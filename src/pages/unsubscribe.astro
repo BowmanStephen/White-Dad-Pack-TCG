@@ -1,0 +1,168 @@
+---
+/**
+ * Unsubscribe Page (US097 - Email System - Notifications)
+ *
+ * This page handles one-click email unsubscribes via URL tokens.
+ * Users can unsubscribe from all emails or specific categories.
+ */
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { unsubscribeAllEmails, emailPreferences } from '@/stores/email';
+
+// Get unsubscribe token from URL params
+const url = new URL(Astro.request.url);
+const token = url.searchParams.get('token') || '';
+const type = url.searchParams.get('type') || 'all';
+
+// Perform unsubscribe if token provided
+let unsubscribeSuccess = false;
+let unsubscribeError = '';
+let email = '';
+let preferences = emailPreferences.get();
+
+if (token && preferences) {
+  const result = unsubscribeAllEmails(token);
+  if (result.success) {
+    unsubscribeSuccess = true;
+    preferences = emailPreferences.get();
+    email = preferences?.email || '';
+  } else {
+    unsubscribeError = result.error || 'Unsubscribe failed';
+  }
+} else if (!token) {
+  unsubscribeError = 'No unsubscribe token provided. Please use the link from your email.';
+}
+
+// Get page metadata
+const title = unsubscribeSuccess ? 'Unsubscribed - DadDeck' : 'Unsubscribe Failed - DadDeck';
+const description = unsubscribeSuccess
+  ? 'You have been successfully unsubscribed from DadDeck emails.'
+  : 'We could not process your unsubscribe request.';
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+      {
+        unsubscribeSuccess ? (
+          // Success State
+          <div class="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-8 text-center">
+            <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <h1 class="text-2xl font-bold text-white mb-2">
+              You're Unsubscribed
+            </h1>
+
+            <p class="text-slate-400 mb-6">
+              We've successfully removed <span class="text-white font-medium">{email}</span> from our email list.
+              You won't receive any more emails from DadDeck.
+            </p>
+
+            <div class="bg-slate-700/50 rounded-lg p-4 mb-6 text-left">
+              <p class="text-slate-300 text-sm mb-2">
+                <strong class="text-white">What this means:</strong>
+              </p>
+              <ul class="text-slate-400 text-sm space-y-1">
+                <li>• No more weekly digest emails</li>
+                <li>• No trade offer notifications</li>
+                <li>• No special event announcements</li>
+                <li>• No achievement emails</li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <a
+                href="/"
+                class="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Return to DadDeck
+              </a>
+
+              <button
+                id="resubscribe-btn"
+                class="w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-lg transition-colors"
+                type="button"
+              >
+                Re-subscribe to Emails
+              </button>
+            </div>
+
+            <p class="text-slate-500 text-xs mt-6">
+              If you didn't request this unsubscribe, or if you change your mind later,
+              you can always manage your email preferences in the settings menu.
+            </p>
+          </div>
+        ) : (
+          // Error State
+          <div class="bg-slate-800 rounded-2xl shadow-2xl border border-red-900/50 p-8 text-center">
+            <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+
+            <h1 class="text-2xl font-bold text-white mb-2">
+              Unsubscribe Failed
+            </h1>
+
+            <p class="text-slate-400 mb-6">
+              {unsubscribeError}
+            </p>
+
+            <div class="bg-slate-700/50 rounded-lg p-4 mb-6 text-left">
+              <p class="text-slate-300 text-sm mb-2">
+                <strong class="text-white">Possible reasons:</strong>
+              </p>
+              <ul class="text-slate-400 text-sm space-y-1">
+                <li>• The unsubscribe link may have expired</li>
+                <li>• The link may have been already used</li>
+                <li>• You may not have email preferences set up yet</li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <a
+                href="/settings"
+                class="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Manage Email Preferences
+              </a>
+
+              <a
+                href="/"
+                class="block w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-lg transition-colors"
+              >
+                Return to DadDeck
+              </a>
+            </div>
+
+            <p class="text-slate-500 text-xs mt-6">
+              Need help? You can also manage your email preferences directly in the app settings.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </main>
+
+  <!-- Re-subscription handler -->
+  {unsubscribeSuccess && (
+    <script>
+      import { resubscribeEmails } from '@/stores/email';
+
+      document.getElementById('resubscribe-btn')?.addEventListener('click', () => {
+        resubscribeEmails();
+        alert('You have been re-subscribed to all email notifications. You can customize your preferences in settings.');
+        window.location.href = '/settings';
+      });
+    </script>
+  )}
+</BaseLayout>
+
+<style>
+  /* Add any page-specific styles here */
+</style>

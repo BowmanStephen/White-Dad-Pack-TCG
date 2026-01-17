@@ -485,7 +485,7 @@ export function cancelTrade(tradeId: string): { success: boolean; error?: string
 
 /**
  * Add a trade to received trades (when receiving a shared trade)
- * Shows notification to the user
+ * Shows notification to the user and sends email notification
  */
 export function addReceivedTrade(trade: TradeOffer): void {
   const state = tradeStore.get();
@@ -502,6 +502,32 @@ export function addReceivedTrade(trade: TradeOffer): void {
   if (typeof window !== 'undefined') {
     import('./notifications.js').then(({ notifyTradeOffer }) => {
       notifyTradeOffer(trade.senderName, trade.offeredCards.length);
+    });
+
+    // Send email notification for trade offer (US097)
+    import('./email.js').then(({ sendTradeOfferEmail }) => {
+      sendTradeOfferEmail({
+        tradeId: trade.id,
+        senderName: trade.senderName,
+        offeredCards: trade.offeredCards.map((c) => ({
+          id: c.id,
+          name: c.name,
+          rarity: c.rarity,
+          isHolo: c.isHolo,
+        })),
+        requestedCards: trade.requestedCards.map((c) => ({
+          id: c.id,
+          name: c.name,
+          rarity: c.rarity,
+          isHolo: c.isHolo,
+        })),
+        message: trade.message,
+        expiresAt: trade.expiresAt,
+        tradeUrl: `${window.location.origin}/trade?d=${trade.id}`,
+        unsubscribeUrl: `${window.location.origin}/unsubscribe?type=trade&id=${trade.id}`,
+      }).catch((error) => {
+        console.error('[Trade System] Failed to send trade email:', error);
+      });
     });
   }
 }

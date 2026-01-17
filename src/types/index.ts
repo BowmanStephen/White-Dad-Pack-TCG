@@ -2915,3 +2915,10 @@ export * from './security';
 
 // Re-export admin types for convenience
 export * from './admin';
+
+// ============================================================================
+// EMAIL SYSTEM TYPES (US097 - Email System - Notifications)
+// ============================================================================
+
+// Re-export email types for convenience
+export * from './email';
