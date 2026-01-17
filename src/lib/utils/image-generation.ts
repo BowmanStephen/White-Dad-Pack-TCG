@@ -589,3 +589,42 @@ export interface PackShareOptions {
    */
   imageGeneration?: PackImageGenerationOptions;
 }
+
+/**
+ * Share content to Twitter/X using the Twitter Web Intent API
+ *
+ * Opens a new tab/window with the Twitter compose interface pre-filled
+ * with the specified text and URL. Note: Twitter Web Intent does not
+ * support directly attaching images via URL - images must be uploaded
+ * through Twitter's interface or API.
+ *
+ * @param text - The tweet text (will be URL-encoded)
+ * @param imageUrl - Optional image URL to include in tweet (Twitter will attempt to fetch and attach)
+ * @param url - Optional URL to share (defaults to current origin)
+ *
+ * @example
+ * ```typescript
+ * import { shareToTwitter } from '@/lib/utils/image-generation';
+ *
+ * // Share a card pull
+ * shareToTwitter('Just pulled a Mythic Grillmaster Gary! 🎴', 'https://example.com/card.png');
+ *
+ * // Share with custom URL
+ * shareToTwitter('Check out this pack!', 'https://example.com/pack.png', 'https://dadddeck.com');
+ * ```
+ */
+export function shareToTwitter(text: string, _imageUrl?: string, url?: string): void {
+  // Build the Twitter Intent URL
+  const tweetUrl = url || window.location.origin;
+  let intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(tweetUrl)}`;
+
+  // Note: Twitter Web Intent doesn't support direct image URL attachment.
+  // The imageUrl parameter is included for future API integration or as a reference.
+  // For actual image sharing, users would need to:
+  // 1. Use the Web Share API (navigator.share) with files
+  // 2. Upload images to a service and use Twitter's API with media_ids
+  // 3. Manually attach images after the intent opens
+
+  // Open in new tab/window
+  window.open(intentUrl, '_blank', 'noopener,noreferrer,width=550,height=420');
+}

@@ -4,7 +4,7 @@
   import { RARITY_CONFIG, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
-  import { downloadPackImage, sharePackImage } from '../../lib/utils/image-generation';
+  import { downloadPackImage, sharePackImage, shareToTwitter } from '../../lib/utils/image-generation';
 
   export let pack: Pack;
   export let stats: {
@@ -68,9 +68,7 @@
 
   function shareOnX() {
     const text = `I just pulled a ${stats.bestCard.isHolo ? 'Holographic ' : ''}${bestRarityConfig.name} ${stats.bestCard.name} in DadDeck™! 🎴✨\n\nOpen your own pack at:`;
-    const url = window.location.origin;
-    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-    window.open(xUrl, '_blank');
+    shareToTwitter(text);
   }
 
   async function copyLink() {

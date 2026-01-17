@@ -175,3 +175,18 @@ y US014 acceptance criteria","status":"completed","activeForm":"Verifying US014 
 {"type":"assistant","message":{"id":"msg_202601171555392790fc34e81a478e","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 15 - US015: Social Sharing - Card Image Generation
+*2026-01-17T08:01:31.374Z (347s)*
+
+**Status:** Completed
+
+**Notes:**
+I integration for native OS sharing on supported devices\n- Fallback download button for all browsers\n- Browser capability detection via `checkShareSupport()`\n- Auto-generated shareable text with rarity stars\n- Sanitized filenames for safe file downloads\n- Error handling with user-friendly messages\n\n**Files modified:**\n- `src/lib/utils/image-generation.ts` (new, 230 lines)\n- `src/components/card/Card.svelte` (added share functionality)\n- `package.json` (added html2canvas dependency)\n\n
+
+---
+## ✓ Iteration 16 - US016: Social Sharing - Pack Pull Collage
+*2026-01-17T08:07:14.965Z (343s)*
+
+**Status:** Completed
+
+---
