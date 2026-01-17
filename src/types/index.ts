@@ -66,6 +66,11 @@ export interface PackCard extends Card {
   holoType: HoloVariant;
 }
 
+// Card for display in collection (with duplicate count)
+export interface CollectionDisplayCard extends PackCard {
+  duplicateCount: number;
+}
+
 // Pack Configuration
 export interface PackConfig {
   cardsPerPack: number;
@@ -151,6 +156,16 @@ export interface RarityConfig {
   particleCount: number;
   animationIntensity: number;
 }
+
+// Rarity order for comparison (common=0, mythic=5)
+export const RARITY_ORDER: Record<Rarity, number> = {
+  common: 0,
+  uncommon: 1,
+  rare: 2,
+  epic: 3,
+  legendary: 4,
+  mythic: 5,
+};
 
 // Rarity configurations map
 export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
