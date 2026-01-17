@@ -18,7 +18,7 @@ import type {
   PackValidationResult,
   SecurityViolation,
 } from '../../types/security';
-import { RARITY_CONFIG } from '../../types';
+import { RARITY_ORDER } from '../../types';
 import { createSecurityViolation } from './utils';
 
 // Store recent pack hashes for duplicate detection
@@ -40,9 +40,13 @@ function cleanOldHashes(): void {
  * Uses a simple but effective string-based hash for browser compatibility
  */
 export async function hashPackData(pack: Pack): Promise<string> {
+  // Handle undefined or empty cards array
+  const cards = pack.cards ?? [];
+  
   // Create a canonical string representation of the pack
   const canonical = JSON.stringify({
-    cards: pack.cards.map((c) => ({
+    id: pack.id, // Include pack ID to ensure unique hashes
+    cards: cards.map((c) => ({
       id: c.id,
       rarity: c.rarity,
       isHolo: c.isHolo,
@@ -157,7 +161,9 @@ export async function detectDuplicatePack(
   // Limit the size of recent hashes
   if (recentPackHashes.size > RECENT_PACKS_WINDOW) {
     const oldestKey = recentPackHashes.keys().next().value;
-    recentPackHashes.delete(oldestKey);
+    if (oldestKey !== undefined) {
+      recentPackHashes.delete(oldestKey);
+    }
   }
 
   return { isDuplicate: false };
@@ -199,10 +205,10 @@ export function validateRarityDistribution(pack: Pack): string[] {
     anomalies.push('Pack contains no common cards (statistically suspicious)');
   }
 
-  // Calculate total rarity score
+  // Calculate total rarity score (using RARITY_ORDER as score: common=0, mythic=5)
   let totalScore = 0;
   for (const card of pack.cards) {
-    totalScore += RARITY_CONFIG[card.rarity].rarityScore;
+    totalScore += RARITY_ORDER[card.rarity];
   }
 
   // Flag packs with unusually high rarity score
@@ -259,6 +265,31 @@ export async function validatePack(
   const anomalies: string[] = [];
   let entropyVerified = true;
   let duplicateDetected = false;
+
+  // Check for missing or empty cards
+  if (!pack.cards || !Array.isArray(pack.cards)) {
+    anomalies.push('Pack has no cards array');
+    return {
+      valid: false,
+      entropyVerified: false,
+      duplicateDetected: false,
+      anomalies,
+      serverSeed: entropy?.serverSeed,
+      clientSeed: entropy?.clientSeed,
+    };
+  }
+
+  if (pack.cards.length === 0) {
+    anomalies.push('Pack is empty');
+    return {
+      valid: false,
+      entropyVerified: false,
+      duplicateDetected: false,
+      anomalies,
+      serverSeed: entropy?.serverSeed,
+      clientSeed: entropy?.clientSeed,
+    };
+  }
 
   // Validate entropy if provided
   if (entropy) {
