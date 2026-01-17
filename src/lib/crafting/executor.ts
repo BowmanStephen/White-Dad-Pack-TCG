@@ -21,31 +21,191 @@ import { RARITY_CONFIG, RARITY_ORDER } from '@/types';
 // ============================================================================
 
 /**
- * Validate that selected cards match the recipe requirements
+ * Validation error types for better error handling
  */
-export function validateRecipeSelection(
-  recipe: CraftingRecipe,
-  selectedCards: PackCard[]
-): { valid: boolean; error?: string } {
-  // Check card count
-  if (selectedCards.length !== recipe.inputCount) {
+export type ValidationErrorType =
+  | 'INVALID_RECIPE_ID'
+  | 'INVALID_RARITY'
+  | 'INSUFFICIENT_CURRENCY'
+  | 'INSUFFICIENT_CARDS'
+  | 'CARD_COUNT_MISMATCH'
+  | 'EMPTY_SELECTION';
+
+/**
+ * Detailed validation error result
+ */
+export interface ValidationResult {
+  valid: boolean;
+  error?: string;
+  errorType?: ValidationErrorType;
+}
+
+/**
+ * Validate recipe ID exists in available recipes
+ */
+export function validateRecipeId(
+  recipeId: string | undefined | null,
+  availableRecipes: CraftingRecipe[]
+): ValidationResult {
+  if (!recipeId) {
     return {
       valid: false,
-      error: `Need ${recipe.inputCount} cards, selected ${selectedCards.length}`,
+      error: 'No recipe selected. Please select a recipe to craft.',
+      errorType: 'INVALID_RECIPE_ID',
+    };
+  }
+
+  const recipeExists = availableRecipes.some((recipe) => recipe.id === recipeId);
+  if (!recipeExists) {
+    return {
+      valid: false,
+      error: `Invalid recipe ID: ${recipeId}. This recipe does not exist.`,
+      errorType: 'INVALID_RECIPE_ID',
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Validate card rarity matches recipe requirements
+ */
+export function validateCardRarities(
+  recipe: CraftingRecipe,
+  selectedCards: PackCard[]
+): ValidationResult {
+  if (selectedCards.length === 0) {
+    return {
+      valid: false,
+      error: 'No cards selected. Please select cards to craft with.',
+      errorType: 'EMPTY_SELECTION',
     };
   }
 
   // Check that all cards match the required rarity
-  for (const card of selectedCards) {
-    if (card.rarity !== recipe.inputRarity) {
-      return {
-        valid: false,
-        error: `All cards must be ${RARITY_CONFIG[recipe.inputRarity].name}`,
-      };
-    }
+  const invalidCards = selectedCards.filter(
+    (card) => card.rarity !== recipe.inputRarity
+  );
+
+  if (invalidCards.length > 0) {
+    const requiredRarityName = RARITY_CONFIG[recipe.inputRarity].name;
+    return {
+      valid: false,
+      error: `${invalidCards.length} card(s) do not match required rarity. All cards must be ${requiredRarityName}.`,
+      errorType: 'INVALID_RARITY',
+    };
   }
 
   return { valid: true };
+}
+
+/**
+ * Validate player has sufficient currency for crafting
+ */
+export function validatePlayerCurrency(
+  recipe: CraftingRecipe,
+  playerCurrency: number
+): ValidationResult {
+  const cost = calculateCraftingCost(recipe);
+
+  if (playerCurrency < cost) {
+    return {
+      valid: false,
+      error: `Insufficient crafting currency. Need ${cost.toFixed(2)} ${getCurrencyName()}, but you only have ${playerCurrency.toFixed(2)}.`,
+      errorType: 'INSUFFICIENT_CURRENCY',
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Validate player has sufficient cards for crafting
+ */
+export function validateCardCount(
+  recipe: CraftingRecipe,
+  selectedCards: PackCard[]
+): ValidationResult {
+  if (selectedCards.length !== recipe.inputCount) {
+    return {
+      valid: false,
+      error: `Need ${recipe.inputCount} cards for this recipe, but only ${selectedCards.length} selected.`,
+      errorType: 'CARD_COUNT_MISMATCH',
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Comprehensive validation that checks all requirements for crafting
+ *
+ * @param recipeId - ID of the recipe to validate
+ * @param recipe - The recipe object (must be provided if recipeId is valid)
+ * @param selectedCards - Cards selected for crafting
+ * @param playerCurrency - Player's current crafting currency
+ * @param availableRecipes - All available recipes (for recipe ID validation)
+ * @returns Validation result with detailed error message if invalid
+ */
+export function validateCraftingAttempt(
+  recipeId: string | undefined | null,
+  recipe: CraftingRecipe | null,
+  selectedCards: PackCard[],
+  playerCurrency: number,
+  availableRecipes: CraftingRecipe[]
+): ValidationResult {
+  // Validate recipe ID exists
+  const recipeIdValidation = validateRecipeId(recipeId, availableRecipes);
+  if (!recipeIdValidation.valid) {
+    return recipeIdValidation;
+  }
+
+  // Ensure recipe object is provided
+  if (!recipe) {
+    return {
+      valid: false,
+      error: 'Recipe data not loaded. Please try selecting the recipe again.',
+      errorType: 'INVALID_RECIPE_ID',
+    };
+  }
+
+  // Validate card count
+  const cardCountValidation = validateCardCount(recipe, selectedCards);
+  if (!cardCountValidation.valid) {
+    return cardCountValidation;
+  }
+
+  // Validate card rarities
+  const rarityValidation = validateCardRarities(recipe, selectedCards);
+  if (!rarityValidation.valid) {
+    return rarityValidation;
+  }
+
+  // Validate player currency
+  const currencyValidation = validatePlayerCurrency(recipe, playerCurrency);
+  if (!currencyValidation.valid) {
+    return currencyValidation;
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Legacy validation function for backwards compatibility
+ * @deprecated Use validateCraftingAttempt for comprehensive validation
+ */
+export function validateRecipeSelection(
+  recipe: CraftingRecipe,
+  selectedCards: PackCard[]
+): ValidationResult {
+  // Validate card count
+  const cardCountValidation = validateCardCount(recipe, selectedCards);
+  if (!cardCountValidation.valid) {
+    return cardCountValidation;
+  }
+
+  // Validate card rarities
+  return validateCardRarities(recipe, selectedCards);
 }
 
 // ============================================================================
@@ -315,4 +475,16 @@ export function canAffordCraft(recipe: CraftingRecipe, playerCurrency: number): 
  */
 export function rollCraftingSuccess(recipe: CraftingRecipe): boolean {
   return Math.random() < recipe.successRate;
+}
+
+// ============================================================================
+// UTILITY HELPERS
+// ============================================================================
+
+/**
+ * Get the display name for crafting currency
+ * Currently returns "Dad Coins" but can be changed for different currencies
+ */
+function getCurrencyName(): string {
+  return 'Dad Coins';
 }

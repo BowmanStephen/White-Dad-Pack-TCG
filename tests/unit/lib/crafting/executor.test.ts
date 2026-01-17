@@ -3,7 +3,16 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { calculateCraftingCost, canAffordCraft, executeCraft } from '@/lib/crafting/executor';
+import {
+  calculateCraftingCost,
+  canAffordCraft,
+  executeCraft,
+  validateCraftingAttempt,
+  validateRecipeId,
+  validateCardRarities,
+  validatePlayerCurrency,
+  validateCardCount,
+} from '@/lib/crafting/executor';
 import { CRAFTING_RECIPES } from '@/types';
 import { getAllCards } from '@/lib/cards/database';
 
@@ -315,6 +324,275 @@ describe('executeCraft', () => {
 
       mockRandom.mockRestore();
     });
+  });
+});
+
+describe('validateRecipeId - HP-004', () => {
+  it('should reject undefined recipe ID', () => {
+    const result = validateRecipeId(undefined, CRAFTING_RECIPES);
+    expect(result.valid).toBe(false);
+    expect(result.error).toBe('No recipe selected. Please select a recipe to craft.');
+    expect(result.errorType).toBe('INVALID_RECIPE_ID');
+  });
+
+  it('should reject null recipe ID', () => {
+    const result = validateRecipeId(null, CRAFTING_RECIPES);
+    expect(result.valid).toBe(false);
+    expect(result.error).toBe('No recipe selected. Please select a recipe to craft.');
+    expect(result.errorType).toBe('INVALID_RECIPE_ID');
+  });
+
+  it('should reject non-existent recipe ID', () => {
+    const result = validateRecipeId('fake_recipe_id', CRAFTING_RECIPES);
+    expect(result.valid).toBe(false);
+    expect(result.error).toContain('Invalid recipe ID: fake_recipe_id');
+    expect(result.errorType).toBe('INVALID_RECIPE_ID');
+  });
+
+  it('should accept valid recipe ID', () => {
+    const result = validateRecipeId('common_to_uncommon', CRAFTING_RECIPES);
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+});
+
+describe('validateCardRarities - HP-004', () => {
+  const commonToUncommon = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+
+  it('should reject empty selection', () => {
+    const result = validateCardRarities(commonToUncommon, []);
+    expect(result.valid).toBe(false);
+    expect(result.error).toBe('No cards selected. Please select cards to craft with.');
+    expect(result.errorType).toBe('EMPTY_SELECTION');
+  });
+
+  it('should reject cards with wrong rarity', () => {
+    const mixedCards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'uncommon' as const }, // Wrong rarity
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+    ];
+
+    const result = validateCardRarities(commonToUncommon, mixedCards);
+    expect(result.valid).toBe(false);
+    expect(result.error).toContain('1 card(s) do not match required rarity');
+    expect(result.error).toContain('Common');
+    expect(result.errorType).toBe('INVALID_RARITY');
+  });
+
+  it('should accept all cards with correct rarity', () => {
+    const validCards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+    ];
+
+    const result = validateCardRarities(commonToUncommon, validCards);
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+});
+
+describe('validatePlayerCurrency - HP-004', () => {
+  const commonToUncommon = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+
+  it('should reject insufficient currency', () => {
+    const result = validatePlayerCurrency(commonToUncommon, 50);
+    expect(result.valid).toBe(false);
+    expect(result.error).toContain('Insufficient crafting currency');
+    expect(result.error).toContain('Need 75.00');
+    expect(result.error).toContain('only have 50.00');
+    expect(result.errorType).toBe('INSUFFICIENT_CURRENCY');
+  });
+
+  it('should accept sufficient currency', () => {
+    const result = validatePlayerCurrency(commonToUncommon, 100);
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+
+  it('should accept exact currency amount', () => {
+    const result = validatePlayerCurrency(commonToUncommon, 75);
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+});
+
+describe('validateCardCount - HP-004', () => {
+  const commonToUncommon = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+
+  it('should reject insufficient cards', () => {
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+    ];
+
+    const result = validateCardCount(commonToUncommon, cards);
+    expect(result.valid).toBe(false);
+    expect(result.error).toBe('Need 5 cards for this recipe, but only 3 selected.');
+    expect(result.errorType).toBe('CARD_COUNT_MISMATCH');
+  });
+
+  it('should reject too many cards', () => {
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+      { id: 'card6', rarity: 'common' as const },
+    ];
+
+    const result = validateCardCount(commonToUncommon, cards);
+    expect(result.valid).toBe(false);
+    expect(result.error).toBe('Need 5 cards for this recipe, but only 6 selected.');
+    expect(result.errorType).toBe('CARD_COUNT_MISMATCH');
+  });
+
+  it('should accept exact card count', () => {
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+    ];
+
+    const result = validateCardCount(commonToUncommon, cards);
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+});
+
+describe('validateCraftingAttempt - HP-004 (Comprehensive Validation)', () => {
+  it('should fail with no recipe selected', () => {
+    const result = validateCraftingAttempt(
+      undefined,
+      null,
+      [],
+      100,
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('INVALID_RECIPE_ID');
+  });
+
+  it('should fail with invalid recipe ID', () => {
+    const result = validateCraftingAttempt(
+      'fake_recipe',
+      null,
+      [],
+      100,
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('INVALID_RECIPE_ID');
+  });
+
+  it('should fail when recipe data is missing', () => {
+    const result = validateCraftingAttempt(
+      'common_to_uncommon',
+      null,
+      [],
+      100,
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.error).toContain('Recipe data not loaded');
+    expect(result.errorType).toBe('INVALID_RECIPE_ID');
+  });
+
+  it('should fail with insufficient cards', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+    ];
+
+    const result = validateCraftingAttempt(
+      'common_to_uncommon',
+      recipe,
+      cards,
+      100,
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('CARD_COUNT_MISMATCH');
+  });
+
+  it('should fail with wrong rarity cards', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'uncommon' as const }, // Wrong rarity
+    ];
+
+    const result = validateCraftingAttempt(
+      'common_to_uncommon',
+      recipe,
+      cards,
+      100,
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('INVALID_RARITY');
+  });
+
+  it('should fail with insufficient currency', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+    ];
+
+    const result = validateCraftingAttempt(
+      'common_to_uncommon',
+      recipe,
+      cards,
+      50, // Not enough currency (need 75)
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('INSUFFICIENT_CURRENCY');
+  });
+
+  it('should pass with valid inputs', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+    ];
+
+    const result = validateCraftingAttempt(
+      'common_to_uncommon',
+      recipe,
+      cards,
+      100, // Enough currency
+      CRAFTING_RECIPES
+    );
+
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
   });
 });
 
