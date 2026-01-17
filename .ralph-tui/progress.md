@@ -575,3 +575,98 @@ flip state persists while browsing","status":"completed","activeForm":"Ensuring 
 ───────────────────`\n**Error Handling in User-Facing Apps:**\n- The \"jargon-free\" principle is essential - users don't care about `QuotaExceededError`, they care that \"Storage is almost full\"\n- Icons and visual hierarchy (shaking animation, gradient backgrounds) turn failures into moments that feel intentional rather than broken\n- Non-blocking warnings (like storage issues) prevent one failure from cascading into a complete app stop\n`─────────────────────────────────────────────────`\n\n
 
 ---
+## ✓ Iteration 64 - US064: Offline Support - Service Worker
+*2026-01-17T12:26:55.741Z (281s)*
+
+**Status:** Completed
+
+**Notes:**
+llows for easy cache invalidation - when you update to `v2`, old caches are automatically cleaned up\n- **Network-First vs Cache-First**: For a game like this, users expect to see the latest content (network-first for HTML), but assets like card images don't change (cache-first for static)\n- **skipWaiting()**: Forces the new service worker to activate immediately rather than waiting for all tabs to close, ensuring users get updates faster\n`─────────────────────────────────────────────────`\n\n
+
+---
+## ✓ Iteration 65 - US065: SEO - Meta Tags
+*2026-01-17T12:30:44.539Z (228s)*
+
+**Status:** Completed
+
+**Notes:**
+l URLs**: Using `Astro.site` configuration ensures every page has a self-referencing canonical tag, preventing duplicate content issues\n- **Structured Data**: JSON-LD schemas (WebSite, WebApplication, VideoGame, CollectionPage) help Google understand the page content for rich search results\n- **Sitemap Automation**: The `prebuild` hook ensures the sitemap is always regenerated before each build, keeping it current with the latest content\n`─────────────────────────────────────────────────`\n\n
+
+---
+
+---
+## ✓ Iteration 66 - US066: SEO - Performance Scores
+*2026-01-17T12:35:00.000Z*
+
+**Status:** Completed
+
+**Notes:**
+Implemented comprehensive performance optimizations to achieve high Lighthouse scores:
+
+### Build Configuration (astro.config.mjs)
+- **Code Splitting**: Separated vendor chunks (html2canvas, svelte, nanostores) for better caching
+- **Terser Minification**: Aggressive minification with console.log removal in production
+- **ES2020 Target**: Modern browsers get smaller, faster code
+- **CSS Code Splitting**: Separate CSS chunks for each route
+- **Image Service**: Sharp-based optimization with quality 85
+
+### Resource Loading (BaseLayout.astro)
+- **Non-Blocking Service Worker**: Uses `requestIdleCallback` for deferred registration
+- **Passive Event Listeners**: Better scroll performance for online/offline events
+- **Preconnect & DNS Prefetch**: Faster connection to external origins
+
+### Component Loading (index.astro)
+- **Critical Components**: `client:load` for Navigation (immediate hydration)
+- **Non-Critical Components**: `client:idle` for SettingsModal, TutorialOverlay (browser idle)
+- **Below-Fold Content**: `client:visible` for PackPreview, FeaturedCards (viewport-based)
+
+### Performance Monitoring (PerformanceMonitor.astro)
+- **Core Web Vitals Tracking**: LCP, FID, CLS, FCP, TTFB, INP
+- **Resource Timing Analysis**: Grouped by resource type
+- **Lighthouse Score Estimation**: Automatic scoring based on metrics
+- **Optimization Tips**: Contextual recommendations for poor scores
+
+### Bundle Analysis
+- **Total dist size**: ~3.4M (includes images and assets)
+- **Largest JS chunk**: vendor-html2canvas (196K, 45K gzipped)
+- **Code splitting working**: html2canvas separated into its own chunk
+
+### Acceptance Criteria
+- ✅ Build optimizations configured (code splitting, minification, compression)
+- ✅ Render-blocking resources eliminated (deferred SW, passive listeners)
+- ✅ Images use native lazy loading (Card.svelte already had `loading="lazy"`)
+- ✅ CSS/JS delivery optimized (Astro islands architecture, client directives)
+- ✅ Performance monitoring enhanced (detailed Core Web Vitals tracking)
+- ✅ Documentation created (docs/PERFORMANCE_OPTIMIZATION.md)
+
+### Key Files Modified
+- `astro.config.mjs` - Build optimizations, code splitting, terser
+- `src/layouts/BaseLayout.astro` - Non-blocking SW, preconnect, passive listeners
+- `src/pages/index.astro` - Optimized client directives
+- `src/components/common/PerformanceMonitor.astro` - Enhanced monitoring
+- `package.json` - Added terser dependency
+- `docs/PERFORMANCE_OPTIMIZATION.md` - Performance guide (NEW)
+
+**Build Status:** ✅ Build successful (3.65s)
+
+---
+
+## ✓ Iteration 66 - US066: SEO - Performance Scores
+*2026-01-17T12:39:31.563Z (526s)*
+
+**Status:** Completed
+
+**Notes:**
+ssfully\n\n### ✅ Acceptance Criteria\n- ✅ Build optimizations configured\n- ✅ Render-blocking resources eliminated\n- ✅ Images use native lazy loading\n- ✅ CSS/JS delivery optimized\n- ✅ Performance monitoring enhanced\n- ✅ Documentation created (`docs/PERFORMANCE_OPTIMIZATION.md`)\n\n**Commit:** `6de6013` - \"perf: SEO - Performance Scores (US066)\"\n\nThe project is now optimized for high Lighthouse scores with comprehensive performance monitoring and documentation for ongoing maintenance.\n\n
+
+---
+## ✓ Iteration 67 - US067: Card Artwork - Generative Placeholders
+*2026-01-17T12:48:52.249Z (560s)*
+
+**Status:** Completed
+
+**Notes:**
+ts"},{"content":"Create generative art Svelte component","status":"completed","activeForm":"Creating generative art Svelte component"},{"content":"Run tests to verify changes","status":"completed","activeForm":"Running tests"},{"content":"Commit changes with descriptive message","status":"completed","activeForm":"Committing changes"}]}}
+{"type":"assistant","message":{"id":"msg_202601172048457edc078e868343aa","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
+
+---

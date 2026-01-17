@@ -1,6 +1,7 @@
-import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant } from '../../types';
+import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign } from '../../types';
 import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
+import { PACK_DESIGN_CONFIG } from '../../types';
 
 /**
  * Select cards from the rarity pool, excluding already used cards.
@@ -200,6 +201,30 @@ export function rollHolo(rarity: Rarity, rng: SeededRandom): HoloVariant {
 }
 
 /**
+ * Roll for pack design based on US068 distribution.
+ *
+ * Distribution:
+ * - 80% standard (default blue design)
+ * - 15% holiday (festive seasonal theme)
+ * - 5% premium (gold foil pattern - rare drop)
+ *
+ * @param rng - Seeded random number generator
+ * @returns The appropriate PackDesign based on probability roll
+ */
+export function rollPackDesign(rng: SeededRandom): PackDesign {
+  const roll = rng.next();
+
+  // 80% standard (0.00 - 0.80)
+  if (roll < 0.80) return 'standard';
+
+  // 15% holiday (0.80 - 0.95)
+  if (roll < 0.95) return 'holiday';
+
+  // 5% premium (0.95 - 1.00)
+  return 'premium';
+}
+
+/**
  * Generate a single pack of cards
  */
 export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: number): Pack {
@@ -248,12 +273,16 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
   // Shuffle the cards so rarity isn't predictable by position
   const shuffledCards = rng.shuffle(packCards);
 
+  // Roll for pack design (US068 - 80% standard, 15% holiday, 5% premium)
+  const packDesign = rollPackDesign(rng);
+
   // Create the pack
   const pack: Pack = {
     id: generateId(),
     cards: shuffledCards,
     openedAt: new Date(),
     bestRarity: getHighestRarity(shuffledCards),
+    design: packDesign,
   };
 
   return pack;

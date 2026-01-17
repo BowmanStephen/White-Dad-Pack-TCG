@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
-  import type { Rarity } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
+  import type { Rarity, PackDesign } from '../../types';
+  import { RARITY_CONFIG, PACK_DESIGN_CONFIG } from '../../types';
   import * as uiStore from '../../stores/ui';
   import { playPackTear } from '../../stores/audio';
 
   export let bestRarity: Rarity = 'common';
+  export let design: PackDesign = 'standard';
 
   const dispatch = createEventDispatcher();
 
@@ -16,6 +17,7 @@
   let reducedMotion = false;
 
   $: rarityConfig = RARITY_CONFIG[bestRarity];
+  $: packDesign = PACK_DESIGN_CONFIG[design];
   $: glowColor = rarityConfig.glowColor;
   $: particleCount = reducedMotion ? 0 : rarityConfig.particleCount;
 
@@ -169,38 +171,70 @@
     <div
       class="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-transform duration-200 ease-out"
       class:animate-pack-shake={phase === 'tear'}
+      class:animate-pack-shake-festive={phase === 'tear' && design === 'holiday'}
+      class:animate-pack-shake-golden={phase === 'tear' && design === 'premium'}
     >
-      <!-- Pack background -->
+      <!-- Pack background - uses pack design gradient -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 border-4 rounded-2xl transition-all duration-300 ease-out"
-        style:border-color={phase === 'tear' || phase === 'burst' ? rarityConfig.color : 'rgba(251, 191, 36, 0.5)'}
+        class="absolute inset-0 border-4 rounded-2xl transition-all duration-300 ease-out"
+        style:background={`linear-gradient(to bottom right, ${packDesign.gradientStart}, ${packDesign.gradientEnd})`}
+        style:border-color={phase === 'tear' || phase === 'burst' ? packDesign.primaryColor : packDesign.borderColor}
       >
-        <!-- Inner pattern -->
-        <div class="absolute inset-4 border-2 border-amber-500/30 rounded-xl"></div>
+        <!-- Inner pattern - uses pack design accent color -->
+        <div class="absolute inset-4 border-2 rounded-xl" style:border-color={`${packDesign.accentColor}33`}></div>
+
+        <!-- Pack design overlay patterns -->
+        {#if design === 'holiday'}
+          <!-- Holiday snowflake pattern -->
+          <div class="absolute inset-0 pointer-events-none opacity-20">
+            <div class="absolute top-8 left-8 text-2xl">❄️</div>
+            <div class="absolute top-16 right-12 text-xl">❄️</div>
+            <div class="absolute bottom-20 left-12 text-lg">❄️</div>
+            <div class="absolute top-32 left-16 text-xl">❄️</div>
+            <div class="absolute bottom-32 right-8 text-2xl">❄️</div>
+          </div>
+        {:else if design === 'premium'}
+          <!-- Premium gold foil pattern -->
+          <div class="absolute inset-0 pointer-events-none opacity-30">
+            <div class="absolute inset-0" style:background={`repeating-linear-gradient(45deg, transparent, transparent 10px, ${packDesign.accentColor}22 10px, ${packDesign.accentColor}22 20px)`}></div>
+          </div>
+        {/if}
 
         <!-- Pack design -->
         <div class="absolute inset-0 flex flex-col items-center justify-center p-8">
           <!-- Logo area -->
           <div class="text-center mb-6">
             <div class="text-4xl md:text-5xl font-bold">
-              <span class="text-amber-400">Dad</span><span class="text-white">Deck</span>
+              <span style:color={packDesign.accentColor}>Dad</span><span class="text-white">Deck</span>
             </div>
-            <div class="text-amber-400/80 text-sm mt-1">SERIES 1</div>
+            <div style:color={`${packDesign.accentColor}cc`} class="text-sm mt-1">SERIES 1</div>
+            <!-- Pack design badge -->
+            {#if design !== 'standard'}
+              <div class="mt-2 px-3 py-1 rounded-full text-xs font-bold" style:background={packDesign.primaryColor} style:color="white">
+                {packDesign.name.toUpperCase()}
+              </div>
+            {/if}
           </div>
 
           <!-- Pack art -->
           <div
             class="w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center mb-6 border-2 transition-all duration-300 ease-out"
-            style:background="linear-gradient(135deg, {rarityConfig.color}33, {rarityConfig.color}11)"
-            style:border-color="{rarityConfig.color}66"
+            style:background={`linear-gradient(135deg, ${rarityConfig.color}33, ${rarityConfig.color}11)`}
+            style:border-color={`${rarityConfig.color}66`}
           >
-            <span class="text-6xl md:text-7xl">👔</span>
+            {#if design === 'holiday'}
+              <span class="text-6xl md:text-7xl">🎄</span>
+            {:else if design === 'premium'}
+              <span class="text-6xl md:text-7xl">👑</span>
+            {:else}
+              <span class="text-6xl md:text-7xl">👔</span>
+            {/if}
           </div>
 
           <!-- Pack info -->
           <div class="text-center">
             <div class="text-white font-bold text-lg">BOOSTER PACK</div>
-            <div class="text-slate-400 text-sm">7 Cards Inside</div>
+            <div class:text-slate-400={design === 'standard'} class:text-red-200={design === 'holiday'} class:text-yellow-200={design === 'premium'} class="text-sm">7 Cards Inside</div>
           </div>
         </div>
 
@@ -210,10 +244,11 @@
           class:opacity-0={phase === 'appear' || phase === 'burst'}
           class:opacity-100={phase === 'glow' || phase === 'tear'}
           class:animate-shimmer={phase === 'glow' || phase === 'tear'}
+          class:animate-shimmer-golden={phase === 'glow' || phase === 'tear' && design === 'premium'}
           style="background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%); background-size: 200% 100%;"
         ></div>
 
-        <!-- SVG Tear effect overlay -->
+        <!-- SVG Tear effect overlay - different patterns per design -->
         {#if phase === 'tear' || phase === 'burst'}
           <div class="absolute inset-0 pointer-events-none">
             <svg
@@ -221,25 +256,52 @@
               class="w-full h-full"
               style="overflow: visible;"
             >
-              <!-- Tear line from top to bottom with jagged edges -->
-              <path
-                d="M 200 0 L 195 100 L 205 150 L 192 200 L 208 250 L 193 300 L 207 350 L 194 400 L 206 450 L 195 500 L 205 600"
-                fill="none"
-                stroke={rarityConfig.color}
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="animate-tear-line"
-                style="filter: drop-shadow(0 0 8px {rarityConfig.color});"
-              />
+              {#if design === 'holiday'}
+                <!-- Holiday: Zigzag tear like candy cane stripe -->
+                <path
+                  d="M 200 0 L 220 50 L 180 100 L 220 150 L 180 200 L 220 250 L 180 300 L 220 350 L 180 400 L 220 450 L 180 500 L 200 600"
+                  fill="none"
+                  stroke={packDesign.accentColor}
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="animate-tear-line"
+                  style="filter: drop-shadow(0 0 8px {packDesign.primaryColor});"
+                />
+              {:else if design === 'premium'}
+                <!-- Premium: Lightning bolt tear -->
+                <path
+                  d="M 200 0 L 185 100 L 210 150 L 180 200 L 215 250 L 175 300 L 220 350 L 170 400 L 225 450 L 165 500 L 200 600"
+                  fill="none"
+                  stroke={packDesign.accentColor}
+                  stroke-width="5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="animate-tear-line-golden"
+                  style="filter: drop-shadow(0 0 12px {packDesign.primaryColor});"
+                />
+              {:else}
+                <!-- Standard: Classic jagged tear -->
+                <path
+                  d="M 200 0 L 195 100 L 205 150 L 192 200 L 208 250 L 193 300 L 207 350 L 194 400 L 206 450 L 195 500 L 205 600"
+                  fill="none"
+                  stroke={rarityConfig.color}
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="animate-tear-line"
+                  style="filter: drop-shadow(0 0 8px {rarityConfig.color});"
+                />
+              {/if}
               <!-- Tear flare effect -->
               <circle
                 cx="200"
                 cy="300"
                 r="{phase === 'burst' ? 150 : 0}"
-                fill={rarityConfig.color}
+                fill={design === 'premium' ? packDesign.accentColor : rarityConfig.color}
                 fill-opacity="0.3"
                 class="transition-all duration-300 ease-out"
+                class:animate-burst-golden={design === 'premium'}
               />
             </svg>
           </div>
@@ -291,7 +353,7 @@
     }
   }
 
-  /* Pack shake animation - ease-out timing */
+  /* Pack shake animation - standard (ease-out timing) */
   .animate-pack-shake {
     animation: packShake 0.5s ease-out;
   }
@@ -302,12 +364,45 @@
     20%, 40%, 60%, 80% { transform: translateX(4px) rotate(0.5deg); }
   }
 
+  /* Pack shake animation - holiday (festive bounce) */
+  .animate-pack-shake-festive {
+    animation: packShakeFestive 0.5s ease-out;
+  }
+
+  @keyframes packShakeFestive {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: translateY(-6px) rotate(-2deg); }
+    20%, 40%, 60%, 80% { transform: translateY(-3px) rotate(2deg); }
+  }
+
+  /* Pack shake animation - premium (gentle sway) */
+  .animate-pack-shake-golden {
+    animation: packShakeGolden 0.6s ease-out;
+  }
+
+  @keyframes packShakeGolden {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-3px) rotate(-1deg); }
+    50% { transform: translateX(3px) rotate(1deg); }
+    75% { transform: translateX(-2px) rotate(-0.5deg); }
+  }
+
   /* Shimmer effect - ease-in-out for smooth looping */
   .animate-shimmer {
     animation: shimmer 1s ease-in-out infinite;
   }
 
   @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Shimmer effect - premium golden (slower, more luxurious) */
+  .animate-shimmer-golden {
+    animation: shimmerGolden 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmerGolden {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
@@ -323,7 +418,7 @@
     100% { opacity: 0; }
   }
 
-  /* Tear line animation - ease-out */
+  /* Tear line animation - standard/ease-out */
   .animate-tear-line {
     animation: tearLineDraw 0.5s ease-out forwards;
     stroke-dasharray: 1000;
@@ -336,11 +431,45 @@
     }
   }
 
+  /* Tear line animation - premium golden (with glow pulse) */
+  .animate-tear-line-golden {
+    animation: tearLineDrawGolden 0.5s ease-out forwards, tearLineGlow 0.5s ease-in-out infinite alternate;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+  }
+
+  @keyframes tearLineDrawGolden {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes tearLineGlow {
+    from { filter: drop-shadow(0 0 8px gold); }
+    to { filter: drop-shadow(0 0 16px gold); }
+  }
+
+  /* Burst animation - premium golden (expands more) */
+  .animate-burst-golden {
+    animation: burstGolden 0.4s ease-out forwards;
+  }
+
+  @keyframes burstGolden {
+    0% { transform: scale(0); opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
   /* Performance optimization - only animate transform and opacity */
   .animate-pack-shake,
+  .animate-pack-shake-festive,
+  .animate-pack-shake-golden,
   .animate-shimmer,
+  .animate-shimmer-golden,
   .animate-flash-ease-out,
-  .animate-tear-line {
+  .animate-tear-line,
+  .animate-tear-line-golden,
+  .animate-burst-golden {
     will-change: transform, opacity;
   }
 
@@ -355,7 +484,8 @@
   }
 
   /* GPU acceleration for tear line */
-  .animate-tear-line {
+  .animate-tear-line,
+  .animate-tear-line-golden {
     transform: translateZ(0);
   }
 </style>

@@ -186,6 +186,7 @@
     <!-- Pack opening animation -->
     <PackAnimation
       bestRarity={currentPack.bestRarity}
+      design={currentPack.design}
       on:complete={completePackAnimation}
       on:skip={skipToResults}
     />

@@ -92,16 +92,35 @@ export interface Pack {
   cards: PackCard[];
   openedAt: Date;
   bestRarity: Rarity;
+  design: PackDesign;
 }
 
 // Animation State
-export type PackState = 
+export type PackState =
   | 'idle'
   | 'generating'
   | 'pack_animate'
   | 'cards_ready'
   | 'revealing'
   | 'results';
+
+// Pack Design Types (US068 - Pack Designs - Visual Variety)
+export type PackDesign = 'standard' | 'holiday' | 'premium';
+
+// Pack Design Configuration
+export interface PackDesignConfig {
+  name: string;
+  description: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  borderColor: string;
+  gradientStart: string;
+  gradientEnd: string;
+  pattern: string;
+  probability: number;
+  animationVariant: 'standard' | 'festive' | 'golden';
+}
 
 // Collection Metadata - Statistics about the user's collection
 export interface CollectionMetadata {
@@ -485,3 +504,51 @@ export interface AnalyticsSession {
   pageCount: number;          // Pages viewed in session
   lastActivity: number;       // Last activity timestamp
 }
+
+// ============================================================================
+// PACK DESIGNS (US068 - Pack Designs - Visual Variety)
+// ============================================================================
+
+// Pack Design Configurations
+// Distribution: 80% standard, 15% holiday, 5% premium
+export const PACK_DESIGN_CONFIG: Record<PackDesign, PackDesignConfig> = {
+  standard: {
+    name: 'Standard Pack',
+    description: 'The classic blue booster pack',
+    primaryColor: '#1e40af', // blue-700
+    secondaryColor: '#1e3a8a', // blue-900
+    accentColor: '#fbbf24', // amber-400
+    borderColor: 'rgba(30, 64, 175, 0.5)',
+    gradientStart: '#1e40af',
+    gradientEnd: '#1e3a8a',
+    pattern: 'standard',
+    probability: 0.80,
+    animationVariant: 'standard',
+  },
+  holiday: {
+    name: 'Holiday Pack',
+    description: 'Festive seasonal edition',
+    primaryColor: '#dc2626', // red-600
+    secondaryColor: '#991b1b', // red-900
+    accentColor: '#22c55e', // green-500
+    borderColor: 'rgba(220, 38, 38, 0.5)',
+    gradientStart: '#dc2626',
+    gradientEnd: '#991b1b',
+    pattern: 'holiday',
+    probability: 0.15,
+    animationVariant: 'festive',
+  },
+  premium: {
+    name: 'Premium Pack',
+    description: 'Gold foil rare edition',
+    primaryColor: '#ca8a04', // yellow-600
+    secondaryColor: '#854d0e', // yellow-900
+    accentColor: '#fef08a', // yellow-200
+    borderColor: 'rgba(202, 138, 4, 0.5)',
+    gradientStart: '#ca8a04',
+    gradientEnd: '#854d0e',
+    pattern: 'premium',
+    probability: 0.05,
+    animationVariant: 'golden',
+  },
+};

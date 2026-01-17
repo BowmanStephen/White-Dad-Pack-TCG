@@ -44,6 +44,7 @@ describe('Pack Store - US044: UI State Tests', () => {
       cards: mockCards,
       openedAt: new Date(),
       bestRarity: 'rare',
+      design: 'standard',
     };
   }
 
@@ -139,17 +140,31 @@ describe('Pack Store - US044: UI State Tests', () => {
     });
 
     it('should persist pack error state', () => {
-      packError.set('Test error');
+      packError.set({
+        id: 'test-error-1',
+        category: 'pack_generation',
+        title: 'Test Error',
+        message: 'Test error',
+        userMessage: 'Test error',
+        canRecover: true,
+      });
 
       const error = packError.get();
-      expect(error).toBe('Test error');
+      expect(error?.title).toBe('Test Error');
     });
 
     it('should persist storage error state', () => {
-      storageError.set('Storage failed');
+      storageError.set({
+        id: 'storage-error-1',
+        category: 'storage',
+        title: 'Storage Failed',
+        message: 'Storage failed',
+        userMessage: 'Storage failed',
+        canRecover: true,
+      });
 
       const error = storageError.get();
-      expect(error).toBe('Storage failed');
+      expect(error?.title).toBe('Storage Failed');
     });
 
     it('should maintain state across multiple operations', () => {
@@ -268,12 +283,20 @@ describe('Pack Store - US044: UI State Tests', () => {
 
     it('should not reset packError when reset is called (error persists for debugging)', () => {
       // Set up initial state
-      packError.set('Previous error');
+      const testError = {
+        id: 'test-error-2',
+        category: 'pack_generation' as const,
+        title: 'Previous Error',
+        message: 'Previous error',
+        userMessage: 'Previous error',
+        canRecover: true,
+      };
+      packError.set(testError);
 
       resetPack();
 
       // Note: packError is NOT reset by resetPack() - it persists for debugging
-      expect(packError.get()).toBe('Previous error');
+      expect(packError.get()).toEqual(testError);
 
       // Clear it manually for cleanup
       packError.set(null);
@@ -281,7 +304,15 @@ describe('Pack Store - US044: UI State Tests', () => {
 
     it('should reset storageError to null when reset is called', () => {
       // Set up initial state
-      storageError.set('Previous storage error');
+      const testError = {
+        id: 'storage-error-2',
+        category: 'storage' as const,
+        title: 'Previous Storage Error',
+        message: 'Previous storage error',
+        userMessage: 'Previous storage error',
+        canRecover: true,
+      };
+      storageError.set(testError);
 
       resetPack();
 
@@ -364,17 +395,33 @@ describe('Pack Store - US044: UI State Tests', () => {
 
     it('should recover error state for debugging', () => {
       // Set an error state
-      packError.set('Simulated crash error');
-      storageError.set('Storage error during crash');
+      const crashError = {
+        id: 'crash-error',
+        category: 'pack_generation' as const,
+        title: 'Simulated Crash',
+        message: 'Simulated crash error',
+        userMessage: 'Simulated crash error',
+        canRecover: true,
+      };
+      const storageCrashError = {
+        id: 'storage-crash-error',
+        category: 'storage' as const,
+        title: 'Storage Crash',
+        message: 'Storage error during crash',
+        userMessage: 'Storage error during crash',
+        canRecover: true,
+      };
+      packError.set(crashError);
+      storageError.set(storageCrashError);
 
       // "Recover" by checking error states persist
-      expect(packError.get()).toBe('Simulated crash error');
-      expect(storageError.get()).toBe('Storage error during crash');
+      expect(packError.get()).toEqual(crashError);
+      expect(storageError.get()).toEqual(storageCrashError);
 
       // Should be able to recover by resetting (storageError is reset, packError persists)
       resetPack();
       expect(storageError.get()).toBeNull();
-      expect(packError.get()).toBe('Simulated crash error'); // packError persists
+      expect(packError.get()).toEqual(crashError); // packError persists
 
       // Clean up for other tests
       packError.set(null);
