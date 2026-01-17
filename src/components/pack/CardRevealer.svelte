@@ -3,7 +3,9 @@
   import type { Pack } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import Card from '../card/Card.svelte';
+  import CardSkeleton from '../loading/CardSkeleton.svelte';
   import ParticleEffects from '../card/ParticleEffects.svelte';
+  import FadeIn from '../loading/FadeIn.svelte';
   import { playCardReveal } from '../../stores/audio';
 
   export let pack: Pack;
@@ -190,29 +192,37 @@
     tabindex="0"
   >
     {#if currentCard}
-      <!-- Rarity-specific particle effects on reveal -->
-      <ParticleEffects
-        rarity={currentCard.rarity}
-        active={isCurrentRevealed && particlesActive}
-        duration={1500}
-      />
+      <!-- Card skeleton while loading (before reveal) -->
+      {#if !isCurrentRevealed}
+        <CardSkeleton size="lg" rarity={currentCard.rarity} />
+      {:else}
+        <!-- FadeIn wrapper for smooth reveal -->
+        <FadeIn duration={300}>
+          <!-- Rarity-specific particle effects on reveal -->
+          <ParticleEffects
+            rarity={currentCard.rarity}
+            active={particlesActive}
+            duration={1500}
+          />
 
-      <!-- Legendary/Mythic burst effect -->
-      {#if isCurrentRevealed && (currentCard.rarity === 'legendary' || currentCard.rarity === 'mythic')}
-        <div
-          class="absolute inset-0 rounded-xl animate-legendary-burst pointer-events-none"
-          style="background: radial-gradient(circle, {rarityConfig.color}66 0%, transparent 70%);"
-        ></div>
+          <!-- Legendary/Mythic burst effect -->
+          {#if currentCard.rarity === 'legendary' || currentCard.rarity === 'mythic'}
+            <div
+              class="absolute inset-0 rounded-xl animate-legendary-burst pointer-events-none"
+              style="background: radial-gradient(circle, {rarityConfig.color}66 0%, transparent 70%);"
+            ></div>
+          {/if}
+
+          <div class:animate-card-reveal={true}>
+            <Card
+              card={currentCard}
+              isFlipped={false}
+              size="lg"
+              interactive={true}
+            />
+          </div>
+        </FadeIn>
       {/if}
-
-      <div class:animate-card-reveal={isCurrentRevealed}>
-        <Card
-          card={currentCard}
-          isFlipped={!isCurrentRevealed}
-          size="lg"
-          interactive={isCurrentRevealed}
-        />
-      </div>
     {/if}
     
     <!-- Tap hint -->

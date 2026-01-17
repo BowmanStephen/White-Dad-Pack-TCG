@@ -5,6 +5,8 @@
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
+  import PackSkeleton from '../loading/PackSkeleton.svelte';
+  import FadeIn from '../loading/FadeIn.svelte';
 
   // Reactive state using Svelte 5 runes
   let currentPack = $state<Pack | null>(null);
@@ -155,18 +157,8 @@
     </div>
 
   {:else if packState === 'generating'}
-    <!-- Generating state - loading spinner -->
-    <div class="text-center">
-      <!-- CSS Spinner -->
-      <div class="relative w-16 h-16 mx-auto mb-6">
-        <div class="absolute inset-0 rounded-full border-4 border-slate-700"></div>
-        <div class="absolute inset-0 rounded-full border-4 border-t-amber-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-        <!-- Pack icon in center -->
-        <div class="absolute inset-0 flex items-center justify-center text-2xl">📦</div>
-      </div>
-      <p class="text-slate-300 text-lg mb-2">Generating your pack...</p>
-      <p class="text-slate-500 text-sm">Rolling for rarities...</p>
-    </div>
+    <!-- Generating state - pack skeleton with shimmer -->
+    <PackSkeleton />
 
   {:else if packError}
     <!-- Error state -->

@@ -16,6 +16,8 @@
   import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard } from '../../types';
   import Card from '../card/Card.svelte';
   import CardComparison from '../card/CardComparison.svelte';
+  import CollectionGridSkeleton from '../loading/CollectionGridSkeleton.svelte';
+  import FadeIn from '../loading/FadeIn.svelte';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG } from '../../types';
 
   // State
@@ -25,6 +27,7 @@
   const pageSize = 24; // Load 24 cards at a time
   let hasMore = false;
   let isLoading = false;
+  let isInitialLoading = true; // Track initial load for skeleton
 
   // Filters
   let searchTerm = '';
@@ -109,6 +112,7 @@
     cardObtainedDates = getCardObtainedDates(currentCollection.packs);
     allCards = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
     applyFilters();
+    isInitialLoading = false;
   }
 
   // Apply all filters
@@ -491,43 +495,48 @@
   {/if}
 
   <!-- Card Grid -->
-  {#if displayedCards.length > 0}
-    <div class="card-grid" class:animate-sort={true}>
-      {#each displayedCards as card (card.id)}
-        {@const isSelected = isCardSelected(card)}
-        {@const selectionNum = getSelectionNumber(card)}
-        <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected}>
-          <Card
-            {card}
-            size="md"
-            interactive={true}
-            isFlipped={false}
-            showBack={false}
-            enableShare={false}
-          />
-          {#if card.duplicateCount > 1}
-            <div class="duplicate-badge">
-              {formatCardCount(card.duplicateCount)}
-            </div>
-          {/if}
-          <!-- Compare Button (appears on hover) -->
-          <button
-            class="compare-badge"
-            class:selected={isSelected}
-            on:click|stopPropagation={() => toggleCardSelection(card)}
-            aria-label="Select for comparison"
-            title="Select for comparison"
-          >
-            {#if isSelected}
-              <span class="compare-number">{selectionNum}</span>
-              <span class="compare-icon">✓</span>
-            {:else}
-              <span class="compare-icon">⚔️</span>
+  {#if isInitialLoading}
+    <!-- Show skeleton while initially loading -->
+    <CollectionGridSkeleton count={12} />
+  {:else if displayedCards.length > 0}
+    <FadeIn duration={300}>
+      <div class="card-grid" class:animate-sort={true}>
+        {#each displayedCards as card (card.id)}
+          {@const isSelected = isCardSelected(card)}
+          {@const selectionNum = getSelectionNumber(card)}
+          <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected}>
+            <Card
+              {card}
+              size="md"
+              interactive={true}
+              isFlipped={false}
+              showBack={false}
+              enableShare={false}
+            />
+            {#if card.duplicateCount > 1}
+              <div class="duplicate-badge">
+                {formatCardCount(card.duplicateCount)}
+              </div>
             {/if}
-          </button>
-        </div>
-      {/each}
-    </div>
+            <!-- Compare Button (appears on hover) -->
+            <button
+              class="compare-badge"
+              class:selected={isSelected}
+              on:click|stopPropagation={() => toggleCardSelection(card)}
+              aria-label="Select for comparison"
+              title="Select for comparison"
+            >
+              {#if isSelected}
+                <span class="compare-number">{selectionNum}</span>
+                <span class="compare-icon">✓</span>
+              {:else}
+                <span class="compare-icon">⚔️</span>
+              {/if}
+            </button>
+          </div>
+        {/each}
+      </div>
+    </FadeIn>
 
     <!-- Loading Trigger (for infinite scroll) -->
     {#if hasMore}
@@ -538,10 +547,8 @@
         aria-live="polite"
       >
         {#if isLoading}
-          <div class="loading-spinner">
-            <span class="spinner"></span>
-            <span>Loading more cards...</span>
-          </div>
+          <!-- Show skeleton grid when loading more -->
+          <CollectionGridSkeleton count={6} />
         {:else}
           <span class="load-more-hint">Scroll down to load more</span>
         {/if}
