@@ -536,8 +536,10 @@
     background: rgba(71, 85, 105, 0.5);
     border: none;
     border-radius: 50%;
-    width: 1.25rem;
-    height: 1.25rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
     display: flex;
     align-items: center;
     justify-content: center;

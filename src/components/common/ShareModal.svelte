@@ -203,7 +203,7 @@
       <!-- Close button -->
       <button
         on:click={closeModal}
-        class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800"
+        class="absolute top-4 right-4 p-3 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800 min-w-[44px] min-h-[44px]"
         aria-label="Close share modal"
         type="button"
       >

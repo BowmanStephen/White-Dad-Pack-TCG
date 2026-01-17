@@ -211,8 +211,8 @@
   
   <!-- Navigation buttons -->
   <div class="flex items-center gap-4">
-    <button 
-      class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+    <button
+      class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-w-[48px] min-h-[48px]"
       on:click={handlePrev}
       disabled={currentIndex === 0}
       aria-label="Previous card"
@@ -221,9 +221,9 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
     </button>
-    
-    <button 
-      class="px-6 py-3 rounded-lg font-bold transition-all"
+
+    <button
+      class="px-6 py-3 rounded-lg font-bold transition-all min-h-[48px]"
       class:bg-amber-500={!isCurrentRevealed}
       class:hover:bg-amber-400={!isCurrentRevealed}
       class:bg-slate-700={isCurrentRevealed && currentIndex < pack.cards.length - 1}
@@ -240,9 +240,9 @@
         View Results
       {/if}
     </button>
-    
-    <button 
-      class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+
+    <button
+      class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-w-[48px] min-h-[48px]"
       on:click={handleNext}
       disabled={currentIndex === pack.cards.length - 1 && !isCurrentRevealed}
       aria-label="Next card"
@@ -252,10 +252,10 @@
       </svg>
     </button>
   </div>
-  
+
   <!-- Skip button -->
-  <button 
-    class="text-slate-500 hover:text-slate-300 text-sm transition-colors"
+  <button
+    class="min-h-[44px] px-4 py-2 text-slate-500 hover:text-slate-300 text-sm transition-colors"
     on:click={handleSkip}
   >
     Skip to results
@@ -268,15 +268,19 @@
       {@const isCurrent = i === currentIndex}
       {@const cardRarity = RARITY_CONFIG[card.rarity]}
       <button
-        class="w-3 h-3 rounded-full transition-all"
-        class:scale-125={isCurrent}
+        class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full transition-all flex items-center justify-center"
+        class:scale-110={isCurrent}
         style="
           background: {isRevealed ? cardRarity.color : '#475569'};
           box-shadow: {isCurrent ? `0 0 10px ${isRevealed ? cardRarity.color : '#475569'}` : 'none'};
         "
         on:click={() => dispatch('next') /* TODO: implement goToCard */}
         aria-label="Card {i + 1}"
-      ></button>
+      >
+        <span class="w-3 h-3 rounded-full block" style="
+          background: {isRevealed ? cardRarity.color : '#475569'};
+        "></span>
+      </button>
     {/each}
   </div>
 </div>
