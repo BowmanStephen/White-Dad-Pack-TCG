@@ -22,6 +22,7 @@
   let copyTimeout: ReturnType<typeof setTimeout>;
   let canNativeShare = false;
   let inspectCard: PackCard | null = null;
+  let inspectIndex: number = 0;
   let isGeneratingPackImage = false;
   let packImageShareSuccess = false;
   let inspectModalElement: HTMLElement;
@@ -37,6 +38,28 @@
     common: 1,
   };
 
+  // Navigate to previous card in inspection modal
+  function goToPreviousCard() {
+    if (inspectIndex > 0) {
+      inspectIndex -= 1;
+      inspectCard = sortedCards[inspectIndex];
+    }
+  }
+
+  // Navigate to next card in inspection modal
+  function goToNextCard() {
+    if (inspectIndex < sortedCards.length - 1) {
+      inspectIndex += 1;
+      inspectCard = sortedCards[inspectIndex];
+    }
+  }
+
+  // Check if previous card is available
+  $: hasPrevious = inspectIndex > 0;
+
+  // Check if next card is available
+  $: hasNext = inspectIndex < sortedCards.length - 1;
+
   onMount(() => {
     canNativeShare = !!navigator.share;
   });
@@ -46,6 +69,15 @@
     if (e.key === 'Escape') {
       closeInspect();
       return;
+    }
+
+    // Arrow key navigation
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goToPreviousCard();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      goToNextCard();
     }
 
     if (e.key === 'Tab' && inspectModalElement) {
@@ -97,6 +129,8 @@
   function handleCardInspect(card: PackCard) {
     // Store the previously focused element
     previouslyFocusedElement = document.activeElement as HTMLElement;
+    // Find the index of this card in sortedCards
+    inspectIndex = sortedCards.findIndex(c => c.id === card.id);
     inspectCard = card;
     // Focus the modal after it opens
     setTimeout(() => {
@@ -455,6 +489,33 @@
       >
         ×
       </button>
+
+      <!-- Previous/Next navigation -->
+      <div class="absolute top-0 left-0 right-0 -mt-12 flex justify-between px-2 z-10">
+        <button
+          on:click={goToPreviousCard}
+          disabled={!hasPrevious}
+          class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800/80 text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-slate-700"
+          aria-label="Previous card"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="text-white/70 text-sm font-bold self-center">
+          {inspectIndex + 1} / {sortedCards.length}
+        </div>
+        <button
+          on:click={goToNextCard}
+          disabled={!hasNext}
+          class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800/80 text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-slate-700"
+          aria-label="Next card"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
 
       <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
         <!-- Large card preview -->
