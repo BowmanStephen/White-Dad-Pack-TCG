@@ -21,6 +21,7 @@ import {
   isCurrentUserBanned,
   getBanStatus,
 } from './security';
+import { trackPackOpenForReferral } from './referral';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -387,6 +388,9 @@ function trackPackComplete(pack: Pack, skipped: boolean): void {
       skipped,
     },
   });
+
+  // Track pack opening for referral progress
+  trackPackOpenForReferral();
 
   // Check for achievements after pack completion
   const context = getAchievementContext(pack);

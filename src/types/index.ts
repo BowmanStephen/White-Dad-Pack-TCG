@@ -2922,3 +2922,99 @@ export * from './admin';
 
 // Re-export email types for convenience
 export * from './email';
+
+// ============================================================================
+// REFERRAL SYSTEM TYPES (US098 - Referral System - Growth Loop)
+// ============================================================================
+
+// Referral code format (similar to friend codes: "REF-XXXX")
+export type ReferralCode = string;
+
+// Referral relationship status
+export type ReferralStatus = 'pending' | 'active' | 'completed' | 'rewarded';
+
+// Referral relationship (tracks who referred whom)
+export interface ReferralRelationship {
+  id: string;                      // Unique relationship ID
+  referrerId: string;              // Player ID of the referrer
+  referredId: string;              // Player ID of the referred player
+  referralCode: ReferralCode;      // Code used for referral
+  status: ReferralStatus;          // Current status
+  createdAt: Date;                 // When referred player joined
+  completedAt?: Date;              // When referred player opened 10 packs
+  rewardedAt?: Date;               // When referrer received reward
+  packsOpened: number;             // Number of packs opened by referred player
+}
+
+// Referral reward (5 packs for referrer, 2 packs for referred)
+export interface ReferralReward {
+  id: string;                      // Unique reward ID
+  relationshipId: string;          // Reference to ReferralRelationship
+  recipientId: string;             // Player ID receiving reward
+  rewardType: 'referrer' | 'referred'; // Type of reward
+  packCount: number;               // Number of packs awarded (5 or 2)
+  claimed: boolean;                // Whether reward has been claimed
+  claimedAt?: Date;                // When reward was claimed
+  expiresAt: Date;                 // When reward expires (7 days)
+}
+
+// Referral stats for a player
+export interface ReferralStats {
+  totalReferrals: number;          // Total players referred
+  activeReferrals: number;         // Referrals who opened 10+ packs
+  pendingReferrals: number;        // Referrals in progress (<10 packs)
+  totalRewardsEarned: number;      // Total packs earned from referrals
+  totalRewardsClaimed: number;     // Total packs claimed
+}
+
+// Referral link configuration
+export interface ReferralLink {
+  code: ReferralCode;              // Unique referral code
+  url: string;                     // Full referral URL
+  shareText: string;               // Default text for sharing
+  shareImageUrl?: string;          // Optional image for social sharing
+}
+
+// Referral leaderboard entry
+export interface ReferralLeaderboardEntry {
+  playerId: string;                // Player ID
+  username: string;                // Username
+  pseudonym: string;               // Dad-themed pseudonym
+  avatarId: AvatarId;              // Avatar ID
+  totalReferrals: number;          // Total referrals
+  activeReferrals: number;         // Active referrals (10+ packs)
+  rank: number;                    // Leaderboard rank
+}
+
+// Referral state for UI
+export interface ReferralState {
+  myReferralCode: ReferralCode;    // Your unique referral code
+  myReferralLink: ReferralLink;    // Your referral link
+  referredBy: ReferralRelationship | null; // Who referred you (if any)
+  referrals: ReferralRelationship[]; // Players you've referred
+  rewards: ReferralReward[];       // Your referral rewards
+  stats: ReferralStats;            // Your referral stats
+  leaderboard: ReferralLeaderboardEntry[]; // Top referrers
+  hasClaimedNewUserBonus: boolean; // Whether you claimed your new user bonus
+  newUserRewardClaimed: boolean;   // Whether 2-pack bonus was claimed
+}
+
+// Referral configuration
+export interface ReferralConfig {
+  referrerReward: number;          // Packs awarded to referrer (5)
+  referredReward: number;          // Packs awarded to referred player (2)
+  packsRequired: number;           // Packs required for reward (10)
+  rewardExpirationDays: number;    // Days until reward expires (7)
+  leaderboardLimit: number;        // Number of entries on leaderboard (100)
+  maxReferralsPerPlayer: number;   // Max referrals to prevent abuse (100)
+}
+
+// Default referral configuration
+export const DEFAULT_REFERRAL_CONFIG: ReferralConfig = {
+  referrerReward: 5,               // 5 packs for referrer
+  referredReward: 2,               // 2 packs for referred player
+  packsRequired: 10,               // Referred player must open 10 packs
+  rewardExpirationDays: 7,         // Rewards expire in 7 days
+  leaderboardLimit: 100,           // Top 100 on leaderboard
+  maxReferralsPerPlayer: 100,      // Prevent abuse
+};
