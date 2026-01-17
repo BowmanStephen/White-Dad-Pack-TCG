@@ -9,7 +9,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "prebuild": "bun run optimize:images"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@types/dompurify": "^3.2.0",
     "@types/node": "^25.0.9",
+    "sharp": "^0.34.5",
     "vitest": "^4.0.17"
   }
 }

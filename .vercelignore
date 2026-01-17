@@ -1,0 +1,25 @@
+# Build artifacts
+node_modules
+.vercel
+.git
+
+# Test files
+coverage
+.nyc_output
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+
+# Development files
+.ralph-tui
+*.log
+
+# Documentation
+PRD.md
+CLAUDE.md
+README.md
+docs/
+
+# CI/CD
+.github
