@@ -22,6 +22,7 @@ import {
   getBanStatus,
 } from './security';
 import { trackPackOpenForReferral } from './referral';
+import { awardEventCurrencyForPack } from '../lib/events/helpers';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -207,6 +208,9 @@ export async function openNewPack(): Promise<void> {
 
     // Security: Record successful pack open
     recordSuccessfulPackOpen(pack, packType);
+
+    // Event System: Award event currency for opening pack
+    awardEventCurrencyForPack(pack.id);
 
     // Track pack open event
     trackEvent({
