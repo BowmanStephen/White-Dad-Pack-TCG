@@ -767,3 +767,12 @@ RLs"},{"content":"Build TradeHistory component","status":"completed","activeForm
 {"type":"assistant","message":{"id":"msg_202601172215501d6fdcd3212f49a1","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 79 - US079: Leaderboard - Global Rankings
+*2026-01-17T14:23:21.360Z (438s)*
+
+**Status:** Completed
+
+**Notes:**
+\n2. **Dad-themed Pseudonyms**: The pseudonym generator combines dad types (BBQ, FixIt, Couch, etc.) with common names and random numbers to create fun, memorable identities like \"BBQ_Gary_47\" that fit the game's satirical theme.\n\n3. **State Architecture**: The leaderboard system follows the established Nanostores pattern with persistent atoms for user data and regular map stores for transient UI state (current category, loading status).\n─────────────────────────────────────────────────\n\n
+
+---

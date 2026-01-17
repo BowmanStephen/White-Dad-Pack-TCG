@@ -1,0 +1,257 @@
+/**
+ * Crafting Executor - US080: Card Crafting - Combine Cards
+ *
+ * Core crafting logic for:
+ * - Validating recipes
+ * - Executing crafts (success/failure)
+ * - Generating result cards
+ * - Managing inventory changes
+ */
+
+import type {
+  CraftingRecipe,
+  PackCard,
+  Card,
+  Rarity,
+} from '@/types';
+import { RARITY_CONFIG, RARITY_ORDER } from '@/types';
+
+// ============================================================================
+// CRAFTING VALIDATION
+// ============================================================================
+
+/**
+ * Validate that selected cards match the recipe requirements
+ */
+export function validateRecipeSelection(
+  recipe: CraftingRecipe,
+  selectedCards: PackCard[]
+): { valid: boolean; error?: string } {
+  // Check card count
+  if (selectedCards.length !== recipe.inputCount) {
+    return {
+      valid: false,
+      error: `Need ${recipe.inputCount} cards, selected ${selectedCards.length}`,
+    };
+  }
+
+  // Check that all cards match the required rarity
+  for (const card of selectedCards) {
+    if (card.rarity !== recipe.inputRarity) {
+      return {
+        valid: false,
+        error: `All cards must be ${RARITY_CONFIG[recipe.inputRarity].name}`,
+      };
+    }
+  }
+
+  return { valid: true };
+}
+
+// ============================================================================
+// CRAFTING EXECUTION
+// ============================================================================
+
+/**
+ * Execute a crafting attempt
+ *
+ * @param recipe - The recipe being crafted
+ * @param inputCards - The cards being consumed
+ * @param allCards - All available cards (for selecting result card)
+ * @returns Crafting result with success/failure and output card(s)
+ */
+export function executeCraft(
+  recipe: CraftingRecipe,
+  inputCards: PackCard[],
+  allCards: Card[]
+): {
+  success: boolean;
+  resultCard?: PackCard;
+  returnedCards?: PackCard[];
+  consumedCards: PackCard[];
+} {
+  // Validate selection
+  const validation = validateRecipeSelection(recipe, inputCards);
+  if (!validation.valid) {
+    return {
+      success: false,
+      consumedCards: [],
+    };
+  }
+
+  // Roll for success
+  const success = Math.random() < recipe.successRate;
+
+  if (success) {
+    // Generate result card
+    const resultCard = generateResultCard(recipe, allCards);
+
+    return {
+      success: true,
+      resultCard,
+      consumedCards: inputCards,
+    };
+  } else {
+    // Calculate cards to return on failure
+    const returnedCount = recipe.failReturnRate
+      ? Math.ceil(inputCards.length * recipe.failReturnRate)
+      : 0;
+
+    const returnedCards = returnedCount > 0
+      ? inputCards.slice(0, returnedCount)
+      : [];
+
+    const consumedCards = returnedCount > 0
+      ? inputCards.slice(returnedCount)
+      : inputCards;
+
+    return {
+      success: false,
+      returnedCards,
+      consumedCards,
+    };
+  }
+}
+
+// ============================================================================
+// RESULT CARD GENERATION
+// ============================================================================
+
+/**
+ * Generate a result card based on the recipe
+ */
+function generateResultCard(
+  recipe: CraftingRecipe,
+  allCards: Card[]
+): PackCard {
+  // Filter cards by output rarity
+  const candidates = allCards.filter(
+    (card) => card.rarity === recipe.outputRarity
+  );
+
+  if (candidates.length === 0) {
+    throw new Error(`No cards found with rarity ${recipe.outputRarity}`);
+  }
+
+  // Select random card
+  const baseCard = candidates[Math.floor(Math.random() * candidates.length)];
+
+  // Determine if result is holo (10% chance for rare+)
+  const isHolo = RARITY_ORDER[recipe.outputRarity] >= RARITY_ORDER.rare
+    ? Math.random() < 0.1
+    : false;
+
+  // Determine holo type
+  let holoType: 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic' = 'none';
+  if (isHolo) {
+    const holoRoll = Math.random();
+    if (recipe.outputRarity === 'mythic') {
+      holoType = 'prismatic';
+    } else if (recipe.outputRarity === 'legendary') {
+      holoType = holoRoll < 0.5 ? 'full_art' : 'prismatic';
+    } else if (recipe.outputRarity === 'epic') {
+      holoType = holoRoll < 0.6 ? 'reverse' : holoRoll < 0.9 ? 'full_art' : 'standard';
+    } else {
+      holoType = holoRoll < 0.7 ? 'reverse' : 'standard';
+    }
+  }
+
+  return {
+    ...baseCard,
+    isRevealed: false,
+    isHolo,
+    holoType,
+  };
+}
+
+// ============================================================================
+// INVENTORY MANAGEMENT
+// ============================================================================
+
+/**
+ * Calculate inventory changes from crafting
+ */
+export function calculateInventoryChanges(
+  success: boolean,
+  inputCards: PackCard[],
+  resultCard?: PackCard,
+  returnedCards?: PackCard[]
+): {
+  removed: string[]; // Card IDs to remove
+  added: PackCard[]; // Cards to add
+} {
+  const removed = inputCards.map((card) => card.id);
+  const added: PackCard[] = [];
+
+  if (success && resultCard) {
+    added.push(resultCard);
+  }
+
+  if (returnedCards && returnedCards.length > 0) {
+    added.push(...returnedCards);
+  }
+
+  return { removed, added };
+}
+
+/**
+ * Check if user has enough cards for a recipe
+ */
+export function hasCardsForRecipe(
+  recipe: CraftingRecipe,
+  inventory: Map<string, number>
+): boolean {
+  let count = 0;
+
+  for (const [cardId, qty] of inventory.entries()) {
+    // This would need the actual card data to check rarity
+    // For now, we'll assume the caller has pre-filtered
+    count += qty;
+  }
+
+  return count >= recipe.inputCount;
+}
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Get all cards of a specific rarity from inventory
+ */
+export function getCardsByRarity(
+  allCards: PackCard[],
+  rarity: Rarity
+): PackCard[] {
+  return allCards.filter((card) => card.rarity === rarity);
+}
+
+/**
+ * Sort cards by rarity (descending)
+ */
+export function sortCardsByRarity(cards: PackCard[]): PackCard[] {
+  return [...cards].sort((a, b) => {
+    const aOrder = RARITY_ORDER[a.rarity];
+    const bOrder = RARITY_ORDER[b.rarity];
+    return bOrder - aOrder;
+  });
+}
+
+/**
+ * Get crafting success chance display text
+ */
+export function getSuccessRateText(recipe: CraftingRecipe): string {
+  const percentage = Math.round(recipe.successRate * 100);
+  return `${percentage}% success rate`;
+}
+
+/**
+ * Get failure return text
+ */
+export function getFailureReturnText(recipe: CraftingRecipe): string {
+  if (!recipe.failReturnRate) return 'All cards consumed on failure';
+
+  const returnPercent = Math.round(recipe.failReturnRate * 100);
+  const returnCount = Math.ceil(recipe.inputCount * recipe.failReturnRate);
+  return `On failure: ${returnCount} of ${recipe.inputCount} cards returned (${returnPercent}%)`;
+}

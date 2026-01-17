@@ -24,6 +24,7 @@
     { href: '/', label: 'Home' },
     { href: '/pack', label: 'Open Pack', isCta: true },
     { href: '/collection', label: 'My Collection' },
+    { href: '/crafting', label: 'Crafting' },
     { href: '/trade', label: 'Trade' },
   ];
 
