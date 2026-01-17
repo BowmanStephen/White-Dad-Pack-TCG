@@ -1,0 +1,509 @@
+---
+// Voting Page (US087 - Community - Card Voting)
+//
+// Monthly voting events where players vote on 3 card concepts.
+// Winning concept becomes a real card next month.
+// Voters receive exclusive foil version.
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import VotingGallery from '@/components/voting/VotingGallery.svelte';
+import VotingHistory from '@/components/voting/VotingHistory.svelte';
+import { VOTING_EVENTS } from '@/data/voting';
+
+// NOTE: initializeVotingStore() is called by VotingGallery/VotingHistory on client load
+// We cannot call it during SSR because it requires localStorage
+
+// Page metadata
+const title = 'Community Voting - DadDeck™';
+const description = 'Vote on future DadDeck™ cards! Each month, choose from 3 card concepts. The winner becomes a real card and voters get an exclusive foil version.';
+
+// Get voting events for SSR
+const now = new Date();
+const currentEvent = VOTING_EVENTS.find(function(e) {
+  return e.status === 'active' && now >= e.startDate && now <= e.endDate;
+});
+const upcomingEvents = VOTING_EVENTS.filter(function(e) {
+  return e.status === 'upcoming' && e.startDate > now;
+});
+const pastEvents = VOTING_EVENTS.filter(function(e) {
+  return e.status === 'completed';
+});
+
+// Format current event date for display
+const currentEventDate = currentEvent
+  ? new Date(currentEvent.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  : '';
+
+// Helper function to format event dates
+function formatEventDate(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
+// Compute template conditionals
+const hasCurrentEvent = currentEvent !== null && currentEvent !== undefined;
+const hasPastEvents = pastEvents.length > 0;
+
+// Generate past winners HTML
+const pastWinnersHTML = pastEvents.slice(0, 6).map(function(event) {
+  if (!event.winnerId) return '';
+  const winner = event.concepts.find(function(c) { return c.id === event.winnerId; });
+  if (!winner) return '';
+
+  const rarityClass = 'rarity-' + winner.rarity;
+  const bgColor = winner.rarity === 'legendary' ? '#f97316'
+    : winner.rarity === 'epic' ? '#a855f7'
+    : '#fbbf24';
+
+  return `
+    <div class="winner-card ${rarityClass}">
+      <div class="winner-badge">🏆 Winner</div>
+      <div class="card-header" style="background: ${bgColor}">
+        <h3>${winner.name}</h3>
+        <p class="subtitle">${winner.subtitle}</p>
+      </div>
+      <div class="card-details">
+        <p class="period">${formatEventDate(event.startDate)}</p>
+        <p class="votes">${event.totalVotes} total votes</p>
+      </div>
+    </div>
+  `;
+}).join('');
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="voting-page">
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="header-content">
+        <div class="icon">🗳️</div>
+        <h1>Community Card Voting</h1>
+        <p class="subtitle">
+          Shape the future of DadDeck™! Each month, vote on 3 card concepts.
+          The winning concept becomes a real card next month, and voters receive an exclusive foil version!
+        </p>
+      </div>
+
+      <!-- Voting Stats Banner -->
+      <div class="stats-banner">
+        <div class="stat">
+          <span class="stat-icon">📅</span>
+          <div class="stat-content">
+            <span class="stat-value">Monthly</span>
+            <span class="stat-label">New Events</span>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">🃏</span>
+          <div class="stat-content">
+            <span class="stat-value">3 Concepts</span>
+            <span class="stat-label">Per Event</span>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">✨</span>
+          <div class="stat-content">
+            <span class="stat-value">Exclusive Foil</span>
+            <span class="stat-label">For Voters</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+      <h2>How Community Voting Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Vote Opens</h3>
+            <p>On the 1st of each month, 3 new card concepts are revealed and voting opens for 7 days.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Cast Your Vote</h3>
+            <p>Review the 3 concepts and vote for your favorite. You can only vote once per event.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Winner Announced</h3>
+            <p>After voting ends, the concept with the most votes wins and becomes a real card next month.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Get Exclusive Rewards</h3>
+            <p>If you voted for the winner, you'll receive an exclusive foil version when the card releases!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Current Voting Event -->
+    <section class="current-voting" style:hidden={!currentEvent}>
+      <div class="section-header">
+        <h2>Current Voting Event</h2>
+        <p class="period">{currentEventDate}</p>
+      </div>
+      <VotingGallery
+        client:load
+        event={currentEvent}
+      />
+    </section>
+
+    <!-- No Active Voting -->
+    <section class="no-active-voting" style:hidden={currentEvent}>
+      <div class="message">
+        <span class="icon">😴</span>
+        <h2>No Active Voting Event</h2>
+        <p>Check back soon for the next monthly voting event!</p>
+      </div>
+    </section>
+
+    <!-- Voting History -->
+    <section class="voting-history-section">
+      <div class="section-header">
+        <h2>Your Voting History</h2>
+        <p>Track your votes and see which concepts won</p>
+      </div>
+      <VotingHistory client:load />
+    </section>
+
+    <!-- Past Winners Showcase -->
+    <section class="past-winners" style:hidden={!pastEvents || pastEvents.length === 0}>
+      <div class="section-header">
+        <h2>Past Winners</h2>
+        <p>Cards that won previous voting events</p>
+      </div>
+      <div class="winners-grid" set:html={pastWinnersHTML} />
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+      <div class="section-header">
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>How often can I vote?</h3>
+          <p>You can vote once per monthly event. Each month features 3 new card concepts to choose from.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What happens if I vote for the winner?</h3>
+          <p>If you voted for the winning concept, you'll receive an exclusive foil version of the card when it's released the following month. This foil version is only available to voters!</p>
+        </div>
+        <div class="faq-item">
+          <h3>How is the winner determined?</h3>
+          <p>The concept with the most votes at the end of the 7-day voting period wins. In case of a tie, the team breaks the tie based on community feedback.</p>
+        </div>
+        <div class="faq-item">
+          <h3>When do winning cards get released?</h3>
+          <p>Winning concepts are developed into full cards and released the following month. You'll receive a notification when your voted card is available!</p>
+        </div>
+        <div class="faq-item">
+          <h3>Can I change my vote?</h3>
+          <p>Unfortunately, once you've cast your vote, it cannot be changed. Make sure to review all 3 concepts carefully before voting!</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .voting-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .page-header {
+    background: white;
+    padding: 48px 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-content .icon {
+    display: block;
+    font-size: 4em;
+    margin-bottom: 16px;
+  }
+
+  .header-content h1 {
+    margin: 0 0 16px 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1f2937;
+  }
+
+  .subtitle {
+    margin: 0 auto;
+    max-width: 600px;
+    font-size: 1.125rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .stats-banner {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stat-icon {
+    font-size: 2em;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-value {
+    font-weight: bold;
+    color: #1f2937;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .how-it-works,
+  .current-voting,
+  .no-active-voting,
+  .voting-history-section,
+  .past-winners,
+  .faq {
+    background: white;
+    margin: 24px auto;
+    max-width: 1200px;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .section-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    color: #1f2937;
+  }
+
+  .section-header p,
+  .period {
+    margin: 0;
+    font-size: 1rem;
+    color: #6b7280;
+  }
+
+  .period {
+    font-weight: 500;
+  }
+
+  .how-it-works h2 {
+    margin-bottom: 32px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+  }
+
+  .step-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.125rem;
+    color: #1f2937;
+  }
+
+  .step-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  .no-active-voting {
+    text-align: center;
+  }
+
+  .no-active-voting .icon {
+    display: block;
+    font-size: 3em;
+    margin-bottom: 16px;
+  }
+
+  .no-active-voting h2 {
+    margin: 0 0 8px 0;
+    color: #1f2937;
+  }
+
+  .no-active-voting p {
+    margin: 0;
+    color: #6b7280;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  .winners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .winner-card {
+    border: 2px solid #fbbf24;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .winner-card.rarity-legendary {
+    border-color: #f97316;
+  }
+
+  .winner-card.rarity-epic {
+    border-color: #a855f7;
+  }
+
+  .winner-card.rarity-rare {
+    border-color: #fbbf24;
+  }
+
+  .winner-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #fbbf24;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    z-index: 10;
+  }
+
+  .card-header {
+    padding: 16px;
+    color: white;
+  }
+
+  .card-header h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.125rem;
+  }
+
+  .card-header .subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .card-details {
+    padding: 16px;
+  }
+
+  .card-details p {
+    margin: 4px 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .faq-item h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.125rem;
+    color: #1f2937;
+  }
+
+  .faq-item p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 32px 16px;
+    }
+
+    .header-content h1 {
+      font-size: 1.75rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
+
+    .stats-banner {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .how-it-works,
+    .current-voting,
+    .voting-history-section,
+    .past-winners,
+    .faq {
+      margin: 16px;
+      padding: 24px 16px;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .steps {
+      grid-template-columns: 1fr;
+    }
+
+    .winners-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
