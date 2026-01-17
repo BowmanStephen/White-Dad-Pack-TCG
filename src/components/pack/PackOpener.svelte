@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import type { Pack, PackState } from '../../types';
   import type { AppError } from '../../lib/utils/errors';
-  import { getStoreValues, subscribeToStores } from '../../lib/stores/svelte-helpers';
   import {
     openNewPack,
     completePackAnimation,
@@ -13,6 +12,13 @@
     prevCard,
     resetPack,
     showResults,
+    currentPack as packStore,
+    packState as packStateStore,
+    currentCardIndex as currentCardIndexStore,
+    revealedCards as revealedCardsStore,
+    packStats as packStatsStore,
+    packError as packErrorStore,
+    storageError as storageErrorStore,
   } from '../../stores/pack';
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
@@ -32,60 +38,64 @@
   let packError = $state<AppError | null>(null);
   let storageError = $state<AppError | null>(null);
 
-  // Load initial values from stores
-  function loadFromStores() {
-    const values = getStoreValues();
-    currentPack = values.currentPack;
-    packState = values.packState;
-    currentCardIndex = values.currentCardIndex;
-    revealedCards = values.revealedCards;
-    packStats = values.packStats;
-    packError = (values.packError as AppError | null) ?? null;
-    storageError = (values.storageError as AppError | null) ?? null;
-  }
+  // Auto-sync Nanostores to Svelte 5 state using $effect
+  $effect(() => {
+    currentPack = packStore.get();
+  });
+
+  $effect(() => {
+    packState = packStateStore.get();
+  });
+
+  $effect(() => {
+    currentCardIndex = currentCardIndexStore.get();
+  });
+
+  $effect(() => {
+    revealedCards = revealedCardsStore.get();
+  });
+
+  $effect(() => {
+    packStats = packStatsStore.get();
+  });
+
+  $effect(() => {
+    packError = packErrorStore.get() as AppError | null;
+  });
+
+  $effect(() => {
+    storageError = storageErrorStore.get() as AppError | null;
+  });
 
   // Start pack opening on mount
   onMount(() => {
     openNewPack();
-
-    // Subscribe to store changes for reactive updates
-    const unsubscribe = subscribeToStores(() => {
-      loadFromStores();
-    });
-
-    return unsubscribe;
   });
 
-  // Actions (now using direct imports for better performance)
+  // Actions (reactivity is now automatic via $effect)
   function completePackAnimationHandler() {
     completePackAnimation();
-    loadFromStores();
   }
 
   function skipToResultsHandler() {
     stopAutoReveal();
     skipToResults();
-    loadFromStores();
   }
 
   function revealCurrentCardHandler() {
     revealCurrentCard();
-    loadFromStores();
   }
 
   function nextCardHandler() {
     nextCard();
-    loadFromStores();
   }
 
   function prevCardHandler() {
     prevCard();
-    loadFromStores();
   }
 
   function handleOpenAnother() {
     openNewPack();
-    setTimeout(() => loadFromStores(), 150);
   }
 
   function handleGoHome() {
@@ -173,8 +183,7 @@
     <ErrorDisplay
       error={packError}
       onDismiss={() => {
-        packError = null;
-        import('../../stores/pack').then(({ packError: store }) => store.set(null));
+        packErrorStore.set(null);
       }}
     />
 
@@ -199,7 +208,6 @@
       on:skip={skipToResultsHandler}
       on:results={() => {
         showResults();
-        loadFromStores();
       }}
     />
 
