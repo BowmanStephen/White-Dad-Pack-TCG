@@ -6,9 +6,6 @@
   export let onPurchase: () => void;
   export let onDailyLogin: () => void;
   export let dailyRewardClaimed = false;
-
-  const $isDadPassActive = isDadPassActive;
-  const $daysRemaining = daysRemaining;
 </script>
 
 <div class="daddypass-banner" class:active={$isDadPassActive} class:inactive={!$isDadPassActive}>

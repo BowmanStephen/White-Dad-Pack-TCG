@@ -14,6 +14,13 @@ import {
   usePremiumPack,
   hasPremiumPacks,
 } from './premium';
+import {
+  initSecurity,
+  validatePackBeforeOpen,
+  recordSuccessfulPackOpen,
+  isCurrentUserBanned,
+  getBanStatus,
+} from './security';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -78,6 +85,29 @@ export const packProgress = computed(
 
 // Start opening a new pack (standard or premium)
 export async function openNewPack(): Promise<void> {
+  // Initialize security system if not already initialized
+  await initSecurity();
+
+  // Check if user is banned
+  if (isCurrentUserBanned()) {
+    const ban = getBanStatus();
+    const appError = createAppError(
+      'banned',
+      ban.reason || 'Your account has been suspended due to suspicious activity.',
+      [
+        {
+          label: 'Go Home',
+          action: () => {
+            window.location.href = '/';
+          },
+        },
+      ]
+    );
+    packError.set(appError);
+    packState.set('idle');
+    return;
+  }
+
   // Reset state first
   currentCardIndex.set(0);
   revealedCards.set(new Set());
@@ -129,6 +159,33 @@ export async function openNewPack(): Promise<void> {
       throw new Error('Generated pack has no cards');
     }
 
+    // Security: Validate pack integrity and check for exploits
+    const validationResult = await validatePackBeforeOpen(pack);
+    if (!validationResult.valid) {
+      // Create security error
+      const securityError = createAppError(
+        'security',
+        validationResult.violation?.details || 'Pack validation failed. Please try again.',
+        [
+          {
+            label: 'Try Again',
+            action: () => openNewPack(),
+            primary: true,
+          },
+          {
+            label: 'Go Home',
+            action: () => {
+              window.location.href = '/';
+            },
+          },
+        ]
+      );
+      packError.set(securityError);
+      packState.set('idle');
+      logError(securityError, validationResult.violation);
+      return;
+    }
+
     // Save pack to collection (LocalStorage)
     const saveResult = addPackToCollection(pack);
     if (!saveResult.success) {
@@ -146,6 +203,9 @@ export async function openNewPack(): Promise<void> {
       storageError.set(storageAppError);
       logError(storageAppError, saveResult.error);
     }
+
+    // Security: Record successful pack open
+    recordSuccessfulPackOpen(pack, packType);
 
     // Track pack open event
     trackEvent({

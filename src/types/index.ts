@@ -2901,3 +2901,10 @@ export const DADPASS_TIERS: DadPassTier[] = [
     ],
   },
 ];
+
+// ============================================================================
+// SECURITY TYPES (US095 - Security - Anti-Cheat)
+// ============================================================================
+
+// Re-export security types for convenience
+export * from './security';
