@@ -27,6 +27,8 @@
   let packImageShareSuccess = false;
   let inspectModalElement: HTMLElement;
   let previouslyFocusedElement: HTMLElement | null = null;
+  let isCardFlipped = false;
+  let flippedCardStates = new Map<string, boolean>();
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -43,6 +45,8 @@
     if (inspectIndex > 0) {
       inspectIndex -= 1;
       inspectCard = sortedCards[inspectIndex];
+      // Restore flip state for the new card
+      isCardFlipped = flippedCardStates.get(inspectCard.id) || false;
     }
   }
 
@@ -51,6 +55,8 @@
     if (inspectIndex < sortedCards.length - 1) {
       inspectIndex += 1;
       inspectCard = sortedCards[inspectIndex];
+      // Restore flip state for the new card
+      isCardFlipped = flippedCardStates.get(inspectCard.id) || false;
     }
   }
 
@@ -132,10 +138,19 @@
     // Find the index of this card in sortedCards
     inspectIndex = sortedCards.findIndex(c => c.id === card.id);
     inspectCard = card;
+    // Restore flip state for this card
+    isCardFlipped = flippedCardStates.get(card.id) || false;
     // Focus the modal after it opens
     setTimeout(() => {
       inspectModalElement?.focus();
     }, 50);
+  }
+
+  function toggleCardFlip() {
+    isCardFlipped = !isCardFlipped;
+    if (inspectCard) {
+      flippedCardStates.set(inspectCard.id, isCardFlipped);
+    }
   }
 
   function closeInspect() {
@@ -518,34 +533,105 @@
       </div>
 
       <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
-        <!-- Large card preview -->
+        <!-- Large card preview with flip -->
         <div class="flex-shrink-0">
           <div
-            class="w-64 h-80 md:w-80 md:h-96 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-2xl"
-            style="
-              background: linear-gradient(135deg, {inspectRarity.color}44, {inspectRarity.color}11);
-              border: 4px solid {inspectRarity.color};
-              box-shadow: 0 0 60px {inspectRarity.glowColor};
-            "
+            class="card-perspective cursor-pointer"
+            on:click={toggleCardFlip}
+            on:keydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleCardFlip();
+              }
+            }}
+            role="button"
+            tabindex="0"
+            aria-label="Click to flip card, currently showing {isCardFlipped ? 'back' : 'front'}"
+            aria-pressed={isCardFlipped}
           >
-            <!-- Holo sheen -->
-            {#if inspectCard.isHolo}
-              <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
-            {/if}
-
-            <!-- Card content -->
-            <div class="text-8xl mb-4">{DAD_TYPE_ICONS[inspectCard.type]}</div>
-            <div class="text-center px-6">
-              <div class="text-xs font-black px-3 py-1 rounded-full inline-block mb-2 uppercase tracking-wider"
-                style="background: {inspectRarity.color}22; color: {inspectRarity.color}; border: 1px solid {inspectRarity.color}44;"
+            <div
+              class="card-3d w-64 h-80 md:w-80 md:h-96 relative"
+              class:card-flipped={isCardFlipped}
+            >
+              <!-- Card Front -->
+              <div class="card-face absolute inset-0 rounded-2xl overflow-hidden shadow-2xl"
+                style="
+                  background: linear-gradient(135deg, {inspectRarity.color}44, {inspectRarity.color}11);
+                  border: 4px solid {inspectRarity.color};
+                  box-shadow: 0 0 60px {inspectRarity.glowColor};
+                "
               >
-                {inspectRarity.name}
+                <!-- Holo sheen -->
                 {#if inspectCard.isHolo}
-                  <span class="ml-1">✨ HOLO</span>
+                  <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
                 {/if}
+
+                <!-- Card content -->
+                <div class="h-full flex flex-col items-center justify-center p-6">
+                  <div class="text-8xl mb-4">{DAD_TYPE_ICONS[inspectCard.type]}</div>
+                  <div class="text-center px-6">
+                    <div class="text-xs font-black px-3 py-1 rounded-full inline-block mb-2 uppercase tracking-wider"
+                      style="background: {inspectRarity.color}22; color: {inspectRarity.color}; border: 1px solid {inspectRarity.color}44;"
+                    >
+                      {inspectRarity.name}
+                      {#if inspectCard.isHolo}
+                        <span class="ml-1">✨ HOLO</span>
+                      {/if}
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-black text-white mb-1">{inspectCard.name}</h3>
+                    <p class="text-slate-300 text-sm">{inspectCard.subtitle}</p>
+                  </div>
+                </div>
+
+                <!-- Flip hint -->
+                <div class="absolute bottom-4 left-0 right-0 text-center">
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 text-white/60 text-xs font-bold backdrop-blur-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
+                      <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3m18 8v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"></path>
+                      <path d="M4 12h16"></path>
+                    </svg>
+                    <span>Tap to flip</span>
+                  </div>
+                </div>
               </div>
-              <h3 class="text-2xl md:text-3xl font-black text-white mb-1">{inspectCard.name}</h3>
-              <p class="text-slate-300 text-sm">{inspectCard.subtitle}</p>
+
+              <!-- Card Back -->
+              <div class="card-face card-back absolute inset-0 rounded-2xl overflow-hidden shadow-2xl"
+                style="border: 4px solid #475569; box-shadow: 0 0 40px rgba(71, 85, 105, 0.4);"
+              >
+                <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
+                  <!-- Back pattern -->
+                  <div class="absolute inset-4 border-2 border-amber-500/20 rounded-xl"></div>
+                  <div class="absolute inset-6 border border-amber-500/10 rounded-lg"></div>
+
+                  <!-- Center logo -->
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-5xl md:text-6xl font-black mb-3 tracking-tight">
+                      <span class="text-amber-400">Dad</span><span class="text-white">Deck</span>
+                    </div>
+                    <div class="text-slate-500 text-sm font-bold tracking-widest mb-4">SERIES 1</div>
+                    <div class="text-6xl md:text-7xl drop-shadow-lg">👔</div>
+                    <div class="mt-6 text-slate-600 text-xs font-bold uppercase tracking-wider">The Ultimate White Dad<br>Trading Card Simulator</div>
+                  </div>
+
+                  <!-- Corner decorations -->
+                  <div class="absolute top-4 left-4 text-amber-500/30 text-2xl">◆</div>
+                  <div class="absolute top-4 right-4 text-amber-500/30 text-2xl">◆</div>
+                  <div class="absolute bottom-4 left-4 text-amber-500/30 text-2xl">◆</div>
+                  <div class="absolute bottom-4 right-4 text-amber-500/30 text-2xl">◆</div>
+
+                  <!-- Flip hint (back) -->
+                  <div class="absolute bottom-4 left-0 right-0 text-center">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 text-white/60 text-xs font-bold backdrop-blur-sm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
+                        <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3m18 8v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"></path>
+                        <path d="M4 12h16"></path>
+                      </svg>
+                      <span>Tap to flip</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -613,6 +699,29 @@
   @keyframes shimmer {
     0% { transform: translateX(-100%) rotate(45deg); }
     100% { transform: translateX(200%) rotate(45deg); }
+  }
+
+  /* Card flip animation styles */
+  .card-perspective {
+    perspective: 1000px;
+  }
+
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+  }
+
+  .card-flipped {
+    transform: rotateY(180deg);
   }
 </style>
 
