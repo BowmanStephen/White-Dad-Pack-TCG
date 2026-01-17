@@ -185,6 +185,7 @@ export interface CollectionMetadata {
   uniqueCards: string[]; // Array of unique card IDs
   rarePulls: number; // Number of rare+ pulls
   holoPulls: number; // Number of holo pulls
+  created?: Date; // When the collection was first created
 }
 
 // Collection - All packs owned by the user
@@ -409,6 +410,8 @@ export interface PackOpenEvent extends AnalyticsEvent {
   data: {
     packId: string;           // Pack identifier
     cardCount: number;        // Number of cards in pack
+    packType?: string;        // Type of pack (standard, premium)
+    premiumConfigId?: string; // ID of premium configuration
   };
 }
 
@@ -993,6 +996,7 @@ export const CRAFTING_RECIPES: CraftingRecipe[] = [
 
 // Re-export leaderboard types from separate file
 export * from './leaderboard';
+import type { PlayerStats } from './leaderboard';
 
 // ============================================================================
 // NOTIFICATION TYPES (US081 - Notification System - Browser Push)

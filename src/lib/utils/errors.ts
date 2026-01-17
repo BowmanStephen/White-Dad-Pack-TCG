@@ -18,6 +18,8 @@ export type ErrorCategory =
   | 'generation'     // Pack/card generation failures
   | 'validation'     // Invalid data/state
   | 'permission'     // Browser permission denied
+  | 'security'       // Security violations/anti-cheat
+  | 'banned'         // User account banned
   | 'unknown';       // Catch-all for unexpected errors
 
 /**
@@ -76,6 +78,16 @@ const ERROR_MESSAGES: Record<ErrorCategory, { title: string; message: string; ic
     title: 'Permission Needed',
     message: 'We need permission to continue. Please check your browser settings.',
     icon: '🔒',
+  },
+  security: {
+    title: 'Security Alert',
+    message: 'We detected suspicious activity. Please refresh the page and try again.',
+    icon: '🛡️',
+  },
+  banned: {
+    title: 'Account Suspended',
+    message: 'Your account has been suspended due to policy violations.',
+    icon: '🚫',
   },
   unknown: {
     title: 'Oops! Something Went Wrong',
