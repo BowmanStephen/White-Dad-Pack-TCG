@@ -4,6 +4,7 @@
   import { RARITY_CONFIG, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
+  import { downloadPackImage, sharePackImage } from '../../lib/utils/image-generation';
 
   export let pack: Pack;
   export let stats: {
@@ -19,6 +20,8 @@
   let copyTimeout: ReturnType<typeof setTimeout>;
   let canNativeShare = false;
   let inspectCard: PackCard | null = null;
+  let isGeneratingPackImage = false;
+  let packImageShareSuccess = false;
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -96,6 +99,29 @@
           console.error('Share failed:', err);
         }
       }
+    }
+  }
+
+  async function handleSharePackImage() {
+    isGeneratingPackImage = true;
+
+    try {
+      // Try native share first (Web Share API with files)
+      const success = await sharePackImage(pack.cards);
+
+      if (success) {
+        packImageShareSuccess = true;
+        setTimeout(() => {
+          packImageShareSuccess = false;
+        }, 2000);
+      } else {
+        // Fallback to download
+        await downloadPackImage(pack.cards);
+      }
+    } catch (error) {
+      console.error('Pack image generation failed:', error);
+    } finally {
+      isGeneratingPackImage = false;
     }
   }
   
@@ -200,7 +226,7 @@
           
           <!-- Share buttons for best pull -->
           <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-            <button 
+            <button
               on:click={shareOnX}
               class="flex items-center gap-2 px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition-all active:scale-95 text-sm"
               title="Share on X"
@@ -210,8 +236,35 @@
               </svg>
               Share Pull
             </button>
-            
-            <button 
+
+            <button
+              on:click={handleSharePackImage}
+              disabled={isGeneratingPackImage}
+              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+              title="Share full pack collage"
+            >
+              {#if isGeneratingPackImage}
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Generating...
+              {:else if packImageShareSuccess}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>
+                Shared!
+              {:else}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                Share Pack
+              {/if}
+            </button>
+
+            <button
               on:click={copyLink}
               class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-all active:scale-95 text-sm border border-slate-700"
               title="Copy Link"
@@ -228,7 +281,7 @@
             </button>
 
             {#if canNativeShare}
-              <button 
+              <button
                 on:click={handleNativeShare}
                 class="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-all active:scale-95 border border-slate-700"
                 title="More Share Options"
