@@ -7,6 +7,7 @@
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
   import { playCardReveal } from '../../stores/audio';
+  import ConfettiEffects from '../card/ConfettiEffects.svelte';
 
   export let pack: Pack;
   export let currentIndex: number;
@@ -22,6 +23,7 @@
 
   let autoRevealActive = false;
   let particlesActive = false;
+  let confettiActive = false;
   let autoRevealTimers: number[] = [];
 
   // Debounced reveal using requestAnimationFrame for smoother 60fps
@@ -54,8 +56,14 @@
 
       if (!revealedIndices.has(index)) {
         particlesActive = true;
-        // Play reveal sound based on card rarity
         const cardRarity = pack.cards[index]?.rarity;
+        // Activate confetti for legendary+ cards
+        if (cardRarity === 'legendary' || cardRarity === 'mythic') {
+          confettiActive = true;
+          // Auto-deactivate confetti after animation (handled internally by component)
+          setTimeout(() => { confettiActive = false; }, 3500);
+        }
+        // Play reveal sound based on card rarity
         if (cardRarity) {
           playCardReveal(cardRarity);
         }
@@ -100,8 +108,13 @@
 
     if (!isCurrentRevealed) {
       particlesActive = true;
-      // Play reveal sound based on card rarity
       const cardRarity = currentCard?.rarity;
+      // Activate confetti for legendary+ cards
+      if (cardRarity === 'legendary' || cardRarity === 'mythic') {
+        confettiActive = true;
+        setTimeout(() => { confettiActive = false; }, 3500);
+      }
+      // Play reveal sound based on card rarity
       if (cardRarity) {
         playCardReveal(cardRarity);
       }
@@ -122,8 +135,13 @@
     stopAutoRevealSequence();
     if (!isCurrentRevealed) {
       particlesActive = true;
-      // Play reveal sound based on card rarity
       const cardRarity = currentCard?.rarity;
+      // Activate confetti for legendary+ cards
+      if (cardRarity === 'legendary' || cardRarity === 'mythic') {
+        confettiActive = true;
+        setTimeout(() => { confettiActive = false; }, 3500);
+      }
+      // Play reveal sound based on card rarity
       if (cardRarity) {
         playCardReveal(cardRarity);
       }
@@ -198,6 +216,9 @@
       {:else}
         <!-- FadeIn wrapper for smooth reveal -->
         <FadeIn duration={300}>
+          <!-- Confetti effects for legendary+ cards -->
+          <ConfettiEffects rarity={currentCard.rarity} active={confettiActive} />
+
           <!-- Rarity-specific particle effects on reveal -->
           <ParticleEffects
             rarity={currentCard.rarity}
