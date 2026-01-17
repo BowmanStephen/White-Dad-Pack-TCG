@@ -31,3 +31,8 @@ FIX_PLAN.md
 fix-critical-bugs.md
 RALPH-TUI-*.md
 prd-phase1.json
+
+# Screenshot files (prevent AI read errors)
+Screenshot*.png
+Screenshot*.jpg
+Screenshot*.jpeg
