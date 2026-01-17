@@ -113,6 +113,27 @@ export interface Collection {
   metadata: CollectionMetadata;
 }
 
+// Collection State - Reactive state for collection UI
+export interface CollectionState {
+  openedPacks: Pack[];          // All opened packs
+  uniqueCards: string[];        // Unique card IDs
+  totalCards: number;           // Total cards across all packs
+  rarityCounts: Record<Rarity, number>; // Count of cards by rarity
+}
+
+// Collection Stats - Computed statistics
+export interface CollectionStats {
+  totalPacks: number;
+  totalCards: number;
+  uniqueCards: number;
+  rarePulls: number;
+  epicPulls: number;
+  legendaryPulls: number;
+  mythicPulls: number;
+  holoPulls: number;
+  lastOpenedAt: Date | null;
+}
+
 // UI State
 export interface UIState {
   currentCardIndex: number;

@@ -1,5 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
-import type { Collection, Pack, Rarity } from '../types';
+import type { Collection, CollectionState, CollectionStats, Pack, Rarity } from '../types';
 
 // Custom encoder for Collection type (handles Date serialization)
 const collectionEncoder = {
@@ -86,6 +86,61 @@ export const collection = persistentAtom<Collection>(
   },
   collectionEncoder
 );
+
+// Compute rarity counts from all packs
+function computeRarityCounts(packs: Pack[]): Record<Rarity, number> {
+  const counts: Record<Rarity, number> = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+  };
+
+  for (const pack of packs) {
+    for (const card of pack.cards) {
+      counts[card.rarity]++;
+    }
+  }
+
+  return counts;
+}
+
+// Get the reactive collection state for UI components
+export function getCollectionState(): CollectionState {
+  const current = collection.get();
+
+  return {
+    openedPacks: current.packs,
+    uniqueCards: current.metadata.uniqueCards,
+    totalCards: current.packs.reduce((sum, pack) => sum + pack.cards.length, 0),
+    rarityCounts: computeRarityCounts(current.packs),
+  };
+}
+
+// Get computed collection statistics
+export function getCollectionStats(): CollectionStats {
+  const current = collection.get();
+  const rarityCounts = computeRarityCounts(current.packs);
+
+  return {
+    totalPacks: current.packs.length,
+    totalCards: current.packs.reduce((sum, pack) => sum + pack.cards.length, 0),
+    uniqueCards: current.metadata.uniqueCards.length,
+    rarePulls: rarityCounts.rare,
+    epicPulls: rarityCounts.epic,
+    legendaryPulls: rarityCounts.legendary,
+    mythicPulls: rarityCounts.mythic,
+    holoPulls: current.metadata.holoPulls,
+    lastOpenedAt: current.metadata.lastOpenedAt,
+  };
+}
+
+// Add a pack to the collection (alias for US022 compatibility)
+export function savePackToCollection(pack: Pack): { success: boolean; error?: string } {
+  return addPackToCollection(pack);
+}
 
 // Add a pack to the collection
 export function addPackToCollection(pack: Pack): { success: boolean; error?: string } {
