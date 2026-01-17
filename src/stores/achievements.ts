@@ -8,6 +8,7 @@ import type {
 } from '../types';
 import { getCollectionStats, collection } from './collection';
 import { trackEvent } from './analytics';
+import { getDailyRewardsState } from './daily-rewards';
 
 // Custom encoder for Achievement type (handles Date serialization)
 const achievementEncoder = {
@@ -184,9 +185,7 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
     rarity: 'bronze',
     category: 'daily',
     checkCondition: () => {
-      // Check daily rewards store directly
-      if (typeof window === 'undefined') return false;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return dailyRewards?.currentStreak >= 3;
     },
   },
@@ -197,8 +196,7 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
     rarity: 'silver',
     category: 'daily',
     checkCondition: () => {
-      if (typeof window === 'undefined') return false;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return dailyRewards?.currentStreak >= 7;
     },
   },
@@ -209,8 +207,7 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
     rarity: 'gold',
     category: 'daily',
     checkCondition: () => {
-      if (typeof window === 'undefined') return false;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return dailyRewards?.currentStreak >= 14;
     },
   },
@@ -221,8 +218,7 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
     rarity: 'platinum',
     category: 'daily',
     checkCondition: () => {
-      if (typeof window === 'undefined') return false;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return dailyRewards?.currentStreak >= 30;
     },
   },
@@ -234,13 +230,11 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
     category: 'daily',
     maxProgress: 10,
     checkCondition: () => {
-      if (typeof window === 'undefined') return false;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return dailyRewards?.totalClaimed >= 10;
     },
     getProgress: () => {
-      if (typeof window === 'undefined') return 0;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return Math.min(dailyRewards?.totalClaimed || 0, 10);
     },
   },
@@ -252,13 +246,11 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
     category: 'daily',
     maxProgress: 50,
     checkCondition: () => {
-      if (typeof window === 'undefined') return false;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return dailyRewards?.totalClaimed >= 50;
     },
     getProgress: () => {
-      if (typeof window === 'undefined') return 0;
-      const dailyRewards = (window as any).__dailyRewardsState;
+      const dailyRewards = getDailyRewardsState();
       return Math.min(dailyRewards?.totalClaimed || 0, 50);
     },
   },
