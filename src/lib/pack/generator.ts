@@ -1,7 +1,7 @@
 import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign, SeasonId } from '../../types';
 import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
-import { PACK_DESIGN_CONFIG, SEASON_PACK_CONFIG } from '../../types';
+import { PACK_DESIGN_CONFIG, SEASON_PACK_CONFIG, RARITY_ORDER } from '../../types';
 import { getSeasonById } from '../../data/seasons';
 
 /**
@@ -35,22 +35,31 @@ export function selectCards(
 
     // Fallback 1: Try adjacent rarities if pool is exhausted
     if (available.length === 0) {
-      const rarityIndex = RARITY_ORDER.indexOf(rarity);
+      const rarityValue = RARITY_ORDER[rarity];
+      const allRarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 
       // Search outward from the requested rarity (lower first, then higher)
-      for (let offset = 1; offset < RARITY_ORDER.length; offset++) {
-        // Try lower rarity
-        if (rarityIndex - offset >= 0) {
-          const lowerRarity = RARITY_ORDER[rarityIndex - offset];
-          available = getCardsByRarity(lowerRarity).filter((card) => !excludedIds.has(card.id));
+      for (const otherRarity of allRarities) {
+        if (otherRarity === rarity) continue;
+
+        const otherValue = RARITY_ORDER[otherRarity];
+        // Try lower rarities first
+        if (otherValue < rarityValue) {
+          available = getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
           if (available.length > 0) break;
         }
+      }
 
-        // Try higher rarity
-        if (rarityIndex + offset < RARITY_ORDER.length) {
-          const higherRarity = RARITY_ORDER[rarityIndex + offset];
-          available = getCardsByRarity(higherRarity).filter((card) => !excludedIds.has(card.id));
-          if (available.length > 0) break;
+      // If still no cards, try higher rarities
+      if (available.length === 0) {
+        for (const otherRarity of allRarities) {
+          if (otherRarity === rarity) continue;
+
+          const otherValue = RARITY_ORDER[otherRarity];
+          if (otherValue > rarityValue) {
+            available = getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
+            if (available.length > 0) break;
+          }
         }
       }
     }
@@ -113,16 +122,11 @@ export const DEFAULT_PACK_CONFIG: PackConfig = {
 };
 
 /**
- * Rarity order for comparison (higher index = rarer)
- */
-const RARITY_ORDER: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
-
-/**
  * Compare two rarities
  * @returns positive if a > b, negative if a < b, 0 if equal
  */
 export function compareRarity(a: Rarity, b: Rarity): number {
-  return RARITY_ORDER.indexOf(a) - RARITY_ORDER.indexOf(b);
+  return RARITY_ORDER[a] - RARITY_ORDER[b];
 }
 
 /**

@@ -20,7 +20,7 @@ import type {
   PackCard,
   Rarity,
 } from '@/types';
-import { CRAFTING_RECIPES, DEFAULT_CRAFTING_CONFIG } from '@/types';
+import { CRAFTING_RECIPES, DEFAULT_CRAFTING_CONFIG, RARITY_ORDER } from '@/types';
 
 // ============================================================================
 // CRAFTING CONFIGURATION
@@ -337,16 +337,7 @@ export function clearCraftingHistory(): void {
  * Compare rarities to determine which is better
  */
 function isBetterRarity(rarity1: Rarity, rarity2: Rarity): boolean {
-  const rarityOrder: Record<Rarity, number> = {
-    common: 0,
-    uncommon: 1,
-    rare: 2,
-    epic: 3,
-    legendary: 4,
-    mythic: 5,
-  };
-
-  return rarityOrder[rarity1] > rarityOrder[rarity2];
+  return RARITY_ORDER[rarity1] > RARITY_ORDER[rarity2];
 }
 
 /**
