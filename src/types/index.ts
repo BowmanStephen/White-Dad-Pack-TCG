@@ -839,6 +839,13 @@ export const DEFAULT_TRADE_CONFIG: TradeConfig = {
 };
 
 // ============================================================================
+// LEADERBOARD TYPES (US079 - Leaderboard - Global Rankings)
+// ============================================================================
+
+// Re-export leaderboard types from separate file
+export * from './leaderboard';
+
+// ============================================================================
 // PACK DESIGNS (US068 - Pack Designs - Visual Variety)
 // ============================================================================
 
