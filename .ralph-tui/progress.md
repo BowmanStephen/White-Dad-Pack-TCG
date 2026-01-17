@@ -261,3 +261,51 @@ rarity sorting\n\n2. **`src/pages/index.astro`** and **`src/pages/pack.astro`**:
 and dynamic rendering.\n\n**Shareable State Pattern**: By persisting filter state in the URL, users can share their filtered collection views with others (e.g., `your-site.com/collection?rarity=rare`). This is a common web pattern that improves shareability and bookmarkability.\n\n**SSR Compatibility**: The `typeof window === 'undefined'` checks ensure the code doesn't crash during server-side rendering (Astro builds pages statically first).\n─────────────────────────────────────────────────\n\n
 
 ---
+## ✓ Iteration 25 - US025: Collection - Filter by Type
+*2026-01-17T08:41:59.696Z (138s)*
+
+**Status:** Completed
+
+**Notes:**
+any combination of 16 dad types\n- **URL persistence** - Filter state saved as comma-separated values (?type=BBQ_DAD,FIX_IT_DAD)\n- **Collapsible panel** - Clean UI with expandable type grid\n- **Visual feedback** - Active types highlighted in gold\n- **Clear All button** - Quickly remove all type filters\n- **Counter badge** - Toggle button shows selected count (e.g., \"Types (3)\")\n- **Responsive grid** - 4 columns mobile, 8 columns tablet+\n\n### Build Status:\n✅ Build successful (1.93s)\n\n
+
+---
+## ✓ Iteration 26 - US026: Collection - Search by Name
+*2026-01-17T08:44:14.383Z (134s)*
+
+**Status:** Completed
+
+**Notes:**
+r button only when there's something to clear. This keeps the UI clean and reduces cognitive load—users only see actionable controls when relevant.\n\n**Memory Leak Prevention**: Notice I added cleanup for the debounce timeout in the `onMount` return function. This prevents memory leaks by ensuring any pending timeout is cleared when the component unmounts. This is a common oversight in React/Svelte components that use timers or intervals.\n`─────────────────────────────────────────────────`\n\n
+
+---
+## ✓ Iteration 27 - US027: Collection - Sort Options
+*2026-01-17T08:49:38.682Z (323s)*
+
+**Status:** Completed
+
+---
+## ✓ Iteration 28 - US028: Collection - Stats Header
+*2026-01-17T08:54:57.625Z (318s)*
+
+**Status:** Completed
+
+---
+## ✓ Iteration 29 - US029: Collection - Export/Import
+*2026-01-17T08:56:58.467Z (120s)*
+
+**Status:** Completed
+
+**Notes:**
+clicking inside the modal, but the overlay click still closes it. This is a common UX pattern that allows users to click outside to dismiss while preventing accidental closes when interacting with modal content.\n\n**Merge Strategy**: For merging collections, I used a `Map` to deduplicate packs by ID—`new Map(mergedPacks.map(p => [p.id, p]))` automatically keeps the last occurrence of each key, which is perfect for \"import wins\" semantics.\n\n`─────────────────────────────────────────────────`
+
+---
+## ✓ Iteration 30 - US030: Collection - Clear Collection
+*2026-01-17T08:58:12.672Z (73s)*
+
+**Status:** Completed
+
+**Notes:**
+orage | ✅ | `clearCollection()` in `collection.ts:206-225` resets persistent atom |\n| Resets all stats to zero | ✅ | All metadata reset: `totalPacksOpened: 0`, `uniqueCards: []`, `rarePulls: 0`, `holoPulls: 0` |\n| Confirmation notification on success | ✅ | Shows \"Collection cleared\" success message for 1.5s |\n\n### Key Files\n- **UI Component:** `src/components/collection/CollectionManager.svelte`\n- **Store Logic:** `src/stores/collection.ts`\n\n### Build Status\n✅ Build successful (2.02s)
+
+---

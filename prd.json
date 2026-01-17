@@ -502,12 +502,13 @@
         "Filter state persisted"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "ui",
         "filter"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US026",
@@ -521,12 +522,13 @@
         "Results update reactively"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "ui",
         "search"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US027",
@@ -540,12 +542,13 @@
         "Smooth animation when reordering"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "ui",
         "sort"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US028",
@@ -559,12 +562,13 @@
         "Stats update reactively on collection change"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "ui",
         "stats"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US029",
@@ -579,12 +583,13 @@
         "Success/error notifications"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "import-export",
         "utility"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US030",
@@ -598,12 +603,13 @@
         "Confirmation notification on success"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "utility",
         "settings"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US031",
@@ -617,12 +623,13 @@
         "Link from landing page ('My Collection' button in nav)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "routing",
         "pages",
         "navigation"
-      ]
+      ],
+      "completionNotes": "Added meta description for SEO. Gallery.svelte is the collection gallery component (renamed from CollectionGallery in PRD)."
     },
     {
       "id": "US032",
@@ -2004,6 +2011,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T08:39:41.258Z"
+    "updatedAt": "2026-01-17T08:58:13.679Z"
   }
 }
