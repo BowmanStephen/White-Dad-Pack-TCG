@@ -98,6 +98,21 @@ export type PackState =
   | 'revealing'
   | 'results';
 
+// Collection Metadata - Statistics about the user's collection
+export interface CollectionMetadata {
+  totalPacksOpened: number;
+  lastOpenedAt: Date | null;
+  uniqueCards: string[]; // Array of unique card IDs
+  rarePulls: number; // Number of rare+ pulls
+  holoPulls: number; // Number of holo pulls
+}
+
+// Collection - All packs owned by the user
+export interface Collection {
+  packs: Pack[];
+  metadata: CollectionMetadata;
+}
+
 // UI State
 export interface UIState {
   currentCardIndex: number;

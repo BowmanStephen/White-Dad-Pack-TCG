@@ -1,6 +1,7 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState } from '../types';
 import { generatePack, getPackStats } from '../lib/pack/generator';
+import { addPackToCollection } from './collection';
 
 // Current pack being opened
 export const currentPack = atom<Pack | null>(null);
@@ -57,6 +58,9 @@ export const packProgress = computed(
 // Error state store for pack generation failures
 export const packError = atom<string | null>(null);
 
+// Storage error state (for LocalStorage issues)
+export const storageError = atom<string | null>(null);
+
 // Start opening a new pack
 export async function openNewPack(): Promise<void> {
   // Reset state first
@@ -64,6 +68,7 @@ export async function openNewPack(): Promise<void> {
   revealedCards.set(new Set());
   isSkipping.set(false);
   packError.set(null);
+  storageError.set(null);
   currentPack.set(null);
 
   // Set to generating state BEFORE async work
@@ -80,6 +85,14 @@ export async function openNewPack(): Promise<void> {
     const remainingDelay = Math.max(0, Math.min(minDelay - elapsed, 500 - elapsed));
     if (remainingDelay > 0) {
       await new Promise(resolve => setTimeout(resolve, remainingDelay));
+    }
+
+    // Save pack to collection (LocalStorage)
+    const saveResult = addPackToCollection(pack);
+    if (!saveResult.success) {
+      // Set storage error but don't block the pack opening
+      storageError.set(saveResult.error || 'Failed to save pack to collection');
+      console.warn('Collection save failed:', saveResult.error);
     }
 
     // Set the pack and transition to pack animation
@@ -175,6 +188,7 @@ export function resetPack(): void {
   currentCardIndex.set(0);
   revealedCards.set(new Set());
   isSkipping.set(false);
+  storageError.set(null);
 }
 
 // Show results screen
