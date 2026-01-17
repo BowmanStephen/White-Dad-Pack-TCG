@@ -16,69 +16,204 @@ const achievementEncoder = createDateEncoder<Achievement[]>({
   dateFields: ['unlockedAt'],
 });
 
+/**
+ * Factory function for creating pack-opening achievements
+ * Reduces boilerplate for achievements based on total packs opened
+ */
+function createPackAchievement(config: {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: Achievement['rarity'];
+  requiredPacks: number;
+  withProgress?: boolean;
+}): AchievementConfig {
+  const base = {
+    name: config.name,
+    description: config.description,
+    icon: config.icon,
+    rarity: config.rarity,
+    category: 'opening' as const,
+    checkCondition: (context: AchievementContext) =>
+      context.stats.totalPacks >= config.requiredPacks,
+  };
+
+  if (config.withProgress) {
+    return {
+      ...base,
+      maxProgress: config.requiredPacks,
+      getProgress: (context: AchievementContext) =>
+        Math.min(context.stats.totalPacks, config.requiredPacks),
+    };
+  }
+
+  return base;
+}
+
+/**
+ * Factory function for creating collection achievements
+ * Reduces boilerplate for achievements based on unique cards owned
+ */
+function createCollectionAchievement(config: {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: Achievement['rarity'];
+  requiredCards: number;
+}): AchievementConfig {
+  return {
+    name: config.name,
+    description: config.description,
+    icon: config.icon,
+    rarity: config.rarity,
+    category: 'collection',
+    maxProgress: config.requiredCards,
+    checkCondition: (context: AchievementContext) =>
+      context.stats.uniqueCards >= config.requiredCards,
+    getProgress: (context: AchievementContext) =>
+      Math.min(context.stats.uniqueCards, config.requiredCards),
+  };
+}
+
+/**
+ * Factory function for creating holo achievements
+ * Reduces boilerplate for achievements based on holographic cards pulled
+ */
+function createHoloAchievement(config: {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: Achievement['rarity'];
+  requiredHolos: number;
+}): AchievementConfig {
+  return {
+    name: config.name,
+    description: config.description,
+    icon: config.icon,
+    rarity: config.rarity,
+    category: 'holo',
+    maxProgress: config.requiredHolos,
+    checkCondition: (context: AchievementContext) =>
+      context.stats.holoPulls >= config.requiredHolos,
+    getProgress: (context: AchievementContext) =>
+      Math.min(context.stats.holoPulls, config.requiredHolos),
+  };
+}
+
+/**
+ * Factory function for creating daily streak achievements
+ * Reduces boilerplate for achievements that check daily login streaks
+ */
+function createStreakAchievement(config: {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: Achievement['rarity'];
+  requiredStreak: number;
+}): AchievementConfig {
+  return {
+    name: config.name,
+    description: config.description,
+    icon: config.icon,
+    rarity: config.rarity,
+    category: 'daily',
+    checkCondition: () => {
+      const dailyRewards = getDailyRewardsState();
+      return dailyRewards?.currentStreak >= config.requiredStreak;
+    },
+  };
+}
+
+/**
+ * Factory function for creating daily rewards claimed achievements
+ * Reduces boilerplate for achievements that track total rewards claimed
+ */
+function createRewardsAchievement(config: {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: Achievement['rarity'];
+  requiredClaims: number;
+}): AchievementConfig {
+  return {
+    name: config.name,
+    description: config.description,
+    icon: config.icon,
+    rarity: config.rarity,
+    category: 'daily',
+    maxProgress: config.requiredClaims,
+    checkCondition: () => {
+      const dailyRewards = getDailyRewardsState();
+      return dailyRewards?.totalClaimed >= config.requiredClaims;
+    },
+    getProgress: () => {
+      const dailyRewards = getDailyRewardsState();
+      return Math.min(dailyRewards?.totalClaimed || 0, config.requiredClaims);
+    },
+  };
+}
+
 // Achievement definitions - all possible achievements
 export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
   // Opening achievements
-  first_pack: {
+  first_pack: createPackAchievement({
+    id: 'first_pack',
     name: 'First Pack',
     description: 'Open your first pack',
     icon: '🎁',
     rarity: 'bronze',
-    category: 'opening',
-    checkCondition: (context) => context.stats.totalPacks >= 1,
-  },
-  ten_packs: {
+    requiredPacks: 1,
+  }),
+  ten_packs: createPackAchievement({
+    id: 'ten_packs',
     name: 'Pack Enthusiast',
     description: 'Open 10 packs',
     icon: '📦',
     rarity: 'silver',
-    category: 'opening',
-    maxProgress: 10,
-    checkCondition: (context) => context.stats.totalPacks >= 10,
-    getProgress: (context) => Math.min(context.stats.totalPacks, 10),
-  },
-  fifty_packs: {
+    requiredPacks: 10,
+    withProgress: true,
+  }),
+  fifty_packs: createPackAchievement({
+    id: 'fifty_packs',
     name: 'Dedicated Dad',
     description: 'Open 50 packs',
     icon: '💪',
     rarity: 'gold',
-    category: 'opening',
-    maxProgress: 50,
-    checkCondition: (context) => context.stats.totalPacks >= 50,
-    getProgress: (context) => Math.min(context.stats.totalPacks, 50),
-  },
-  hundred_packs: {
+    requiredPacks: 50,
+    withProgress: true,
+  }),
+  hundred_packs: createPackAchievement({
+    id: 'hundred_packs',
     name: 'Dedicated',
     description: 'Open 100 packs',
     icon: '🏆',
     rarity: 'platinum',
-    category: 'opening',
-    maxProgress: 100,
-    checkCondition: (context) => context.stats.totalPacks >= 100,
-    getProgress: (context) => Math.min(context.stats.totalPacks, 100),
-  },
+    requiredPacks: 100,
+    withProgress: true,
+  }),
 
   // Collection achievements
-  collector: {
+  collector: createCollectionAchievement({
+    id: 'collector',
     name: 'Collector',
     description: 'Own 25 unique cards',
     icon: '📚',
     rarity: 'silver',
-    category: 'collection',
-    maxProgress: 25,
-    checkCondition: (context) => context.stats.uniqueCards >= 25,
-    getProgress: (context) => Math.min(context.stats.uniqueCards, 25),
-  },
-  master_collector: {
+    requiredCards: 25,
+  }),
+  master_collector: createCollectionAchievement({
+    id: 'master_collector',
     name: 'Master Collector',
     description: 'Own 50 unique cards',
     icon: '👑',
     rarity: 'gold',
-    category: 'collection',
-    maxProgress: 50,
-    checkCondition: (context) => context.stats.uniqueCards >= 50,
-    getProgress: (context) => Math.min(context.stats.uniqueCards, 50),
-  },
+    requiredCards: 50,
+  }),
 
   // Rarity achievements
   rare_pull: {
@@ -119,26 +254,22 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
   },
 
   // Holo achievements
-  holo_collector: {
+  holo_collector: createHoloAchievement({
+    id: 'holo_collector',
     name: 'Holo Collector',
     description: 'Pull 10 holographic cards',
     icon: '🌈',
     rarity: 'silver',
-    category: 'holo',
-    maxProgress: 10,
-    checkCondition: (context) => context.stats.holoPulls >= 10,
-    getProgress: (context) => Math.min(context.stats.holoPulls, 10),
-  },
-  holo_master: {
+    requiredHolos: 10,
+  }),
+  holo_master: createHoloAchievement({
+    id: 'holo_master',
     name: 'Holo Master',
     description: 'Pull 25 holographic cards',
     icon: '💎',
     rarity: 'gold',
-    category: 'holo',
-    maxProgress: 25,
-    checkCondition: (context) => context.stats.holoPulls >= 25,
-    getProgress: (context) => Math.min(context.stats.holoPulls, 25),
-  },
+    requiredHolos: 25,
+  }),
 
   // Variety achievements (future expansion)
   // complete_set: {
@@ -163,82 +294,54 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
   // },
 
   // Daily rewards achievements (US074)
-  daily_streak_3: {
+  daily_streak_3: createStreakAchievement({
+    id: 'daily_streak_3',
     name: 'Consistent Dad',
     description: 'Maintain a 3-day login streak',
     icon: '📅',
     rarity: 'bronze',
-    category: 'daily',
-    checkCondition: () => {
-      const dailyRewards = getDailyRewardsState();
-      return dailyRewards?.currentStreak >= 3;
-    },
-  },
-  daily_streak_7: {
+    requiredStreak: 3,
+  }),
+  daily_streak_7: createStreakAchievement({
+    id: 'daily_streak_7',
     name: 'Weekly Warrior',
     description: 'Maintain a 7-day login streak',
     icon: '🔥',
     rarity: 'silver',
-    category: 'daily',
-    checkCondition: () => {
-      const dailyRewards = getDailyRewardsState();
-      return dailyRewards?.currentStreak >= 7;
-    },
-  },
-  daily_streak_14: {
+    requiredStreak: 7,
+  }),
+  daily_streak_14: createStreakAchievement({
+    id: 'daily_streak_14',
     name: 'Dedicated Dad',
     description: 'Maintain a 14-day login streak',
     icon: '💪',
     rarity: 'gold',
-    category: 'daily',
-    checkCondition: () => {
-      const dailyRewards = getDailyRewardsState();
-      return dailyRewards?.currentStreak >= 14;
-    },
-  },
-  daily_streak_30: {
+    requiredStreak: 14,
+  }),
+  daily_streak_30: createStreakAchievement({
+    id: 'daily_streak_30',
     name: 'Monthly Master',
     description: 'Maintain a 30-day login streak',
     icon: '👑',
     rarity: 'platinum',
-    category: 'daily',
-    checkCondition: () => {
-      const dailyRewards = getDailyRewardsState();
-      return dailyRewards?.currentStreak >= 30;
-    },
-  },
-  daily_rewards_10: {
+    requiredStreak: 30,
+  }),
+  daily_rewards_10: createRewardsAchievement({
+    id: 'daily_rewards_10',
     name: 'Reward Collector',
     description: 'Claim 10 daily rewards',
     icon: '🎁',
     rarity: 'bronze',
-    category: 'daily',
-    maxProgress: 10,
-    checkCondition: () => {
-      const dailyRewards = getDailyRewardsState();
-      return dailyRewards?.totalClaimed >= 10;
-    },
-    getProgress: () => {
-      const dailyRewards = getDailyRewardsState();
-      return Math.min(dailyRewards?.totalClaimed || 0, 10);
-    },
-  },
-  daily_rewards_50: {
+    requiredClaims: 10,
+  }),
+  daily_rewards_50: createRewardsAchievement({
+    id: 'daily_rewards_50',
     name: 'Reward Hoarder',
     description: 'Claim 50 daily rewards',
     icon: '📦',
     rarity: 'gold',
-    category: 'daily',
-    maxProgress: 50,
-    checkCondition: () => {
-      const dailyRewards = getDailyRewardsState();
-      return dailyRewards?.totalClaimed >= 50;
-    },
-    getProgress: () => {
-      const dailyRewards = getDailyRewardsState();
-      return Math.min(dailyRewards?.totalClaimed || 0, 50);
-    },
-  },
+    requiredClaims: 50,
+  }),
 };
 
 // Achievement state with LocalStorage persistence
