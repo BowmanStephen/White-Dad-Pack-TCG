@@ -3,6 +3,80 @@ import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
 
 /**
+ * Select cards from the rarity pool, excluding already used cards.
+ *
+ * This function implements the card selection logic for pack generation:
+ * - Filters the card database by rarity
+ * - Prevents duplicate cards within the same pack
+ * - Falls back to adjacent rarities if the pool is exhausted
+ * - As a last resort, allows duplicates if all pools are exhausted
+ *
+ * Note: This function mutates the excludedIds Set to include newly selected cards.
+ *
+ * @param rarity - The rarity tier to select from
+ * @param excludedIds - Set of card IDs already used in this pack (will be mutated)
+ * @param count - Number of cards to select (default: 1)
+ * @param rng - Optional seeded random number generator
+ * @returns Array of selected cards (may be empty if no cards available)
+ */
+export function selectCards(
+  rarity: Rarity,
+  excludedIds: Set<string>,
+  count: number = 1,
+  rng?: SeededRandom
+): Card[] {
+  const selected: Card[] = [];
+
+  for (let i = 0; i < count; i++) {
+    // Get available cards of the requested rarity
+    let available = getCardsByRarity(rarity).filter((card) => !excludedIds.has(card.id));
+
+    // Fallback 1: Try adjacent rarities if pool is exhausted
+    if (available.length === 0) {
+      const rarityIndex = RARITY_ORDER.indexOf(rarity);
+
+      // Search outward from the requested rarity (lower first, then higher)
+      for (let offset = 1; offset < RARITY_ORDER.length; offset++) {
+        // Try lower rarity
+        if (rarityIndex - offset >= 0) {
+          const lowerRarity = RARITY_ORDER[rarityIndex - offset];
+          available = getCardsByRarity(lowerRarity).filter((card) => !excludedIds.has(card.id));
+          if (available.length > 0) break;
+        }
+
+        // Try higher rarity
+        if (rarityIndex + offset < RARITY_ORDER.length) {
+          const higherRarity = RARITY_ORDER[rarityIndex + offset];
+          available = getCardsByRarity(higherRarity).filter((card) => !excludedIds.has(card.id));
+          if (available.length > 0) break;
+        }
+      }
+    }
+
+    // Fallback 2: Allow duplicates if all pools are exhausted
+    if (available.length === 0) {
+      available = getCardsByRarity(rarity);
+      // If still no cards, try all rarities
+      if (available.length === 0) {
+        available = getAllCards();
+      }
+    }
+
+    // If we still have no cards, skip this selection
+    if (available.length === 0) {
+      continue;
+    }
+
+    // Select a random card
+    const card = rng ? rng.pick(available) : available[Math.floor(Math.random() * available.length)];
+    selected.push(card);
+    excludedIds.add(card.id);
+  }
+
+  return selected;
+}
+
+/**
  * Default pack configuration based on US036 rarity distribution rules
  *
  * Slot breakdown:
@@ -80,11 +154,11 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
   const rng = new SeededRandom(seed);
   const packCards: PackCard[] = [];
   const usedCardIds = new Set<string>();
-  
+
   // Process each slot in the pack
   for (const slot of config.raritySlots) {
     let rarity: Rarity;
-    
+
     if (slot.guaranteedRarity) {
       // Guaranteed rarity slot
       rarity = slot.guaranteedRarity;
@@ -95,46 +169,19 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
       // Fallback to common
       rarity = 'common';
     }
-    
-    // Get available cards of this rarity that haven't been used
-    let availableCards = getCardsByRarity(rarity).filter(
-      (card) => !usedCardIds.has(card.id)
-    );
-    
-    // If no cards available at this rarity, try adjacent rarities
-    if (availableCards.length === 0) {
-      const rarityIndex = RARITY_ORDER.indexOf(rarity);
-      
-      // Try lower rarity first, then higher
-      for (let offset = 1; offset < RARITY_ORDER.length; offset++) {
-        // Try lower
-        if (rarityIndex - offset >= 0) {
-          availableCards = getCardsByRarity(RARITY_ORDER[rarityIndex - offset])
-            .filter((card) => !usedCardIds.has(card.id));
-          if (availableCards.length > 0) break;
-        }
-        // Try higher
-        if (rarityIndex + offset < RARITY_ORDER.length) {
-          availableCards = getCardsByRarity(RARITY_ORDER[rarityIndex + offset])
-            .filter((card) => !usedCardIds.has(card.id));
-          if (availableCards.length > 0) break;
-        }
-      }
+
+    // Use the selectCards function to get a card from the appropriate rarity pool
+    const [selectedCard] = selectCards(rarity, usedCardIds, 1, rng);
+
+    // If no card was selected (database is empty), skip this slot
+    if (!selectedCard) {
+      continue;
     }
-    
-    // If still no cards, use any available card
-    if (availableCards.length === 0) {
-      availableCards = getAllCards().filter((card) => !usedCardIds.has(card.id));
-    }
-    
-    // Select a random card
-    const selectedCard = rng.pick(availableCards);
-    usedCardIds.add(selectedCard.id);
-    
+
     // Determine if this card is holographic
     const isHolo = rng.next() < config.holoChance;
     const holoType: HoloVariant = isHolo ? determineHoloVariant(rng) : 'none';
-    
+
     // Create pack card with runtime properties
     const packCard: PackCard = {
       ...selectedCard,
@@ -142,13 +189,13 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
       isHolo,
       holoType,
     };
-    
+
     packCards.push(packCard);
   }
-  
+
   // Shuffle the cards so rarity isn't predictable by position
   const shuffledCards = rng.shuffle(packCards);
-  
+
   // Create the pack
   const pack: Pack = {
     id: generateId(),
@@ -156,7 +203,7 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
     openedAt: new Date(),
     bestRarity: getHighestRarity(shuffledCards),
   };
-  
+
   return pack;
 }
 
