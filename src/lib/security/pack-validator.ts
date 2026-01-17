@@ -226,6 +226,20 @@ export function validateRarityDistribution(pack: Pack): string[] {
 export function validateCardIntegrity(pack: Pack): string[] {
   const anomalies: string[] = [];
 
+  // Validate card count (must be exactly 6 for standard packs)
+  if (!pack.cards || pack.cards.length !== 6) {
+    anomalies.push(`Invalid card count: ${pack.cards?.length || 0} (expected 6)`);
+  }
+
+  // Check for duplicate card IDs
+  if (pack.cards) {
+    const cardIds = pack.cards.map((c) => c.id);
+    const uniqueIds = new Set(cardIds);
+    if (uniqueIds.size !== cardIds.length) {
+      anomalies.push(`Duplicate card IDs detected in pack`);
+    }
+  }
+
   for (const card of pack.cards) {
     // Check if all required fields exist
     if (!card.id || !card.name || !card.rarity) {

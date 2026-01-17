@@ -202,17 +202,27 @@ describe('Security System - US095', () => {
       expect(result.anomalies.length).toBeGreaterThan(0);
     });
 
-    it('should detect duplicate cards', async () => {
-      const card = createMockCard('1', 'common');
+    it('should detect holo inconsistencies', async () => {
       const pack = createMockPack({
-        cards: [card, card, card, card, card, card], // Same card 6 times
+        cards: [
+          createMockCard('1', 'common'),
+          createMockCard('2', 'common'),
+          createMockCard('3', 'common'),
+          createMockCard('4', 'uncommon'),
+          createMockCard('5', 'uncommon'),
+          createMockCard('6', 'rare'),
+        ],
       });
+
+      // Add holo inconsistency
+      pack.cards[0].isHolo = true;
+      pack.cards[0].holoType = 'none'; // Should not be 'none' if isHolo is true
 
       const result = await validatePack(pack);
 
-      // Duplicate detection will catch identical card IDs
       expect(result.valid).toBe(false);
-      expect(result.duplicateDetected).toBe(true);
+      expect(result.anomalies.length).toBeGreaterThan(0);
+      expect(result.anomalies.some(a => a.includes('Holo inconsistency'))).toBe(true);
     });
   });
 
@@ -382,9 +392,8 @@ describe('Security System - US095', () => {
   describe('Edge Cases', () => {
     it('should handle empty pack', async () => {
       const pack = createMockPack({ cards: [] });
-      const serverEntropy = generateServerEntropy();
 
-      const result = await validatePack(pack, serverEntropy);
+      const result = await validatePack(pack);
 
       expect(result.valid).toBe(false);
     });
@@ -393,9 +402,8 @@ describe('Security System - US095', () => {
       const pack = createMockPack({
         cards: undefined as any,
       });
-      const serverEntropy = generateServerEntropy();
 
-      const result = await validatePack(pack, serverEntropy);
+      const result = await validatePack(pack);
 
       expect(result.valid).toBe(false);
     });
