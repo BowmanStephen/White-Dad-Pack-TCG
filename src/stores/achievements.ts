@@ -175,6 +175,93 @@ export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {
   //     return Object.values(seriesCounts).some((cards) => cards.size >= 50);
   //   },
   // },
+
+  // Daily rewards achievements (US074)
+  daily_streak_3: {
+    name: 'Consistent Dad',
+    description: 'Maintain a 3-day login streak',
+    icon: '📅',
+    rarity: 'bronze',
+    category: 'daily',
+    checkCondition: () => {
+      // Check daily rewards store directly
+      if (typeof window === 'undefined') return false;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return dailyRewards?.currentStreak >= 3;
+    },
+  },
+  daily_streak_7: {
+    name: 'Weekly Warrior',
+    description: 'Maintain a 7-day login streak',
+    icon: '🔥',
+    rarity: 'silver',
+    category: 'daily',
+    checkCondition: () => {
+      if (typeof window === 'undefined') return false;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return dailyRewards?.currentStreak >= 7;
+    },
+  },
+  daily_streak_14: {
+    name: 'Dedicated Dad',
+    description: 'Maintain a 14-day login streak',
+    icon: '💪',
+    rarity: 'gold',
+    category: 'daily',
+    checkCondition: () => {
+      if (typeof window === 'undefined') return false;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return dailyRewards?.currentStreak >= 14;
+    },
+  },
+  daily_streak_30: {
+    name: 'Monthly Master',
+    description: 'Maintain a 30-day login streak',
+    icon: '👑',
+    rarity: 'platinum',
+    category: 'daily',
+    checkCondition: () => {
+      if (typeof window === 'undefined') return false;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return dailyRewards?.currentStreak >= 30;
+    },
+  },
+  daily_rewards_10: {
+    name: 'Reward Collector',
+    description: 'Claim 10 daily rewards',
+    icon: '🎁',
+    rarity: 'bronze',
+    category: 'daily',
+    maxProgress: 10,
+    checkCondition: () => {
+      if (typeof window === 'undefined') return false;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return dailyRewards?.totalClaimed >= 10;
+    },
+    getProgress: () => {
+      if (typeof window === 'undefined') return 0;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return Math.min(dailyRewards?.totalClaimed || 0, 10);
+    },
+  },
+  daily_rewards_50: {
+    name: 'Reward Hoarder',
+    description: 'Claim 50 daily rewards',
+    icon: '📦',
+    rarity: 'gold',
+    category: 'daily',
+    maxProgress: 50,
+    checkCondition: () => {
+      if (typeof window === 'undefined') return false;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return dailyRewards?.totalClaimed >= 50;
+    },
+    getProgress: () => {
+      if (typeof window === 'undefined') return 0;
+      const dailyRewards = (window as any).__dailyRewardsState;
+      return Math.min(dailyRewards?.totalClaimed || 0, 50);
+    },
+  },
 };
 
 // Achievement state with LocalStorage persistence

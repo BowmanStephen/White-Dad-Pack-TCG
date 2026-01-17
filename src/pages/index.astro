@@ -8,6 +8,7 @@ import Footer from '../components/landing/Footer.astro';
 import Navigation from '../components/common/Navigation.svelte';
 import SettingsModal from '../components/common/SettingsModal.svelte';
 import TutorialOverlay from '../components/common/TutorialOverlay.svelte';
+import DailyRewardsBanner from '../components/daily/DailyRewardsBanner.svelte';
 
 // Enhanced SEO for homepage
 const title = "DadDeck - The Ultimate White Dad Trading Card Simulator";
@@ -51,6 +52,9 @@ const webApplicationSchema = {
 >
   <!-- Critical components: load immediately -->
   <Navigation client:load />
+
+  <!-- Daily Rewards Banner: load immediately -->
+  <DailyRewardsBanner client:load />
 
   <!-- Defer non-critical components: load when browser is idle -->
   <SettingsModal client:idle />

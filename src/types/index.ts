@@ -329,7 +329,8 @@ export type AnalyticsEventType =
   | 'settings_change'     // User changed a setting
   | 'modal_open'          // User opened a modal (card inspection, share, etc.)
   | 'modal_close'         // User closed a modal
-  | 'achievement_unlock'; // User unlocked an achievement (US073)
+  | 'achievement_unlock'  // User unlocked an achievement (US073)
+  | 'daily_reward_claim'; // User claimed daily reward (US074)
 
 // Share platforms
 export type SharePlatform = 'twitter' | 'discord' | 'download' | 'native' | 'copy_link';
@@ -462,6 +463,17 @@ export interface AchievementUnlockEvent extends AnalyticsEvent {
   };
 }
 
+// Daily reward claim event (US074)
+export interface DailyRewardClaimEvent extends AnalyticsEvent {
+  type: 'daily_reward_claim';
+  data: {
+    rewardType: string;       // Type of reward claimed (pack, boosted_pack, cards, currency)
+    rewardValue: number;      // Value of reward
+    streak: number;           // Current streak when claimed
+    bonusMultiplier: number;  // Bonus multiplier applied
+  };
+}
+
 // Union type of all analytics events
 export type AnyAnalyticsEvent =
   | PackOpenEvent
@@ -475,7 +487,8 @@ export type AnyAnalyticsEvent =
   | SettingsChangeEvent
   | ModalOpenEvent
   | ModalCloseEvent
-  | AchievementUnlockEvent;
+  | AchievementUnlockEvent
+  | DailyRewardClaimEvent;
 
 // Analytics configuration
 export interface AnalyticsConfig {
@@ -526,7 +539,7 @@ export interface AnalyticsSession {
 export type AchievementRarity = 'bronze' | 'silver' | 'gold' | 'platinum';
 
 // Achievement categories
-export type AchievementCategory = 'opening' | 'collection' | 'rare' | 'holo' | 'variety';
+export type AchievementCategory = 'opening' | 'collection' | 'rare' | 'holo' | 'variety' | 'daily';
 
 // Achievement interface
 export interface Achievement {
@@ -614,7 +627,53 @@ export const ACHIEVEMENT_CATEGORY_NAMES: Record<AchievementCategory, string> = {
   rare: 'Rare Pulls',
   holo: 'Holo Hunters',
   variety: 'Variety Seekers',
+  daily: 'Daily Rewards',
 };
+
+// ============================================================================
+// DAILY REWARDS TYPES (US074 - Daily Rewards - Pack Incentive)
+// ============================================================================
+
+// Daily reward types
+export type DailyRewardType = 'pack' | 'boosted_pack' | 'cards' | 'currency';
+
+// Daily reward interface
+export interface DailyReward {
+  day: number;                  // Day number in current streak (1-based)
+  claimed: boolean;             // Whether reward has been claimed
+  claimedAt?: Date;             // When reward was claimed
+  rewardType: DailyRewardType;  // Type of reward
+  rewardValue: number;          // Value (e.g., pack count, card count)
+  bonusMultiplier?: number;     // Streak bonus multiplier (1.0 = normal)
+}
+
+// Daily rewards state
+export interface DailyRewardsState {
+  currentStreak: number;        // Current login streak (days)
+  longestStreak: number;        // Longest streak achieved
+  lastLoginDate: Date | null;   // Last login date (for streak calculation)
+  nextClaimTime: Date;          // When next reward can be claimed
+  totalClaimed: number;         // Total rewards claimed all-time
+  rewards: DailyReward[];       // Current streak rewards
+  consecutiveDays: number;      // Days in current streak
+  missedDay: boolean;           // Whether user missed a day (resets streak)
+}
+
+// Daily reward tier configuration
+export interface DailyRewardTier {
+  day: number;                  // Day in streak
+  rewardType: DailyRewardType;  // Type of reward
+  baseValue: number;            // Base reward value
+  description: string;          // Reward description
+  icon: string;                 // Icon/emoji
+}
+
+// Streak bonus configuration
+export interface StreakBonus {
+  threshold: number;            // Streak length required
+  multiplier: number;           // Bonus multiplier
+  description: string;          // Bonus description
+}
 
 // ============================================================================
 // PACK DESIGNS (US068 - Pack Designs - Visual Variety)
