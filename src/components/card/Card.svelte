@@ -2,6 +2,7 @@
   import type { PackCard } from '../../types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES } from '../../types';
   import CardStats from './CardStats.svelte';
+  import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
@@ -368,30 +369,8 @@
 
     <!-- Card Back -->
     {#if showBack}
-      <div
-        class="card-face card-back absolute inset-0 overflow-hidden"
-        style="border: 4px solid #475569; box-shadow: 0 0 20px rgba(71, 85, 105, 0.3), inset 0 0 20px rgba(0,0,0,0.5);"
-      >
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
-          <!-- Back pattern -->
-          <div class="absolute inset-4 border-2 border-amber-500/20 rounded-xl"></div>
-          <div class="absolute inset-6 border border-amber-500/10 rounded-lg"></div>
-
-          <!-- Center logo -->
-          <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <div class="text-3xl font-black mb-2 tracking-tight">
-              <span class="text-amber-400">Dad</span><span class="text-white">Deck</span>
-            </div>
-            <div class="text-slate-500 text-xs font-bold tracking-widest">SERIES 1</div>
-            <div class="mt-4 text-4xl drop-shadow-lg">👔</div>
-          </div>
-
-          <!-- Corner decorations -->
-          <div class="absolute top-4 left-4 text-amber-500/30 text-2xl">◆</div>
-          <div class="absolute top-4 right-4 text-amber-500/30 text-2xl">◆</div>
-          <div class="absolute bottom-4 left-4 text-amber-500/30 text-2xl">◆</div>
-          <div class="absolute bottom-4 right-4 text-amber-500/30 text-2xl">◆</div>
-        </div>
+      <div class="card-face card-back absolute inset-0">
+        <CardBack {size} isHolo={card.isHolo} rarity={card.rarity} />
       </div>
     {/if}
   </div>
