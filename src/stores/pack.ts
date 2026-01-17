@@ -1,0 +1,158 @@
+import { atom, computed } from 'nanostores';
+import type { Pack, PackCard, PackState } from '../types';
+import { generatePack, getPackStats } from '../lib/pack/generator';
+
+// Current pack being opened
+export const $currentPack = atom<Pack | null>(null);
+
+// Current state of the pack opening flow
+export const $packState = atom<PackState>('idle');
+
+// Index of the currently viewed card
+export const $currentCardIndex = atom<number>(0);
+
+// Whether the user is skipping animations
+export const $isSkipping = atom<boolean>(false);
+
+// Track which cards have been revealed
+export const $revealedCards = atom<Set<number>>(new Set());
+
+// Computed: Get the current card being viewed
+export const $currentCard = computed(
+  [$currentPack, $currentCardIndex],
+  (pack, index) => {
+    if (!pack || index < 0 || index >= pack.cards.length) return null;
+    return pack.cards[index];
+  }
+);
+
+// Computed: Check if all cards are revealed
+export const $allCardsRevealed = computed(
+  [$currentPack, $revealedCards],
+  (pack, revealed) => {
+    if (!pack) return false;
+    return revealed.size >= pack.cards.length;
+  }
+);
+
+// Computed: Get pack statistics
+export const $packStats = computed($currentPack, (pack) => {
+  if (!pack) return null;
+  return getPackStats(pack);
+});
+
+// Computed: Progress through the pack (0-1)
+export const $packProgress = computed(
+  [$currentPack, $revealedCards],
+  (pack, revealed) => {
+    if (!pack || pack.cards.length === 0) return 0;
+    return revealed.size / pack.cards.length;
+  }
+);
+
+/**
+ * Actions
+ */
+
+// Start opening a new pack
+export function openNewPack(): void {
+  const pack = generatePack();
+  $currentPack.set(pack);
+  $packState.set('generating');
+  $currentCardIndex.set(0);
+  $revealedCards.set(new Set());
+  $isSkipping.set(false);
+  
+  // Transition to pack animation after a brief delay
+  setTimeout(() => {
+    $packState.set('pack_animate');
+  }, 100);
+}
+
+// Complete pack animation and show cards
+export function completePackAnimation(): void {
+  $packState.set('cards_ready');
+}
+
+// Reveal a specific card
+export function revealCard(index: number): void {
+  const pack = $currentPack.get();
+  if (!pack || index < 0 || index >= pack.cards.length) return;
+  
+  const revealed = new Set($revealedCards.get());
+  revealed.add(index);
+  $revealedCards.set(revealed);
+  
+  // Update the card's revealed state
+  const updatedCards = [...pack.cards];
+  updatedCards[index] = { ...updatedCards[index], isRevealed: true };
+  $currentPack.set({ ...pack, cards: updatedCards });
+  
+  $packState.set('revealing');
+}
+
+// Reveal the current card
+export function revealCurrentCard(): void {
+  revealCard($currentCardIndex.get());
+}
+
+// Navigate to next card
+export function nextCard(): void {
+  const pack = $currentPack.get();
+  if (!pack) return;
+  
+  const currentIndex = $currentCardIndex.get();
+  if (currentIndex < pack.cards.length - 1) {
+    $currentCardIndex.set(currentIndex + 1);
+  } else {
+    // All cards viewed, show results
+    $packState.set('results');
+  }
+}
+
+// Navigate to previous card
+export function prevCard(): void {
+  const currentIndex = $currentCardIndex.get();
+  if (currentIndex > 0) {
+    $currentCardIndex.set(currentIndex - 1);
+  }
+}
+
+// Go to a specific card
+export function goToCard(index: number): void {
+  const pack = $currentPack.get();
+  if (!pack || index < 0 || index >= pack.cards.length) return;
+  $currentCardIndex.set(index);
+}
+
+// Skip to results
+export function skipToResults(): void {
+  const pack = $currentPack.get();
+  if (!pack) return;
+  
+  // Reveal all cards
+  const allRevealed = new Set<number>();
+  const updatedCards = pack.cards.map((card, index) => {
+    allRevealed.add(index);
+    return { ...card, isRevealed: true };
+  });
+  
+  $revealedCards.set(allRevealed);
+  $currentPack.set({ ...pack, cards: updatedCards });
+  $packState.set('results');
+  $isSkipping.set(true);
+}
+
+// Reset to idle state
+export function resetPack(): void {
+  $currentPack.set(null);
+  $packState.set('idle');
+  $currentCardIndex.set(0);
+  $revealedCards.set(new Set());
+  $isSkipping.set(false);
+}
+
+// Show results screen
+export function showResults(): void {
+  $packState.set('results');
+}

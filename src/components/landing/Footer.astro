@@ -1,0 +1,27 @@
+---
+import Logo from '../common/Logo.astro';
+---
+
+<footer class="py-12 px-4 border-t border-slate-800">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <Logo size="sm" />
+        <span class="text-slate-500">|</span>
+        <span class="text-slate-400 text-sm">The Ultimate Dad Trading Card Simulator</span>
+      </div>
+      
+      <div class="flex items-center gap-6 text-sm text-slate-400">
+        <a href="#" class="hover:text-white transition-colors">About</a>
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" class="hover:text-white transition-colors">Twitter</a>
+      </div>
+    </div>
+    
+    <div class="mt-8 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+      <p>&copy; {new Date().getFullYear()} DadDeck. All rights reserved. Made with 👔 and dad jokes.</p>
+      <p class="mt-2 text-xs">This is a satirical project. No actual dads were harmed in the making of these cards.</p>
+    </div>
+  </div>
+</footer>

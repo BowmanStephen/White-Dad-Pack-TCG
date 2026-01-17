@@ -1,0 +1,18 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const { size = 'md', class: className = '' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'text-xl',
+  md: 'text-3xl',
+  lg: 'text-5xl',
+};
+---
+
+<div class:list={["font-bold tracking-tight", sizeClasses[size], className]}>
+  <span class="text-amber-400">Dad</span><span class="text-white">Deck</span><span class="text-amber-400 text-sm align-super">TM</span>
+</div>

@@ -1,0 +1,131 @@
+import { atom } from 'nanostores';
+
+// Whether reduced motion is preferred
+export const $prefersReducedMotion = atom<boolean>(false);
+
+// Whether the device supports touch
+export const $isTouchDevice = atom<boolean>(false);
+
+// Whether the device has gyroscope (for holo effects)
+export const $hasGyroscope = atom<boolean>(false);
+
+// Current mouse/touch position for holo effects
+export const $pointerPosition = atom<{ x: number; y: number }>({ x: 0.5, y: 0.5 });
+
+// Device orientation for gyro-based holo effects
+export const $deviceOrientation = atom<{ alpha: number; beta: number; gamma: number }>({
+  alpha: 0,
+  beta: 0,
+  gamma: 0,
+});
+
+// Modal state
+export const $modalOpen = atom<string | null>(null);
+
+// Toast notifications
+export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>([]);
+
+/**
+ * Initialize UI state based on browser capabilities
+ */
+export function initializeUI(): void {
+  if (typeof window === 'undefined') return;
+  
+  // Check for reduced motion preference
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  $prefersReducedMotion.set(mediaQuery.matches);
+  mediaQuery.addEventListener('change', (e) => {
+    $prefersReducedMotion.set(e.matches);
+  });
+  
+  // Check for touch device
+  $isTouchDevice.set('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  
+  // Check for gyroscope
+  if (window.DeviceOrientationEvent) {
+    // Request permission on iOS 13+
+    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+      // Will need to request permission on user interaction
+      $hasGyroscope.set(false);
+    } else {
+      $hasGyroscope.set(true);
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+    }
+  }
+}
+
+/**
+ * Request gyroscope permission (iOS 13+)
+ */
+export async function requestGyroscopePermission(): Promise<boolean> {
+  if (typeof (DeviceOrientationEvent as any).requestPermission !== 'function') {
+    return true;
+  }
+  
+  try {
+    const permission = await (DeviceOrientationEvent as any).requestPermission();
+    if (permission === 'granted') {
+      $hasGyroscope.set(true);
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+      return true;
+    }
+  } catch (error) {
+    console.error('Gyroscope permission denied:', error);
+  }
+  
+  return false;
+}
+
+/**
+ * Handle device orientation changes
+ */
+function handleDeviceOrientation(event: DeviceOrientationEvent): void {
+  $deviceOrientation.set({
+    alpha: event.alpha ?? 0,
+    beta: event.beta ?? 0,
+    gamma: event.gamma ?? 0,
+  });
+}
+
+/**
+ * Update pointer position (normalized 0-1)
+ */
+export function updatePointerPosition(x: number, y: number): void {
+  $pointerPosition.set({ x, y });
+}
+
+/**
+ * Show a toast notification
+ */
+export function showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+  const id = Math.random().toString(36).substring(2, 9);
+  const currentToasts = $toasts.get();
+  $toasts.set([...currentToasts, { id, message, type }]);
+  
+  // Auto-remove after 3 seconds
+  setTimeout(() => {
+    removeToast(id);
+  }, 3000);
+}
+
+/**
+ * Remove a toast notification
+ */
+export function removeToast(id: string): void {
+  const currentToasts = $toasts.get();
+  $toasts.set(currentToasts.filter((t) => t.id !== id));
+}
+
+/**
+ * Open a modal
+ */
+export function openModal(modalId: string): void {
+  $modalOpen.set(modalId);
+}
+
+/**
+ * Close the current modal
+ */
+export function closeModal(): void {
+  $modalOpen.set(null);
+}

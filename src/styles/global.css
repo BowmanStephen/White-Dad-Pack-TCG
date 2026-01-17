@@ -1,0 +1,310 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== CARD STYLES ===== */
+
+/* Card container with 3D perspective */
+.card-perspective {
+  perspective: 1200px;
+  perspective-origin: center;
+}
+
+/* Card with 3D transforms */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card face (front and back) */
+.card-face {
+  backface-visibility: hidden;
+  position: absolute;
+  inset: 0;
+}
+
+/* Card back (rotated 180deg) */
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Flipped card state */
+.card-flipped {
+  transform: rotateY(180deg);
+}
+
+/* ===== RARITY BORDERS ===== */
+
+.rarity-common {
+  --rarity-color: #9ca3af;
+  --rarity-glow: rgba(156, 163, 175, 0.3);
+}
+
+.rarity-uncommon {
+  --rarity-color: #60a5fa;
+  --rarity-glow: rgba(96, 165, 250, 0.4);
+}
+
+.rarity-rare {
+  --rarity-color: #fbbf24;
+  --rarity-glow: rgba(251, 191, 36, 0.5);
+}
+
+.rarity-epic {
+  --rarity-color: #a855f7;
+  --rarity-glow: rgba(168, 85, 247, 0.5);
+}
+
+.rarity-legendary {
+  --rarity-color: #f97316;
+  --rarity-glow: rgba(249, 115, 22, 0.6);
+}
+
+.rarity-mythic {
+  --rarity-color: #ec4899;
+  --rarity-glow: rgba(236, 72, 153, 0.7);
+}
+
+/* Rarity border glow effect */
+.rarity-border {
+  border: 3px solid var(--rarity-color);
+  box-shadow: 
+    0 0 10px var(--rarity-glow),
+    0 0 20px var(--rarity-glow),
+    inset 0 0 10px var(--rarity-glow);
+}
+
+/* ===== HOLOGRAPHIC EFFECTS ===== */
+
+.holo-effect {
+  --mouse-x: 0.5;
+  --mouse-y: 0.5;
+  position: relative;
+  overflow: hidden;
+}
+
+.holo-effect::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    calc(var(--mouse-x) * 360deg),
+    rgba(255, 0, 0, 0.2),
+    rgba(255, 127, 0, 0.2),
+    rgba(255, 255, 0, 0.2),
+    rgba(0, 255, 0, 0.2),
+    rgba(0, 0, 255, 0.2),
+    rgba(75, 0, 130, 0.2),
+    rgba(148, 0, 211, 0.2)
+  );
+  mix-blend-mode: color-dodge;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.holo-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(
+      circle at calc(var(--mouse-x) * 100%) calc(var(--mouse-y) * 100%),
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+}
+
+/* Prismatic holo (more intense) */
+.holo-prismatic::before {
+  opacity: 0.9;
+  animation: prismatic-shift 3s linear infinite;
+}
+
+@keyframes prismatic-shift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* ===== ANIMATIONS ===== */
+
+/* Pack glow animation */
+@keyframes pack-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(255, 215, 0, 0.3),
+      0 0 40px rgba(255, 215, 0, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 
+      0 0 40px rgba(255, 215, 0, 0.5),
+      0 0 80px rgba(255, 215, 0, 0.3),
+      0 0 120px rgba(255, 215, 0, 0.1);
+    transform: scale(1.02);
+  }
+}
+
+.animate-pack-glow {
+  animation: pack-glow 2s ease-in-out infinite;
+}
+
+/* Card flip animation */
+@keyframes card-flip {
+  0% { 
+    transform: rotateY(0deg) scale(1); 
+  }
+  50% { 
+    transform: rotateY(90deg) scale(1.1); 
+  }
+  100% { 
+    transform: rotateY(180deg) scale(1); 
+  }
+}
+
+.animate-card-flip {
+  animation: card-flip 0.6s ease-out forwards;
+}
+
+/* Legendary burst effect */
+@keyframes legendary-burst {
+  0% { 
+    transform: scale(0); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.5); 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: scale(2); 
+    opacity: 0; 
+  }
+}
+
+.animate-legendary-burst {
+  animation: legendary-burst 0.8s ease-out forwards;
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%) rotate(5deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s ease-out forwards;
+}
+
+/* Particle float */
+@keyframes particle-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-particle {
+  animation: particle-float 1s ease-out forwards;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+/* Screen shake for legendary reveals */
+@keyframes screen-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: screen-shake 0.5s ease-in-out;
+}
+
+/* ===== STAT BAR ===== */
+
+.stat-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+}
+
+/* ===== BUTTON STYLES ===== */
+
+.btn-primary {
+  @apply px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 
+         text-white font-bold rounded-lg shadow-lg 
+         hover:from-amber-400 hover:to-orange-400 
+         active:scale-95 transition-all duration-200
+         focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-slate-700 text-white font-medium rounded-lg 
+         hover:bg-slate-600 active:scale-95 transition-all duration-200
+         focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-900;
+}
+
+/* ===== REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

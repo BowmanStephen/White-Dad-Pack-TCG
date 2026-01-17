@@ -1,0 +1,1518 @@
+{
+  "cards": [
+    {
+      "id": "001",
+      "name": "Grill Master Gary",
+      "subtitle": "Keeper of the Sacred Flame",
+      "type": "BBQ_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/grill-master-gary.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 99,
+        "fixIt": 45,
+        "napPower": 60,
+        "remoteControl": 55,
+        "thermostat": 70,
+        "sockSandal": 80,
+        "beerSnob": 85
+      },
+      "flavorText": "Medium rare? That's what I'd call your mother's driving skills.",
+      "abilities": [
+        {
+          "name": "Propane Prophecy",
+          "description": "Knows exactly when the tank is running low"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 25,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "002",
+      "name": "Thermostat Tyrant",
+      "subtitle": "Guardian of the 68 Degrees",
+      "type": "COUCH_DAD",
+      "rarity": "legendary",
+      "artwork": "/cards/thermostat-tyrant.svg",
+      "stats": {
+        "dadJoke": 82,
+        "grillSkill": 40,
+        "fixIt": 55,
+        "napPower": 70,
+        "remoteControl": 75,
+        "thermostat": 100,
+        "sockSandal": 65,
+        "beerSnob": 60
+      },
+      "flavorText": "Touch that dial and you're paying the electric bill.",
+      "abilities": [
+        {
+          "name": "Thermal Awareness",
+          "description": "Can detect a 1 degree change from any room"
+        },
+        {
+          "name": "Bill Rage",
+          "description": "Gains power when electricity bill arrives"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "003",
+      "name": "New Balance Nathan",
+      "subtitle": "The Sole Survivor",
+      "type": "FASHION_DAD",
+      "rarity": "common",
+      "artwork": "/cards/new-balance-nathan.svg",
+      "stats": {
+        "dadJoke": 60,
+        "grillSkill": 50,
+        "fixIt": 40,
+        "napPower": 55,
+        "remoteControl": 65,
+        "thermostat": 45,
+        "sockSandal": 95,
+        "beerSnob": 35
+      },
+      "flavorText": "These babies have great arch support.",
+      "abilities": [
+        {
+          "name": "Comfort Zone",
+          "description": "Never sacrifices comfort for style"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 89,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "004",
+      "name": "Lawn Legend Larry",
+      "subtitle": "Master of the Mow",
+      "type": "LAWN_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/lawn-legend-larry.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 55,
+        "fixIt": 75,
+        "napPower": 45,
+        "remoteControl": 40,
+        "thermostat": 60,
+        "sockSandal": 70,
+        "beerSnob": 50
+      },
+      "flavorText": "Get off my lawn! ...Actually, stay off everyone's lawn.",
+      "abilities": [
+        {
+          "name": "Grass Whisperer",
+          "description": "Can identify grass type by touch"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 42,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "005",
+      "name": "Remote Control Randy",
+      "subtitle": "Channel Surfing Champion",
+      "type": "COUCH_DAD",
+      "rarity": "common",
+      "artwork": "/cards/remote-control-randy.svg",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 35,
+        "fixIt": 30,
+        "napPower": 90,
+        "remoteControl": 100,
+        "thermostat": 55,
+        "sockSandal": 60,
+        "beerSnob": 45
+      },
+      "flavorText": "I'm not sleeping, I'm just resting my eyes.",
+      "abilities": [
+        {
+          "name": "Channel Memory",
+          "description": "Knows every channel number by heart"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 78,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "006",
+      "name": "Handyman Hank",
+      "subtitle": "Duct Tape Diplomat",
+      "type": "FIX_IT_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/handyman-hank.svg",
+      "stats": {
+        "dadJoke": 72,
+        "grillSkill": 50,
+        "fixIt": 95,
+        "napPower": 40,
+        "remoteControl": 45,
+        "thermostat": 65,
+        "sockSandal": 75,
+        "beerSnob": 55
+      },
+      "flavorText": "If it can't be fixed with duct tape, you're not using enough.",
+      "abilities": [
+        {
+          "name": "YouTube Tutorial Master",
+          "description": "Can fix anything after watching one video"
+        },
+        {
+          "name": "Hardware Store Navigator",
+          "description": "Never needs to ask for help at Home Depot"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 33,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "007",
+      "name": "Bogey Bob",
+      "subtitle": "Weekend Warrior of the Fairway",
+      "type": "GOLF_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/bogey-bob.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 60,
+        "fixIt": 35,
+        "napPower": 50,
+        "remoteControl": 55,
+        "thermostat": 45,
+        "sockSandal": 40,
+        "beerSnob": 75
+      },
+      "flavorText": "It's not about the score, it's about the 19th hole.",
+      "abilities": [
+        {
+          "name": "Mulligan Master",
+          "description": "Always gets a do-over"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 56,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "008",
+      "name": "Cargo Shorts Carl",
+      "subtitle": "Pocket Dimension Pioneer",
+      "type": "FASHION_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/cargo-shorts-carl.svg",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 55,
+        "fixIt": 60,
+        "napPower": 50,
+        "remoteControl": 65,
+        "thermostat": 55,
+        "sockSandal": 100,
+        "beerSnob": 40
+      },
+      "flavorText": "You never know when you'll need a flashlight, multitool, and snacks.",
+      "abilities": [
+        {
+          "name": "Infinite Pockets",
+          "description": "Can store an impossible amount of items"
+        },
+        {
+          "name": "Prepared for Anything",
+          "description": "Always has exactly what you need"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 12,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "009",
+      "name": "Oil Change Oscar",
+      "subtitle": "Automotive Alchemist",
+      "type": "CAR_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/oil-change-oscar.svg",
+      "stats": {
+        "dadJoke": 68,
+        "grillSkill": 45,
+        "fixIt": 88,
+        "napPower": 35,
+        "remoteControl": 50,
+        "thermostat": 40,
+        "sockSandal": 55,
+        "beerSnob": 60
+      },
+      "flavorText": "That's not a leak, that's just the car marking its territory.",
+      "abilities": [
+        {
+          "name": "Engine Whisperer",
+          "description": "Can diagnose problems by sound alone"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 67,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "010",
+      "name": "TPS Report Terry",
+      "subtitle": "Cubicle Commander",
+      "type": "OFFICE_DAD",
+      "rarity": "common",
+      "artwork": "/cards/tps-report-terry.svg",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 40,
+        "fixIt": 45,
+        "napPower": 60,
+        "remoteControl": 70,
+        "thermostat": 80,
+        "sockSandal": 50,
+        "beerSnob": 35
+      },
+      "flavorText": "Did you get the memo about the new cover sheets?",
+      "abilities": [
+        {
+          "name": "Meeting Survivor",
+          "description": "Can endure any length of meeting"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 91,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "011",
+      "name": "Skateboard Scott",
+      "subtitle": "Fellow Kids Enthusiast",
+      "type": "COOL_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/skateboard-scott.svg",
+      "stats": {
+        "dadJoke": 55,
+        "grillSkill": 50,
+        "fixIt": 40,
+        "napPower": 30,
+        "remoteControl": 45,
+        "thermostat": 35,
+        "sockSandal": 25,
+        "beerSnob": 70
+      },
+      "flavorText": "I was doing kickflips before you were born. Well, attempting them.",
+      "abilities": [
+        {
+          "name": "Radical Recall",
+          "description": "Remembers every 90s slang term"
+        },
+        {
+          "name": "Hip Injury Risk",
+          "description": "50% chance of pulling something"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 28,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "012",
+      "name": "Soccer Stan",
+      "subtitle": "Sideline Strategist",
+      "type": "COACH_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/soccer-stan.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 65,
+        "fixIt": 50,
+        "napPower": 25,
+        "remoteControl": 40,
+        "thermostat": 45,
+        "sockSandal": 60,
+        "beerSnob": 55
+      },
+      "flavorText": "HUSTLE! HUSTLE! ...Sorry, force of habit.",
+      "abilities": [
+        {
+          "name": "Orange Slice Provider",
+          "description": "Always brings snacks for the team"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 45,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "013",
+      "name": "Secret Recipe Rick",
+      "subtitle": "Culinary Cryptkeeper",
+      "type": "CHEF_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/secret-recipe-rick.svg",
+      "stats": {
+        "dadJoke": 78,
+        "grillSkill": 92,
+        "fixIt": 35,
+        "napPower": 55,
+        "remoteControl": 50,
+        "thermostat": 60,
+        "sockSandal": 65,
+        "beerSnob": 80
+      },
+      "flavorText": "The secret ingredient? I'll never tell. Okay, it's love. And MSG.",
+      "abilities": [
+        {
+          "name": "Taste Memory",
+          "description": "Can recreate any dish from memory"
+        },
+        {
+          "name": "Apron Shield",
+          "description": "Kiss the Cook grants +10 defense"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 15,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "014",
+      "name": "Costco Craig",
+      "subtitle": "Bulk Buy Baron",
+      "type": "WAREHOUSE_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/costco-craig.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 75,
+        "fixIt": 55,
+        "napPower": 45,
+        "remoteControl": 60,
+        "thermostat": 50,
+        "sockSandal": 70,
+        "beerSnob": 65
+      },
+      "flavorText": "We don't NEED 48 rolls of paper towels, but at this price...",
+      "abilities": [
+        {
+          "name": "Sample Seeker",
+          "description": "Can locate free samples from any aisle"
+        },
+        {
+          "name": "Hot Dog Devotee",
+          "description": "$1.50 combo meal is sacred"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 37,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "015",
+      "name": "Christmas Clark",
+      "subtitle": "Illumination Obsessed",
+      "type": "HOLIDAY_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/christmas-clark.svg",
+      "stats": {
+        "dadJoke": 88,
+        "grillSkill": 45,
+        "fixIt": 70,
+        "napPower": 30,
+        "remoteControl": 55,
+        "thermostat": 40,
+        "sockSandal": 50,
+        "beerSnob": 60
+      },
+      "flavorText": "25,000 lights and counting. The neighbors will learn to love it.",
+      "abilities": [
+        {
+          "name": "Ladder Courage",
+          "description": "No roof is too high for decorations"
+        },
+        {
+          "name": "Extension Cord Master",
+          "description": "Can daisy-chain infinite power strips"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 8,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "016",
+      "name": "The Ultimate Dad",
+      "subtitle": "Father of All Fathers",
+      "type": "BBQ_DAD",
+      "rarity": "mythic",
+      "artwork": "/cards/ultimate-dad.svg",
+      "stats": {
+        "dadJoke": 100,
+        "grillSkill": 100,
+        "fixIt": 95,
+        "napPower": 90,
+        "remoteControl": 95,
+        "thermostat": 100,
+        "sockSandal": 85,
+        "beerSnob": 90
+      },
+      "flavorText": "Hi Hungry, I'm THE Dad.",
+      "abilities": [
+        {
+          "name": "Dad Joke Mastery",
+          "description": "Every joke lands, even the bad ones"
+        },
+        {
+          "name": "Universal Remote",
+          "description": "Controls all devices in a 50-foot radius"
+        },
+        {
+          "name": "Infinite Wisdom",
+          "description": "Actually does know everything"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 150,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "017",
+      "name": "WiFi Wizard Walter",
+      "subtitle": "Router Rebooter Supreme",
+      "type": "TECH_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/wifi-wizard-walter.svg",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 70,
+        "napPower": 50,
+        "remoteControl": 85,
+        "thermostat": 75,
+        "sockSandal": 55,
+        "beerSnob": 45
+      },
+      "flavorText": "Have you tried turning it off and on again?",
+      "abilities": [
+        {
+          "name": "Password Keeper",
+          "description": "Remembers the WiFi password from 2015"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 52,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "018",
+      "name": "Smoker Steve",
+      "subtitle": "Low and Slow Legend",
+      "type": "BBQ_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/smoker-steve.svg",
+      "stats": {
+        "dadJoke": 72,
+        "grillSkill": 98,
+        "fixIt": 50,
+        "napPower": 65,
+        "remoteControl": 45,
+        "thermostat": 55,
+        "sockSandal": 70,
+        "beerSnob": 88
+      },
+      "flavorText": "12 hours? That's just getting started.",
+      "abilities": [
+        {
+          "name": "Smoke Ring Summoner",
+          "description": "Perfect smoke ring every time"
+        },
+        {
+          "name": "Patience of a Pitmaster",
+          "description": "Can wait indefinitely for perfect bark"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 19,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "019",
+      "name": "Minivan Mike",
+      "subtitle": "Carpool Champion",
+      "type": "CAR_DAD",
+      "rarity": "common",
+      "artwork": "/cards/minivan-mike.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 50,
+        "fixIt": 45,
+        "napPower": 55,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 75,
+        "beerSnob": 35
+      },
+      "flavorText": "It's not a minivan, it's a swagger wagon.",
+      "abilities": [
+        {
+          "name": "Snack Compartment",
+          "description": "Always has emergency goldfish crackers"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 82,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "020",
+      "name": "Recliner Randy",
+      "subtitle": "Nap Time Ninja",
+      "type": "COUCH_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/recliner-randy.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 45,
+        "fixIt": 35,
+        "napPower": 100,
+        "remoteControl": 90,
+        "thermostat": 80,
+        "sockSandal": 65,
+        "beerSnob": 50
+      },
+      "flavorText": "This isn't sleeping, this is horizontal life evaluation.",
+      "abilities": [
+        {
+          "name": "Power Nap",
+          "description": "Fully recharged in exactly 20 minutes"
+        },
+        {
+          "name": "Snore Shield",
+          "description": "Claims to never snore despite evidence"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 31,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "021",
+      "name": "Fertilizer Fred",
+      "subtitle": "Grass Growth Guru",
+      "type": "LAWN_DAD",
+      "rarity": "common",
+      "artwork": "/cards/fertilizer-fred.svg",
+      "stats": {
+        "dadJoke": 62,
+        "grillSkill": 48,
+        "fixIt": 55,
+        "napPower": 40,
+        "remoteControl": 50,
+        "thermostat": 45,
+        "sockSandal": 65,
+        "beerSnob": 42
+      },
+      "flavorText": "The secret is in the nitrogen ratio. Trust me.",
+      "abilities": [
+        {
+          "name": "Weed Detector",
+          "description": "Can spot a dandelion from 50 yards"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 95,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "022",
+      "name": "LinkedIn Larry",
+      "subtitle": "Professional Networker",
+      "type": "OFFICE_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/linkedin-larry.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 42,
+        "fixIt": 38,
+        "napPower": 55,
+        "remoteControl": 65,
+        "thermostat": 72,
+        "sockSandal": 45,
+        "beerSnob": 58
+      },
+      "flavorText": "Excited to announce that I'm excited to announce...",
+      "abilities": [
+        {
+          "name": "Humble Brag",
+          "description": "Every post is subtly about achievements"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 61,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "023",
+      "name": "Band Dad Brad",
+      "subtitle": "Former Garage Rocker",
+      "type": "COOL_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/band-dad-brad.svg",
+      "stats": {
+        "dadJoke": 58,
+        "grillSkill": 52,
+        "fixIt": 45,
+        "napPower": 48,
+        "remoteControl": 55,
+        "thermostat": 40,
+        "sockSandal": 30,
+        "beerSnob": 78
+      },
+      "flavorText": "We almost got signed. ALMOST.",
+      "abilities": [
+        {
+          "name": "Air Guitar Solo",
+          "description": "Can shred invisible strings"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 58,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "024",
+      "name": "Classic Car Craig",
+      "subtitle": "Restoration Romantic",
+      "type": "CAR_DAD",
+      "rarity": "legendary",
+      "artwork": "/cards/classic-car-craig.svg",
+      "stats": {
+        "dadJoke": 68,
+        "grillSkill": 55,
+        "fixIt": 92,
+        "napPower": 35,
+        "remoteControl": 40,
+        "thermostat": 50,
+        "sockSandal": 45,
+        "beerSnob": 72
+      },
+      "flavorText": "They don't make 'em like they used to. Literally, this is irreplaceable.",
+      "abilities": [
+        {
+          "name": "Part Finder",
+          "description": "Can source discontinued parts from anywhere"
+        },
+        {
+          "name": "Weekend Project",
+          "description": "Has been 'almost done' for 5 years"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 3,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "025",
+      "name": "Breakfast King Keith",
+      "subtitle": "Pancake Perfectionist",
+      "type": "CHEF_DAD",
+      "rarity": "common",
+      "artwork": "/cards/breakfast-king-keith.svg",
+      "stats": {
+        "dadJoke": 82,
+        "grillSkill": 70,
+        "fixIt": 40,
+        "napPower": 35,
+        "remoteControl": 55,
+        "thermostat": 50,
+        "sockSandal": 60,
+        "beerSnob": 45
+      },
+      "flavorText": "Saturday morning pancakes are non-negotiable.",
+      "abilities": [
+        {
+          "name": "Flip Master",
+          "description": "Never drops a pancake"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 88,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "026",
+      "name": "Weber Genesis Grill",
+      "subtitle": "The Sacred Flame Keeper",
+      "type": "ITEM",
+      "rarity": "legendary",
+      "artwork": "/cards/weber-genesis.svg",
+      "stats": {
+        "dadJoke": 0,
+        "grillSkill": 100,
+        "fixIt": 20,
+        "napPower": 0,
+        "remoteControl": 0,
+        "thermostat": 95,
+        "sockSandal": 0,
+        "beerSnob": 30
+      },
+      "flavorText": "Four burners of pure power. Side burner for the beans.",
+      "abilities": [
+        {
+          "name": "Even Heat Distribution",
+          "description": "No hot spots, ever"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 5,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "027",
+      "name": "La-Z-Boy Throne",
+      "subtitle": "Seat of Power",
+      "type": "ITEM",
+      "rarity": "epic",
+      "artwork": "/cards/lazboy-throne.svg",
+      "stats": {
+        "dadJoke": 0,
+        "grillSkill": 0,
+        "fixIt": 0,
+        "napPower": 100,
+        "remoteControl": 85,
+        "thermostat": 70,
+        "sockSandal": 0,
+        "beerSnob": 40
+      },
+      "flavorText": "Built-in cup holders. Heated massage. This is the endgame.",
+      "abilities": [
+        {
+          "name": "Infinite Recline",
+          "description": "Adjusts to any position imaginable"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 11,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "028",
+      "name": "Craftsman Toolbox",
+      "subtitle": "Repository of Solutions",
+      "type": "ITEM",
+      "rarity": "rare",
+      "artwork": "/cards/craftsman-toolbox.svg",
+      "stats": {
+        "dadJoke": 0,
+        "grillSkill": 15,
+        "fixIt": 95,
+        "napPower": 0,
+        "remoteControl": 0,
+        "thermostat": 10,
+        "sockSandal": 0,
+        "beerSnob": 0
+      },
+      "flavorText": "Inherited from grandpa. Every tool has a story.",
+      "abilities": [
+        {
+          "name": "Right Tool, Right Job",
+          "description": "Always has what you need"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 22,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "029",
+      "name": "Cargo Shorts of Holding",
+      "subtitle": "Pocket Dimension Portal",
+      "type": "ITEM",
+      "rarity": "rare",
+      "artwork": "/cards/cargo-shorts.svg",
+      "stats": {
+        "dadJoke": 25,
+        "grillSkill": 0,
+        "fixIt": 40,
+        "napPower": 0,
+        "remoteControl": 30,
+        "thermostat": 0,
+        "sockSandal": 100,
+        "beerSnob": 0
+      },
+      "flavorText": "17 pockets. Each one a mystery.",
+      "abilities": [
+        {
+          "name": "Endless Storage",
+          "description": "Defies the laws of physics"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 35,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "030",
+      "name": "The Thermostat",
+      "subtitle": "Climate Control Artifact",
+      "type": "ITEM",
+      "rarity": "mythic",
+      "artwork": "/cards/the-thermostat.svg",
+      "stats": {
+        "dadJoke": 50,
+        "grillSkill": 0,
+        "fixIt": 30,
+        "napPower": 20,
+        "remoteControl": 60,
+        "thermostat": 100,
+        "sockSandal": 0,
+        "beerSnob": 0
+      },
+      "flavorText": "He who controls the thermostat, controls the household.",
+      "abilities": [
+        {
+          "name": "Temperature Lock",
+          "description": "Only the worthy may adjust"
+        },
+        {
+          "name": "Bill Awareness",
+          "description": "Displays real-time energy cost"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 149,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "031",
+      "name": "Propane Paul",
+      "subtitle": "Tank Tender",
+      "type": "BBQ_DAD",
+      "rarity": "common",
+      "artwork": "/cards/propane-paul.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 85,
+        "fixIt": 50,
+        "napPower": 45,
+        "remoteControl": 40,
+        "thermostat": 55,
+        "sockSandal": 65,
+        "beerSnob": 60
+      },
+      "flavorText": "Taste the meat, not the heat.",
+      "abilities": [
+        {
+          "name": "Tank Gauge Intuition",
+          "description": "Knows exactly how many burgers are left"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 76,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "032",
+      "name": "YouTube Tutorial Tom",
+      "subtitle": "Self-Taught Specialist",
+      "type": "FIX_IT_DAD",
+      "rarity": "common",
+      "artwork": "/cards/youtube-tom.svg",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 45,
+        "fixIt": 78,
+        "napPower": 40,
+        "remoteControl": 70,
+        "thermostat": 55,
+        "sockSandal": 60,
+        "beerSnob": 42
+      },
+      "flavorText": "I watched a 10-minute video. I'm basically a professional now.",
+      "abilities": [
+        {
+          "name": "Video Pause Master",
+          "description": "Can follow any tutorial step by step"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 84,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "033",
+      "name": "Country Club Chad",
+      "subtitle": "Fairway Philosopher",
+      "type": "GOLF_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/country-club-chad.svg",
+      "stats": {
+        "dadJoke": 72,
+        "grillSkill": 55,
+        "fixIt": 25,
+        "napPower": 45,
+        "remoteControl": 50,
+        "thermostat": 60,
+        "sockSandal": 35,
+        "beerSnob": 85
+      },
+      "flavorText": "It's not about winning, it's about the business deals on the back nine.",
+      "abilities": [
+        {
+          "name": "Networking Drive",
+          "description": "Every round is a business opportunity"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 29,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "034",
+      "name": "Little League Lou",
+      "subtitle": "Dugout Dynamo",
+      "type": "COACH_DAD",
+      "rarity": "common",
+      "artwork": "/cards/little-league-lou.svg",
+      "stats": {
+        "dadJoke": 78,
+        "grillSkill": 60,
+        "fixIt": 45,
+        "napPower": 30,
+        "remoteControl": 35,
+        "thermostat": 40,
+        "sockSandal": 55,
+        "beerSnob": 50
+      },
+      "flavorText": "Keep your eye on the ball! No, the OTHER ball!",
+      "abilities": [
+        {
+          "name": "Encouragement Aura",
+          "description": "Good job! becomes a battle cry"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 92,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "035",
+      "name": "Riding Mower Rex",
+      "subtitle": "Lawn Cavalry Commander",
+      "type": "LAWN_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/riding-mower-rex.svg",
+      "stats": {
+        "dadJoke": 68,
+        "grillSkill": 50,
+        "fixIt": 72,
+        "napPower": 55,
+        "remoteControl": 45,
+        "thermostat": 50,
+        "sockSandal": 75,
+        "beerSnob": 58
+      },
+      "flavorText": "Zero-turn radius. Maximum dad satisfaction.",
+      "abilities": [
+        {
+          "name": "Stripe Perfection",
+          "description": "Creates MLB-quality lawn patterns"
+        },
+        {
+          "name": "Cup Holder Command",
+          "description": "Never spills a beverage while mowing"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 14,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "036",
+      "name": "World's Best Dad Mug",
+      "subtitle": "Ceramic Confidence",
+      "type": "ITEM",
+      "rarity": "common",
+      "artwork": "/cards/worlds-best-mug.svg",
+      "stats": {
+        "dadJoke": 40,
+        "grillSkill": 0,
+        "fixIt": 0,
+        "napPower": 30,
+        "remoteControl": 20,
+        "thermostat": 15,
+        "sockSandal": 0,
+        "beerSnob": 25
+      },
+      "flavorText": "Scientifically unverified, emotionally accurate.",
+      "abilities": [
+        {
+          "name": "Morning Boost",
+          "description": "Coffee tastes better from this mug"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 100,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "037",
+      "name": "Oakley Wraparounds",
+      "subtitle": "Tactical Eye Protection",
+      "type": "ITEM",
+      "rarity": "uncommon",
+      "artwork": "/cards/oakley-wraparounds.svg",
+      "stats": {
+        "dadJoke": 20,
+        "grillSkill": 25,
+        "fixIt": 15,
+        "napPower": 10,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 70,
+        "beerSnob": 30
+      },
+      "flavorText": "Polarized lenses for maximum fish-spotting capability.",
+      "abilities": [
+        {
+          "name": "Glare Immunity",
+          "description": "Never squints at the sun"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 63,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "038",
+      "name": "Cell Phone Holster",
+      "subtitle": "Belt-Mounted Communication",
+      "type": "ITEM",
+      "rarity": "common",
+      "artwork": "/cards/phone-holster.svg",
+      "stats": {
+        "dadJoke": 35,
+        "grillSkill": 0,
+        "fixIt": 10,
+        "napPower": 0,
+        "remoteControl": 45,
+        "thermostat": 0,
+        "sockSandal": 80,
+        "beerSnob": 0
+      },
+      "flavorText": "Quick draw texting. Hands-free hip storage.",
+      "abilities": [
+        {
+          "name": "Always Accessible",
+          "description": "Never misses a call (or pretends not to)"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 97,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "039",
+      "name": "Hawaiian Shirt Harry",
+      "subtitle": "Tropical State of Mind",
+      "type": "FASHION_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/hawaiian-harry.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 65,
+        "fixIt": 35,
+        "napPower": 60,
+        "remoteControl": 55,
+        "thermostat": 40,
+        "sockSandal": 85,
+        "beerSnob": 70
+      },
+      "flavorText": "Every day is casual Friday when you believe.",
+      "abilities": [
+        {
+          "name": "Vacation Vibes",
+          "description": "Brings beach energy to any BBQ"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 54,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "040",
+      "name": "Costco Hot Dog",
+      "subtitle": "The $1.50 Legend",
+      "type": "ITEM",
+      "rarity": "common",
+      "artwork": "/cards/costco-hotdog.svg",
+      "stats": {
+        "dadJoke": 50,
+        "grillSkill": 60,
+        "fixIt": 0,
+        "napPower": 20,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 0,
+        "beerSnob": 15
+      },
+      "flavorText": "Price hasn't changed since 1985. Neither has the quality.",
+      "abilities": [
+        {
+          "name": "Infinite Value",
+          "description": "Includes a drink. Always."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 101,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "041",
+      "name": "Conference Call Carl",
+      "subtitle": "Mute Button Master",
+      "type": "OFFICE_DAD",
+      "rarity": "common",
+      "artwork": "/cards/conference-carl.svg",
+      "stats": {
+        "dadJoke": 72,
+        "grillSkill": 38,
+        "fixIt": 42,
+        "napPower": 65,
+        "remoteControl": 60,
+        "thermostat": 75,
+        "sockSandal": 50,
+        "beerSnob": 40
+      },
+      "flavorText": "You're on mute. YOU'RE ON MUTE.",
+      "abilities": [
+        {
+          "name": "Background Blur",
+          "description": "Hides the chaos behind him"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 86,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "042",
+      "name": "Sports Center Sam",
+      "subtitle": "Highlight Historian",
+      "type": "COUCH_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/sportscenter-sam.svg",
+      "stats": {
+        "dadJoke": 68,
+        "grillSkill": 55,
+        "fixIt": 30,
+        "napPower": 75,
+        "remoteControl": 95,
+        "thermostat": 60,
+        "sockSandal": 55,
+        "beerSnob": 65
+      },
+      "flavorText": "Did you see that play? Let me show you again. And again.",
+      "abilities": [
+        {
+          "name": "Stat Recall",
+          "description": "Remembers every sports statistic since 1987"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 48,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "043",
+      "name": "IPA Ian",
+      "subtitle": "Hop Head Extraordinaire",
+      "type": "COOL_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/ipa-ian.svg",
+      "stats": {
+        "dadJoke": 60,
+        "grillSkill": 70,
+        "fixIt": 35,
+        "napPower": 45,
+        "remoteControl": 50,
+        "thermostat": 40,
+        "sockSandal": 55,
+        "beerSnob": 100
+      },
+      "flavorText": "You can really taste the notes of pine and disappointment.",
+      "abilities": [
+        {
+          "name": "Palate Pretension",
+          "description": "Can identify any hop variety blindfolded"
+        },
+        {
+          "name": "Brewery Tour Guide",
+          "description": "Knows every local craft brewery"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 27,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "044",
+      "name": "Vintage Vinyl Vince",
+      "subtitle": "Analog Audiophile",
+      "type": "VINTAGE_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/vinyl-vince.svg",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 45,
+        "fixIt": 55,
+        "napPower": 50,
+        "remoteControl": 40,
+        "thermostat": 55,
+        "sockSandal": 45,
+        "beerSnob": 72
+      },
+      "flavorText": "You just can't replicate the warmth of vinyl. Or the crackle. Especially the crackle.",
+      "abilities": [
+        {
+          "name": "Album Knowledge",
+          "description": "Knows every B-side ever recorded"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 34,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "045",
+      "name": "Kiss the Cook Apron",
+      "subtitle": "Culinary Armor",
+      "type": "ITEM",
+      "rarity": "common",
+      "artwork": "/cards/kiss-cook-apron.svg",
+      "stats": {
+        "dadJoke": 60,
+        "grillSkill": 40,
+        "fixIt": 0,
+        "napPower": 0,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 50,
+        "beerSnob": 20
+      },
+      "flavorText": "Instructions unclear. Kissed the grill instead.",
+      "abilities": [
+        {
+          "name": "Splatter Shield",
+          "description": "Protects good shirts from grease"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 103,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "046",
+      "name": "Fourth of July Frank",
+      "subtitle": "Patriotic Pyrotechnician",
+      "type": "HOLIDAY_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/fourth-july-frank.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 85,
+        "fixIt": 45,
+        "napPower": 35,
+        "remoteControl": 50,
+        "thermostat": 40,
+        "sockSandal": 70,
+        "beerSnob": 65
+      },
+      "flavorText": "These are totally legal. Probably. Don't tell mom.",
+      "abilities": [
+        {
+          "name": "Firework Choreographer",
+          "description": "Times every explosion perfectly"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 24,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "047",
+      "name": "Home Depot Hero",
+      "subtitle": "Aisle Navigator",
+      "type": "WAREHOUSE_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/home-depot-hero.svg",
+      "stats": {
+        "dadJoke": 72,
+        "grillSkill": 50,
+        "fixIt": 82,
+        "napPower": 35,
+        "remoteControl": 45,
+        "thermostat": 55,
+        "sockSandal": 65,
+        "beerSnob": 48
+      },
+      "flavorText": "I came for one screw. Left with a new power tool.",
+      "abilities": [
+        {
+          "name": "Project Creep",
+          "description": "Every small fix becomes a renovation"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 51,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "048",
+      "name": "Smart Home Steve",
+      "subtitle": "IoT Overlord",
+      "type": "TECH_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/smart-home-steve.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 45,
+        "fixIt": 65,
+        "napPower": 55,
+        "remoteControl": 100,
+        "thermostat": 95,
+        "sockSandal": 40,
+        "beerSnob": 55
+      },
+      "flavorText": "Alexa, tell the kids dinner is ready. ALEXA. ALEXA!",
+      "abilities": [
+        {
+          "name": "Voice Command",
+          "description": "Controls everything by yelling at it"
+        },
+        {
+          "name": "App Overload",
+          "description": "Has 47 apps for 47 devices"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 17,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "049",
+      "name": "White Crew Socks",
+      "subtitle": "Ankle Armor",
+      "type": "ITEM",
+      "rarity": "common",
+      "artwork": "/cards/white-socks.svg",
+      "stats": {
+        "dadJoke": 30,
+        "grillSkill": 0,
+        "fixIt": 0,
+        "napPower": 15,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 90,
+        "beerSnob": 0
+      },
+      "flavorText": "Pulled up high. As nature intended.",
+      "abilities": [
+        {
+          "name": "Sandal Compatible",
+          "description": "Pairs perfectly with any open-toed shoe"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 105,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    },
+    {
+      "id": "050",
+      "name": "New Balance 608s",
+      "subtitle": "The Dad Shoe",
+      "type": "ITEM",
+      "rarity": "uncommon",
+      "artwork": "/cards/new-balance-608.svg",
+      "stats": {
+        "dadJoke": 25,
+        "grillSkill": 0,
+        "fixIt": 10,
+        "napPower": 20,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 95,
+        "beerSnob": 0
+      },
+      "flavorText": "Orthopedic excellence. Podiatrist approved.",
+      "abilities": [
+        {
+          "name": "All-Day Comfort",
+          "description": "Can walk Costco for hours"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 59,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios"
+    }
+  ]
+}

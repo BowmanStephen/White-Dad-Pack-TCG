@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/common/Logo.astro';
+import PackOpener from '../components/pack/PackOpener.svelte';
+---
+
+<BaseLayout title="Open Pack - DadDeck">
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/">
+        <Logo size="sm" />
+      </a>
+      <a 
+        href="/" 
+        class="text-slate-400 hover:text-white transition-colors text-sm"
+      >
+        Back to Home
+      </a>
+    </div>
+  </header>
+  
+  <main class="pt-20 pb-8 min-h-screen">
+    <PackOpener client:load />
+  </main>
+</BaseLayout>

@@ -1,0 +1,88 @@
+---
+import { getCardsByRarity } from '../../lib/cards/database';
+import { RARITY_CONFIG, DAD_TYPE_ICONS } from '../../types';
+
+// Get a sample of cards to feature
+const featuredCards = [
+  ...getCardsByRarity('legendary').slice(0, 2),
+  ...getCardsByRarity('epic').slice(0, 2),
+  ...getCardsByRarity('rare').slice(0, 2),
+];
+---
+
+<section class="py-20 px-4 bg-slate-800/30">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        <span class="text-white">Meet the</span> <span class="text-amber-400">Dads</span>
+      </h2>
+      <p class="text-slate-400 max-w-2xl mx-auto">
+        From legendary grill masters to mythic thermostat guardians, discover the dads that await.
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {featuredCards.map((card) => {
+        const rarityConfig = RARITY_CONFIG[card.rarity];
+        const typeIcon = DAD_TYPE_ICONS[card.type];
+        
+        return (
+          <div 
+            class="group relative aspect-[2.5/3.5] rounded-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10"
+            style={`border: 2px solid ${rarityConfig.color}; box-shadow: 0 0 20px ${rarityConfig.glowColor};`}
+          >
+            {/* Card background */}
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-800">
+              {/* Card content */}
+              <div class="absolute inset-0 flex flex-col p-3">
+                {/* Type badge */}
+                <div class="text-2xl mb-2">{typeIcon}</div>
+                
+                {/* Card art placeholder */}
+                <div class="flex-1 flex items-center justify-center">
+                  <div 
+                    class="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+                    style={`background: linear-gradient(135deg, ${rarityConfig.color}33, ${rarityConfig.color}11);`}
+                  >
+                    {typeIcon}
+                  </div>
+                </div>
+                
+                {/* Card name */}
+                <div class="mt-auto">
+                  <div class="text-xs font-bold text-white truncate">{card.name}</div>
+                  <div class="text-[10px] text-slate-400 truncate">{card.subtitle}</div>
+                </div>
+                
+                {/* Rarity indicator */}
+                <div 
+                  class="absolute top-2 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded"
+                  style={`background: ${rarityConfig.color}33; color: ${rarityConfig.color};`}
+                >
+                  {rarityConfig.name}
+                </div>
+              </div>
+            </div>
+            
+            {/* Hover overlay */}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+              <div class="text-xs text-white">
+                <div class="font-bold">{card.name}</div>
+                <div class="text-slate-300 italic">"{card.flavorText.slice(0, 50)}..."</div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    
+    <div class="text-center mt-12">
+      <a 
+        href="/pack" 
+        class="inline-flex items-center justify-center px-6 py-3 font-bold rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:from-amber-400 hover:to-orange-400 active:scale-95 transition-all duration-200"
+      >
+        Start Collecting
+      </a>
+    </div>
+  </div>
+</section>
