@@ -3,18 +3,103 @@ import type { Rarity } from '../types';
 
 /**
  * Audio Store - Manages sound effects and mute state
+ *
+ * Features:
+ * - Rarity-specific jingles with configurable durations
+ * - Sound caching for instant playback
+ * - Layered audio support (jingles over ambient)
+ * - Master volume control
+ * - iOS/Android compatibility via AudioContext
  */
 
 // Mute state - persists to localStorage
 const MUTED_KEY = 'daddeck_audio_muted';
+const VOLUME_KEY = 'daddeck_audio_volume';
+
 const initialMuted = typeof window !== 'undefined'
   ? localStorage.getItem(MUTED_KEY) === 'true'
   : false;
 
+const initialVolume = typeof window !== 'undefined'
+  ? parseFloat(localStorage.getItem(VOLUME_KEY) || '0.7')
+  : 0.7;
+
 export const muted = atom<boolean>(initialMuted);
+export const masterVolume = atom<number>(initialVolume);
 
 // Audio context for iOS compatibility (created on first user interaction)
 let audioContext: AudioContext | null = null;
+
+/**
+ * Rarity jingle configuration
+ * Defines duration and volume for each rarity's reveal sound
+ */
+export const RARITY_JINGLE_CONFIG: Record<Rarity, {
+  duration: number;      // Duration in seconds
+  volume: number;        // Volume multiplier (applied to master)
+  description: string;   // Description of the jingle
+}> = {
+  common: {
+    duration: 0.5,
+    volume: 0.5,
+    description: 'Quick card flip sound',
+  },
+  uncommon: {
+    duration: 0.8,
+    volume: 0.6,
+    description: 'Standard reveal with slight flourish',
+  },
+  rare: {
+    duration: 1.2,
+    volume: 0.7,
+    description: 'Enhanced reveal sound',
+  },
+  epic: {
+    duration: 2.0,
+    volume: 0.8,
+    description: 'Triumphant fanfare (2 seconds)',
+  },
+  legendary: {
+    duration: 3.0,
+    volume: 0.9,
+    description: 'Epic orchestral hit (3 seconds)',
+  },
+  mythic: {
+    duration: 5.0,
+    volume: 1.0,
+    description: 'Full celebration sequence (5 seconds)',
+  },
+};
+
+/**
+ * Sound cache for instant playback
+ * Preloads and caches Audio objects to avoid network latency
+ */
+const soundCache = new Map<string, HTMLAudioElement>();
+
+/**
+ * Preload a sound into cache
+ * @param soundPath - Path to the sound file
+ */
+function preloadSound(soundPath: string): HTMLAudioElement {
+  if (soundCache.has(soundPath)) {
+    return soundCache.get(soundPath)!;
+  }
+
+  const audio = new Audio(soundPath);
+  audio.preload = 'auto'; // Eagerly load the sound
+  soundCache.set(soundPath, audio);
+  return audio;
+}
+
+/**
+ * Get or create a cached audio element
+ * Clones the audio to allow overlapping playback
+ */
+function getCachedAudio(soundPath: string): HTMLAudioElement {
+  const cached = preloadSound(soundPath);
+  return cached.cloneNode(true) as HTMLAudioElement;
+}
 
 /**
  * Initialize audio context (required for iOS/Android)
@@ -57,11 +142,40 @@ export function toggleMute(): void {
 }
 
 /**
- * Play a sound effect
- * @param soundType - Type of sound to play
- * @param rarity - Optional rarity for sound variation
+ * Set master volume
+ * @param volume - Volume level (0.0 to 1.0)
  */
-export function playSound(soundType: 'pack_tear' | 'card_reveal' | 'card_flip', rarity?: Rarity): void {
+export function setMasterVolume(volume: number): void {
+  const clampedVolume = Math.max(0, Math.min(1, volume));
+  masterVolume.set(clampedVolume);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(VOLUME_KEY, String(clampedVolume));
+  }
+}
+
+/**
+ * Get the jingle duration for a rarity
+ * @param rarity - Card rarity
+ */
+export function getJingleDuration(rarity: Rarity): number {
+  return RARITY_JINGLE_CONFIG[rarity].duration;
+}
+
+/**
+ * Play a sound effect with optional layering
+ * @param soundType - Type of sound to play
+ * @param options - Playback options
+ */
+export function playSound(
+  soundType: 'pack_tear' | 'card_reveal' | 'card_flip' | 'jingle',
+  options?: {
+    rarity?: Rarity;
+    layerable?: boolean;  // Allow this sound to play over others
+    volume?: number;      // Custom volume override
+  }
+): void {
   // Don't play if muted
   if (muted.get()) return;
 
@@ -70,15 +184,18 @@ export function playSound(soundType: 'pack_tear' | 'card_reveal' | 'card_flip', 
 
   // Build sound path based on type and rarity
   let soundPath = '/sounds/';
+  let targetRarity: Rarity = 'common';
 
   switch (soundType) {
     case 'pack_tear':
       soundPath += 'pack-tear.mp3';
       break;
     case 'card_reveal':
-      // Rarity-based reveal sounds for rare+ cards
-      if (rarity && ['rare', 'epic', 'legendary', 'mythic'].includes(rarity)) {
-        soundPath += `reveal-${rarity}.mp3`;
+    case 'jingle':
+      targetRarity = options?.rarity || 'common';
+      // Use rarity-specific reveal sounds
+      if (targetRarity && ['rare', 'epic', 'legendary', 'mythic'].includes(targetRarity)) {
+        soundPath += `reveal-${targetRarity}.mp3`;
       } else {
         soundPath += 'reveal-common.mp3';
       }
@@ -88,22 +205,27 @@ export function playSound(soundType: 'pack_tear' | 'card_reveal' | 'card_flip', 
       break;
   }
 
-  // Play the sound
-  const audio = new Audio(soundPath);
+  // Get or create audio element (uses cache)
+  const audio = getCachedAudio(soundPath);
 
-  // Set volume based on rarity (mythic gets extra boost)
-  const volume = rarity === 'mythic' ? 0.8 : 0.6;
-  audio.volume = volume;
+  // Calculate volume: master volume × rarity multiplier × custom override
+  const rarityMultiplier = RARITY_JINGLE_CONFIG[targetRarity].volume;
+  const customVolume = options?.volume ?? 1.0;
+  const finalVolume = masterVolume.get() * rarityMultiplier * customVolume;
+  audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   // Handle errors gracefully (missing files, etc.)
   audio.addEventListener('error', () => {
-    // Silent fail - sound is optional enhancement
     console.debug(`Sound not found: ${soundPath}`);
+  });
+
+  // Clean up after playback to free memory
+  audio.addEventListener('ended', () => {
+    audio.remove();
   });
 
   // Play the sound
   audio.play().catch(() => {
-    // Silent fail - autoplay prevention, etc.
     console.debug(`Sound playback prevented: ${soundPath}`);
   });
 }
@@ -119,7 +241,23 @@ export function playPackTear(): void {
  * Play card reveal sound based on rarity
  */
 export function playCardReveal(rarity: Rarity): void {
-  playSound('card_reveal', rarity);
+  playSound('card_reveal', { rarity });
+}
+
+/**
+ * Play a rarity jingle (for epic+ cards)
+ * Jingles are longer and more elaborate than standard reveals
+ */
+export function playRarityJingle(rarity: Rarity): void {
+  // Only play special jingles for epic+ cards
+  if (!['epic', 'legendary', 'mythic'].includes(rarity)) {
+    return;
+  }
+
+  playSound('jingle', {
+    rarity,
+    layerable: true,  // Jingles can layer over ambient sounds
+  });
 }
 
 /**
@@ -130,8 +268,44 @@ export function playCardFlip(): void {
 }
 
 /**
+ * Preload all common sounds into cache
+ * Call this during app initialization for instant playback
+ */
+export function preloadSounds(): void {
+  const soundsToPreload = [
+    'pack-tear.mp3',
+    'reveal-common.mp3',
+    'reveal-uncommon.mp3',
+    'reveal-rare.mp3',
+    'reveal-epic.mp3',
+    'reveal-legendary.mp3',
+    'reveal-mythic.mp3',
+    'card-flip.mp3',
+  ];
+
+  soundsToPreload.forEach(sound => {
+    preloadSound(`/sounds/${sound}`);
+  });
+}
+
+/**
  * Check if audio is available
  */
 export function isAudioAvailable(): boolean {
   return !muted.get() && typeof Audio !== 'undefined';
+}
+
+/**
+ * Get current audio configuration
+ */
+export function getAudioConfig(): {
+  muted: boolean;
+  masterVolume: number;
+  cacheSize: number;
+} {
+  return {
+    muted: muted.get(),
+    masterVolume: masterVolume.get(),
+    cacheSize: soundCache.size,
+  };
 }
