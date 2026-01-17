@@ -32,6 +32,21 @@
   // Check if we're in browser environment
   const isBrowser = typeof window !== 'undefined' && typeof requestAnimationFrame !== 'undefined';
 
+  // Performance detection - disable effects on low-end devices
+  let holoEffectsEnabled = true;
+  let particleElements: HTMLSpanElement[] = [];
+
+  if (isBrowser) {
+    // Check for low-end device indicators
+    const hardwareConcurrency = navigator.hardwareConcurrency || 4;
+    const memory = (navigator as any).deviceMemory || 8; // Chrome-only API
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Disable holo effects on low-end devices
+    // Criteria: mobile with < 4 cores OR < 4GB RAM
+    holoEffectsEnabled = !(isMobile && (hardwareConcurrency < 4 || memory < 4));
+  }
+
   function handleMouseMove(event: MouseEvent) {
     if (!interactive) return;
 
@@ -220,7 +235,7 @@
       <div class="absolute inset-3 border border-white/3 rounded-md"></div>
 
       <!-- Holographic overlay -->
-      {#if card.isHolo}
+      {#if card.isHolo && holoEffectsEnabled}
         {#if card.holoType === 'standard'}
           <div
             class="absolute inset-0 pointer-events-none z-10 holo-sheen"
@@ -253,6 +268,25 @@
           ></div>
           <div class="absolute inset-0 pointer-events-none z-10" style="background: radial-gradient(circle at {mouseX * 100}% {mouseY * 100}%, rgba(255,255,255,0.5) 0%, transparent 40%);"></div>
         {/if}
+      {/if}
+
+      <!-- Sparkle particles based on rarity -->
+      {#if card.isHolo && holoEffectsEnabled && rarityConfig.particleCount > 0}
+        <div class="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+          {#each Array(rarityConfig.particleCount) as _, i}
+            <span
+              class="sparkle absolute text-white"
+              style="
+                left: {((i * 137.5) % 100)}%;
+                top: {((i * 73.7) % 100)}%;
+                font-size: {Math.random() * 8 + 4}px;
+                animation-delay: {i * 0.15}s;
+                opacity: {Math.random() * 0.6 + 0.2};
+                text-shadow: 0 0 4px {rarityConfig.glowColor};
+              "
+            >✦</span>
+          {/each}
+        </div>
       {/if}
 
       <!-- Top bar -->
@@ -390,6 +424,7 @@
   .card-3d {
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
   }
 
   .card-face {
@@ -406,10 +441,12 @@
 
   .holo-sheen {
     transition: background 0.3s ease-out;
+    will-change: background;
   }
 
   .prismatic-holo {
     animation: prismatic-shift 6s linear infinite;
+    will-change: filter, background;
   }
 
   @keyframes prismatic-shift {
@@ -425,6 +462,7 @@
 
   .legendary-glow {
     animation: glow-pulse 3s ease-in-out infinite;
+    will-change: box-shadow;
   }
 
   @keyframes glow-pulse {
@@ -434,10 +472,29 @@
 
   .sparkle {
     animation: sparkle 2s ease-in-out infinite;
+    will-change: transform, opacity;
+    pointer-events: none;
   }
 
   @keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0); }
-    50% { opacity: 1; transform: scale(1); }
+    0%, 100% {
+      opacity: 0;
+      transform: scale(0) translate(0, 0);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1) translate(0, -5px);
+    }
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    .sparkle,
+    .prismatic-holo,
+    .legendary-glow,
+    .holo-sheen {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 </style>
