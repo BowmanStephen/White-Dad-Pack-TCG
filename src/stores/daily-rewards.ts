@@ -8,6 +8,7 @@ import type {
   StreakBonus,
 } from '../types';
 import { trackEvent } from './analytics';
+import { createDateEncoder } from '../lib/utils/encoders';
 
 // ============================================================================
 // DAILY REWARDS CONFIGURATION
@@ -91,30 +92,9 @@ export const STREAK_BONUSES: StreakBonus[] = [
 ];
 
 // Custom encoder for DailyRewardsState (handles Date serialization)
-const dailyRewardsEncoder = {
-  encode(data: DailyRewardsState): string {
-    return JSON.stringify(data, (_key, value) => {
-      // Convert Date objects to ISO strings
-      if (value instanceof Date) {
-        return value.toISOString();
-      }
-      return value;
-    });
-  },
-  decode(str: string): DailyRewardsState {
-    const data = JSON.parse(str);
-    // Convert ISO strings back to Date objects
-    return {
-      ...data,
-      lastLoginDate: data.lastLoginDate ? new Date(data.lastLoginDate) : null,
-      nextClaimTime: new Date(data.nextClaimTime),
-      rewards: data.rewards.map((reward: DailyReward) => ({
-        ...reward,
-        claimedAt: reward.claimedAt ? new Date(reward.claimedAt) : undefined,
-      })),
-    };
-  },
-};
+const dailyRewardsEncoder = createDateEncoder<DailyRewardsState>({
+  dateFields: ['lastLoginDate', 'nextClaimTime', 'rewards.claimedAt'],
+});
 
 // ============================================================================
 // DAILY REWARDS STATE

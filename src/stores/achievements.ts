@@ -9,27 +9,12 @@ import type {
 import { getCollectionStats, collection } from './collection';
 import { trackEvent } from './analytics';
 import { getDailyRewardsState } from './daily-rewards';
+import { createDateEncoder } from '../lib/utils/encoders';
 
 // Custom encoder for Achievement type (handles Date serialization)
-const achievementEncoder = {
-  encode(data: Achievement[]): string {
-    return JSON.stringify(data, (_key, value) => {
-      // Convert Date objects to ISO strings
-      if (value instanceof Date) {
-        return value.toISOString();
-      }
-      return value;
-    });
-  },
-  decode(str: string): Achievement[] {
-    const data = JSON.parse(str);
-    // Convert ISO strings back to Date objects
-    return data.map((achievement: Achievement) => ({
-      ...achievement,
-      unlockedAt: achievement.unlockedAt ? new Date(achievement.unlockedAt) : undefined,
-    }));
-  },
-};
+const achievementEncoder = createDateEncoder<Achievement[]>({
+  dateFields: ['unlockedAt'],
+});
 
 // Achievement definitions - all possible achievements
 export const ACHIEVEMENT_DEFINITIONS: Record<string, AchievementConfig> = {

@@ -3,17 +3,16 @@ import type { Collection, CollectionState, CollectionStats, Pack, Rarity } from 
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
+import { createDateEncoder } from '../lib/utils/encoders';
 
 // Custom encoder for Collection type (handles Date serialization)
+const baseCollectionEncoder = createDateEncoder<Collection>({
+  dateFields: ['metadata.created', 'metadata.lastOpenedAt', 'packs.openedAt'],
+});
+
 const collectionEncoder = {
   encode(data: Collection): string {
-    return JSON.stringify(data, (_key, value) => {
-      // Convert Date objects to ISO strings
-      if (value instanceof Date) {
-        return value.toISOString();
-      }
-      return value;
-    });
+    return baseCollectionEncoder.encode(data);
   },
   decode(str: string): Collection {
     const data = safeJsonParse<Collection>(str);
@@ -35,22 +34,7 @@ const collectionEncoder = {
         },
       };
     }
-
-    // Convert ISO strings back to Date objects
-    if (data.metadata?.lastOpenedAt) {
-      data.metadata.lastOpenedAt = new Date(data.metadata.lastOpenedAt);
-    }
-    if (data.metadata?.created) {
-      data.metadata.created = new Date(data.metadata.created);
-    }
-    // Convert openedAt dates in packs
-    if (data.packs) {
-      data.packs = data.packs.map((pack: Pack) => ({
-        ...pack,
-        openedAt: new Date(pack.openedAt),
-      }));
-    }
-    return data;
+    return baseCollectionEncoder.decode(JSON.stringify(data));
   },
 };
 

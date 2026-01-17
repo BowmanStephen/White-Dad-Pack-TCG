@@ -21,6 +21,7 @@ import type {
   Rarity,
 } from '@/types';
 import { CRAFTING_RECIPES, DEFAULT_CRAFTING_CONFIG, RARITY_ORDER } from '@/types';
+import { createDateEncoder } from '@/lib/utils/encoders';
 
 // ============================================================================
 // CRAFTING CONFIGURATION
@@ -62,7 +63,12 @@ export const selectedRecipe = atom<CraftingRecipe | null>(null);
 
 /**
  * Custom encoder for crafting history (converts dates to/from ISO strings)
+ * Handles data migration for old formats missing isRevealed/isHolo fields
  */
+const baseCraftingEncoder = createDateEncoder<CraftingHistory>({
+  dateFields: ['entries.timestamp'],
+});
+
 const craftingHistoryEncoder = {
   decode(value: unknown): CraftingHistory {
     if (!value || typeof value !== 'object') {
@@ -108,7 +114,7 @@ const craftingHistoryEncoder = {
   },
 
   encode(value: CraftingHistory): unknown {
-    return JSON.stringify(value);
+    return baseCraftingEncoder.encode(value);
   },
 };
 

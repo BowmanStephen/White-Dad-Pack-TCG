@@ -33,32 +33,15 @@ import {
 } from '@/lib/battle';
 import { getAllCards } from '@/lib/cards/database';
 import { trackEvent } from './analytics';
+import { createDateEncoder } from '@/lib/utils/encoders';
 
 // ============================================================================
 // ENCODER FOR LOCALSTORAGE (handles Date serialization)
 // ============================================================================
 
-const battleHistoryEncoder = {
-  encode(data: BattleHistoryEntry[]): string {
-    return JSON.stringify(data, (_key, value) => {
-      if (value instanceof Date) {
-        return value.toISOString();
-      }
-      return value;
-    });
-  },
-  decode(str: string): BattleHistoryEntry[] {
-    const data = JSON.parse(str);
-    return data.map((entry: any) => ({
-      ...entry,
-      result: {
-        ...entry.result,
-        timestamp: new Date(entry.result.timestamp),
-      },
-      timestamp: new Date(entry.timestamp),
-    }));
-  },
-};
+const battleHistoryEncoder = createDateEncoder<BattleHistoryEntry[]>({
+  dateFields: ['timestamp', 'result.timestamp'],
+});
 
 // ============================================================================
 // BATTLE STORES
