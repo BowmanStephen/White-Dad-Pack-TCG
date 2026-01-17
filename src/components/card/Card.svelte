@@ -2,6 +2,7 @@
   import type { PackCard } from '../../types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES } from '../../types';
   import CardStats from './CardStats.svelte';
+  import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
   export let card: PackCard;
@@ -331,13 +332,15 @@
 
       <!-- Artwork area -->
       <div class="relative z-20 mx-3 mt-3 aspect-square rounded-xl overflow-hidden shadow-2xl" style="box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px {rarityConfig.glowColor}33;">
-        <img
-          src={card.artwork}
-          alt={card.name}
-          class="w-full h-full object-cover"
-          loading="lazy"
-          style="filter: drop-shadow(0 0 8px {rarityConfig.glowColor});"
-        />
+        <div class="w-full h-full relative">
+          <GenerativeCardArt
+            card={card}
+            width={300}
+            height={300}
+            showName={false}
+            alt={card.name}
+          />
+        </div>
         {#if card.isHolo}
           <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[9px] font-black bg-gradient-to-r from-pink-500 to-purple-600 text-white" style="box-shadow: 0 2px 4px rgba(0,0,0,0.3);">HOLO</div>
         {/if}
