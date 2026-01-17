@@ -532,19 +532,17 @@ export function getDailyRewardsSummary(): {
   };
 }
 
+/**
+ * Get current daily rewards state
+ * Used by other stores (e.g., achievements) to check streak-related conditions
+ */
+export function getDailyRewardsState(): DailyRewardsState {
+  return dailyRewards.get();
+}
+
 // Initialize daily rewards on module load
 if (typeof window !== 'undefined') {
   initializeDailyRewards();
-
-  // Expose state to window for achievement checking
-  // @ts-ignore - exposing for cross-module access
-  window.__dailyRewardsState = dailyRewards.get();
-
-  // Subscribe to changes and update window object
-  dailyRewards.subscribe((state) => {
-    // @ts-ignore - exposing for cross-module access
-    window.__dailyRewardsState = state;
-  });
 
   // Update countdown every second
   setInterval(() => {
