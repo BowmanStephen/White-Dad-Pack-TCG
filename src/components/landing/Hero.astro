@@ -1,6 +1,64 @@
 ---
 import Button from '../common/Button.astro';
 import PackPreview from './PackPreview.astro';
+import { localeStore } from '@/i18n';
+
+// Get current locale for initial render
+const currentLocale = localeStore.get();
+
+// Translations
+const translations = {
+  en: {
+    title1: 'Collect Every Dad',
+    title2: 'in the Cul-de-sac',
+    subtitle: 'The satirical trading card game your father would definitely not understand. Open packs, collect dads, embrace the cringe.',
+    cta: 'Open Your First Pack',
+    learnMore: 'Learn More',
+    stats: {
+      cards: 'Unique Cards',
+      rarity: 'Rarity Tiers',
+      free: 'Free Forever',
+    }
+  },
+  es: {
+    title1: 'Colecciona a Todos los Papas',
+    title2: 'en el Vecindario',
+    subtitle: 'El juego de cartas coleccionables satírico que tu padre definitivamente no entendería. Abre sobres, colecciona papás, abraza la vergüenza.',
+    cta: 'Abre Tu Primer Sobre',
+    learnMore: 'Más Información',
+    stats: {
+      cards: 'Cartas Únicas',
+      rarity: 'Niveles de Rareza',
+      free: 'Gratis Para Siempre',
+    }
+  },
+  fr: {
+    title1: 'Collectionnez Tous les Papas',
+    title2: 'dans le Quartier',
+    subtitle: 'Le jeu de cartes à collectionner satirique que votre père ne comprendrait certainement pas. Collectionnez des cartes, embrassez le ridicule.',
+    cta: 'Ouvrez Votre Premier Paquet',
+    learnMore: 'En Savoir Plus',
+    stats: {
+      cards: 'Cartes Uniques',
+      rarity: 'Niveaux de Rareté',
+      free: 'Gratuit Pour Toujours',
+    }
+  },
+  de: {
+    title1: 'Sammle Alle Väter',
+    title2: 'in der Sackgasse',
+    subtitle: 'Das satirische Sammelkartenspiel, das dein Vater definitiv nicht verstehen würde. Sammle Karten, umarme die Peinlichkeit.',
+    cta: 'Öffne Dein Ersten Pack',
+    learnMore: 'Mehr Erfahren',
+    stats: {
+      cards: 'Einzigartige Karten',
+      rarity: 'Seltenheitsstufen',
+      free: 'Für Immer Kostenlos',
+    }
+  }
+};
+
+const t = translations[currentLocale] || translations.en;
 ---
 
 <section aria-labelledby="hero-heading" class="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
@@ -9,52 +67,51 @@ import PackPreview from './PackPreview.astro';
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
     <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
   </div>
-  
+
   <div class="relative z-10 max-w-6xl mx-auto">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
       <!-- Text content -->
       <div class="text-center lg:text-left">
         <h1 id="hero-heading" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-          <span class="text-amber-400">Collect Every Dad</span>
+          <span class="text-amber-400">{t.title1}</span>
           <br />
-          <span class="text-white">in the Cul-de-sac</span>
+          <span class="text-white">{t.title2}</span>
         </h1>
-        
+
         <p class="text-xl text-slate-300 mb-8 max-w-xl mx-auto lg:mx-0">
-          The satirical trading card game your father would definitely not understand. 
-          Open packs, collect dads, embrace the cringe.
+          {t.subtitle}
         </p>
-        
+
         <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <a 
-            href="/pack" 
+          <a
+            href="/pack"
             class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:from-amber-400 hover:to-orange-400 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
             <span class="mr-2">🎴</span>
-            Open Your First Pack
+            {t.cta}
           </a>
           <Button variant="secondary" size="lg" href="#features">
-            Learn More
+            {t.learnMore}
           </Button>
         </div>
-        
+
         <!-- Stats -->
         <div class="mt-12 flex flex-wrap gap-8 justify-center lg:justify-start">
           <div class="text-center">
             <div class="text-3xl font-bold text-amber-400">50+</div>
-            <div class="text-sm text-slate-400">Unique Cards</div>
+            <div class="text-sm text-slate-400">{t.stats.cards}</div>
           </div>
           <div class="text-center">
             <div class="text-3xl font-bold text-amber-400">6</div>
-            <div class="text-sm text-slate-400">Rarity Tiers</div>
+            <div class="text-sm text-slate-400">{t.stats.rarity}</div>
           </div>
           <div class="text-center">
             <div class="text-3xl font-bold text-amber-400">100%</div>
-            <div class="text-sm text-slate-400">Free Forever</div>
+            <div class="text-sm text-slate-400">{t.stats.free}</div>
           </div>
         </div>
       </div>
-      
+
       <!-- Pack preview -->
       <div class="flex justify-center lg:justify-end">
         <PackPreview />

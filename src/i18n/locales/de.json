@@ -1,0 +1,208 @@
+{
+  "ui": {
+    "open_pack": "Pack Öffnen",
+    "my_collection": "Meine Sammlung",
+    "battle": "Kampf",
+    "friends": "Freunde",
+    "settings": "Einstellungen",
+    "home": "Startseite",
+    "cards": "Karten",
+    "profile": "Profil",
+    "achievements": "Erfolge",
+    "badges": "Abzeichen",
+    "stats": "Statistiken",
+    "back": "Zurück",
+    "next": "Weiter",
+    "skip": "Überspringen",
+    "continue": "Fortfahren",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "save": "Speichern",
+    "close": "Schließen",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg"
+  },
+  "landing": {
+    "hero_title": "Sammle Alle Väter",
+    "hero_subtitle": "Der Ultimative Sammelkarten-Simulator für Väter",
+    "hero_cta": "Öffne Deinen Ersten Pack",
+    "features_title": "Warum DadDeck™?",
+    "features_free": {
+      "title": "Kostenloses Pack Öffnen",
+      "description": "Unbegrenztes Pack Öffnen ohne Mikrotransaktionen"
+    },
+    "features_cards": {
+      "title": "Über 50 Einzigartige Karten",
+      "description": "Sammle BBQ-Väter, Handwerker-Väter, Sofa-Väter und mehr"
+    },
+    "features_premium": {
+      "title": "Premium-Animationen",
+      "description": "Pack-Öffnungserlebnis in AAA-Qualität"
+    },
+    "features_share": {
+      "title": "Teile Deine Ziehungen",
+      "description": "Zeige Deine seltensten Karten Freunden"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "audio": "Audio",
+    "mute": "Stummschalten",
+    "volume": "Gesamtlautstärke",
+    "graphics": "Grafik",
+    "animation_quality": "Animationsqualität",
+    "quality_low": "Niedrig",
+    "quality_medium": "Mittel",
+    "quality_high": "Hoch",
+    "screen_shake": "Bildschirmwackeln",
+    "particles": "Partikeleffekte",
+    "about": {
+      "title": "Über DadDeck™",
+      "version": "Version",
+      "description": "DadDeck™ ist ein kostenloses Sammelkartenspiel, das die amerikanische Vorstadtvater-Kultur durch Sammelkarten parodiert."
+    }
+  },
+  "pack": {
+    "opening": "Pack Öffnen...",
+    "revealing": "Karten Enthüllen...",
+    "complete": "Pack Abgeschlossen!",
+    "cards_found": "Gefundene Karten",
+    "rarity": "Seltenheit",
+    "share": "Diese Ziehung Teilen",
+    "open_another": "Weiteren Pack Öffnen",
+    "view_collection": "Sammlung Ansehen"
+  },
+  "card": {
+    "stats": {
+      "dadJoke": "Vaterwitz",
+      "grillSkill": "Grill-Können",
+      "fixIt": "Reparieren",
+      "napPower": "Mittagsschlaf-Kraft",
+      "remoteControl": "Fernbedienung",
+      "thermostat": "Thermostat",
+      "sockSandal": "Socke und Sandale",
+      "beerSnob": "Bier-Snob"
+    },
+    "types": {
+      "BBQ_DAD": "BBQ-Vater",
+      "FIX_IT_DAD": "Handwerker-Vater",
+      "GOLF_DAD": "Golf-Vater",
+      "COUCH_DAD": "Sofa-Vater",
+      "LAWN_DAD": "Rasen-Vater",
+      "CAR_DAD": "Auto-Vater",
+      "OFFICE_DAD": "Büro-Vater",
+      "COOL_DAD": "Cooler Vater",
+      "COACH_DAD": "Trainer-Vater",
+      "CHEF_DAD": "Koch-Vater",
+      "HOLIDAY_DAD": "Feiertags-Vater",
+      "WAREHOUSE_DAD": "Lager-Vater",
+      "VINTAGE_DAD": "Vintage-Vater",
+      "FASHION_DAD": "Mode-Vater",
+      "TECH_DAD": "Tech-Vater",
+      "ITEM": "Gegenstand"
+    },
+    "rarities": {
+      "common": "Gewöhnlich",
+      "uncommon": "Ungewöhnlich",
+      "rare": "Selten",
+      "epic": "Episch",
+      "legendary": "Legendär",
+      "mythic": "Mythisch"
+    },
+    "holo": {
+      "none": "Nicht-Holo",
+      "standard": "Holo",
+      "reverse": "Reverse-Holo",
+      "full_art": "Full-Art-Holo",
+      "prismatic": "Prismatisches Holo"
+    },
+    "abilities": "Fähigkeiten",
+    "flavor_text": "Flavor-Text",
+    "series": "Serie",
+    "artist": "Künstler"
+  },
+  "collection": {
+    "title": "Meine Sammlung",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "sort_name": "Name",
+    "sort_rarity": "Seltenheit",
+    "sort_type": "Typ",
+    "sort_recent": "Kürzlich Hinzugefügt",
+    "total_cards": "Gesamtkarten",
+    "unique_cards": "Einzigartige Karten",
+    "collection_value": "Sammlungswert",
+    "empty": "Deine Sammlung ist leer. Öffne einige Packs!",
+    "search": "Karten suchen..."
+  },
+  "battle": {
+    "title": "Kartenkampf",
+    "select_card": "Wähle Deine Karte",
+    "vs": "GEGEN",
+    "attack": "Angreifen",
+    "defend": "Verteidigen",
+    "special": "Spezial",
+    "you_win": "Du Gewinnst!",
+    "you_lose": "Du Verlierst",
+    "draw": "Unentschieden",
+    "play_again": "Nochmal Spielen"
+  },
+  "friends": {
+    "title": "Freunde",
+    "add_friend": "Freund Hinzufügen",
+    "search": "Nach Benutzernamen suchen...",
+    "online": "Online",
+    "offline": "Offline",
+    "pending": "Ausstehend",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen",
+    "remove": "Freund Entfernen",
+    "no_friends": "Noch keine Freunde. Füge welche hinzu, um Karten zu tauschen!"
+  },
+  "achievements": {
+    "title": "Erfolge",
+    "unlocked": "Freigeschaltet",
+    "locked": "Gesperrt",
+    "pack_addict": {
+      "name": "Pack-Süchtig",
+      "description": "Öffne 100 Packs"
+    },
+    "dedicated_collector": {
+      "name": "Engagierter Sammler",
+      "description": "Sammle 50 einzigartige Karten"
+    },
+    "first_mythic": {
+      "name": "Mythenjäger",
+      "description": "Ziehe Deine erste mythische Karte"
+    },
+    "complete_set": {
+      "name": "Perfektionist",
+      "description": "Sammle alle Karten einer Serie"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "username": "Benutzername",
+    "avatar": "Avatar",
+    "level": "Level",
+    "xp": "EP",
+    "joined": "Beigetreten",
+    "edit_profile": "Profil Bearbeiten",
+    "stats": {
+      "packs_opened": "Geöffnete Packs",
+      "cards_collected": "Gesammelte Karten",
+      "battles_won": "Gewonnene Kämpfe",
+      "friends_count": "Freunde"
+    }
+  },
+  "toasts": {
+    "pack_opened": "Pack erfolgreich geöffnet!",
+    "card_added": "Karte zur Sammlung hinzugefügt!",
+    "settings_saved": "Einstellungen gespeichert!",
+    "friend_added": "Freund hinzugefügt!",
+    "error_occurred": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+    "connection_error": "Verbindungsfehler. Überprüfe dein Internet."
+  }
+}

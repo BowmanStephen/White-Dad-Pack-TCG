@@ -1,0 +1,208 @@
+{
+  "ui": {
+    "open_pack": "Open Pack",
+    "my_collection": "My Collection",
+    "battle": "Battle",
+    "friends": "Friends",
+    "settings": "Settings",
+    "home": "Home",
+    "cards": "Cards",
+    "profile": "Profile",
+    "achievements": "Achievements",
+    "badges": "Badges",
+    "stats": "Stats",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "landing": {
+    "hero_title": "Collect Every Dad",
+    "hero_subtitle": "The Ultimate White Dad Trading Card Simulator",
+    "hero_cta": "Open Your First Pack",
+    "features_title": "Why DadDeck™?",
+    "features_free": {
+      "title": "Free Pack Opening",
+      "description": "Unlimited pack opening with zero microtransactions"
+    },
+    "features_cards": {
+      "title": "50+ Unique Cards",
+      "description": "Collect BBQ Dads, Fix-It Dads, Couch Dads, and more"
+    },
+    "features_premium": {
+      "title": "Premium Animations",
+      "description": "AAA-quality pack opening experience"
+    },
+    "features_share": {
+      "title": "Share Your Pulls",
+      "description": "Show off your rarest cards to friends"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "audio": "Audio",
+    "mute": "Mute Sounds",
+    "volume": "Master Volume",
+    "graphics": "Graphics",
+    "animation_quality": "Animation Quality",
+    "quality_low": "Low",
+    "quality_medium": "Medium",
+    "quality_high": "High",
+    "screen_shake": "Screen Shake",
+    "particles": "Particle Effects",
+    "about": {
+      "title": "About DadDeck™",
+      "version": "Version",
+      "description": "DadDeck™ is a free trading card game parodying suburban American dad culture through collectible cards."
+    }
+  },
+  "pack": {
+    "opening": "Opening Pack...",
+    "revealing": "Revealing Cards...",
+    "complete": "Pack Complete!",
+    "cards_found": "Cards Found",
+    "rarity": "Rarity",
+    "share": "Share This Pull",
+    "open_another": "Open Another Pack",
+    "view_collection": "View Collection"
+  },
+  "card": {
+    "stats": {
+      "dadJoke": "Dad Joke",
+      "grillSkill": "Grill Skill",
+      "fixIt": "Fix-It",
+      "napPower": "Nap Power",
+      "remoteControl": "Remote Control",
+      "thermostat": "Thermostat",
+      "sockSandal": "Sock & Sandal",
+      "beerSnob": "Beer Snob"
+    },
+    "types": {
+      "BBQ_DAD": "BBQ Dad",
+      "FIX_IT_DAD": "Fix-It Dad",
+      "GOLF_DAD": "Golf Dad",
+      "COUCH_DAD": "Couch Dad",
+      "LAWN_DAD": "Lawn Dad",
+      "CAR_DAD": "Car Dad",
+      "OFFICE_DAD": "Office Dad",
+      "COOL_DAD": "Cool Dad",
+      "COACH_DAD": "Coach Dad",
+      "CHEF_DAD": "Chef Dad",
+      "HOLIDAY_DAD": "Holiday Dad",
+      "WAREHOUSE_DAD": "Warehouse Dad",
+      "VINTAGE_DAD": "Vintage Dad",
+      "FASHION_DAD": "Fashion Dad",
+      "TECH_DAD": "Tech Dad",
+      "ITEM": "Item"
+    },
+    "rarities": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary",
+      "mythic": "Mythic"
+    },
+    "holo": {
+      "none": "Non-Holo",
+      "standard": "Holo",
+      "reverse": "Reverse Holo",
+      "full_art": "Full Art Holo",
+      "prismatic": "Prismatic Holo"
+    },
+    "abilities": "Abilities",
+    "flavor_text": "Flavor Text",
+    "series": "Series",
+    "artist": "Artist"
+  },
+  "collection": {
+    "title": "My Collection",
+    "filter": "Filter",
+    "sort": "Sort",
+    "sort_name": "Name",
+    "sort_rarity": "Rarity",
+    "sort_type": "Type",
+    "sort_recent": "Recently Added",
+    "total_cards": "Total Cards",
+    "unique_cards": "Unique Cards",
+    "collection_value": "Collection Value",
+    "empty": "Your collection is empty. Open some packs!",
+    "search": "Search cards..."
+  },
+  "battle": {
+    "title": "Card Battle",
+    "select_card": "Select Your Card",
+    "vs": "VS",
+    "attack": "Attack",
+    "defend": "Defend",
+    "special": "Special",
+    "you_win": "You Win!",
+    "you_lose": "You Lose",
+    "draw": "Draw",
+    "play_again": "Play Again"
+  },
+  "friends": {
+    "title": "Friends",
+    "add_friend": "Add Friend",
+    "search": "Search by username...",
+    "online": "Online",
+    "offline": "Offline",
+    "pending": "Pending",
+    "accept": "Accept",
+    "decline": "Decline",
+    "remove": "Remove Friend",
+    "no_friends": "No friends yet. Add some to trade cards!"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "pack_addict": {
+      "name": "Pack Addict",
+      "description": "Open 100 packs"
+    },
+    "dedicated_collector": {
+      "name": "Dedicated Collector",
+      "description": "Collect 50 unique cards"
+    },
+    "first_mythic": {
+      "name": "Mythic Hunter",
+      "description": "Pull your first Mythic card"
+    },
+    "complete_set": {
+      "name": "Completionist",
+      "description": "Collect all cards from a series"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "username": "Username",
+    "avatar": "Avatar",
+    "level": "Level",
+    "xp": "XP",
+    "joined": "Joined",
+    "edit_profile": "Edit Profile",
+    "stats": {
+      "packs_opened": "Packs Opened",
+      "cards_collected": "Cards Collected",
+      "battles_won": "Battles Won",
+      "friends_count": "Friends"
+    }
+  },
+  "toasts": {
+    "pack_opened": "Pack opened successfully!",
+    "card_added": "Card added to collection!",
+    "settings_saved": "Settings saved!",
+    "friend_added": "Friend added!",
+    "error_occurred": "An error occurred. Please try again.",
+    "connection_error": "Connection error. Check your internet."
+  }
+}

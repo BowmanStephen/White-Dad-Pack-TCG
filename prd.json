@@ -1647,12 +1647,13 @@
         "Crafting history log"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "features",
         "gameplay",
         "economy"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US081",
@@ -1687,12 +1688,13 @@
         "Info panel with card details"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "cards",
         "ui",
         "media"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US083",
@@ -1727,12 +1729,13 @@
         "Share deck list (text format)"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "features",
         "strategy"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US085",
@@ -1747,12 +1750,13 @@
         "Upgrade history tracked"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "features",
         "progression",
         "economy"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US086",
@@ -1767,12 +1771,13 @@
         "Season launch events"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "content",
         "liveops",
         "engagement"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US087",
@@ -1787,12 +1792,13 @@
         "Notification when voted cards released"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "community",
         "engagement",
         "features"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US088",
@@ -1807,12 +1813,13 @@
         "Profile viewable by others"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "social",
         "profile",
         "customization"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US089",
@@ -1827,12 +1834,13 @@
         "Friend activity feed"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "social",
         "features",
         "backend"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US090",
@@ -1847,12 +1855,13 @@
         "Ranked mode (seasonal leaderboard)"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "features",
         "gameplay",
         "multiplayer"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US091",
@@ -1867,12 +1876,13 @@
         "Premium users: no cooldown"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "integrations",
         "discord",
         "api"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US092",
@@ -2058,6 +2068,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T14:23:22.367Z"
+    "updatedAt": "2026-01-17T16:42:02.865Z"
   }
 }
