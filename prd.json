@@ -281,12 +281,13 @@
         "State persists until user initiates new pack"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-opening",
         "state",
         "ui"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US015",
@@ -1993,6 +1994,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T07:54:35.451Z"
+    "updatedAt": "2026-01-17T07:55:44.263Z"
   }
 }

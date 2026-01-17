@@ -2,16 +2,20 @@
   import type { PackCard } from '../../types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES } from '../../types';
   import CardStats from './CardStats.svelte';
+  import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
   export let card: PackCard;
   export let isFlipped: boolean = false;
   export let showBack: boolean = true;
   export let size: 'sm' | 'md' | 'lg' = 'md';
   export let interactive: boolean = true;
+  export let enableShare: boolean = false;
 
   $: rarityConfig = RARITY_CONFIG[card.rarity];
   $: typeIcon = DAD_TYPE_ICONS[card.type];
   $: typeName = DAD_TYPE_NAMES[card.type];
+  $: shareSupport = checkShareSupport();
+  $: canShare = enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles;
 
   const sizeClasses = {
     sm: 'w-48 h-[268px]',
@@ -132,6 +136,49 @@
         return `0 0 15px ${baseGlow}, 0 0 30px ${baseGlow}55, inset 0 0 15px rgba(0,0,0,0.5)`;
     }
   })();
+
+  // Share functionality
+  let isGeneratingImage = false;
+  let shareError: string | null = null;
+
+  async function handleDownload() {
+    if (isGeneratingImage || !cardElement) return;
+    isGeneratingImage = true;
+    shareError = null;
+
+    try {
+      await downloadCardImage(card, cardElement, { scale: 2 });
+    } catch (error) {
+      console.error('Failed to download card image:', error);
+      shareError = 'Failed to download image. Please try again.';
+    } finally {
+      isGeneratingImage = false;
+    }
+  }
+
+  async function handleShare() {
+    if (isGeneratingImage || !cardElement) return;
+    isGeneratingImage = true;
+    shareError = null;
+
+    try {
+      const success = await shareCardImage(card, cardElement, {
+        shareTitle: 'DadDeck™ Card',
+        imageGeneration: { scale: 2 },
+      });
+
+      if (!success) {
+        // Fallback to download if share API failed or was cancelled
+        await handleDownload();
+      }
+    } catch (error) {
+      console.error('Failed to share card image:', error);
+      shareError = 'Failed to share image. Please try again.';
+      isGeneratingImage = false;
+    } finally {
+      isGeneratingImage = false;
+    }
+  }
 </script>
 
 <div
@@ -291,6 +338,49 @@
     {/if}
   </div>
 </div>
+
+<!-- Share/Download Button -->
+{#if enableShare && !isFlipped}
+  <div class="flex justify-center mt-4 gap-2">
+    {#if canShare}
+      <button
+        on:click={handleShare}
+        disabled={isGeneratingImage}
+        class="px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
+        class:opacity-50={isGeneratingImage}
+        class:cursor-not-allowed={isGeneratingImage}
+        style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); color: white; box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
+      >
+        {#if isGeneratingImage}
+          <span class="animate-spin">⟳</span>
+          <span>Generating...</span>
+        {:else}
+          <span>📤</span>
+          <span>Share</span>
+        {/if}
+      </button>
+    {/if}
+    <button
+      on:click={handleDownload}
+      disabled={isGeneratingImage}
+      class="px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
+      class:opacity-50={isGeneratingImage}
+      class:cursor-not-allowed={isGeneratingImage}
+      style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); color: white; box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
+    >
+      {#if isGeneratingImage}
+        <span class="animate-spin">⟳</span>
+        <span>Generating...</span>
+      {:else}
+        <span>💾</span>
+        <span>Download</span>
+      {/if}
+    </button>
+  </div>
+  {#if shareError}
+    <div class="mt-2 text-center text-xs text-red-400">{shareError}</div>
+  {/if}
+{/if}
 
 <style>
   .card-perspective {
