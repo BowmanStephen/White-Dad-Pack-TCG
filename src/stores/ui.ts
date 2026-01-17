@@ -36,7 +36,20 @@ export const deviceOrientation = $deviceOrientation;
 export const toasts = $toasts;
 
 // Audio exports - re-export from audio store for convenience
-export { muted as audioMuted, toggleMute, playPackTear, playCardReveal, playCardFlip, isAudioAvailable } from './audio';
+export {
+  muted as audioMuted,
+  masterVolume,
+  musicVolume,
+  sfxVolume,
+  toggleMute,
+  setMasterVolume,
+  setMusicVolume,
+  setSfxVolume,
+  playPackTear,
+  playCardReveal,
+  playCardFlip,
+  isAudioAvailable
+} from './audio';
 
 /**
  * Initialize UI state based on browser capabilities

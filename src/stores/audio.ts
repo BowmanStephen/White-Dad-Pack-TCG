@@ -15,6 +15,8 @@ import type { Rarity } from '../types';
 // Mute state - persists to localStorage
 const MUTED_KEY = 'daddeck_audio_muted';
 const VOLUME_KEY = 'daddeck_audio_volume';
+const MUSIC_VOLUME_KEY = 'daddeck_audio_music_volume';
+const SFX_VOLUME_KEY = 'daddeck_audio_sfx_volume';
 
 const initialMuted = typeof window !== 'undefined'
   ? localStorage.getItem(MUTED_KEY) === 'true'
@@ -24,8 +26,18 @@ const initialVolume = typeof window !== 'undefined'
   ? parseFloat(localStorage.getItem(VOLUME_KEY) || '0.7')
   : 0.7;
 
+const initialMusicVolume = typeof window !== 'undefined'
+  ? parseFloat(localStorage.getItem(MUSIC_VOLUME_KEY) || '0.7')
+  : 0.7;
+
+const initialSfxVolume = typeof window !== 'undefined'
+  ? parseFloat(localStorage.getItem(SFX_VOLUME_KEY) || '0.8')
+  : 0.8;
+
 export const muted = atom<boolean>(initialMuted);
 export const masterVolume = atom<number>(initialVolume);
+export const musicVolume = atom<number>(initialMusicVolume);
+export const sfxVolume = atom<number>(initialSfxVolume);
 
 // Audio context for iOS compatibility (created on first user interaction)
 let audioContext: AudioContext | null = null;
@@ -156,6 +168,34 @@ export function setMasterVolume(volume: number): void {
 }
 
 /**
+ * Set music volume
+ * @param volume - Volume level (0.0 to 1.0)
+ */
+export function setMusicVolume(volume: number): void {
+  const clampedVolume = Math.max(0, Math.min(1, volume));
+  musicVolume.set(clampedVolume);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(MUSIC_VOLUME_KEY, String(clampedVolume));
+  }
+}
+
+/**
+ * Set sound effects volume
+ * @param volume - Volume level (0.0 to 1.0)
+ */
+export function setSfxVolume(volume: number): void {
+  const clampedVolume = Math.max(0, Math.min(1, volume));
+  sfxVolume.set(clampedVolume);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SFX_VOLUME_KEY, String(clampedVolume));
+  }
+}
+
+/**
  * Get the jingle duration for a rarity
  * @param rarity - Card rarity
  */
@@ -208,10 +248,10 @@ export function playSound(
   // Get or create audio element (uses cache)
   const audio = getCachedAudio(soundPath);
 
-  // Calculate volume: master volume × rarity multiplier × custom override
+  // Calculate volume: master volume × sfx volume × rarity multiplier × custom override
   const rarityMultiplier = RARITY_JINGLE_CONFIG[targetRarity].volume;
   const customVolume = options?.volume ?? 1.0;
-  const finalVolume = masterVolume.get() * rarityMultiplier * customVolume;
+  const finalVolume = masterVolume.get() * sfxVolume.get() * rarityMultiplier * customVolume;
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   // Handle errors gracefully (missing files, etc.)
@@ -301,11 +341,15 @@ export function isAudioAvailable(): boolean {
 export function getAudioConfig(): {
   muted: boolean;
   masterVolume: number;
+  musicVolume: number;
+  sfxVolume: number;
   cacheSize: number;
 } {
   return {
     muted: muted.get(),
     masterVolume: masterVolume.get(),
+    musicVolume: musicVolume.get(),
+    sfxVolume: sfxVolume.get(),
     cacheSize: soundCache.size,
   };
 }

@@ -4,6 +4,7 @@ import CollectionManager from '../components/collection/CollectionManager.svelte
 import CollectionStats from '../components/collection/CollectionStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 import Navigation from '../components/common/Navigation.svelte';
+import SettingsModal from '../components/common/SettingsModal.svelte';
 ---
 
 <BaseLayout
@@ -11,6 +12,7 @@ import Navigation from '../components/common/Navigation.svelte';
   description="View your complete DadDeck trading card collection. Track your packs, rare pulls, and holographic cards in this free browser-based TCG simulator."
 >
   <Navigation client:load />
+  <SettingsModal client:load />
 
   <!-- Page Header -->
   <div class="page-header">
