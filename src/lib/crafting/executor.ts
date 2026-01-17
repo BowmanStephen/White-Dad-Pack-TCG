@@ -99,11 +99,11 @@ export function executeCraft(
 
     const returnedCards = returnedCount > 0
       ? inputCards.slice(0, returnedCount)
-      : [];
+      : inputCards; // When failReturnRate=0, return all cards
 
     const consumedCards = returnedCount > 0
       ? inputCards.slice(returnedCount)
-      : inputCards;
+      : []; // When failReturnRate=0, consume no cards
 
     return {
       success: false,
@@ -305,4 +305,14 @@ export function calculateCraftingCost(recipe: CraftingRecipe): number {
 export function canAffordCraft(recipe: CraftingRecipe, playerCurrency: number): boolean {
   const cost = calculateCraftingCost(recipe);
   return playerCurrency >= cost;
+}
+
+/**
+ * Roll for crafting success based on recipe success rate
+ *
+ * @param recipe - The recipe being crafted
+ * @returns true if crafting succeeds, false otherwise
+ */
+export function rollCraftingSuccess(recipe: CraftingRecipe): boolean {
+  return Math.random() < recipe.successRate;
 }

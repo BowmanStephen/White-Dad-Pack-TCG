@@ -2,9 +2,10 @@
  * Crafting Executor Tests - US080: Card Crafting
  */
 
-import { describe, it, expect } from 'vitest';
-import { calculateCraftingCost, canAffordCraft } from '@/lib/crafting/executor';
+import { describe, it, expect, vi } from 'vitest';
+import { calculateCraftingCost, canAffordCraft, executeCraft } from '@/lib/crafting/executor';
 import { CRAFTING_RECIPES } from '@/types';
+import { getAllCards } from '@/lib/cards/database';
 
 describe('calculateCraftingCost', () => {
   it('should calculate base cost correctly', () => {
@@ -153,6 +154,121 @@ describe('canAffordCraft', () => {
     // Player with 0 currency can afford zero-cost recipe
     const canAfford = canAffordCraft(zeroInputRecipe, 0);
     expect(canAfford).toBe(true);
+  });
+});
+
+describe('executeCraft', () => {
+  describe('failure path with failReturnRate', () => {
+    it('should execute failed craft with zero fail return rate', () => {
+      // Create test recipe with 0% return rate on failure
+      const recipe = {
+        id: 'test_zero_return',
+        name: 'Test Zero Return',
+        description: 'Test recipe with 0% return rate',
+        inputRarity: 'common' as const,
+        inputCount: 5,
+        outputRarity: 'uncommon' as const,
+        outputCount: 1,
+        successRate: 0.5,
+        failReturnRate: 0, // CP-003: Return 0% on failure
+      };
+
+      // Create test input cards
+      const inputCards: Array<{ id: string; rarity: 'common'; }> = [
+        { id: 'card1', rarity: 'common' },
+        { id: 'card2', rarity: 'common' },
+        { id: 'card3', rarity: 'common' },
+        { id: 'card4', rarity: 'common' },
+        { id: 'card5', rarity: 'common' },
+      ];
+
+      // Mock Math.random to force failure
+      const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.9); // 90% > 50% success rate = failure
+
+      const result = executeCraft(recipe, inputCards as any, getAllCards());
+
+      // Verify failure
+      expect(result.success).toBe(false);
+
+      // CP-003: When failReturnRate = 0%, consumed cards should be empty array
+      expect(result.consumedCards).toEqual([]);
+      expect(result.consumedCards).toHaveLength(0);
+
+      // All input cards should be returned
+      expect(result.returnedCards).toBeDefined();
+      expect(result.returnedCards).toHaveLength(5);
+      expect(result.returnedCards?.map(c => c.id)).toEqual(['card1', 'card2', 'card3', 'card4', 'card5']);
+
+      mockRandom.mockRestore();
+    });
+
+    it('should execute failed craft with partial fail return rate', () => {
+      // Test with 60% return rate (rare to epic recipe)
+      const rareToEpic = CRAFTING_RECIPES.find(r => r.id === 'rare_to_epic');
+      expect(rareToEpic).toBeDefined();
+      expect(rareToEpic!.failReturnRate).toBe(0.6);
+
+      // Create test input cards
+      const inputCards: Array<{ id: string; rarity: 'rare'; }> = [
+        { id: 'card1', rarity: 'rare' },
+        { id: 'card2', rarity: 'rare' },
+        { id: 'card3', rarity: 'rare' },
+        { id: 'card4', rarity: 'rare' },
+        { id: 'card5', rarity: 'rare' },
+      ];
+
+      // Mock Math.random to force failure
+      const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.9);
+
+      const result = executeCraft(rareToEpic!, inputCards as any, getAllCards());
+
+      // Verify failure
+      expect(result.success).toBe(false);
+
+      // With 60% return rate: ceil(5 * 0.6) = 3 cards returned
+      expect(result.returnedCards).toBeDefined();
+      expect(result.returnedCards).toHaveLength(3);
+      expect(result.returnedCards?.map(c => c.id)).toEqual(['card1', 'card2', 'card3']);
+
+      // Remaining 2 cards should be consumed
+      expect(result.consumedCards).toHaveLength(2);
+      expect(result.consumedCards.map(c => c.id)).toEqual(['card4', 'card5']);
+
+      mockRandom.mockRestore();
+    });
+
+    it('should execute successful craft and consume all input cards', () => {
+      // Test common to uncommon recipe
+      const commonToUncommon = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon');
+      expect(commonToUncommon).toBeDefined();
+
+      // Create test input cards
+      const inputCards: Array<{ id: string; rarity: 'common'; }> = [
+        { id: 'card1', rarity: 'common' },
+        { id: 'card2', rarity: 'common' },
+        { id: 'card3', rarity: 'common' },
+        { id: 'card4', rarity: 'common' },
+        { id: 'card5', rarity: 'common' },
+      ];
+
+      // Mock Math.random to force success
+      const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.1); // 10% < success rate
+
+      const result = executeCraft(commonToUncommon!, inputCards as any, getAllCards());
+
+      // Verify success
+      expect(result.success).toBe(true);
+      expect(result.resultCard).toBeDefined();
+
+      // All input cards should be consumed on success
+      expect(result.consumedCards).toHaveLength(5);
+      expect(result.consumedCards.map(c => c.id)).toEqual(['card1', 'card2', 'card3', 'card4', 'card5']);
+
+      // No cards returned on success
+      expect(result.returnedCards).toBeUndefined();
+
+      mockRandom.mockRestore();
+    });
   });
 });
 
