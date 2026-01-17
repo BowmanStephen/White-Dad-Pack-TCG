@@ -72,7 +72,7 @@ export const fingerprintData = atom<DeviceFingerprint | null>(null);
 /**
  * Current ban status
  */
-export const banStatus = atom<BanStatus>({ isBanned: false, violationIds: [] });
+export const banStatus = atom<BanStatus>({ isBanned: false, violationIds: [], permanent: false });
 
 /**
  * Rate limit status for pack opens
@@ -252,42 +252,63 @@ export async function validatePackBeforeOpen(
   const entropy = existingEntropy || await createPackEntropy();
   currentEntropy.set(entropy);
 
-  // Validate the pack
-  const validationResult = await validatePack(pack, entropy, fp);
+  try {
+    // Validate the pack with timeout
+    const validationResult = await Promise.race([
+      validatePack(pack, entropy, fp),
+      new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Validation timed out')), 5000)
+      )
+    ]);
 
-  if (!validationResult.valid) {
-    // Create violation for validation failure
-    const violationType = validationResult.duplicateDetected
-      ? 'duplicate_detection'
-      : validationResult.anomalies.some((a) => a.includes('Entropy'))
-      ? 'entropy_mismatch'
-      : 'pack_manipulation';
+    if (!validationResult.valid) {
+      // Create violation for validation failure
+      const violationType = validationResult.duplicateDetected
+        ? 'duplicate_detection'
+        : validationResult.anomalies.some((a) => a.includes('Entropy'))
+        ? 'entropy_mismatch'
+        : 'pack_manipulation';
 
-    const violation: SecurityViolation = {
-      id: `viol_validation_${Date.now()}`,
-      type: violationType,
-      severity: validationResult.duplicateDetected ? 'high' : 'medium',
-      timestamp: new Date(),
-      details: validationResult.anomalies.join('; '),
-      fingerprint: fp,
-      metadata: {
-        anomalies: validationResult.anomalies,
-        entropyVerified: validationResult.entropyVerified,
-      },
-    };
+      const violation: SecurityViolation = {
+        id: `viol_validation_${Date.now()}`,
+        type: violationType,
+        severity: validationResult.duplicateDetected ? 'high' : 'medium',
+        timestamp: new Date(),
+        details: validationResult.anomalies.join('; '),
+        fingerprint: fp,
+        metadata: {
+          anomalies: validationResult.anomalies,
+          entropyVerified: validationResult.entropyVerified,
+        },
+      };
 
-    addViolation(violation);
+      addViolation(violation);
 
-    // Check for immediate ban
-    if (shouldImmediateBan(violation.type)) {
-      applyImmediateBan(fp, violation);
-      banStatus.set(isBanned(fp));
+      // Check for immediate ban
+      if (shouldImmediateBan(violation.type)) {
+        applyImmediateBan(fp, violation);
+        banStatus.set(isBanned(fp));
+      }
+
+      return { valid: false, entropy, violation };
     }
 
-    return { valid: false, entropy, violation };
+    return { valid: true, entropy };
+  } catch (error) {
+    // Handle timeouts or unexpected errors
+    return {
+      valid: false,
+      entropy,
+      violation: {
+        id: `viol_error_${Date.now()}`,
+        type: 'pack_manipulation',
+        severity: 'medium',
+        timestamp: new Date(),
+        details: error instanceof Error ? error.message : 'Validation failed unexpectedly',
+        fingerprint: fp,
+      }
+    };
   }
-
-  return { valid: true, entropy };
 }
 
 /**
@@ -319,7 +340,7 @@ export function recordSuccessfulPackOpen(pack: Pack, packType: string): void {
 export function getCurrentBanStatus(): BanStatus {
   const fp = deviceFingerprint.get();
   if (!fp) {
-    return { isBanned: false, violationIds: [] };
+    return { isBanned: false, violationIds: [], permanent: false };
   }
 
   const status = isBanned(fp);

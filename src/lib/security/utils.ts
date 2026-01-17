@@ -62,6 +62,7 @@ export async function generateDeviceFingerprint(): Promise<DeviceFingerprint> {
  * Get browser information
  */
 function getBrowserInfo(): string {
+  if (typeof navigator === 'undefined') return 'Unknown';
   const ua = navigator.userAgent;
   if (ua.includes('Firefox')) return 'Firefox';
   if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
@@ -74,6 +75,7 @@ function getBrowserInfo(): string {
  * Get OS information
  */
 function getOSInfo(): string {
+  if (typeof navigator === 'undefined') return 'Unknown';
   const ua = navigator.userAgent;
   if (ua.includes('Windows')) return 'Windows';
   if (ua.includes('Mac OS')) return 'macOS';
@@ -87,6 +89,7 @@ function getOSInfo(): string {
  * Get screen information
  */
 function getScreenInfo(): string {
+  if (typeof screen === 'undefined') return 'unknown';
   return `${screen.width}x${screen.height}x${screen.colorDepth}`;
 }
 
@@ -123,8 +126,10 @@ async function getCanvasFingerprint(): Promise<string> {
  */
 function getWebGLFingerprint(): string {
   try {
+    if (typeof document === 'undefined') return 'unavailable';
+
     const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const gl = (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
     if (!gl) return 'unavailable';
 
     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
