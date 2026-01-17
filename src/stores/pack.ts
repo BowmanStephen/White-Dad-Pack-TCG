@@ -122,117 +122,125 @@ export async function openNewPack(): Promise<void> {
   packState.set('generating');
 
   try {
-    // Start timer for pack generation
-    const generationStartTime = performance.now();
+    // Race between generation and timeout
+    await Promise.race([
+      (async () => {
+        // Start timer for pack generation
+        const generationStartTime = performance.now();
 
-    // Get current pack type (standard or premium)
-    const packType = currentPackType.get();
-    let pack: Pack;
+        // Get current pack type (standard or premium)
+        const packType = currentPackType.get();
+        let pack: Pack;
 
-    if (packType === 'premium') {
-      // Check if user has premium packs available
-      if (!hasPremiumPacks()) {
-        throw new Error('No premium packs available. Please purchase a premium pack first.');
-      }
+        if (packType === 'premium') {
+          // Check if user has premium packs available
+          if (!hasPremiumPacks()) {
+            throw new Error('No premium packs available. Please purchase a premium pack first.');
+          }
 
-      // Use a premium pack from inventory
-      const used = usePremiumPack('premium_single');
-      if (!used) {
-        throw new Error('Failed to use premium pack from inventory.');
-      }
+          // Use a premium pack from inventory
+          const used = usePremiumPack('premium_single');
+          if (!used) {
+            throw new Error('Failed to use premium pack from inventory.');
+          }
 
-      // Generate premium pack with boosted rates
-      pack = generatePremiumPack('premium_single');
-    } else {
-      // Generate standard pack
-      pack = generatePack();
-    }
+          // Generate premium pack with boosted rates
+          pack = generatePremiumPack('premium_single');
+        } else {
+          // Generate standard pack
+          pack = generatePack();
+        }
 
-    // Calculate pack generation time for UX delay
-    const generationElapsed = performance.now() - generationStartTime;
+        // Calculate pack generation time for UX delay
+        const generationElapsed = performance.now() - generationStartTime;
 
-    // Ensure minimum delay for smooth UX (target: 200ms, max: 500ms)
-    const targetDelay = 200;
-    const maxDelay = 500;
-    const remainingDelay = Math.max(0, Math.min(targetDelay - generationElapsed, maxDelay - generationElapsed));
+        // Ensure minimum delay for smooth UX (target: 200ms, max: 500ms)
+        const targetDelay = 200;
+        const maxDelay = 500;
+        const remainingDelay = Math.max(0, Math.min(targetDelay - generationElapsed, maxDelay - generationElapsed));
 
-    if (remainingDelay > 0) {
-      await new Promise(resolve => setTimeout(resolve, remainingDelay));
-    }
+        if (remainingDelay > 0) {
+          await new Promise(resolve => setTimeout(resolve, remainingDelay));
+        }
 
-    // Validate pack has cards
-    if (!pack || pack.cards.length === 0) {
-      throw new Error('Generated pack has no cards');
-    }
+        // Validate pack has cards
+        if (!pack || pack.cards.length === 0) {
+          throw new Error('Generated pack has no cards');
+        }
 
-    // Security: Validate pack integrity and check for exploits
-    const validationResult = await validatePackBeforeOpen(pack);
-    if (!validationResult.valid) {
-      // Create security error
-      const securityError = createAppError(
-        'security',
-        validationResult.violation?.details || 'Pack validation failed. Please try again.',
-        [
-          {
-            label: 'Try Again',
-            action: () => openNewPack(),
-            primary: true,
+        // Security: Validate pack integrity and check for exploits
+        const validationResult = await validatePackBeforeOpen(pack);
+        if (!validationResult.valid) {
+          // Create security error
+          const securityError = createAppError(
+            'security',
+            validationResult.violation?.details || 'Pack validation failed. Please try again.',
+            [
+              {
+                label: 'Try Again',
+                action: () => openNewPack(),
+                primary: true,
+              },
+              {
+                label: 'Go Home',
+                action: () => {
+                  window.location.href = '/';
+                },
+              },
+            ]
+          );
+          packError.set(securityError);
+          packState.set('idle');
+          logError(securityError, validationResult.violation);
+          return;
+        }
+
+        // Save pack to collection (LocalStorage)
+        const saveResult = addPackToCollection(pack);
+        if (!saveResult.success) {
+          // Create storage error but don't block the pack opening
+          const storageAppError = createAppError(
+            'storage',
+            saveResult.error || 'Failed to save pack to collection',
+            [
+              {
+                label: 'Dismiss',
+                action: () => storageError.set(null),
+              },
+            ]
+          );
+          storageError.set(storageAppError);
+          logError(storageAppError, saveResult.error);
+        }
+
+        // Security: Record successful pack open
+        recordSuccessfulPackOpen(pack, packType);
+
+        // Event System: Award event currency for opening pack
+        awardEventCurrencyForPack(pack.id);
+
+        // Track pack open event
+        trackEvent({
+          type: 'pack_open',
+          data: {
+            packId: pack.id,
+            cardCount: pack.cards.length,
+            packType,
+            ...(packType === 'premium' && { premiumConfigId: 'premium_single' }),
           },
-          {
-            label: 'Go Home',
-            action: () => {
-              window.location.href = '/';
-            },
-          },
-        ]
-      );
-      packError.set(securityError);
-      packState.set('idle');
-      logError(securityError, validationResult.violation);
-      return;
-    }
+        });
 
-    // Save pack to collection (LocalStorage)
-    const saveResult = addPackToCollection(pack);
-    if (!saveResult.success) {
-      // Create storage error but don't block the pack opening
-      const storageAppError = createAppError(
-        'storage',
-        saveResult.error || 'Failed to save pack to collection',
-        [
-          {
-            label: 'Dismiss',
-            action: () => storageError.set(null),
-          },
-        ]
-      );
-      storageError.set(storageAppError);
-      logError(storageAppError, saveResult.error);
-    }
+        // Set the pack and transition to pack animation
+        currentPack.set(pack);
+        packState.set('pack_animate');
 
-    // Security: Record successful pack open
-    recordSuccessfulPackOpen(pack, packType);
-
-    // Event System: Award event currency for opening pack
-    awardEventCurrencyForPack(pack.id);
-
-    // Track pack open event
-    trackEvent({
-      type: 'pack_open',
-      data: {
-        packId: pack.id,
-        cardCount: pack.cards.length,
-        packType,
-        ...(packType === 'premium' && { premiumConfigId: 'premium_single' }),
-      },
-    });
-
-    // Set the pack and transition to pack animation
-    currentPack.set(pack);
-    packState.set('pack_animate');
-
-    // Record pack open start time for duration tracking
-    packOpenStartTime = Date.now();
+        // Record pack open start time for duration tracking
+        packOpenStartTime = Date.now();
+      })(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Pack generation timed out')), 8000)
+      )
+    ]);
   } catch (error) {
     // Create friendly generation error
     const appError = createAppError(

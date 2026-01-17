@@ -26,7 +26,7 @@
     {
       "id": "US102",
       "title": "Code Quality - Fix Cross-Store Communication Pattern",
-      "description": "As a developer, I want proper store imports instead of window object pollution, so I maintain type safety and follow best practices.",
+      "description": "As a developer, I want proper store imports instead of window object pollution, so I maintain type safety and follow best practices. NOTE: There is a screenshot file 'Screenshot 2026-01-17 at 2.51.08 PM.png' in the project directory that the AI model cannot read. This file should be ignored or removed before running Ralph to avoid errors.",
       "acceptanceCriteria": [
         "Remove window.__dailyRewardsState from src/stores/daily-rewards.ts:541-547",
         "Update src/stores/achievements.ts:186-227 to import dailyRewards store directly",
@@ -152,7 +152,141 @@
       "labels": [
         "code-quality",
         "refactor",
-        "architecture"
+        "types"
+      ]
+    },
+    {
+      "id": "US110",
+      "title": "Code Quality - Fix Rate Limiter Type Error",
+      "description": "As a developer, I want to fix the TypeScript type error in rate limiter where 'windowMs' property doesn't exist on type 'never'.",
+      "acceptanceCriteria": [
+        "Fix the type error in src/lib/security/rate-limiter.ts:147",
+        "Ensure rate limiting still works correctly",
+        "Run tests to verify fix"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "fix",
+        "typescript"
+      ]
+    },
+    {
+      "id": "US111",
+      "title": "Code Quality - Remove Screenshot Files",
+      "description": "As a developer, I want to remove screenshot files that cause AI model read errors (e.g., 'Screenshot 2026-01-17 at 2.51.08 PM.png').",
+      "acceptanceCriteria": [
+        "Remove all screenshot files from project root",
+        "Update .gitignore to ignore *.png screenshots",
+        "Verify no AI read errors in logs"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "cleanup"
+      ]
+    },
+    {
+      "id": "US112",
+      "title": "Code Quality - Add .gitignore for .DS_Store",
+      "description": "As a developer, I want to add .DS_Store to .gitignore to prevent commit noise on macOS.",
+      "acceptanceCriteria": [
+        "Add .DS_Store to .gitignore",
+        "Add .DS_Store/** pattern to ignore nested directories",
+        "Verify git status is clean"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "git",
+        "cleanup"
+      ]
+    },
+    {
+      "id": "US113",
+      "title": "Code Quality - Supress Test Console Warnings",
+      "description": "As a developer, I want to suppress noisy console warnings during test runs (e.g., '[Analytics] Event not tracked').",
+      "acceptanceCriteria": [
+        "Identify sources of console warnings in tests",
+        "Suppress or redirect warnings appropriately",
+        "Add environment variable to disable warnings in test mode",
+        "Keep warnings enabled in development mode"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "testing"
+      ]
+    },
+    {
+      "id": "US114",
+      "title": "Code Quality - Remove Console.log Statements",
+      "description": "As a developer, I want to remove console.log statements from production code, keeping only error logging.",
+      "acceptanceCriteria": [
+        "Search for console.log in src/ directory",
+        "Replace with proper logger or remove entirely",
+        "Add debug flag for conditional logging",
+        "Ensure error handling still logs to console"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "logging"
+      ]
+    },
+    {
+      "id": "US115",
+      "title": "Code Quality - Standardize JSDoc Format",
+      "description": "As a developer, I want to standardize JSDoc comment format across the codebase for consistency.",
+      "acceptanceCriteria": [
+        "Document JSDoc style guidelines in AGENTS.md or separate file",
+        "Apply standard format to inconsistent JSDoc comments",
+        "Run linter to enforce JSDoc standards"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "documentation"
+      ]
+    },
+    {
+      "id": "US116",
+      "title": "Code Quality - Remove Unused Imports",
+      "description": "As a developer, I want to remove unused import statements to reduce bundle size and improve maintainability.",
+      "acceptanceCriteria": [
+        "Identify unused imports using IDE or linter",
+        "Remove unused imports from files",
+        "Update imports if file was actually using them"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "bundle"
+      ]
+    },
+    {
+      "id": "US117",
+      "title": "Code Quality - Add Unit Tests for Utilities",
+      "description": "As a developer, I want to add unit tests for utility functions in src/lib/utils/ to ensure code quality and catch regressions.",
+      "acceptanceCriteria": [
+        "Create tests/utilities.test.ts file",
+        "Add tests for existing functions (random, errors, encoding)",
+        "Ensure tests cover edge cases and error scenarios",
+        "Run tests and verify all pass"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "testing"
       ]
     }
   ],
