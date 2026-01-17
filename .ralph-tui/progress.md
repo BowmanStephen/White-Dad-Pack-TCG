@@ -122,3 +122,36 @@ State machine flow: `idle` → `generating` → `pack_animate` → `cards_ready`
 `─────────────────────────────────────────────────`
 
 ---
+## ✓ Iteration 12 - US012: Pack State Machine - Cards Ready State
+*2026-01-17T07:52:53.230Z (110s)*
+
+**Status:** Completed
+
+---
+
+## ✓ Iteration 13 - US013: Pack State Machine - Revealing State
+*2026-01-17T01:53:00.000Z*
+
+**Status:** Completed (Verification Only)
+
+**Notes:**
+The revealing state was already fully implemented in the codebase from previous iterations (US007 - staggered card reveal, US008 - PackResults). Verification against acceptance criteria:
+
+✅ State transitions to 'revealing' when cards start flipping - `revealCard()` in pack.ts:115 sets `packState.set('revealing')`
+✅ Each card flip tracked individually - `revealedCards` Set in pack.ts:18 tracks revealed indices
+✅ Skip button available during reveal - "Skip to results" button in CardRevealer.svelte:234-239
+✅ State transitions to 'results' when all cards revealed - Auto-reveal completion (pack.ts:208) and manual navigation (pack.ts:134)
+
+`★ Insight ─────────────────────────────────────`
+The revealing state is the **active bridge state** between cards_ready and results. Unlike cards_ready (a brief holding pattern), revealing is where the cards actually flip one-by-one. The state machine stays in 'revealing' from the first card flip until either:
+
+1. **All cards revealed** → auto-transition to 'results'
+2. **User skips** → immediate transition with all cards force-revealed
+3. **User navigates to last card** → transition after viewing
+
+The `revealedCards` Set is clever because it allows **non-linear reveal patterns** - users could theoretically reveal card 5 before card 2 (though current UI enforces sequential). This data structure would support future features like "click any card to reveal" or "reveal in random order."
+
+State machine flow: `idle` → `generating` → `pack_animate` → `cards_ready` → `revealing` → `results`
+`─────────────────────────────────────────────────`
+
+---
