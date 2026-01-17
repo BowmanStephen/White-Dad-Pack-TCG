@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { muted, toggleMute } from '../../stores/audio';
   import { openModal } from '../../stores/ui';
+  import ThemeToggle from './ThemeToggle.svelte';
 
   interface NavLink {
     href: string;
@@ -121,6 +122,9 @@
           </svg>
         {/if}
       </button>
+
+      <!-- Theme Toggle -->
+      <ThemeToggle />
 
       <!-- Settings button -->
       <button

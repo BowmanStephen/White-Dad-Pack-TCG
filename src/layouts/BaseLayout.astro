@@ -90,7 +90,7 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <!-- Performance Monitoring (dev only) -->
     <PerformanceMonitor />
   </head>
-  <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased">
+  <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased transition-colors duration-300">
     <!-- Skip Navigation Link -->
     <a
       href="#main-content"
@@ -268,5 +268,94 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
   body.offline {
     padding-top: 2.5rem;
+  }
+
+  /* ============================================================================
+     DARK MODE STYLES
+     ============================================================================ */
+
+  /* Smooth transition for theme changes */
+  :root {
+    --theme-transition: background-color 0.3s ease, color 0.3s ease,
+                       border-color 0.3s ease, box-shadow 0.3s ease,
+                       background 0.3s ease;
+  }
+
+  /* Light mode (default) - Light backgrounds, dark text */
+  html:not(.dark) body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+    color: #1e293b;
+  }
+
+  /* Dark mode - Dark backgrounds, light text */
+  html.dark body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: #f1f5f9;
+  }
+
+  /* Theme-aware components */
+  html:not(.dark) .card-bg {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  html.dark .card-bg {
+    background-color: #1e293b;
+    border-color: #334155;
+  }
+
+  /* Scrollbar styling by theme */
+  html:not(.dark) ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+  }
+
+  html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  html.dark ::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  /* Skip link theme styling */
+  html:not(.dark) .skip-link {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #0f172a;
+  }
+
+  html.dark .skip-link {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+  }
+
+  /* Offline indicator theme styling */
+  html:not(.dark) body.offline::before {
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+    color: white;
+  }
+
+  html.dark body.offline::before {
+    background: linear-gradient(90deg, #b91c1c, #991b1b);
+    color: white;
+  }
+
+  /* Smooth transitions for all theme-aware elements */
+  body,
+  .card-bg,
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-thumb {
+    transition: var(--theme-transition);
   }
 </style>
