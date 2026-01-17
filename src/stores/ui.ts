@@ -1,10 +1,14 @@
 import { atom } from 'nanostores';
 import { isLowEndDevice } from '../lib/utils/performance';
+import { trackEvent } from './analytics';
 
 // Animation Quality Settings
 export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
 
 const QUALITY_KEY = 'daddeck_animation_quality';
+
+// Modal open time tracking
+let modalOpenTime: Record<string, number> = {};
 
 // Initialize quality from localStorage or auto-detect
 const getInitialQuality = (): AnimationQuality => {
@@ -219,13 +223,40 @@ export function removeToast(id: string): void {
 /**
  * Open a modal
  */
-export function openModal(modalId: string): void {
+export function openModal(modalId: string, trigger: 'click' | 'keyboard' = 'click'): void {
   $modalOpen.set(modalId);
+
+  // Track modal open event
+  trackEvent({
+    type: 'modal_open',
+    data: {
+      modalType: modalId as 'card_inspection' | 'share' | 'settings',
+      trigger,
+    },
+  });
+
+  // Record modal open time for duration tracking
+  modalOpenTime[modalId] = Date.now();
 }
 
 /**
  * Close the current modal
  */
 export function closeModal(): void {
+  const currentModal = $modalOpen.get();
+
+  // Track modal close event with duration
+  if (currentModal && modalOpenTime[currentModal]) {
+    const duration = Date.now() - modalOpenTime[currentModal];
+    trackEvent({
+      type: 'modal_close',
+      data: {
+        modalType: currentModal as 'card_inspection' | 'share' | 'settings',
+        duration,
+      },
+    });
+    delete modalOpenTime[currentModal];
+  }
+
   $modalOpen.set(null);
 }

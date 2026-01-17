@@ -2,6 +2,7 @@
   import { fade, scale } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
   import { modalOpen, closeModal } from '@/stores/ui';
+  import { trackEvent } from '@/stores/analytics';
   import type { Card } from '@/types';
   import { onMount, onDestroy } from 'svelte';
 
@@ -125,6 +126,16 @@
     twitterUrl.searchParams.set('text', text);
     twitterUrl.searchParams.set('via', 'DadDeckTCG');
 
+    // Track share event
+    trackEvent({
+      type: 'share',
+      data: {
+        platform: 'twitter',
+        packId: 'unknown', // ShareModal doesn't receive packId, could be enhanced
+        cardCount: cards.length,
+      },
+    });
+
     window.open(twitterUrl.toString(), '_blank', 'noopener,noreferrer,width=550,height=420');
   }
 
@@ -134,6 +145,17 @@
 
     try {
       await navigator.clipboard.writeText(instructions);
+
+      // Track share event
+      trackEvent({
+        type: 'share',
+        data: {
+          platform: 'discord',
+          packId: 'unknown',
+          cardCount: cards.length,
+        },
+      });
+
       alert('Instructions copied! Paste them in Discord, then right-click the image to copy it.');
     } catch (error) {
       console.error('Failed to copy:', error);
@@ -164,6 +186,16 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Track download event
+      trackEvent({
+        type: 'share',
+        data: {
+          platform: 'download',
+          packId: 'unknown',
+          cardCount: cards.length,
+        },
+      });
     } catch (error) {
       console.error('Download failed:', error);
       alert('Failed to download image. Please try again.');
@@ -278,6 +310,16 @@
                     title: 'DadDeck™ Pull',
                     text: `Just opened a pack on DadDeck™!`,
                     files: [file],
+                  });
+
+                  // Track native share event
+                  trackEvent({
+                    type: 'share',
+                    data: {
+                      platform: 'native',
+                      packId: 'unknown',
+                      cardCount: cards.length,
+                    },
                   });
                 } catch (error) {
                   console.error('Native share failed:', error);

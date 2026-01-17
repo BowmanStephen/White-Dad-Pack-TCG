@@ -2,6 +2,10 @@ import { atom, computed } from 'nanostores';
 import type { Pack, PackState } from '../types';
 import { generatePack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
+import { trackEvent } from './analytics';
+
+// Track pack open start time for duration calculation
+let packOpenStartTime: number | null = null;
 
 // Current pack being opened
 export const currentPack = atom<Pack | null>(null);
@@ -95,9 +99,21 @@ export async function openNewPack(): Promise<void> {
       console.warn('Collection save failed:', saveResult.error);
     }
 
+    // Track pack open event
+    trackEvent({
+      type: 'pack_open',
+      data: {
+        packId: pack.id,
+        cardCount: pack.cards.length,
+      },
+    });
+
     // Set the pack and transition to pack animation
     currentPack.set(pack);
     packState.set('pack_animate');
+
+    // Record pack open start time for duration tracking
+    packOpenStartTime = Date.now();
   } catch (error) {
     // Handle generation errors
     packError.set(error instanceof Error ? error.message : 'Failed to generate pack');
@@ -112,11 +128,16 @@ export function completePackAnimation(): void {
 }
 
 // Reveal a specific card
-export function revealCard(index: number): void {
+export function revealCard(
+  index: number,
+  options: { autoRevealed?: boolean } = {}
+): void {
   const pack = currentPack.get();
   if (!pack || index < 0 || index >= pack.cards.length) return;
 
   const revealed = new Set(revealedCards.get());
+  const wasAlreadyRevealed = revealed.has(index);
+
   revealed.add(index);
   revealedCards.set(revealed);
 
@@ -124,6 +145,23 @@ export function revealCard(index: number): void {
   const updatedCards = [...pack.cards];
   updatedCards[index] = { ...updatedCards[index], isRevealed: true };
   currentPack.set({ ...pack, cards: updatedCards });
+
+  // Track card reveal event (only if not already revealed)
+  if (!wasAlreadyRevealed) {
+    const card = pack.cards[index];
+    trackEvent({
+      type: 'card_reveal',
+      data: {
+        packId: pack.id,
+        cardIndex: index,
+        cardId: card.id,
+        rarity: card.rarity,
+        isHolo: card.isHolo,
+        holoType: card.holoType,
+        autoRevealed: options.autoRevealed || false,
+      },
+    });
+  }
 
   packState.set('revealing');
 }
@@ -179,6 +217,9 @@ export function skipToResults(): void {
   currentPack.set({ ...pack, cards: updatedCards });
   packState.set('results');
   isSkipping.set(true);
+
+  // Track pack completion event
+  trackPackComplete(pack, true);
 }
 
 // Reset to idle state
@@ -193,7 +234,35 @@ export function resetPack(): void {
 
 // Show results screen
 export function showResults(): void {
+  const pack = currentPack.get();
+  if (pack) {
+    // Track pack completion event
+    trackPackComplete(pack, isSkipping.get());
+  }
   packState.set('results');
+}
+
+/**
+ * Track pack completion event
+ */
+function trackPackComplete(pack: Pack, skipped: boolean): void {
+  const duration = packOpenStartTime ? Date.now() - packOpenStartTime : 0;
+  const holoCount = pack.cards.filter((c) => c.isHolo).length;
+
+  trackEvent({
+    type: 'pack_complete',
+    data: {
+      packId: pack.id,
+      cardCount: pack.cards.length,
+      bestRarity: pack.bestRarity,
+      holoCount,
+      duration,
+      skipped,
+    },
+  });
+
+  // Reset pack open start time
+  packOpenStartTime = null;
 }
 
 // Auto-reveal sequence state
@@ -219,12 +288,16 @@ export function startAutoReveal(): void {
     const activePack = currentPack.get();
     if (!activePack || autoRevealIndex >= activePack.cards.length) {
       stopAutoReveal();
+      // Track pack completion after auto-reveal finishes
+      if (activePack) {
+        trackPackComplete(activePack, false);
+      }
       packState.set('results');
       return;
     }
 
-    // Reveal current card
-    revealCard(autoRevealIndex);
+    // Reveal current card (mark as auto-revealed)
+    revealCard(autoRevealIndex, { autoRevealed: true });
 
     // Move to next card
     autoRevealIndex++;

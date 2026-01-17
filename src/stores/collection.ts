@@ -1,5 +1,6 @@
 import { persistentAtom } from '@nanostores/persistent';
 import type { Collection, CollectionState, CollectionStats, Pack, Rarity } from '../types';
+import { trackEvent } from './analytics';
 
 // Custom encoder for Collection type (handles Date serialization)
 const collectionEncoder = {
@@ -272,4 +273,38 @@ export function importCollection(
       error: error instanceof Error ? error.message : 'Failed to import collection',
     };
   }
+}
+
+// Track collection view event
+export function trackCollectionView(): void {
+  const stats = getCollectionStats();
+  trackEvent({
+    type: 'collection_view',
+    data: {
+      totalPacks: stats.totalPacks,
+      totalCards: stats.totalCards,
+      uniqueCards: stats.uniqueCards,
+    },
+  });
+}
+
+// Track collection filter event
+export function trackCollectionFilter(filterType: string, filterValue: string): void {
+  trackEvent({
+    type: 'collection_filter',
+    data: {
+      filterType,
+      filterValue,
+    },
+  });
+}
+
+// Track collection sort event
+export function trackCollectionSort(sortOption: string): void {
+  trackEvent({
+    type: 'collection_sort',
+    data: {
+      sortOption: sortOption as any, // Type assertion for SortOption
+    },
+  });
 }
