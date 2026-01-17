@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/common/Logo.astro';
+import CollectionManager from '../components/collection/CollectionManager.svelte';
 import CollectionStats from '../components/collection/CollectionStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 ---
@@ -31,6 +32,11 @@ import Gallery from '../components/collection/Gallery.svelte';
     </div>
   </div>
 
+  <!-- Collection Manager -->
+  <div class="manager-section">
+    <CollectionManager client:load />
+  </div>
+
   <!-- Collection Stats -->
   <div class="stats-section">
     <CollectionStats client:load />
@@ -56,5 +62,9 @@ import Gallery from '../components/collection/Gallery.svelte';
 
   .stats-section {
     padding: 0 1rem 2rem 1rem;
+  }
+
+  .manager-section {
+    padding: 0 1rem 1rem 1rem;
   }
 </style>
