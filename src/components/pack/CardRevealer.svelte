@@ -25,7 +25,7 @@
 
   // Cinematic mode configuration
   $: cinematicConfig = uiStore.getCinematicConfig();
-  $: isCinematic = uiStore.$cinematicMode === 'cinematic';
+  $: isCinematic = uiStore.$cinematicMode.get() === 'cinematic';
 
   // Camera zoom state for cinematic reveals
   let cameraZoomActive = false;

@@ -22,7 +22,7 @@
 
   // Get cinematic configuration
   $: cinematicConfig = uiStore.getCinematicConfig();
-  $: isCinematic = uiStore.$cinematicMode === 'cinematic';
+  $: isCinematic = uiStore.$cinematicMode.get() === 'cinematic';
 
   // Calculate particle count with cinematic multiplier
   $: baseParticleCount = reducedMotion ? 0 : rarityConfig.particleCount;

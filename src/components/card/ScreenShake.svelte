@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { prefersReducedMotion, screenShakeEnabled } from '../../stores/ui';
 
   interface Props {
@@ -8,6 +9,19 @@
   }
 
   let { active = false, intensity = 'subtle', duration = 300 }: Props = $props();
+
+  // Reactive state synced from Nanostores
+  let shakeEnabled = $state(true);
+  let reducedMotion = $state(false);
+
+  // Subscribe to Nanostores on mount
+  onMount(() => {
+    const unsubscribers = [
+      screenShakeEnabled.subscribe((value) => { shakeEnabled = value; }),
+      prefersReducedMotion.subscribe((value) => { reducedMotion = value; }),
+    ];
+    return () => unsubscribers.forEach((unsub) => unsub());
+  });
 
   // Intensity configurations (CSS translate oscillation)
   const intensityConfig = {
@@ -29,17 +43,17 @@
   };
 
   // Screen shake is disabled if user prefers reduced motion OR has disabled it in settings
-  const shouldShake = $derived(active && screenShakeEnabled.get() && !prefersReducedMotion.get());
-  const config = $derived(intensityConfig[intensity]);
+  let shouldShake = $derived(active && shakeEnabled && !reducedMotion);
+  let config = $derived(intensityConfig[intensity]);
 </script>
 
-{#if shouldShake()}
+{#if shouldShake}
   <div
     class="screen-shake-overlay fixed inset-0 pointer-events-none z-50"
     style="
-      --shake-x: {config().x};
-      --shake-y: {config().y};
-      --shake-rotate: {config().rotate};
+      --shake-x: {config.x};
+      --shake-y: {config.y};
+      --shake-rotate: {config.rotate};
       animation-duration: {duration}ms;
     "
     aria-hidden="true"
