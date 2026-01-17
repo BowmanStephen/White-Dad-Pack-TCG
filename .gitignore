@@ -23,3 +23,11 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vercel
+
+# Ralph TUI (local automation state)
+.ralph-tui/
+ralph-tui-*.sh
+FIX_PLAN.md
+fix-critical-bugs.md
+RALPH-TUI-*.md
+prd-phase1.json
