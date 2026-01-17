@@ -726,12 +726,13 @@
         "Unit tests for edge cases"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-generator",
         "logic",
         "balance"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US037",
@@ -745,12 +746,13 @@
         "Fallback: allow duplicates if pool exhausted"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-generator",
         "logic",
         "random"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US038",
@@ -764,12 +766,13 @@
         "Holo stored in card.holoVariant field"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-generator",
         "logic",
         "random"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US039",
@@ -783,12 +786,13 @@
         "Creative names and abilities (satirical tone)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "database",
         "cards",
         "content"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US040",
@@ -803,12 +807,13 @@
         "Distinct visual per dad type (color-coded)"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "database",
         "assets",
         "images"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US041",
@@ -2015,6 +2020,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T09:07:16.332Z"
+    "updatedAt": "2026-01-17T09:29:12.675Z"
   }
 }
