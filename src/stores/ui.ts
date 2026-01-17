@@ -25,6 +25,16 @@ export const $modalOpen = atom<string | null>(null);
 // Toast notifications
 export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>([]);
 
+// Export stores without $ prefix for imports
+// The $ prefix versions above are used in Svelte templates
+export const modalOpen = $modalOpen;
+export const prefersReducedMotion = $prefersReducedMotion;
+export const isTouchDevice = $isTouchDevice;
+export const hasGyroscope = $hasGyroscope;
+export const pointerPosition = $pointerPosition;
+export const deviceOrientation = $deviceOrientation;
+export const toasts = $toasts;
+
 /**
  * Initialize UI state based on browser capabilities
  */

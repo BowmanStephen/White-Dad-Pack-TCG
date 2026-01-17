@@ -5,6 +5,8 @@
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
   import { downloadPackImage, sharePackImage, shareToTwitter } from '../../lib/utils/image-generation';
+  import { modalOpen, openModal } from '../../stores/ui';
+  import ShareModal from '../common/ShareModal.svelte';
 
   export let pack: Pack;
   export let stats: {
@@ -69,6 +71,10 @@
   function shareOnX() {
     const text = `I just pulled a ${stats.bestCard.isHolo ? 'Holographic ' : ''}${bestRarityConfig.name} ${stats.bestCard.name} in DadDeck™! 🎴✨\n\nOpen your own pack at:`;
     shareToTwitter(text);
+  }
+
+  function openShareModal() {
+    openModal('share');
   }
 
   async function copyLink() {
@@ -225,46 +231,23 @@
           <!-- Share buttons for best pull -->
           <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
             <button
-              on:click={shareOnX}
-              class="flex items-center gap-2 px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition-all active:scale-95 text-sm"
-              title="Share on X"
+              on:click={openShareModal}
+              class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95 shadow-lg shadow-purple-500/25"
+              title="Share your pull"
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="w-4 h-4 fill-current">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
               </svg>
-              Share Pull
-            </button>
-
-            <button
-              on:click={handleSharePackImage}
-              disabled={isGeneratingPackImage}
-              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-              title="Share full pack collage"
-            >
-              {#if isGeneratingPackImage}
-                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Generating...
-              {:else if packImageShareSuccess}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg>
-                Shared!
-              {:else}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-                Share Pack
-              {/if}
+              Share This Pull
             </button>
 
             <button
               on:click={copyLink}
-              class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-all active:scale-95 text-sm border border-slate-700"
+              class="flex items-center gap-2 px-4 py-3 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-all active:scale-95 border border-slate-700"
               title="Copy Link"
             >
               {#if copied}
@@ -277,22 +260,6 @@
                 Copy Link
               {/if}
             </button>
-
-            {#if canNativeShare}
-              <button
-                on:click={handleNativeShare}
-                class="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-all active:scale-95 border border-slate-700"
-                title="More Share Options"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                  <circle cx="18" cy="5" r="3"></circle>
-                  <circle cx="6" cy="12" r="3"></circle>
-                  <circle cx="18" cy="19" r="3"></circle>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                </svg>
-              </button>
-            {/if}
           </div>
         </div>
       </div>
@@ -524,6 +491,9 @@
     </div>
   </div>
 {/if}
+
+<!-- Share Modal -->
+<ShareModal cards={pack.cards} packImageElement={null} />
 
 <style>
   @keyframes shimmer {

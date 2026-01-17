@@ -381,12 +381,13 @@
         "Progress indicator for large files"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "social",
         "download",
         "utility"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US020",
@@ -1998,6 +1999,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T08:10:52.486Z"
+    "updatedAt": "2026-01-17T08:13:33.498Z"
   }
 }
