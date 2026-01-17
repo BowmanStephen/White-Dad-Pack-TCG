@@ -1,37 +1,101 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { 
-    $currentPack as currentPack,
-    $packState as packState,
-    $currentCardIndex as currentCardIndex,
-    $revealedCards as revealedCards,
-    $allCardsRevealed as allCardsRevealed,
-    $packStats as packStats,
-    openNewPack,
-    completePackAnimation,
-    revealCurrentCard,
-    nextCard,
-    prevCard,
-    skipToResults,
-    resetPack,
-    showResults
-  } from '../../stores/pack';
+  import type { Pack, PackState } from '../../types';
+  import { getStoreValues } from '../../lib/stores/svelte-helpers';
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
-  
+
+  // Reactive state using Svelte 5 runes
+  let currentPack = $state<Pack | null>(null);
+  let packState = $state<PackState>('idle');
+  let currentCardIndex = $state<number>(0);
+  let revealedCards = $state<Set<number>>(new Set());
+  let packStats = $state<any>(null);
+
+  // Load initial values from stores
+  function loadFromStores() {
+    const values = getStoreValues();
+    currentPack = values.currentPack;
+    packState = values.packState;
+    currentCardIndex = values.currentCardIndex;
+    revealedCards = values.revealedCards;
+    packStats = values.packStats;
+  }
+
   // Start pack opening on mount
   onMount(() => {
-    openNewPack();
+    // Import dynamically to avoid SSR issues
+    import('../../stores/pack').then(({ openNewPack }) => {
+      openNewPack();
+
+      // Subscribe to store changes
+      const unsubscribe = import('../../lib/stores/svelte-helpers').then(({ subscribeToStores }) => {
+        return subscribeToStores((values) => {
+          loadFromStores();
+        });
+      });
+
+      return () => {
+        unsubscribe.then(unsub => unsub());
+      };
+    });
   });
-  
+
+  // Actions
+  function completePackAnimation() {
+    import('../../stores/pack').then(({ completePackAnimation }) => {
+      completePackAnimation();
+      loadFromStores();
+    });
+  }
+
+  function skipToResults() {
+    import('../../stores/pack').then(({ skipToResults }) => {
+      skipToResults();
+      loadFromStores();
+    });
+  }
+
+  function revealCurrentCard() {
+    import('../../stores/pack').then(({ revealCurrentCard }) => {
+      revealCurrentCard();
+      loadFromStores();
+    });
+  }
+
+  function nextCard() {
+    import('../../stores/pack').then(({ nextCard }) => {
+      nextCard();
+      loadFromStores();
+    });
+  }
+
+  function prevCard() {
+    import('../../stores/pack').then(({ prevCard }) => {
+      prevCard();
+      loadFromStores();
+    });
+  }
+
+  function handleOpenAnother() {
+    import('../../stores/pack').then(({ openNewPack }) => {
+      openNewPack();
+      setTimeout(() => loadFromStores(), 150);
+    });
+  }
+
+  function handleGoHome() {
+    window.location.href = '/';
+  }
+
   // Handle keyboard navigation
   function handleKeydown(event: KeyboardEvent) {
-    if ($packState === 'cards_ready' || $packState === 'revealing') {
+    if (packState === 'cards_ready' || packState === 'revealing') {
       switch (event.key) {
         case 'ArrowRight':
         case ' ':
-          if (!$currentPack?.cards[$currentCardIndex]?.isRevealed) {
+          if (!currentPack?.cards[currentCardIndex]?.isRevealed) {
             revealCurrentCard();
           } else {
             nextCard();
@@ -46,58 +110,51 @@
       }
     }
   }
-  
-  function handleOpenAnother() {
-    openNewPack();
-  }
-  
-  function handleGoHome() {
-    window.location.href = '/';
-  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
-  {#if $packState === 'idle' || $packState === 'generating'}
+  {#if packState === 'idle' || packState === 'generating'}
     <!-- Loading state -->
     <div class="text-center">
       <div class="text-4xl mb-4 animate-bounce">📦</div>
       <p class="text-slate-400">Preparing your pack...</p>
     </div>
-    
-  {:else if $packState === 'pack_animate'}
+
+  {:else if packState === 'pack_animate' && currentPack}
     <!-- Pack opening animation -->
-    <PackAnimation 
+    <PackAnimation
+      bestRarity={currentPack.bestRarity}
       on:complete={completePackAnimation}
       on:skip={skipToResults}
-      bestRarity={$currentPack?.bestRarity || 'common'}
     />
-    
-  {:else if $packState === 'cards_ready' || $packState === 'revealing'}
+
+  {:else if (packState === 'cards_ready' || packState === 'revealing') && currentPack}
     <!-- Card reveal phase -->
-    {#if $currentPack}
-      <CardRevealer 
-        pack={$currentPack}
-        currentIndex={$currentCardIndex}
-        revealedIndices={$revealedCards}
-        on:reveal={revealCurrentCard}
-        on:next={nextCard}
-        on:prev={prevCard}
-        on:skip={skipToResults}
-        on:results={showResults}
-      />
-    {/if}
-    
-  {:else if $packState === 'results'}
+    <CardRevealer
+      pack={currentPack}
+      currentIndex={currentCardIndex}
+      revealedIndices={revealedCards}
+      on:reveal={revealCurrentCard}
+      on:next={nextCard}
+      on:prev={prevCard}
+      on:skip={skipToResults}
+      on:results={() => {
+        import('../../stores/pack').then(({ showResults }) => {
+          showResults();
+          loadFromStores();
+        });
+      }}
+    />
+
+  {:else if packState === 'results' && currentPack && packStats}
     <!-- Results screen -->
-    {#if $currentPack && $packStats}
-      <PackResults 
-        pack={$currentPack}
-        stats={$packStats}
-        on:openAnother={handleOpenAnother}
-        on:goHome={handleGoHome}
-      />
-    {/if}
+    <PackResults
+      pack={currentPack}
+      stats={packStats}
+      on:openAnother={handleOpenAnother}
+      on:goHome={handleGoHome}
+    />
   {/if}
 </div>

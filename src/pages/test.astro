@@ -1,0 +1,49 @@
+---
+import { getAllCards } from '../lib/cards/database';
+
+const cards = getAllCards();
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Test - DadDeck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-8">
+  <h1 class="text-3xl font-bold mb-4">Image Test Page</h1>
+
+  <div class="mb-8">
+    <h2 class="text-xl font-bold mb-2">Direct Image Test</h2>
+    <img src="/cards/grill-master-gary.svg" alt="Test Card" class="w-64 h-64 border-2 border-amber-500" />
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-xl font-bold mb-2">Database Cards (First 5)</h2>
+    <div class="grid grid-cols-5 gap-4">
+      {cards.slice(0, 5).map(card => (
+        <div key={card.id} class="border border-slate-700 p-4 rounded">
+          <img
+            src={card.artwork}
+            alt={card.name}
+            class="w-full aspect-square object-contain"
+          />
+          <p class="text-sm mt-2">{card.name}</p>
+          <p class="text-xs text-slate-400">{card.artwork}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div>
+    <h2 class="text-xl font-bold mb-2">All Card Paths</h2>
+    <ul class="text-sm space-y-1">
+      {cards.slice(0, 10).map(card => (
+        <li key={card.id}>
+          {card.artwork} - <span class="text-green-500">✓</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</body>
+</html>

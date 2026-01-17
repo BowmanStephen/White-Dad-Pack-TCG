@@ -1,0 +1,489 @@
+# CLAUDE.md - DadDeck™ Project Guide
+
+**Project:** DadDeck™ - The Ultimate White Dad Trading Card Simulator
+**Type:** Satirical Trading Card Game (TCG) Pack-Opening Simulator
+**Status:** Active Development (MVP Phase)
+
+---
+
+## 🎯 Project Overview
+
+DadDeck™ is a free, browser-based trading card pack-opening simulator that parodies suburban American dad culture through collectible cards. Think of it as a satirical mix of Magic: The Gathering meets Pokémon TCG, but all the cards are about dad stereotypes.
+
+### Core Concept
+- **Players open digital booster packs** containing 6-7 cards
+- **Cards feature dad archetypes** (BBQ Dad, Fix-It Dad, Couch Dad, etc.)
+- **Each card has stats** (Dad Joke, Grill Skill, Nap Power, etc.)
+- **Premium AAA-quality animations** for pack opening
+- **No microtransactions** - pure entertainment, social sharing focus
+- **Shareable pulls** for viral potential
+
+**See full PRD:** `PRD.md` (comprehensive product requirements document)
+
+---
+
+## 💻 Tech Stack
+
+### Core Framework
+- **Astro 5.16+** - Static site generator with component islands
+- **Svelte 5.46+** - Interactive components (via `@astrojs/svelte`)
+- **Tailwind CSS 3** - Utility-first styling (via `@astrojs/tailwind`)
+
+### State Management
+- **Nanostores 1.1+** - Lightweight reactive state management
+  - `@nanostores/persistent` - LocalStorage persistence for collections
+
+### Tooling
+- **Bun** - Package manager & runtime (see `bun.lock`)
+- **TypeScript** - Type safety across the codebase
+- **Vitest 4.0+** - Testing framework
+
+### Package Manager
+**Use Bun for all commands:**
+```bash
+bun install              # Install dependencies
+bun run dev              # Start dev server (localhost:4321)
+bun run build            # Build for production
+bun run preview          # Preview production build
+bun test                 # Run tests
+```
+
+---
+
+## 📁 Project Structure
+
+```
+/
+├── public/                   # Static assets (images, fonts, etc.)
+├── src/
+│   ├── components/          # Reusable components
+│   │   ├── landing/         # Landing page components
+│   │   │   ├── Hero.astro           # Hero section
+│   │   │   ├── Features.astro       # Feature highlights
+│   │   │   ├── FeaturedCards.astro  # Showcase cards
+│   │   │   ├── PackPreview.astro    # Pack preview animation
+│   │   │   └── Footer.astro         # Site footer
+│   │   ├── pack/            # Pack opening components
+│   │   │   ├── PackOpener.svelte        # Main pack opening UI
+│   │   │   ├── PackAnimation.svelte    # Pack tear animation
+│   │   │   ├── CardRevealer.svelte     # Individual card reveal
+│   │   │   └── PackResults.svelte      # Results screen
+│   │   ├── card/            # Card components
+│   │   │   ├── Card.svelte             # Individual card display
+│   │   │   └── CardStats.svelte        # Card stats visualization
+│   │   └── common/          # Shared components
+│   │       ├── Logo.astro             # DadDeck™ logo
+│   │       └── Button.astro           # Reusable button
+│   ├── layouts/             # Astro layouts
+│   │   └── BaseLayout.astro # Root layout with global styles
+│   ├── lib/                 # Business logic
+│   │   ├── cards/
+│   │   │   └── database.ts  # Card database & data access
+│   │   ├── pack/
+│   │   │   └── generator.ts # Pack generation logic
+│   │   └── utils/
+│   │       └── random.ts    # Random number utilities
+│   ├── stores/              # Nanostores (state management)
+│   │   ├── pack.ts          # Pack state & operations
+│   │   └── ui.ts            # UI state (animations, routing)
+│   ├── types/               # TypeScript definitions
+│   │   └── index.ts         # ALL types (Card, Pack, Rarity, etc.)
+│   └── pages/               # Astro routes
+│       └── index.astro      # Landing page
+├── tests/                   # Test files (Vitest)
+├── astro.config.mjs         # Astro configuration
+├── tailwind.config.mjs      # Tailwind configuration
+├── tsconfig.json            # TypeScript configuration
+├── package.json             # Dependencies & scripts
+└── bun.lock                # Bun lockfile
+```
+
+---
+
+## 🎨 Card System Design
+
+### Rarity Tiers
+6 rarity levels (common → mythic):
+- **Common** (grey) - Basic cards, minimal effects
+- **Uncommon** (blue) - Enhanced stats, minor effects
+- **Rare** (gold) - Strong abilities, particle effects
+- **Epic** (purple) - Premium animations, holo variants
+- **Legendary** (orange) - Full art, intense effects
+- **Mythic** (pink) - Prismatic holo, maximum particles
+
+### Dad Types (16 categories)
+```
+BBQ_DAD | FIX_IT_DAD | GOLF_DAD | COUCH_DAD | LAWN_DAD
+CAR_DAD | OFFICE_DAD | COOL_DAD | COACH_DAD | CHEF_DAD
+HOLIDAY_DAD | WAREHOUSE_DAD | VINTAGE_DAD | FASHION_DAD
+TECH_DAD | ITEM (equipment/items)
+```
+
+### Card Stats (8 attributes)
+Each card has 0-100 in:
+- **Dad Joke** - Quality of terrible puns
+- **Grill Skill** - BBQ mastery level
+- **Fix-It** - Repair capabilities
+- **Nap Power** - Ability to sleep anywhere
+- **Remote Control** - Channel surfing expertise
+- **Thermostat** - Temperature control obsession
+- **Sock & Sandal** - Fashion confidence
+- **Beer Snob** - Craft beer knowledge
+
+### Holographic Variants
+- **none** - Standard non-holo
+- **standard** - Basic holo shine
+- **reverse** - Reverse holo (background only)
+- **full_art** - Full art holo (entire card)
+- **prismatic** - Prismatic rainbow holo (mythic only)
+
+---
+
+## 🔄 Pack Opening Flow
+
+### User Journey
+```
+1. Landing Page → User clicks "Open Pack"
+2. Pack Generation → 6-7 cards generated based on rarity slots
+3. Pack Animation → Pack tears open (Svelte animation)
+4. Card Reveal → Cards reveal one-by-one (skippable)
+5. Results Screen → Display all cards, allow sharing
+6. Share → Individual card images for social media
+```
+
+### State Machine (PackState)
+```typescript
+'idle'           → Waiting for user to open pack
+'generating'     → Pack is being generated
+'pack_animate'   → Pack tear animation playing
+'cards_ready'    → Cards ready to reveal
+'revealing'      → Individual cards revealing
+'results'        → All cards revealed, showing results
+```
+
+### Rarity Slot System
+Each pack has guaranteed slots:
+- Slot 1-3: Common (100%)
+- Slot 4-5: Uncommon or better
+- Slot 6: Rare or better
+- **Holo chance:** 1 in 6 cards (random slot)
+
+---
+
+## 🧩 Component Architecture
+
+### Astro Components (.astro)
+- **Server-side rendered** by default
+- **Static HTML generation** for performance
+- **Use for:** Landing page, SEO content, static layouts
+
+### Svelte Components (.svelte)
+- **Client-side interactivity** via Astro islands
+- **Reactive state** for animations & user interaction
+- **Use for:** Pack opening, card reveal, UI controls
+
+### Component Communication
+```typescript
+// Astro → Svelte: Pass props to .svelte components
+<PackOpener client:load />  // 'client:load' hydrates on page load
+
+// Svelte → Svelte: Use Nanostores for shared state
+import { packStore } from '@/stores/pack';
+const cards = packStore.get();  // Access shared pack state
+```
+
+---
+
+## 🎭 Animation & VFX
+
+### Design Principles
+1. **60fps on mid-tier devices** - Performance target
+2. **AAA game feel** - Premium particle effects, smooth easing
+3. **Rarity-driven intensity** - Higher rarity = more dramatic
+4. **Mobile-optimized** - Touch-friendly, no lag
+
+### Animation Zones
+- **Pack Tear** - CSS/SVG animation, 1-2s duration
+- **Card Flip** - 3D transform, ease-out timing
+- **Holo Sparkle** - Particle system based on rarity
+- **Glow Pulse** - Box-shadow animation for rare+
+
+### Rarity Visual Effects
+```typescript
+// See RARITY_CONFIG in src/types/index.ts
+common:    0 particles, 1x intensity
+uncommon:  5 particles, 1.2x intensity
+rare:     10 particles, 1.5x intensity
+epic:     15 particles, 1.8x intensity
+legendary:25 particles, 2.2x intensity
+mythic:   40 particles, 3x intensity
+```
+
+---
+
+## 🗄️ Data Layer
+
+### Card Database Location
+**`src/lib/cards/database.ts`** - Contains all card data
+
+### Adding New Cards
+```typescript
+// In src/lib/cards/database.ts
+import { Card } from '@/types';
+
+export const CARDS: Card[] = [
+  {
+    id: 'bbq_dad_001',
+    name: 'Grillmaster Gary',
+    subtitle: 'The Flame Keeper',
+    type: 'BBQ_DAD',
+    rarity: 'rare',
+    artwork: '/images/cards/bbq-dad-001.png',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 95,
+      fixIt: 40,
+      napPower: 30,
+      remoteControl: 50,
+      thermostat: 60,
+      sockSandal: 45,
+      beerSnob: 70,
+    },
+    flavorText: '"Propane is just a suggestion."',
+    abilities: [{
+      name: 'Perfect Sear',
+      description: 'Flip a burger. If it lands rare, gain +10 Grill Skill.',
+    }],
+    series: 1,
+    cardNumber: 1,
+    totalInSeries: 50,
+    artist: 'AI Assistant',
+    holoVariant: 'reverse',
+  },
+  // ... more cards
+];
+```
+
+### Pack Generation Logic
+**`src/lib/pack/generator.ts`** - Generates random packs
+
+**Key functions:**
+- `generatePack()` - Creates a new pack with rarity slots
+- `rollRarity(slot)` - Determines card rarity based on slot
+- `rollHolo()` - Determines if card gets holo variant
+- `selectCards(rarity)` - Randomly selects card from rarity pool
+
+---
+
+## 🎯 When Working on This Project
+
+### Adding Features
+1. **Define types first** - Add to `src/types/index.ts`
+2. **Create store** - Add to `src/stores/` if stateful
+3. **Build component** - Use .astro for static, .svelte for interactive
+4. **Add logic** - Place in `src/lib/` folder
+5. **Test** - Add test file to `tests/` directory
+
+### Styling Guidelines
+- **Use Tailwind utility classes** - See `tailwind.config.mjs`
+- **Follow rarity colors** - Use `RARITY_CONFIG` for consistency
+- **Responsive-first** - Mobile breakpoint is default
+- **Accessibility** - ARIA labels, keyboard navigation
+
+### Performance Targets
+- **Initial load:** <3 seconds
+- **Pack generation:** <500ms
+- **Animation FPS:** 60fps on mobile
+- **Bundle size:** <500KB (gzipped)
+
+---
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+bun test                    # Watch mode
+bun run test:run            # Single run
+```
+
+### Test Structure
+```
+tests/
+├── pack/
+│   └── generator.test.ts   # Pack generation logic tests
+├── card/
+│   └── database.test.ts    # Card data validation tests
+└── utils/
+    └── random.test.ts      # Random utility tests
+```
+
+### What to Test
+- **Pack generation** - Correct rarity distribution
+- **Card data** - Valid stats, types, required fields
+- **Random functions** - Distribution accuracy
+- **UI state** - State transitions work correctly
+
+---
+
+## 🚀 Deployment
+
+### Build for Production
+```bash
+bun run build              # Outputs to ./dist/
+```
+
+### Preview Build
+```bash
+bun run preview            # Serves ./dist/ locally
+```
+
+### Deployment Platforms (Recommended)
+- **Vercel** - Zero-config deployment (recommended)
+- **Netlify** - Alternative with edge functions
+- **Cloudflare Pages** - Global CDN
+
+### Environment Variables (Future)
+```bash
+# .env.example
+PUBLIC_API_URL=           # For future API features
+PUBLIC_ANALYTICS_ID=      # For tracking (GA, Plausible, etc.)
+```
+
+---
+
+## 📊 Success Metrics (MVP)
+
+### Technical Goals
+- ✅ Zero crashes during pack opening
+- ✅ 60fps animations on mid-tier devices
+- ✅ <3s initial page load
+- ✅ Works on mobile (65%) and desktop (35%)
+
+### Product Goals
+- ✅ Unlimited free pack opening
+- ✅ Premium pack opening feel
+- ✅ Shareable card pulls
+- ✅ 50+ unique cards in database
+
+---
+
+## 🐛 Common Issues & Solutions
+
+### Pack Generation Not Working
+**Check:** `src/lib/pack/generator.ts` - ensure `CARDS` array is populated
+**Check:** Browser console for Nanostores errors
+**Fix:** Clear localStorage: `localStorage.clear()`
+
+### Animations Laggy
+**Check:** DevTools Performance tab for bottlenecks
+**Fix:** Reduce particle count in `RARITY_CONFIG`
+**Fix:** Use `will-change` CSS property for animated elements
+
+### Types Not Found
+**Check:** Import path uses `@/` alias: `import { Card } from '@/types'`
+**Check:** `tsconfig.json` has path alias configured
+
+### Svelte Component Not Hydrating
+**Check:** Added `client:load` directive: `<PackOpener client:load />`
+**Check:** Component is imported in `.astro` file
+
+---
+
+## 🎨 Design Resources
+
+### Visual Assets Location
+**`public/images/`** - All static images
+- `/cards/` - Individual card artwork
+- `/packs/` - Pack designs (closed, open, torn)
+- `/ui/` - UI elements (buttons, icons, etc.)
+
+### Card Artwork Specs
+- **Format:** PNG with transparency
+- **Size:** 400x550px (standard card ratio)
+- **Resolution:** 2x (800x1100px) for retina displays
+
+---
+
+## 📝 Key Files to Understand
+
+### Must Read (Priority Order)
+1. **`src/types/index.ts`** - All types, understand the data model
+2. **`src/stores/pack.ts`** - Pack state management
+3. **`src/lib/pack/generator.ts`** - How packs are created
+4. **`src/components/pack/PackOpener.svelte`** - Main pack opening UI
+5. **`PRD.md`** - Full product requirements (90KB document!)
+
+### Quick Reference Files
+- **`tailwind.config.mjs`** - Custom design tokens
+- **`astro.config.mjs`** - Integrations & build config
+- **`src/lib/cards/database.ts`** - All card data
+
+---
+
+## 🎓 Learning Context
+
+### For Stephen (UX Designer → Developer)
+
+**This project is great for learning:**
+- **Astro islands architecture** - Server + client components
+- **Svelte reactivity** - Simpler than React, great for learning
+- **State management patterns** - Nanostores are beginner-friendly
+- **TypeScript in practice** - Real-world type safety
+- **CSS animations** - Visual feedback & timing
+
+**Focus on:**
+1. **Understanding the pack flow** - Follow `PackState` transitions
+2. **Component communication** - How stores connect components
+3. **Animation timing** - When to use CSS vs JS animations
+4. **Type safety** - Leverage TypeScript to catch bugs early
+
+**When confused:**
+- Ask: "What state is this component in?"
+- Ask: "Where does this data come from?"
+- Ask: "What happens when the user clicks X?"
+
+---
+
+## 🚦 Quick Commands Reference
+
+```bash
+# Development
+bun install              # Install dependencies
+bun run dev              # Start dev server (http://localhost:4321)
+
+# Building
+bun run build            # Build production site to ./dist/
+bun run preview          # Preview production build
+
+# Testing
+bun test                 # Run tests in watch mode
+bun run test:run         # Run tests once
+
+# Astro CLI
+bun astro add <package>  # Add Astro integration
+bun astro check          # Type check Astro components
+```
+
+---
+
+## 🎯 Current Sprint Focus
+
+**MVP Phase - Core Features:**
+1. ✅ Basic pack opening flow
+2. ✅ Card reveal animations
+3. ✅ Rarity-based visual effects
+4. 🔄 Social sharing functionality
+5. 🔄 Card collection persistence (LocalStorage)
+6. 🔄 Mobile responsiveness polish
+
+**Next Up (Post-MVP):**
+- Season 2 card expansion (30+ new cards)
+- User accounts & cloud collections
+- Trading system between players
+- Deck building mini-game
+
+---
+
+**Last updated:** January 17, 2026
+
+**Questions?** Check the PRD (`PRD.md`) or ask about specific components!

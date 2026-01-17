@@ -24,9 +24,10 @@
   let mouseX = 0.5;
   let mouseY = 0.5;
   let cardElement: HTMLDivElement;
+  let time = 0;
   
   function handleMouseMove(event: MouseEvent) {
-    if (!interactive || !card.isHolo) return;
+    if (!interactive) return;
     
     const rect = cardElement.getBoundingClientRect();
     mouseX = (event.clientX - rect.left) / rect.width;
@@ -38,9 +39,23 @@
     mouseY = 0.5;
   }
   
-  // Calculate rotation based on mouse position
-  $: rotateX = interactive ? (mouseY - 0.5) * 20 : 0;
-  $: rotateY = interactive ? (mouseX - 0.5) * -20 : 0;
+  // Animate time for prismatic effects
+  function animate(time: number) {
+    if (card.isHolo && card.holoType === 'prismatic') {
+      const t = time / 1000;
+      // Add subtle movement
+      if (interactive) {
+        time = t;
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  
+  requestAnimationFrame(animate);
+  
+  // Calculate rotation based on mouse position (enhanced for holo)
+  $: rotateX = interactive ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0;
+  $: rotateY = interactive ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0;
   
   // Get number of stars based on rarity
   function getRarityStars(rarity: string): number {
@@ -88,36 +103,124 @@
       <!-- Card background -->
       <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
         
-        <!-- Holographic overlay -->
+        <!-- Enhanced holographic overlays -->
         {#if card.isHolo}
-          <div 
-            class="absolute inset-0 pointer-events-none z-10"
-            class:holo-standard={card.holoType === 'standard'}
-            class:holo-prismatic={card.holoType === 'prismatic'}
-            style="
-              background: linear-gradient(
-                {mouseX * 360}deg,
-                rgba(255, 0, 0, 0.15),
-                rgba(255, 127, 0, 0.15),
-                rgba(255, 255, 0, 0.15),
-                rgba(0, 255, 0, 0.15),
-                rgba(0, 0, 255, 0.15),
-                rgba(75, 0, 130, 0.15),
-                rgba(148, 0, 211, 0.15)
-              );
-              mix-blend-mode: color-dodge;
-            "
-          ></div>
-          <div 
-            class="absolute inset-0 pointer-events-none z-10"
-            style="
-              background: radial-gradient(
-                circle at {mouseX * 100}% {mouseY * 100}%,
-                rgba(255, 255, 255, 0.3) 0%,
-                transparent 50%
-              );
-            "
-          ></div>
+          <!-- Standard holo: rainbow gradient sheen -->
+          {#if card.holoType === 'standard'}
+            <div 
+              class="absolute inset-0 pointer-events-none z-10 holo-sheen"
+              style="
+                background: linear-gradient(
+                  {mouseX * 360}deg,
+                  rgba(255, 0, 0, 0.2),
+                  rgba(255, 127, 0, 0.18),
+                  rgba(255, 255, 0, 0.2),
+                  rgba(0, 255, 0, 0.18),
+                  rgba(0, 0, 255, 0.2),
+                  rgba(75, 0, 130, 0.18),
+                  rgba(148, 0, 211, 0.2)
+                );
+                mix-blend-mode: color-dodge;
+              "
+            ></div>
+            <div 
+              class="absolute inset-0 pointer-events-none z-10"
+              style="
+                background: radial-gradient(
+                  circle at {mouseX * 100}% {mouseY * 100}%,
+                  rgba(255, 255, 255, 0.4) 0%,
+                  transparent 50%
+                );
+              "
+            ></div>
+          {/if}
+          
+          <!-- Reverse holo: sparkle effects only on background -->
+          {#if card.holoType === 'reverse'}
+            <div 
+              class="absolute inset-0 pointer-events-none z-10"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  transparent 40%,
+                  rgba(255, 255, 255, 0.1) 50%,
+                  transparent 60%
+                );
+              "
+            ></div>
+            <div 
+              class="absolute inset-0 pointer-events-none z-10"
+              style="
+                background: radial-gradient(
+                  circle at {mouseX * 100}% {mouseY * 100}%,
+                  rgba(255, 255, 255, 0.5) 0%,
+                  transparent 40%
+                );
+              "
+            ></div>
+          {/if}
+          
+          <!-- Full art holo: intense rainbow with sparkle -->
+          {#if card.holoType === 'full_art'}
+            <div 
+              class="absolute inset-0 pointer-events-none z-10"
+              style="
+                background: linear-gradient(
+                  {time * 0.05}deg,
+                  rgba(255, 0, 0, 0.25),
+                  rgba(255, 127, 0, 0.22),
+                  rgba(255, 255, 0, 0.25),
+                  rgba(0, 255, 0, 0.22),
+                  rgba(0, 0, 255, 0.25),
+                  rgba(75, 0, 130, 0.22),
+                  rgba(148, 0, 211, 0.25)
+                );
+                mix-blend-mode: color-dodge;
+                animation: holo-sheen 8s linear infinite;
+              "
+            ></div>
+            <div 
+              class="absolute inset-0 pointer-events-none z-10"
+              style="
+                background: radial-gradient(
+                  circle at {mouseX * 100}% {mouseY * 100}%,
+                  rgba(255, 255, 255, 0.5) 0%,
+                  transparent 50%
+                );
+              "
+            ></div>
+          {/if}
+          
+          <!-- Prismatic holo: multi-color shifting -->
+          {#if card.holoType === 'prismatic'}
+            <div 
+              class="absolute inset-0 pointer-events-none z-10 prismatic-holo"
+              style="
+                background: linear-gradient(
+                  {time * 0.1}deg,
+                  rgba(255, 0, 128, 0.3),
+                  rgba(128, 0, 255, 0.28),
+                  rgba(0, 128, 255, 0.3),
+                  rgba(0, 255, 255, 0.28),
+                  rgba(0, 255, 128, 0.3),
+                  rgba(128, 255, 0, 0.28),
+                  rgba(255, 255, 0, 0.3),
+                  rgba(255, 128, 0, 0.28)
+                );
+                mix-blend-mode: color-dodge;
+              "
+            ></div>
+            <div 
+              class="absolute inset-0 pointer-events-none z-10"
+              style="
+                background: radial-gradient(
+                  circle at {mouseX * 100}% {mouseY * 100}%,
+                  rgba(255, 255, 255, 0.6) 0%,
+                  transparent 40%
+                );
+              "
+            ></div>
+          {/if}
         {/if}
         
         <!-- Top bar -->
@@ -146,14 +249,15 @@
         </div>
         
         <!-- Artwork area -->
-        <div class="relative z-20 mx-3 mt-3 aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
-          <!-- Placeholder art -->
-          <div 
-            class="text-8xl opacity-80"
-            style="filter: drop-shadow(0 0 20px {rarityConfig.glowColor});"
-          >
-            {typeIcon}
-          </div>
+        <div class="relative z-20 mx-3 mt-3 aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-slate-600 to-slate-700">
+          <!-- Actual card artwork -->
+          <img 
+            src={card.artwork}
+            alt={card.name}
+            class="w-full h-full object-cover"
+            loading="lazy"
+            style="filter: drop-shadow(0 0 10px {rarityConfig.glowColor});"
+          />
           
           <!-- Holo badge -->
           {#if card.isHolo}
@@ -240,21 +344,47 @@
     transform: rotateY(180deg);
   }
   
-  .holo-standard {
-    animation: holo-shift 3s ease-in-out infinite;
+  /* Holo sheen animations */
+  .holo-sheen {
+    transition: background 0.3s ease-out;
   }
   
-  .holo-prismatic {
-    animation: prismatic-shift 2s linear infinite;
-  }
-  
-  @keyframes holo-shift {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.8; }
+  .prismatic-holo {
+    animation: prismatic-shift 6s linear infinite;
   }
   
   @keyframes prismatic-shift {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    50% { filter: hue-rotate(180deg) brightness(1.1); }
+    100% { filter: hue-rotate(360deg) brightness(1); }
+  }
+  
+  @keyframes holo-sheen {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+  }
+  
+  /* Glow pulse for legendary+ cards */
+  .legendary-glow {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 20px var(--rarity-glow), 0 0 40px var(--rarity-glow);
+    }
+    50% { 
+      box-shadow: 0 0 30px var(--rarity-glow), 0 0 60px var(--rarity-glow), 0 0 80px var(--rarity-glow);
+    }
+  }
+  
+  /* Sparkle animation for prismatic */
+  .sparkle {
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
   }
 </style>
