@@ -208,7 +208,8 @@
       "series": 1,
       "cardNumber": 7,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/bogey-bob.svg"
     },
     {
       "id": "008",
@@ -269,7 +270,8 @@
       "series": 1,
       "cardNumber": 9,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/oil-change-oscar.svg"
     },
     {
       "id": "010",
@@ -297,7 +299,8 @@
       "series": 1,
       "cardNumber": 10,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/tps-report-terry.svg"
     },
     {
       "id": "011",
@@ -329,7 +332,8 @@
       "series": 1,
       "cardNumber": 11,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/skateboard-scott.svg"
     },
     {
       "id": "012",
@@ -357,7 +361,8 @@
       "series": 1,
       "cardNumber": 12,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/soccer-stan.svg"
     },
     {
       "id": "013",
@@ -389,7 +394,8 @@
       "series": 1,
       "cardNumber": 13,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/secret-recipe-rick.svg"
     },
     {
       "id": "014",
@@ -421,7 +427,8 @@
       "series": 1,
       "cardNumber": 14,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/costco-craig.svg"
     },
     {
       "id": "015",
@@ -453,7 +460,8 @@
       "series": 1,
       "cardNumber": 15,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/christmas-clark.svg"
     },
     {
       "id": "016",
@@ -518,7 +526,8 @@
       "series": 1,
       "cardNumber": 17,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/wifi-wizard-walter.svg"
     },
     {
       "id": "018",
@@ -550,7 +559,8 @@
       "series": 1,
       "cardNumber": 18,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/smoker-steve.svg"
     },
     {
       "id": "019",
@@ -578,7 +588,8 @@
       "series": 1,
       "cardNumber": 19,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/minivan-mike.svg"
     },
     {
       "id": "020",
@@ -610,7 +621,8 @@
       "series": 1,
       "cardNumber": 20,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/recliner-randy.svg"
     },
     {
       "id": "021",
@@ -638,7 +650,8 @@
       "series": 1,
       "cardNumber": 21,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/fertilizer-fred.svg"
     },
     {
       "id": "022",
@@ -666,7 +679,8 @@
       "series": 1,
       "cardNumber": 22,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/linkedin-larry.svg"
     },
     {
       "id": "023",
@@ -694,7 +708,8 @@
       "series": 1,
       "cardNumber": 23,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/band-dad-brad.svg"
     },
     {
       "id": "024",
@@ -755,7 +770,8 @@
       "series": 1,
       "cardNumber": 25,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/breakfast-king-keith.svg"
     },
     {
       "id": "026",
@@ -932,7 +948,8 @@
       "series": 1,
       "cardNumber": 31,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/propane-paul.svg"
     },
     {
       "id": "032",
@@ -960,7 +977,8 @@
       "series": 1,
       "cardNumber": 32,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/youtube-tom.svg"
     },
     {
       "id": "033",
@@ -988,7 +1006,8 @@
       "series": 1,
       "cardNumber": 33,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/country-club-chad.svg"
     },
     {
       "id": "034",
@@ -1016,7 +1035,8 @@
       "series": 1,
       "cardNumber": 34,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/little-league-lou.svg"
     },
     {
       "id": "035",
@@ -1048,7 +1068,8 @@
       "series": 1,
       "cardNumber": 35,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/riding-mower-rex.svg"
     },
     {
       "id": "036",
@@ -1163,7 +1184,8 @@
       "series": 1,
       "cardNumber": 39,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/hawaiian-harry.svg"
     },
     {
       "id": "040",
@@ -1220,7 +1242,8 @@
       "series": 1,
       "cardNumber": 41,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/conference-carl.svg"
     },
     {
       "id": "042",
@@ -1397,7 +1420,8 @@
       "series": 1,
       "cardNumber": 47,
       "totalInSeries": 150,
-      "artist": "DadArt Studios"
+      "artist": "DadArt Studios",
+      "artwork": "/cards/home-depot-hero.svg"
     },
     {
       "id": "048",

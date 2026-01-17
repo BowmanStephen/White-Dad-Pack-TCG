@@ -1,0 +1,17 @@
+# Ralph TUI Configuration - DadDeck Overnight Session
+# Auto-generated for autonomous overnight development
+
+tracker = "json"
+agent = "claude"
+maxIterations = 0  # Run until all stories complete
+autoCommit = true
+iterationDelay = 2  # 2 second delay between iterations
+headless = false  # Show TUI for monitoring
+
+[trackerOptions]
+prdPath = "/Users/stephen_bowman/Documents/GitHub/_work/White Dad Pack TCG/prd.json"
+
+[agentOptions]
+model = "claude-sonnet-4-5-20250929"  # Use Sonnet 4.5 for balance of speed/quality
+cwd = "/Users/stephen_bowman/Documents/GitHub/_work/White Dad Pack TCG"
+subagentTracing = "moderate"  # Track subagents for visibility

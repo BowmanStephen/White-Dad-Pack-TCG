@@ -1,0 +1,979 @@
+{
+  "name": "DadDeck™ - White Dad Trading Card Simulator",
+  "description": "Satirical trading card pack-opening simulator parodying suburban American dad culture through collectible cards.",
+  "branchName": "feature/daddeck-mvp",
+  "userStories": [
+    {
+      "id": "US001",
+      "title": "Landing Page - Hero Section",
+      "description": "As a visitor, I want to see an engaging hero section that explains what DadDeck is, so I can quickly understand the value proposition.",
+      "acceptanceCriteria": [
+        "Hero section displays catchy headline about dad stereotypes",
+        "Subheadline explains pack-opening simulator concept",
+        "Primary CTA button 'Open Pack' routes to pack opener",
+        "Secondary CTA 'Learn More' scrolls to features section",
+        "Background features subtle floating card animation",
+        "Mobile responsive (stacks vertical on small screens)",
+        "Animation performs at 60fps on mid-tier devices"
+      ],
+      "priority": 1,
+      "passes": true,
+      "labels": [
+        "landing-page",
+        "ui",
+        "responsive"
+      ],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US002",
+      "title": "Landing Page - Features Section",
+      "description": "As a visitor, I want to see key features highlighted, so I can understand what makes DadDeck unique.",
+      "acceptanceCriteria": [
+        "4 feature cards displayed: 'Free Pack Opening', '50+ Unique Cards', 'Share Your Pulls', 'No Microtransactions'",
+        "Each card has an icon, title, and description",
+        "Grid layout: 1 col mobile, 2 col tablet, 4 col desktop",
+        "Hover effects on cards (lift, shadow)",
+        "Icons use consistent visual style"
+      ],
+      "priority": 1,
+      "passes": true,
+      "labels": [
+        "landing-page",
+        "ui",
+        "responsive"
+      ],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US003",
+      "title": "Landing Page - Featured Cards Showcase",
+      "description": "As a visitor, I want to see sample cards with different rarities, so I can understand the card system before opening packs.",
+      "acceptanceCriteria": [
+        "Display 3-4 sample cards (common, rare, legendary)",
+        "Cards use actual Card.svelte component for consistency",
+        "Hover effects: card tilt and glow",
+        "Card names and stats visible",
+        "Rarity colors match RARITY_CONFIG",
+        "Mobile-friendly layout"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "landing-page",
+        "ui",
+        "cards"
+      ]
+    },
+    {
+      "id": "US004",
+      "title": "Landing Page - Pack Preview Animation",
+      "description": "As a visitor, I want to see an animated pack preview, so I can get excited about opening packs.",
+      "acceptanceCriteria": [
+        "Looping pack opening animation (2-3 seconds)",
+        "Smooth pack tear effect",
+        "Card reveal preview (1-2 cards flash)",
+        "'Try It Now' button below animation",
+        "Animation optimized for 60fps",
+        "Plays automatically on page load"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "landing-page",
+        "animation",
+        "ui"
+      ]
+    },
+    {
+      "id": "US005",
+      "title": "Landing Page - Footer",
+      "description": "As a visitor, I want footer navigation, so I can find additional information and legal links.",
+      "acceptanceCriteria": [
+        "Copyright info with current year",
+        "Links: About, Privacy, Terms (placeholder pages for now)",
+        "Social media icons (Twitter/X, Discord)",
+        "Responsive layout",
+        "Dark theme matching site aesthetic"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "landing-page",
+        "ui",
+        "legal"
+      ]
+    },
+    {
+      "id": "US006",
+      "title": "Pack Opening - Pack Tear Animation",
+      "description": "As a player, I want a satisfying pack tear animation, so the pack opening feels premium and exciting.",
+      "acceptanceCriteria": [
+        "1.5-2 second animation duration",
+        "CSS/SVG-based pack tear effect",
+        "Particle effects when pack opens",
+        "Smooth easing (ease-out timing)",
+        "Sound effect placeholder (comment where audio goes)",
+        "Animation triggers on pack generation",
+        "Performs at 60fps"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "animation",
+        "vfx"
+      ]
+    },
+    {
+      "id": "US007",
+      "title": "Pack Opening - Staggered Card Reveal",
+      "description": "As a player, I want cards to reveal one-by-one, so I can anticipate and appreciate each card pull.",
+      "acceptanceCriteria": [
+        "Cards flip individually with 0.3s delay between each",
+        "3D flip animation using CSS transform: rotateY",
+        "Rarity-specific reveal effects (more particles for rarer cards)",
+        "'Skip' button reveals all cards immediately",
+        "Animation cancellable via click/tap",
+        "Smooth timing functions"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "animation",
+        "ui"
+      ]
+    },
+    {
+      "id": "US008",
+      "title": "Pack Opening - Results Screen",
+      "description": "As a player, I want to see all revealed cards in a results view, so I can review my pull and decide what to do next.",
+      "acceptanceCriteria": [
+        "Display all 6-7 revealed cards",
+        "Cards sorted by rarity (mythic first, common last)",
+        "'Open Another Pack' button (primary action)",
+        "'Share This Pull' button (secondary action)",
+        "Card count indicator (e.g., '6 cards revealed')",
+        "Layout optimized for mobile and desktop",
+        "Cards interactive (tap/click to inspect)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "ui",
+        "responsive"
+      ]
+    },
+    {
+      "id": "US009",
+      "title": "Pack State Machine - Idle State",
+      "description": "As a developer, I want the pack state machine to have an idle state, so the system knows when a user is ready to open a pack.",
+      "acceptanceCriteria": [
+        "Initial state is 'idle'",
+        "Open Pack button triggers state transition",
+        "Loading spinners not shown in idle state",
+        "Pack preview visible",
+        "State persisted in Nanostores"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "state",
+        "logic"
+      ]
+    },
+    {
+      "id": "US010",
+      "title": "Pack State Machine - Generating State",
+      "description": "As a developer, I want the pack state machine to have a generating state, so the UI can show loading feedback during pack creation.",
+      "acceptanceCriteria": [
+        "State transitions to 'generating' when pack creation starts",
+        "Loading spinner/progress indicator displayed",
+        "Pack generation completes within 500ms",
+        "State transitions to 'pack_animate' on completion",
+        "Error handling if generation fails"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "state",
+        "logic"
+      ]
+    },
+    {
+      "id": "US011",
+      "title": "Pack State Machine - Pack Animate State",
+      "description": "As a developer, I want the pack state machine to have a pack_animate state, so the tear animation plays before revealing cards.",
+      "acceptanceCriteria": [
+        "State transitions to 'pack_animate' after generation",
+        "Pack tear animation triggers",
+        "UI shows animation, no cards yet",
+        "State transitions to 'cards_ready' when animation completes",
+        "Animation duration: 1.5-2 seconds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "state",
+        "animation"
+      ]
+    },
+    {
+      "id": "US012",
+      "title": "Pack State Machine - Cards Ready State",
+      "description": "As a developer, I want the pack state machine to have a cards_ready state, so the system knows cards are ready for reveal.",
+      "acceptanceCriteria": [
+        "State transitions to 'cards_ready' after pack animation",
+        "Cards generated but not yet displayed",
+        "Reveal phase begins automatically",
+        "State transitions to 'revealing'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "state",
+        "logic"
+      ]
+    },
+    {
+      "id": "US013",
+      "title": "Pack State Machine - Revealing State",
+      "description": "As a developer, I want the pack state machine to have a revealing state, so cards flip one-by-one.",
+      "acceptanceCriteria": [
+        "State transitions to 'revealing' when cards start flipping",
+        "Each card flip tracked individually",
+        "Skip button available during reveal",
+        "State transitions to 'results' when all cards revealed"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "state",
+        "animation"
+      ]
+    },
+    {
+      "id": "US014",
+      "title": "Pack State Machine - Results State",
+      "description": "As a developer, I want the pack state machine to have a results state, so users can review their pull.",
+      "acceptanceCriteria": [
+        "State transitions to 'results' when reveal complete",
+        "All cards displayed in grid view",
+        "Action buttons available (Open Another, Share)",
+        "State persists until user initiates new pack"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "state",
+        "ui"
+      ]
+    },
+    {
+      "id": "US015",
+      "title": "Social Sharing - Card Image Generation",
+      "description": "As a player, I want to generate shareable images of my cards, so I can post them on social media.",
+      "acceptanceCriteria": [
+        "Function: generateCardImage(card: Card) returns Promise<Blob>",
+        "Uses Canvas API or html2canvas library",
+        "Renders card as high-res PNG (2x for retina displays)",
+        "Includes card artwork, stats, name, rarity indicator",
+        "Transparent background for versatility",
+        "Generation completes within 2 seconds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "social",
+        "images",
+        "utility"
+      ]
+    },
+    {
+      "id": "US016",
+      "title": "Social Sharing - Pack Pull Collage",
+      "description": "As a player, I want to generate a collage of all cards in my pack, so I can share my entire pull.",
+      "acceptanceCriteria": [
+        "Function: generatePackImage(cards: Card[]) returns Promise<Blob>",
+        "Creates grid layout of all 6-7 cards",
+        "Includes DadDeck™ branding/logo",
+        "Optimized for Twitter/X, Discord sharing",
+        "High-resolution output (1200x675px for 16:9 aspect)",
+        "Generation completes within 3 seconds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "social",
+        "images",
+        "utility"
+      ]
+    },
+    {
+      "id": "US017",
+      "title": "Social Sharing - Twitter Integration",
+      "description": "As a player, I want to share my pulls to Twitter, so I can show off my cards.",
+      "acceptanceCriteria": [
+        "Function: shareToTwitter(text: string, imageUrl: string) opens Twitter intent",
+        "Pre-fills tweet with card highlights",
+        "Includes image URL (if uploaded)",
+        "Opens in new tab/window",
+        "Default text: 'Just pulled [Card Name] in DadDeck! 🎴 #DadDeck'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "social",
+        "twitter",
+        "integration"
+      ]
+    },
+    {
+      "id": "US018",
+      "title": "Social Sharing - Discord Integration",
+      "description": "As a player, I want to share my pulls to Discord, so I can show my friends.",
+      "acceptanceCriteria": [
+        "Function: shareToDiscord(imageUrl: string) copies image to clipboard",
+        "Instructions for pasting in Discord",
+        "Fallback: downloads image if clipboard API unavailable",
+        "User-friendly notification on success/failure"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "discord",
+        "integration"
+      ]
+    },
+    {
+      "id": "US019",
+      "title": "Social Sharing - Download Image",
+      "description": "As a player, I want to download card images, so I can save my pulls locally.",
+      "acceptanceCriteria": [
+        "Function: downloadImage(imageUrl: string, filename: string) triggers download",
+        "Auto-generates filename: 'daddeck-pull-[timestamp].png'",
+        "Works on desktop and mobile",
+        "Progress indicator for large files"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "download",
+        "utility"
+      ]
+    },
+    {
+      "id": "US020",
+      "title": "Social Sharing - Share Modal",
+      "description": "As a player, I want a share modal dialog, so I can choose how to share my pull.",
+      "acceptanceCriteria": [
+        "Modal opens on 'Share This Pull' button click",
+        "Platform buttons: Twitter/X, Discord, Download",
+        "Preview of shareable image",
+        "Close button (X) and ESC key support",
+        "Backdrop click closes modal",
+        "Accessible (ARIA labels, keyboard navigation)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "social",
+        "ui",
+        "modal"
+      ]
+    },
+    {
+      "id": "US021",
+      "title": "Collection - LocalStorage Persistence",
+      "description": "As a player, I want my opened packs saved to browser storage, so I can view my collection later.",
+      "acceptanceCriteria": [
+        "Pack data saved to LocalStorage on open",
+        "Uses @nanostores/persistent for reactive storage",
+        "Stores: pack ID, timestamp, cards array",
+        "Automatic save on state change",
+        "Storage quota management (warn if full)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "collection",
+        "storage",
+        "persistence"
+      ]
+    },
+    {
+      "id": "US022",
+      "title": "Collection - State Management",
+      "description": "As a developer, I want collection state managed in Nanostores, so components can react to changes.",
+      "acceptanceCriteria": [
+        "Store type: CollectionState with openedPacks, uniqueCards, totalCards, rarityCounts",
+        "Action: savePackToCollection(pack: Pack) adds to collection",
+        "Action: getCollectionStats() returns CollectionStats",
+        "Action: clearCollection() resets all data",
+        "Action: exportCollection() returns JSON string"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "collection",
+        "state",
+        "stores"
+      ]
+    },
+    {
+      "id": "US023",
+      "title": "Collection - Gallery View",
+      "description": "As a player, I want to view all my collected cards in a gallery, so I can see what I've pulled.",
+      "acceptanceCriteria": [
+        "Grid view of all owned cards",
+        "Responsive: 2 col mobile, 4 col tablet, 6 col desktop",
+        "Cards display artwork, name, rarity indicator",
+        "Duplicate count badge (e.g., 'x3' for 3 copies)",
+        "Scrollable with infinite loading if large collection"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "gallery"
+      ]
+    },
+    {
+      "id": "US024",
+      "title": "Collection - Filter by Rarity",
+      "description": "As a player, I want to filter my collection by rarity, so I can find specific cards.",
+      "acceptanceCriteria": [
+        "Filter buttons: All, Common, Uncommon, Rare, Epic, Legendary, Mythic",
+        "Buttons use rarity colors from RARITY_CONFIG",
+        "Active filter highlighted",
+        "Gallery updates reactively on filter change",
+        "Filter state persisted in URL query params"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "filter"
+      ]
+    },
+    {
+      "id": "US025",
+      "title": "Collection - Filter by Type",
+      "description": "As a player, I want to filter my collection by dad type, so I can see all BBQ Dads, etc.",
+      "acceptanceCriteria": [
+        "Dropdown or button group for dad types",
+        "16 type options: BBQ_DAD, FIX_IT_DAD, GOLF_DAD, etc.",
+        "Supports multi-select (view multiple types at once)",
+        "Gallery updates reactively",
+        "Filter state persisted"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "filter"
+      ]
+    },
+    {
+      "id": "US026",
+      "title": "Collection - Search by Name",
+      "description": "As a player, I want to search my collection by card name, so I can find specific cards.",
+      "acceptanceCriteria": [
+        "Search input field with debounce (300ms)",
+        "Case-insensitive partial matching",
+        "Searches card names and subtitles",
+        "Clear button (X) to reset search",
+        "Results update reactively"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "search"
+      ]
+    },
+    {
+      "id": "US027",
+      "title": "Collection - Sort Options",
+      "description": "As a player, I want to sort my collection, so I can view cards in different orders.",
+      "acceptanceCriteria": [
+        "Sort dropdown: Rarity (desc), Name (asc), Date Obtained (desc)",
+        "Default sort: Rarity (desc)",
+        "Secondary sort: Name (asc) within rarity",
+        "Sort state persisted",
+        "Smooth animation when reordering"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "sort"
+      ]
+    },
+    {
+      "id": "US028",
+      "title": "Collection - Stats Header",
+      "description": "As a player, I want to see my collection stats, so I know how many cards I own.",
+      "acceptanceCriteria": [
+        "Header displays: 'You own X unique cards from Y packs'",
+        "Rarity breakdown: 'X Mythic, Y Legendary, ...'",
+        "Total card count (including duplicates)",
+        "Completion percentage (e.g., '47/50 cards collected')",
+        "Stats update reactively on collection change"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "stats"
+      ]
+    },
+    {
+      "id": "US029",
+      "title": "Collection - Export/Import",
+      "description": "As a player, I want to export my collection, so I can back it up or share it.",
+      "acceptanceCriteria": [
+        "Export button downloads JSON file",
+        "Filename: 'daddeck-collection-[timestamp].json'",
+        "Import button uploads JSON file",
+        "Validation on import (check format, required fields)",
+        "Merge or replace options on import",
+        "Success/error notifications"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "import-export",
+        "utility"
+      ]
+    },
+    {
+      "id": "US030",
+      "title": "Collection - Clear Collection",
+      "description": "As a player, I want to clear my collection, so I can start fresh.",
+      "acceptanceCriteria": [
+        "Clear button in settings or collection page",
+        "Confirmation dialog: 'Are you sure? This cannot be undone.'",
+        "Clears LocalStorage",
+        "Resets all stats to zero",
+        "Confirmation notification on success"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "utility",
+        "settings"
+      ]
+    },
+    {
+      "id": "US031",
+      "title": "Routing - Collection Page",
+      "description": "As a player, I want to access my collection via a dedicated route, so I can bookmark it.",
+      "acceptanceCriteria": [
+        "Route: /collection",
+        "Uses CollectionGallery component",
+        "Page title: 'My Collection - DadDeck™'",
+        "Meta description for SEO",
+        "Link from landing page ('My Collection' button in nav)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "routing",
+        "pages",
+        "navigation"
+      ]
+    },
+    {
+      "id": "US032",
+      "title": "Routing - Navigation Component",
+      "description": "As a player, I want navigation links, so I can move between pages.",
+      "acceptanceCriteria": [
+        "Nav component with: Logo, Home, Collection links",
+        "Sticky header on scroll",
+        "Mobile hamburger menu for small screens",
+        "Active page highlighted",
+        "Smooth transitions between routes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "routing",
+        "navigation",
+        "ui"
+      ]
+    },
+    {
+      "id": "US033",
+      "title": "Card Component - Stats Visualization",
+      "description": "As a player, I want to see card stats visually, so I can quickly understand a card's strengths.",
+      "acceptanceCriteria": [
+        "8 stat bars: Dad Joke, Grill Skill, Fix-It, Nap Power, Remote Control, Thermostat, Sock & Sandal, Beer Snob",
+        "Each bar shows 0-100 value with color gradient",
+        "Bar length proportional to stat value",
+        "Stat label and value visible",
+        "High stats (80+) highlighted with glow effect",
+        "Responsive layout (stacks on mobile)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "cards",
+        "ui",
+        "stats"
+      ]
+    },
+    {
+      "id": "US034",
+      "title": "Card Component - Holographic Effects",
+      "description": "As a player, I want holographic cards to have special effects, so they feel premium.",
+      "acceptanceCriteria": [
+        "Holo variants: standard, reverse, full_art, prismatic",
+        "Sparkle particle animation based on rarity",
+        "Tilt effect on mouse move (parallax)",
+        "Rainbow gradient overlay for prismatic",
+        "Effects perform at 60fps",
+        "Disabled on low-end devices (performance check)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "cards",
+        "vfx",
+        "animation"
+      ]
+    },
+    {
+      "id": "US035",
+      "title": "Card Component - Rarity Glow",
+      "description": "As a player, I want cards to glow based on rarity, so I can quickly identify valuable cards.",
+      "acceptanceCriteria": [
+        "Glow color from RARITY_CONFIG",
+        "Glow intensity scales with rarity",
+        "CSS box-shadow animation (pulse)",
+        "Glow on hover and for rare+ rarities",
+        "Performance optimized (uses GPU acceleration)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "cards",
+        "vfx",
+        "ui"
+      ]
+    },
+    {
+      "id": "US036",
+      "title": "Pack Generator - Rarity Distribution",
+      "description": "As a developer, I want the pack generator to follow rarity distribution rules, so packs are balanced.",
+      "acceptanceCriteria": [
+        "Slot 1-3: Common (100%)",
+        "Slot 4-5: Uncommon or better (20% rare, 5% epic, 1% legendary+)",
+        "Slot 6: Rare or better (50% rare, 10% epic, 2% legendary+, 0.1% mythic)",
+        "Holo chance: 1 in 6 cards (random slot)",
+        "Distribution mathematically verified",
+        "Unit tests for edge cases"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-generator",
+        "logic",
+        "balance"
+      ]
+    },
+    {
+      "id": "US037",
+      "title": "Pack Generator - Card Selection",
+      "description": "As a developer, I want the pack generator to select cards randomly from the appropriate pool, so pulls are varied.",
+      "acceptanceCriteria": [
+        "Function: selectCards(rarity: Rarity) returns Card[]",
+        "Filters CARDS database by rarity",
+        "Random selection without replacement within pack",
+        "Prevents duplicate cards in same pack (if possible)",
+        "Fallback: allow duplicates if pool exhausted"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-generator",
+        "logic",
+        "random"
+      ]
+    },
+    {
+      "id": "US038",
+      "title": "Pack Generator - Holo Variant Assignment",
+      "description": "As a developer, I want holo variants assigned randomly, so packs feel exciting.",
+      "acceptanceCriteria": [
+        "Function: rollHolo() returns HoloVariant",
+        "Distribution: 80% none, 15% standard, 3% reverse, 1.5% full_art, 0.5% prismatic",
+        "Prismatic only for mythic rarity",
+        "Full art only for legendary+",
+        "Holo stored in card.holoVariant field"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "pack-generator",
+        "logic",
+        "random"
+      ]
+    },
+    {
+      "id": "US039",
+      "title": "Card Database - Populate 50 Cards",
+      "description": "As a developer, I want 50 unique cards in the database, so players have variety to collect.",
+      "acceptanceCriteria": [
+        "50 cards across all 16 dad types",
+        "Rarity distribution: 20 common, 15 uncommon, 8 rare, 4 epic, 2 legendary, 1 mythic",
+        "Each card has: id, name, subtitle, type, rarity, stats, flavorText, abilities, series, cardNumber, totalInSeries, artist",
+        "Valid stats (0-100) for all 8 attributes",
+        "Creative names and abilities (satirical tone)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "database",
+        "cards",
+        "content"
+      ]
+    },
+    {
+      "id": "US040",
+      "title": "Card Database - Card Artwork Placeholders",
+      "description": "As a developer, I want placeholder artwork for all cards, so the UI is complete.",
+      "acceptanceCriteria": [
+        "Placeholder images in /public/images/cards/",
+        "Filenames match card artwork paths",
+        "Dimensions: 400x550px (standard card ratio)",
+        "2x resolution for retina (800x1100px)",
+        "PNG format with transparency",
+        "Distinct visual per dad type (color-coded)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "database",
+        "assets",
+        "images"
+      ]
+    },
+    {
+      "id": "US041",
+      "title": "Testing - Pack Generation Tests",
+      "description": "As a developer, I want tests for pack generation, so I can verify rarity distribution.",
+      "acceptanceCriteria": [
+        "Test: pack has exactly 6-7 cards",
+        "Test: slot 1-3 always common",
+        "Test: slot 6 always rare or better",
+        "Test: holo chance approximately 1 in 6",
+        "Test: no duplicate cards in same pack (when possible)",
+        "Test: all cards valid (required fields present)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "testing",
+        "pack",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US042",
+      "title": "Testing - Card Database Tests",
+      "description": "As a developer, I want tests for card data, so I can catch data errors.",
+      "acceptanceCriteria": [
+        "Test: all cards have unique IDs",
+        "Test: all stats 0-100",
+        "Test: all rarities valid",
+        "Test: all types valid (16 dad types or ITEM)",
+        "Test: all holo variants valid",
+        "Test: required fields present (name, subtitle, etc.)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "testing",
+        "database",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US043",
+      "title": "Testing - Random Utility Tests",
+      "description": "As a developer, I want tests for random utilities, so I can verify distribution accuracy.",
+      "acceptanceCriteria": [
+        "Test: randomInt() within bounds",
+        "Test: randomChoice() selects from array",
+        "Test: distribution matches expected probabilities",
+        "Test: seeded random produces consistent results",
+        "Test: no bias in random selection"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "testing",
+        "utilities",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US044",
+      "title": "Testing - UI State Tests",
+      "description": "As a developer, I want tests for UI state transitions, so I can verify the flow works.",
+      "acceptanceCriteria": [
+        "Test: PackState transitions correctly",
+        "Test: state persists in store",
+        "Test: state reset on new pack",
+        "Test: state recoverable from crash"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "testing",
+        "state",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US045",
+      "title": "Performance - Initial Load Optimization",
+      "description": "As a developer, I want the initial page load to be under 3 seconds, so users don't bounce.",
+      "acceptanceCriteria": [
+        "Measure load time with Lighthouse",
+        "Optimize images (WebP format, lazy loading)",
+        "Code splitting for routes",
+        "Minimize JavaScript bundle",
+        "Target: <3s on 3G connection"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "performance",
+        "optimization",
+        "bundle"
+      ]
+    },
+    {
+      "id": "US046",
+      "title": "Performance - Animation Optimization",
+      "description": "As a developer, I want animations to run at 60fps, so the experience feels smooth.",
+      "acceptanceCriteria": [
+        "Profile with Chrome DevTools Performance tab",
+        "Use CSS transforms (GPU accelerated)",
+        "Avoid layout thrashing",
+        "Debounce expensive operations",
+        "Target: 60fps on mid-tier mobile (iPhone 12)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "performance",
+        "animation",
+        "optimization"
+      ]
+    },
+    {
+      "id": "US047",
+      "title": "Accessibility - Keyboard Navigation",
+      "description": "As a keyboard user, I want to navigate the interface without a mouse, so I can use the site.",
+      "acceptanceCriteria": [
+        "All interactive elements keyboard accessible",
+        "Tab order logical (visual flow)",
+        "Focus indicators visible (outline)",
+        "Enter/Space activates buttons",
+        "Escape closes modals",
+        "Skip navigation link"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "keyboard"
+      ]
+    },
+    {
+      "id": "US048",
+      "title": "Accessibility - ARIA Labels",
+      "description": "As a screen reader user, I want descriptive ARIA labels, so I can understand the interface.",
+      "acceptanceCriteria": [
+        "All images have alt text",
+        "Buttons have aria-label if icon-only",
+        "Regions marked with landmark roles",
+        "Live regions for dynamic content",
+        "Error messages announced"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "screen-reader"
+      ]
+    },
+    {
+      "id": "US049",
+      "title": "Mobile Responsiveness - Touch Targets",
+      "description": "As a mobile user, I want touch targets large enough to tap, so the site is usable.",
+      "acceptanceCriteria": [
+        "Buttons min 44x44px (iOS guideline)",
+        "Links min 44x44px",
+        "Adequate spacing between interactive elements",
+        "No hover-only interactions (use click/tap)",
+        "Pinch zoom not broken"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "responsive",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "US050",
+      "title": "Deployment - Production Build",
+      "description": "As a developer, I want a production build, so I can deploy to Vercel.",
+      "acceptanceCriteria": [
+        "Build completes without errors",
+        "Bundle size <500KB gzipped",
+        "All assets optimized",
+        "Environment variables configured",
+        "Deploy to Vercel successful",
+        "Post-deployment smoke test passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "deployment",
+        "vercel",
+        "build"
+      ]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-17T01:00:00Z",
+    "version": "1.0.0",
+    "updatedAt": "2026-01-17T07:25:06.364Z"
+  }
+}
