@@ -219,3 +219,45 @@ function (US019)","is_error":false}]},"parent_tool_use_id":null,"session_id":"a1
 {"type":"assistant","message":{"id":"msg_202601171613307191b9f72aa04422","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 20 - US020: Social Sharing - Share Modal
+*2026-01-17T08:24:24.394Z (651s)*
+
+**Status:** Completed
+
+---
+## ✓ Iteration 21 - US021: Collection - LocalStorage Persistence
+*2026-01-17T08:29:59.970Z (335s)*
+
+**Status:** Completed
+
+**Notes:**
+oCollection`, `clearCollection`, `getPackById`, etc.)\n  - Import/export functionality\n- **`src/stores/pack.ts`**: Integrated collection saving with `addPackToCollection()` call in `openNewPack()`, added `storageError` state for user feedback\n\n**Acceptance criteria met:**\n- ✅ Pack data saved to LocalStorage on open\n- ✅ Uses @nanostores/persistent for reactive storage\n- ✅ Stores: pack ID, timestamp, cards array\n- ✅ Automatic save on state change\n- ✅ Storage quota management (warn if full)
+
+---
+## ✓ Iteration 22 - US022: Collection - State Management
+*2026-01-17T08:31:50.539Z (110s)*
+
+**Status:** Completed
+
+**Notes:**
+derived from the underlying `Collection` data. This follows the single-source-of-truth principle—store raw data, compute derived values on demand.\n\n**Type safety for US022**: The `CollectionState` and `CollectionStats` interfaces explicitly define what UI components can access. This separates \"storage shape\" (`Collection`) from \"UI shape\" (`CollectionState`), allowing the internal data structure to evolve without breaking components.\n`─────────────────────────────────────────────────`\n\n
+
+---
+## ✓ Iteration 23 - US023: Collection - Gallery View
+*2026-01-17T08:37:02.992Z (311s)*
+
+**Status:** Completed
+
+**Notes:**
+rarity sorting\n\n2. **`src/pages/index.astro`** and **`src/pages/pack.astro`**:\n   - Added \"My Collection\" navigation link\n\n### Acceptance Criteria Met\n- ✅ Grid view of all owned cards\n- ✅ Responsive: 2 col mobile, 4 col tablet, 6 col desktop\n- ✅ Cards display artwork, name, rarity indicator (via existing Card component)\n- ✅ Duplicate count badge (e.g., 'x3' for 3 copies)\n- ✅ Scrollable with infinite loading (IntersectionObserver-based)\n\n**Build Status:** ✅ Build successful (1.95s)
+
+---
+## ✓ Iteration 24 - US024: Collection - Filter by Rarity
+*2026-01-17T08:39:40.251Z (156s)*
+
+**Status:** Completed
+
+**Notes:**
+and dynamic rendering.\n\n**Shareable State Pattern**: By persisting filter state in the URL, users can share their filtered collection views with others (e.g., `your-site.com/collection?rarity=rare`). This is a common web pattern that improves shareability and bookmarkability.\n\n**SSR Compatibility**: The `typeof window === 'undefined'` checks ensure the code doesn't crash during server-side rendering (Astro builds pages statically first).\n─────────────────────────────────────────────────\n\n
+
+---

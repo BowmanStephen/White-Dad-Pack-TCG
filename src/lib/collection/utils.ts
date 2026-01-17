@@ -1,4 +1,4 @@
-import type { Pack, PackCard, Rarity, CollectionDisplayCard } from '../../types';
+import type { Pack, PackCard, Rarity, CollectionDisplayCard, DadType } from '../../types';
 import { RARITY_ORDER } from '../../types';
 
 /**
@@ -86,6 +86,14 @@ export function filterCardsBySearch(cards: CollectionDisplayCard[], searchTerm: 
 export function filterCardsByHolo(cards: CollectionDisplayCard[], holoOnly: boolean): CollectionDisplayCard[] {
   if (!holoOnly) return cards;
   return cards.filter((card) => card.isHolo);
+}
+
+/**
+ * Filter cards by dad types (multi-select)
+ */
+export function filterCardsByTypes(cards: CollectionDisplayCard[], selectedTypes: Set<DadType>): CollectionDisplayCard[] {
+  if (selectedTypes.size === 0) return cards;
+  return cards.filter((card) => selectedTypes.has(card.type));
 }
 
 /**

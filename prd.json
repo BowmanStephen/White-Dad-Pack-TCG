@@ -402,12 +402,13 @@
         "Accessible (ARIA labels, keyboard navigation)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "social",
         "ui",
         "modal"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US021",
@@ -421,12 +422,13 @@
         "Storage quota management (warn if full)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "storage",
         "persistence"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US022",
@@ -440,12 +442,13 @@
         "Action: exportCollection() returns JSON string"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "state",
         "stores"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US023",
@@ -459,12 +462,13 @@
         "Scrollable with infinite loading if large collection"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "ui",
         "gallery"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US024",
@@ -478,12 +482,13 @@
         "Filter state persisted in URL query params"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "collection",
         "ui",
         "filter"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US025",
@@ -1999,6 +2004,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T08:13:33.498Z"
+    "updatedAt": "2026-01-17T08:39:41.258Z"
   }
 }

@@ -8,12 +8,13 @@
     filterCardsBySearch,
     filterCardsByRarity,
     filterCardsByHolo,
+    filterCardsByTypes,
     getPaginatedCards,
     formatCardCount,
   } from '../../lib/collection/utils';
-  import type { CollectionDisplayCard, Rarity } from '../../types';
+  import type { CollectionDisplayCard, Rarity, DadType } from '../../types';
   import Card from '../card/Card.svelte';
-  import { RARITY_CONFIG } from '../../types';
+  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
 
   // State
   let allCards: CollectionDisplayCard[] = [];
@@ -27,12 +28,21 @@
   let searchTerm = '';
   let selectedRarity: Rarity | null = null;
   let holoOnly = false;
+  let selectedTypes = new Set<DadType>();
+  let showTypeFilter = false;
 
   // URL query param helpers
   function getQueryParam(param: string): string | null {
     if (typeof window === 'undefined') return null;
     const params = new URLSearchParams(window.location.search);
     return params.get(param);
+  }
+
+  function getQueryParamArray(param: string): string[] {
+    if (typeof window === 'undefined') return [];
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get(param);
+    return value ? value.split(',').map(v => v.trim()) : [];
   }
 
   function setQueryParam(param: string, value: string | null) {
@@ -46,10 +56,28 @@
     window.history.replaceState({}, '', url.toString());
   }
 
+  function setQueryParamArray(param: string, values: string[]) {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (values.length === 0) {
+      url.searchParams.delete(param);
+    } else {
+      url.searchParams.set(param, values.join(','));
+    }
+    window.history.replaceState({}, '', url.toString());
+  }
+
   function initializeFromURL() {
     const rarityParam = getQueryParam('rarity');
     if (rarityParam && Object.keys(RARITY_CONFIG).includes(rarityParam)) {
       selectedRarity = rarityParam as Rarity;
+    }
+
+    const typeParam = getQueryParamArray('type');
+    const validTypes = typeParam.filter((t): t is DadType => Object.keys(DAD_TYPE_NAMES).includes(t));
+    if (validTypes.length > 0) {
+      selectedTypes = new Set(validTypes);
+      showTypeFilter = true;
     }
   }
 
@@ -78,6 +106,9 @@
     // Apply holo filter
     filtered = filterCardsByHolo(filtered, holoOnly);
 
+    // Apply type filter
+    filtered = filterCardsByTypes(filtered, selectedTypes);
+
     // Apply search filter
     filtered = filterCardsBySearch(filtered, searchTerm);
 
@@ -101,6 +132,7 @@
     // Apply all filters
     filtered = filterCardsByRarity(filtered, selectedRarity);
     filtered = filterCardsByHolo(filtered, holoOnly);
+    filtered = filterCardsByTypes(filtered, selectedTypes);
     filtered = filterCardsBySearch(filtered, searchTerm);
 
     const result = getPaginatedCards(filtered, page, pageSize);
@@ -137,6 +169,34 @@
     holoOnly = !holoOnly;
     resetPagination();
   }
+
+  // Handle type filter toggle
+  function toggleTypeFilter() {
+    showTypeFilter = !showTypeFilter;
+  }
+
+  // Handle type selection
+  function toggleTypeSelection(type: DadType) {
+    const newTypes = new Set(selectedTypes);
+    if (newTypes.has(type)) {
+      newTypes.delete(type);
+    } else {
+      newTypes.add(type);
+    }
+    selectedTypes = newTypes;
+    setQueryParamArray('type', Array.from(newTypes));
+    resetPagination();
+  }
+
+  // Clear all type filters
+  function clearTypeFilters() {
+    selectedTypes = new Set();
+    setQueryParamArray('type', []);
+    resetPagination();
+  }
+
+  // Get all dad types as an array for iteration
+  const dadTypes: DadType[] = Object.keys(DAD_TYPE_NAMES) as DadType[];
 
   // Setup intersection observer for infinite scroll
   onMount(() => {
@@ -217,7 +277,43 @@
     >
       ✨ Holo Only
     </button>
+
+    <!-- Type Filter Toggle -->
+    <button
+      class="type-filter-toggle"
+      class:active={showTypeFilter}
+      on:click={toggleTypeFilter}
+    >
+      🏷️ Types {selectedTypes.size > 0 ? `(${selectedTypes.size})` : ''}
+    </button>
   </div>
+
+  <!-- Type Filter Panel (collapsible) -->
+  {#if showTypeFilter}
+    <div class="type-filter-panel">
+      <div class="type-filter-header">
+        <h3 class="type-filter-title">Filter by Dad Type</h3>
+        {#if selectedTypes.size > 0}
+          <button class="clear-types-button" on:click={clearTypeFilters}>
+            Clear All
+          </button>
+        {/if}
+      </div>
+      <div class="type-grid">
+        {#each dadTypes as type}
+          {@const isSelected = selectedTypes.has(type)}
+          <button
+            class="type-button"
+            class:active={isSelected}
+            on:click={() => toggleTypeSelection(type)}
+          >
+            <span class="type-icon">{DAD_TYPE_ICONS[type]}</span>
+            <span class="type-name">{DAD_TYPE_NAMES[type]}</span>
+          </button>
+        {/each}
+      </div>
+    </div>
+  {/if}
 
   <!-- Stats Bar -->
   <div class="stats-bar">
@@ -424,6 +520,143 @@
     border-color: #ec4899;
     color: white;
     box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+  }
+
+  .type-filter-toggle {
+    padding: 0.5rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .type-filter-toggle:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+  }
+
+  .type-filter-toggle.active {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: #fbbf24;
+    color: #fbbf24;
+  }
+
+  /* Type Filter Panel */
+  .type-filter-panel {
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(8px);
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .type-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .type-filter-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+  }
+
+  .clear-types-button {
+    padding: 0.25rem 0.75rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 0.375rem;
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .clear-types-button:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+  }
+
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .type-grid {
+      grid-template-columns: repeat(8, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .type-grid {
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.75rem;
+    }
+  }
+
+  .type-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 70px;
+  }
+
+  .type-button:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+    border-color: rgba(71, 85, 105, 0.8);
+  }
+
+  .type-button.active {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
+    border-color: #fbbf24;
+    color: #fbbf24;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+  }
+
+  .type-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .type-name {
+    font-size: 0.6rem;
+    text-align: center;
+    line-height: 1.1;
+    word-break: break-word;
   }
 
   /* Stats Bar */
