@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BattleArena from '../components/battle/BattleArena.svelte';
+---
+
+<BaseLayout
+  title="Card Battles - DadDeck"
+  description="Battle your cards against AI opponents! Auto-battle system with stats-based combat. Climb the ranked ladder and become the ultimate dad!"
+>
+  <main id="main-content" class="container mx-auto px-4 py-8">
+    <BattleArena client:load />
+  </main>
+</BaseLayout>
