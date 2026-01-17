@@ -24,6 +24,7 @@
     { href: '/', label: 'Home' },
     { href: '/pack', label: 'Open Pack', isCta: true },
     { href: '/collection', label: 'My Collection' },
+    { href: '/friends', label: 'Friends' },
     { href: '/profile', label: 'Profile' },
     { href: '/voting', label: 'Vote' },
     { href: '/upgrade', label: 'Upgrades' },

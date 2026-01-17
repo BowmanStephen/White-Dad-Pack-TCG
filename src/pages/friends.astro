@@ -1,0 +1,326 @@
+---
+/**
+ * Friends Page
+ *
+ * Main social hub for managing friends, viewing activity feed,
+ * and handling friend requests.
+ */
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FriendList from '@/components/friends/FriendList.svelte';
+import FriendFinder from '@/components/friends/FriendFinder.svelte';
+import FriendRequests from '@/components/friends/FriendRequests.svelte';
+import FriendActivityFeed from '@/components/friends/FriendActivityFeed.svelte';
+import { getMyFriendCode, getFriendCount, getPendingRequestCount } from '@/stores/friends';
+import { profile } from '@/stores/profile';
+---
+
+<BaseLayout title="Friends - DadDeck™">
+  <main class:container={true}>
+    <!-- Header -->
+    <header class="friends-header">
+      <h1>Friends 👥</h1>
+      <p class="subtitle">Connect with other dads and share the pack opening experience!</p>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-icon">👥</span>
+          <span class="stat-value">{getFriendCount()}</span>
+          <span class="stat-label">Friends</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">📬</span>
+          <span class="stat-value">{getPendingRequestCount()}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">🔗</span>
+          <span class="stat-value code">{getMyFriendCode()}</span>
+          <span class="stat-label">Your Code</span>
+        </div>
+      </div>
+
+      <!-- Add Friend Button -->
+      <button class="btn-add-friend" on:click={() => window.dispatchEvent(new CustomEvent('open-friend-finder'))}>
+        ➕ Add Friend
+      </button>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="friends-grid">
+      <!-- Left Column: Friends List & Requests -->
+      <div class="left-column">
+        <!-- Friend Requests Section -->
+        <section class="section requests-section">
+          <div class="section-header">
+            <h2>Friend Requests 📨</h2>
+            <span class="badge count">{getPendingRequestCount()}</span>
+          </div>
+          <FriendRequests client:load />
+        </section>
+
+        <!-- Friends List Section -->
+        <section class="section friends-section">
+          <div class="section-header">
+            <h2>My Friends 👥</h2>
+            <span class="badge count">{getFriendCount()}</span>
+          </div>
+          <FriendList client:load />
+        </section>
+      </div>
+
+      <!-- Right Column: Activity Feed -->
+      <div class="right-column">
+        <section class="section activity-section">
+          <div class="section-header">
+            <h2>Friend Activity 📊</h2>
+          </div>
+          <FriendActivityFeed client:load />
+        </section>
+
+        <!-- Quick Actions Card -->
+        <section class="section quick-actions">
+          <h3>Quick Actions ⚡</h3>
+          <div class="action-grid">
+            <a href="/leaderboard" class="action-card">
+              <span class="action-icon">🏆</span>
+              <span class="action-label">Leaderboard</span>
+            </a>
+            <a href="/trade" class="action-card">
+              <span class="action-icon">🤝</span>
+              <span class="action-label">Trade</span>
+            </a>
+            <a href="/collection" class="action-card">
+              <span class="action-icon">📦</span>
+              <span class="action-label">Collection</span>
+            </a>
+            <a href="/profile" class="action-card">
+              <span class="action-icon">👤</span>
+              <span class="action-label">My Profile</span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Friend Finder Modal -->
+    <FriendFinder client:load />
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .friends-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .friends-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3b82f6 0%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #9ca3af;
+    margin-bottom: 1.5rem;
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3b82f6;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .stat-icon {
+    font-size: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+
+  .stat-value.code {
+    font-family: monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .btn-add-friend {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.875rem 2rem;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+  }
+
+  .btn-add-friend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+  }
+
+  .friends-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .left-column,
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .section {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3b82f6;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #d1d5db;
+    margin: 0 0 1rem 0;
+  }
+
+  .badge {
+    background: #fbbf24;
+    color: #1e3a8a;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid #3b82f6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .action-card:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: #60a5fa;
+    transform: translateY(-2px);
+  }
+
+  .action-icon {
+    font-size: 1.5rem;
+  }
+
+  .action-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+
+  @media (max-width: 1024px) {
+    .friends-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    main {
+      padding: 1rem 0.5rem;
+    }
+
+    .friends-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .stats-bar {
+      gap: 0.75rem;
+    }
+
+    .stat-item {
+      padding: 0.5rem 0.75rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .section {
+      padding: 1rem;
+    }
+
+    .action-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  // Handle open friend finder event
+  window.addEventListener('open-friend-finder', () => {
+    import('@/stores/friends').then(({ setFriendFinderOpen }) => {
+      setFriendFinderOpen(true);
+    });
+  });
+</script>
