@@ -204,12 +204,13 @@
         "Error handling if generation fails"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-opening",
         "state",
         "logic"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US011",
@@ -223,12 +224,13 @@
         "Animation duration: 1.5-2 seconds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-opening",
         "state",
         "animation"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US012",
@@ -241,12 +243,13 @@
         "State transitions to 'revealing'"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-opening",
         "state",
         "logic"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US013",
@@ -259,12 +262,13 @@
         "State transitions to 'results' when all cards revealed"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "pack-opening",
         "state",
         "animation"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US014",
@@ -1989,6 +1993,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T07:46:32.070Z"
+    "updatedAt": "2026-01-17T07:54:35.451Z"
   }
 }
