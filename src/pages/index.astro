@@ -7,11 +7,13 @@ import PackPreview from '../components/landing/PackPreview.svelte';
 import Footer from '../components/landing/Footer.astro';
 import Navigation from '../components/common/Navigation.svelte';
 import SettingsModal from '../components/common/SettingsModal.svelte';
+import TutorialOverlay from '../components/common/TutorialOverlay.svelte';
 ---
 
 <BaseLayout>
   <Navigation client:load />
   <SettingsModal client:load />
+  <TutorialOverlay client:load />
 
   <main id="main-content" class="pt-16" tabindex="-1" role="main">
     <Hero />
