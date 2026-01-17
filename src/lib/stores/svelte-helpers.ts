@@ -1,4 +1,3 @@
-import type { Pack, PackState } from '../../types';
 import * as pack from '../../stores/pack';
 
 /**
@@ -12,6 +11,7 @@ export function getStoreValues() {
     revealedCards: pack.revealedCards.get(),
     allCardsRevealed: pack.allCardsRevealed.get(),
     packStats: pack.packStats.get(),
+    packError: pack.packError.get(),
   };
 }
 
@@ -26,6 +26,7 @@ export function subscribeToStores(callback: (values: ReturnType<typeof getStoreV
     pack.revealedCards.subscribe(() => callback(getStoreValues())),
     pack.allCardsRevealed.subscribe(() => callback(getStoreValues())),
     pack.packStats.subscribe(() => callback(getStoreValues())),
+    pack.packError.subscribe(() => callback(getStoreValues())),
   ];
 
   // Return unsubscribe function

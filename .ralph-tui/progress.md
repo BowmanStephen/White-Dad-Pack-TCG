@@ -34,3 +34,55 @@ ayout, hover effects","status":"completed","activeForm":"Updating Features compo
 first, then hydrate in the browser.\n\n2. **Client Directives Matter**: The `client:visible` directive tells Astro to only hydrate the component when it enters the viewport, which is perfect for showcase sections below the fold.\n\n3. **Resource Cleanup**: Using Svelte's `onDestroy` lifecycle hook to clean up `requestAnimationFrame` prevents memory leaks, especially important for components that may be mounted/unmounted frequently.\n`─────────────────────────────────────────────────`\n\n---\n\n
 
 ---
+## ✓ Iteration 4 - US004: Landing Page - Pack Preview Animation
+*2026-01-17T07:30:53.827Z (131s)*
+
+**Status:** Completed
+
+---
+## ✓ Iteration 5 - US005: Landing Page - Footer
+*2026-01-17T07:32:24.259Z (89s)*
+
+**Status:** Completed
+
+**Notes:**
+**Link Updates** - Changed from `#` placeholder links to proper route paths (`/about`, `/privacy`, `/terms`)\n\n**Acceptance Criteria Status:**\n- ✅ Copyright info with current year (already present)\n- ✅ Links: About, Privacy, Terms (enhanced with proper routes)\n- ✅ Social media icons (Twitter/X, Discord) - **NEW**\n- ✅ Responsive layout (already present, verified)\n- ✅ Dark theme matching site aesthetic (enhanced)\n\nBuild completed successfully, changes committed with commit hash `830b38d`.
+
+---
+## ✓ Iteration 6 - US006: Pack Opening - Pack Tear Animation
+*2026-01-17T07:35:34.114Z (189s)*
+
+**Status:** Completed
+
+**Notes:**
+mate line drawing that leverages GPU acceleration without layout thrashing.\n\n─────────────────────────────────────────────────\n\nUS006 (Pack Opening - Pack Tear Animation) is now complete. The component delivers a premium, satisfying pack-opening experience with:\n- 1.8 second duration (within 1.5-2s requirement)\n- SVG-based tear effect with glow\n- 60fps-optimized particle system\n- Ease-out timing for natural feel\n- Sound placeholder at the perfect moment\n- Full accessibility support\n\n
+
+---
+## ✓ Iteration 7 - US007: Pack Opening - Staggered Card Reveal
+*2026-01-17T07:41:06.324Z (331s)*
+
+**Status:** Completed
+
+**Notes:**
+e, color\n\n**4. Skip Button**\n- Already existed, now calls `stopAutoReveal()` to cancel auto-reveal\n\n**5. Cancellable Animations**\n- All user interactions (click, tap, keyboard, swipe) call `stopAutoReveal()`\n- Updates in `CardRevealer.svelte` and `PackOpener.svelte`\n\n**6. Smooth Timing Functions**\n- Uses `cubic-bezier(0.4, 0, 0.2, 1)` for card flip\n- `ease-out` for particle burst animation\n- `ease-out` for legendary burst effect\n\nBuild passed successfully with commit `2999240`.\n\n
+
+---
+## ✓ Iteration 8 - US008: Pack Opening - Results Screen
+*2026-01-17T07:45:42.829Z (275s)*
+
+**Status:** Completed
+
+**Notes:**
+where players want to see their best pulls first.\n\n**Modal State Management**: Using a simple `inspectCard` variable (null or card) is a lightweight pattern for modals in Svelte - more complex apps might use a dedicated modal store or component.\n\n**Accessibility First**: Adding `role=\"button\"`, `tabindex=\"0\"`, and keyboard handlers makes the card grid fully navigable by keyboard users, which is often overlooked in \"visual\" features.\n`─────────────────────────────────────────────────`
+
+---
+## ✓ Iteration 9 - US009: Pack State Machine - Idle State
+*2026-01-17T07:46:31.063Z (47s)*
+
+**Status:** Completed
+
+**Notes:**
+tate machine idle state implementation","status":"completed","activeForm":"Verifying pack state machine idle state"},{"content":"Run quality checks (typecheck, lint)","status":"completed","activeForm":"Running quality checks"},{"content":"Commit changes with descriptive message","status":"completed","activeForm":"Committing changes"}]}}
+{"type":"assistant","message":{"id":"msg_202601171546281be3ce63fedb4ad9","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
+
+---

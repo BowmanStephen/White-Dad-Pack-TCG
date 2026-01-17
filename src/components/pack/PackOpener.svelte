@@ -12,6 +12,7 @@
   let currentCardIndex = $state<number>(0);
   let revealedCards = $state<Set<number>>(new Set());
   let packStats = $state<any>(null);
+  let packError = $state<string | null>(null);
 
   // Load initial values from stores
   function loadFromStores() {
@@ -21,6 +22,7 @@
     currentCardIndex = values.currentCardIndex;
     revealedCards = values.revealedCards;
     packStats = values.packStats;
+    packError = values.packError ?? null;
   }
 
   // Start pack opening on mount
@@ -121,11 +123,39 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
-  {#if packState === 'idle' || packState === 'generating'}
-    <!-- Loading state -->
+  {#if packState === 'idle'}
+    <!-- Idle state - waiting to open -->
     <div class="text-center">
-      <div class="text-4xl mb-4 animate-bounce">📦</div>
-      <p class="text-slate-400">Preparing your pack...</p>
+      <div class="text-4xl mb-4">📦</div>
+      <p class="text-slate-400">Ready to open a pack...</p>
+    </div>
+
+  {:else if packState === 'generating'}
+    <!-- Generating state - loading spinner -->
+    <div class="text-center">
+      <!-- CSS Spinner -->
+      <div class="relative w-16 h-16 mx-auto mb-6">
+        <div class="absolute inset-0 rounded-full border-4 border-slate-700"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-t-amber-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+        <!-- Pack icon in center -->
+        <div class="absolute inset-0 flex items-center justify-center text-2xl">📦</div>
+      </div>
+      <p class="text-slate-300 text-lg mb-2">Generating your pack...</p>
+      <p class="text-slate-500 text-sm">Rolling for rarities...</p>
+    </div>
+
+  {:else if packError}
+    <!-- Error state -->
+    <div class="text-center max-w-md">
+      <div class="text-5xl mb-4">⚠️</div>
+      <h2 class="text-xl text-red-400 mb-2">Pack Generation Failed</h2>
+      <p class="text-slate-400 mb-6">{packError}</p>
+      <button
+        onclick={handleOpenAnother}
+        class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg transition-colors"
+      >
+        Try Again
+      </button>
     </div>
 
   {:else if packState === 'pack_animate' && currentPack}

@@ -54,19 +54,43 @@ export const packProgress = computed(
  * Actions
  */
 
+// Error state store for pack generation failures
+export const packError = atom<string | null>(null);
+
 // Start opening a new pack
-export function openNewPack(): void {
-  const pack = generatePack();
-  currentPack.set(pack);
-  packState.set('generating');
+export async function openNewPack(): Promise<void> {
+  // Reset state first
   currentCardIndex.set(0);
   revealedCards.set(new Set());
   isSkipping.set(false);
+  packError.set(null);
+  currentPack.set(null);
 
-  // Transition to pack animation after a brief delay
-  setTimeout(() => {
+  // Set to generating state BEFORE async work
+  packState.set('generating');
+
+  try {
+    // Simulate minimal delay to ensure loading state is visible (min 200ms)
+    const startTime = performance.now();
+    const pack = await Promise.resolve(generatePack());
+    const elapsed = performance.now() - startTime;
+    const minDelay = 200;
+
+    // Ensure minimum delay for UX (but cap at 500ms per requirements)
+    const remainingDelay = Math.max(0, Math.min(minDelay - elapsed, 500 - elapsed));
+    if (remainingDelay > 0) {
+      await new Promise(resolve => setTimeout(resolve, remainingDelay));
+    }
+
+    // Set the pack and transition to pack animation
+    currentPack.set(pack);
     packState.set('pack_animate');
-  }, 100);
+  } catch (error) {
+    // Handle generation errors
+    packError.set(error instanceof Error ? error.message : 'Failed to generate pack');
+    packState.set('idle');
+    console.error('Pack generation failed:', error);
+  }
 }
 
 // Complete pack animation and show cards
