@@ -14,9 +14,10 @@
   let modalElement: HTMLElement;
   let previouslyFocusedElement: HTMLElement | null = null;
 
-  // Subscribe to modalOpen store
+  // Subscribe to modalOpen store (with cleanup)
+  let unsubscribe: (() => void) | null = null;
   if (typeof window !== 'undefined') {
-    modalOpen.subscribe((value) => {
+    unsubscribe = modalOpen.subscribe((value) => {
       isOpen = value === 'share';
       if (isOpen) {
         // Store the previously focused element
@@ -33,6 +34,13 @@
       }
     });
   }
+
+  // Clean up subscription on destroy
+  onDestroy(() => {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+  });
 
   // Focus trap for modal
   function handleModalKeydown(e: KeyboardEvent) {

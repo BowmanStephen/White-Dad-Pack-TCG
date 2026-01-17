@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import {
     dadPassSubscription,
     isDadPassActive,
@@ -37,18 +37,30 @@
   let successMessage: string | null = null;
   let dailyRewardClaimed = false;
 
+  // Store unsubscribers to prevent memory leaks
+  const unsubscribers: Array<() => void> = [];
+
   onMount(() => {
     initializeDailyRewards();
     summary = getDadPassSummary();
   });
 
   // Subscribe to store changes
-  dadPassSubscription.subscribe(() => {
-    summary = getDadPassSummary();
-  });
+  unsubscribers.push(
+    dadPassSubscription.subscribe(() => {
+      summary = getDadPassSummary();
+    })
+  );
 
-  premiumInventory.subscribe(() => {
-    // Refresh when premium inventory changes
+  unsubscribers.push(
+    premiumInventory.subscribe(() => {
+      // Refresh when premium inventory changes
+    })
+  );
+
+  // Clean up subscriptions on destroy
+  onDestroy(() => {
+    unsubscribers.forEach((unsub) => unsub());
   });
 
   async function handlePurchase(autoRenew: boolean) {

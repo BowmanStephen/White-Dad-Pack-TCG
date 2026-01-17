@@ -122,6 +122,9 @@ export async function openNewPack(): Promise<void> {
   packState.set('generating');
 
   try {
+    // Start timer for pack generation
+    const generationStartTime = performance.now();
+
     // Get current pack type (standard or premium)
     const packType = currentPackType.get();
     let pack: Pack;
@@ -145,13 +148,14 @@ export async function openNewPack(): Promise<void> {
       pack = generatePack();
     }
 
-    // Simulate minimal delay to ensure loading state is visible (min 200ms)
-    const startTime = performance.now();
-    const elapsed = performance.now() - startTime;
-    const minDelay = 200;
+    // Calculate pack generation time for UX delay
+    const generationElapsed = performance.now() - generationStartTime;
 
-    // Ensure minimum delay for UX (but cap at 500ms per requirements)
-    const remainingDelay = Math.max(0, Math.min(minDelay - elapsed, 500 - elapsed));
+    // Ensure minimum delay for smooth UX (target: 200ms, max: 500ms)
+    const targetDelay = 200;
+    const maxDelay = 500;
+    const remainingDelay = Math.max(0, Math.min(targetDelay - generationElapsed, maxDelay - generationElapsed));
+
     if (remainingDelay > 0) {
       await new Promise(resolve => setTimeout(resolve, remainingDelay));
     }

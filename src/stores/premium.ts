@@ -113,71 +113,30 @@ export function addPremiumPackToInventory(packConfigId: string) {
 // ============================================================================
 
 /**
- * Stripe is not yet configured - this is a placeholder for future implementation
+ * ⚠️ PAYMENTS NOT YET AVAILABLE
  *
- * To enable Stripe payments:
+ * Real-money payments via Stripe are not implemented in this MVP version.
+ * Use simulatePremiumPackPurchase() for demo/testing purposes.
+ *
+ * To enable Stripe payments in the future:
  * 1. Create a Stripe account: https://stripe.com
- * 2. Add your Stripe publishable key to .env: PUBLIC_STRIPE_PUBLIC_KEY=pk_test_...
+ * 2. Add Stripe publishable key to .env: PUBLIC_STRIPE_PUBLIC_KEY
  * 3. Create products and prices in Stripe Dashboard
- * 4. Add Stripe Price IDs to PREMIUM_PACK_CONFIGS
- * 5. Implement API route for checkout session creation (e.g., /api/stripe/create-checkout)
- * 6. Implement webhook handler for payment success (e.g., /api/stipe/webhook)
- * 7. Test with Stripe test mode
+ * 4. Implement API routes for checkout and webhooks
+ * 5. Test in Stripe test mode before going live
  */
 
 /**
- * Initiate premium pack purchase via Stripe
+ * Initiate premium pack purchase via Stripe (NOT IMPLEMENTED)
  *
- * This function will:
- * 1. Create a purchase session
- * 2. Redirect to Stripe Checkout (when configured)
- * 3. Handle success/failure callbacks
- *
- * @param packConfigId - Premium pack configuration to purchase
- * @returns Purchase session ID
+ * @deprecated Use simulatePremiumPackPurchase() for demo instead
+ * @throws Error with clear "Coming Soon" message
  */
 export async function initiatePremiumPackPurchase(packConfigId: string): Promise<string> {
-  const config = getPremiumPackConfig(packConfigId);
-
-  if (!config) {
-    throw new Error(`Invalid premium pack config: ${packConfigId}`);
-  }
-
-  if (!config.isActive) {
-    throw new Error(`Premium pack ${packConfigId} is not available`);
-  }
-
-  // Check if Stripe is configured
-  const stripePublicKey = import.meta.env.PUBLIC_STRIPE_PUBLIC_KEY;
-
-  if (!stripePublicKey) {
-    throw new Error('Stripe is not configured. Contact administrator.');
-  }
-
-  // Create purchase session
-  const sessionId = crypto.randomUUID();
-  const session: PurchaseSession = {
-    sessionId,
-    packType: 'premium',
-    packConfigId,
-    status: 'pending',
-    receiptValidated: false,
-    timestamp: new Date(),
-  };
-
-  purchaseSession.set({ data: session });
-
-  // TODO: Create Stripe checkout session via API
-  // For now, this is a placeholder - in production, call your backend:
-  // const response = await fetch('/api/stripe/create-checkout', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ packConfigId, sessionId }),
-  // });
-  // const { checkoutUrl } = await response.json();
-  // window.location.href = checkoutUrl;
-
-  throw new Error('Stripe checkout not yet implemented. Add backend API route first.');
+  throw new Error(
+    '💳 Premium pack purchases are coming soon! ' +
+    'Use "Simulate Purchase" in the demo to try premium packs.'
+  );
 }
 
 /**
@@ -228,23 +187,19 @@ export function simulatePremiumPackPurchase(packConfigId: string = 'premium_sing
  *
  * @param checkoutSessionId - Stripe checkout session ID
  */
+/**
+ * Handle successful Stripe checkout (NOT IMPLEMENTED)
+ *
+ * @deprecated Not implemented - use simulatePremiumPackPurchase() instead
+ */
 export async function handleStripeSuccess(checkoutSessionId: string): Promise<void> {
-  // TODO: Verify checkout session with backend
-  // const response = await fetch('/api/stripe/verify-session', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ checkoutSessionId }),
-  // });
-  // const { packConfigId, validated } = await response.json();
-
-  // For now, this is a placeholder
   throw new Error('Stripe success handler not yet implemented');
 }
 
 /**
- * Handle failed/canceled Stripe checkout
+ * Handle failed/canceled Stripe checkout (NOT IMPLEMENTED)
  *
- * @param checkoutSessionId - Stripe checkout session ID
+ * @deprecated Not implemented - use simulatePremiumPackPurchase() instead
  */
 export async function handleStripeCanceled(checkoutSessionId: string): Promise<void> {
   const currentSessionData = purchaseSession.get();

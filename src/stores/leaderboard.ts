@@ -111,6 +111,11 @@ export function updateUserStats(stats: Partial<PlayerStats>): void {
  * Load leaderboard data for current category and scope
  */
 export async function loadLeaderboard(): Promise<void> {
+  // Guard for SSR - skip loading if not in browser
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   const category = currentCategory.get();
   const scope = currentScope.get();
 
@@ -120,7 +125,8 @@ export async function loadLeaderboard(): Promise<void> {
   try {
     const profile = userProfile.get();
     if (!profile) {
-      throw new Error('User profile not initialized. Call initializeProfile first.');
+      // Silently return if profile not initialized (common during SSR)
+      return;
     }
 
     // Generate mock leaderboard data
