@@ -57,7 +57,7 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <meta name="twitter:image:alt" content="DadDeck - Trading Card Game" />
 
     <!-- Structured Data (JSON-LD) - WebSite -->
-    <script type="application/ld+json" set:html={JSON.stringify({
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "DadDeck",
@@ -80,9 +80,12 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#f59e0b" />
 
-    <!-- Preload critical fonts -->
+    <!-- Preconnect to external origins (performance optimization) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- DNS prefetch for potential external resources -->
+    <link rel="dns-prefetch" href="https://dadddeck.com" />
 
     <!-- Performance Monitoring (dev only) -->
     <PerformanceMonitor />
@@ -97,47 +100,64 @@ const fullImageURL = new URL(image, Astro.site!).href;
     </a>
     <slot />
 
-    <!-- Service Worker Registration -->
-    <script define:vars={{}}>
-      // Only register service worker in production and when supported
+    <!-- Service Worker Registration (deferred for performance) -->
+    <script is:inline define:vars={{}}>
+      // Defer service worker registration to avoid blocking initial render
+      // Only register in production and when supported
       if ('serviceWorker' in navigator && import.meta.env.PROD) {
-        window.addEventListener('load', async () => {
-          try {
-            const registration = await navigator.serviceWorker.register('/sw.js', {
-              scope: '/'
-            });
+        // Use requestIdleCallback for non-blocking registration
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(async () => {
+            try {
+              const registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/'
+              });
+              console.log('[SW] Service Worker registered:', registration.scope);
 
-            console.log('[SW] Service Worker registered:', registration.scope);
-
-            // Listen for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              if (newWorker) {
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New version available
-                    console.log('[SW] New content is available; please refresh.');
-                    // You could show a notification to the user here
-                  }
-                });
-              }
-            });
-          } catch (error) {
-            console.error('[SW] Service Worker registration failed:', error);
-          }
-        });
+              // Listen for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      console.log('[SW] New content is available; please refresh.');
+                    }
+                  });
+                }
+              });
+            } catch (error) {
+              console.error('[SW] Service Worker registration failed:', error);
+            }
+          }, { timeout: 2000 });
+        } else {
+          // Fallback for browsers without requestIdleCallback
+          window.addEventListener('load', async () => {
+            try {
+              const registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/'
+              });
+              console.log('[SW] Service Worker registered:', registration.scope);
+            } catch (error) {
+              console.error('[SW] Service Worker registration failed:', error);
+            }
+          });
+        }
       }
 
-      // Handle online/offline events
-      window.addEventListener('online', () => {
-        console.log('[App] Connection restored');
-        document.body.classList.remove('offline');
-      });
+      // Handle online/offline events (non-blocking)
+      const handleOnlineStatus = () => {
+        if (navigator.onLine) {
+          console.log('[App] Connection restored');
+          document.body.classList.remove('offline');
+        } else {
+          console.log('[App] Connection lost');
+          document.body.classList.add('offline');
+        }
+      };
 
-      window.addEventListener('offline', () => {
-        console.log('[App] Connection lost');
-        document.body.classList.add('offline');
-      });
+      // Use passive listeners for better scroll performance
+      window.addEventListener('online', handleOnlineStatus, { passive: true });
+      window.addEventListener('offline', handleOnlineStatus, { passive: true });
 
       // Set initial state
       if (!navigator.onLine) {

@@ -4,6 +4,10 @@
  *
  * Tracks Core Web Vitals and reports performance metrics.
  * Only active in development mode or when enabled via query param.
+ *
+ * Usage:
+ * - Development: Always active
+ * - Production: Add ?perf=true to URL
  */
 const isDev = import.meta.env.DEV;
 const isEnabled = isDev || new URLSearchParams(Astro.url.search).get('perf') === 'true';
@@ -13,7 +17,12 @@ const isEnabled = isDev || new URLSearchParams(Astro.url.search).get('perf') ===
   <script is:inline>
     // Performance monitoring script (client-side only)
     (function() {
-      if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+      'use strict';
+
+      if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+        console.warn('[Perf] PerformanceObserver not supported in this browser');
+        return;
+      }
 
       const metrics = {};
       const THRESHOLDS = {
@@ -24,54 +33,116 @@ const isEnabled = isDev || new URLSearchParams(Astro.url.search).get('perf') ===
         TTFB: { good: 800, poor: 1800 },
       };
 
-      // Track LCP (Largest Contentful Paint)
+      /**
+       * Get rating for a metric value
+       */
+      function getRating(metricName, value) {
+        const threshold = THRESHOLDS[metricName];
+        if (!threshold) return 'unknown';
+        if (value <= threshold.good) return 'good';
+        if (value <= threshold.poor) return 'needs-improvement';
+        return 'poor';
+      }
+
+      /**
+       * Log metric with rating
+       */
+      function logMetric(name, value) {
+        const rating = getRating(name, value);
+        const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
+        const formattedValue = typeof value === 'number' ? Math.round(value) : value;
+        console.log(`[Perf] ${emoji} ${name}: ${formattedValue} ms (${rating})`);
+      }
+
+      /**
+       * Track LCP (Largest Contentful Paint)
+       * Measures loading performance - largest content element visible in viewport
+       */
       try {
         const lcpObserver = new PerformanceObserver(function(list) {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
           metrics.LCP = lastEntry.renderTime || lastEntry.loadTime;
-          console.log('[Perf] LCP:', metrics.LCP, 'ms');
+          logMetric('LCP', metrics.LCP);
+
+          // Log what element was the LCP
+          if (lastEntry.element) {
+            console.log('[Perf] LCP Element:', lastEntry.element.tagName, lastEntry.element.className);
+          }
         });
-        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
       } catch (e) {
-        console.warn('[Perf] LCP observer not supported');
+        console.warn('[Perf] LCP observer failed:', e.message);
       }
 
-      // Track FID (First Input Delay)
+      /**
+       * Track FID (First Input Delay) / INP (Interaction to Next Paint)
+       * Measures interactivity - delay from user input to browser response
+       */
       try {
         const fidObserver = new PerformanceObserver(function(list) {
           const entries = list.getEntries();
           for (var i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            metrics.FID = entry.processingStart - entry.startTime;
-            console.log('[Perf] FID:', metrics.FID, 'ms');
+            // FID is the first input, INP is all inputs
+            if (!metrics.FID) {
+              metrics.FID = entry.processingStart - entry.startTime;
+              logMetric('FID', metrics.FID);
+            }
+            // Track INP (Interaction to Next Paint)
+            metrics.INP = entry.processingStart - entry.startTime;
+            logMetric('INP', metrics.INP);
           }
         });
-        fidObserver.observe({ entryTypes: ['first-input'] });
+        fidObserver.observe({ type: 'first-input', buffered: true });
       } catch (e) {
-        console.warn('[Perf] FID observer not supported');
+        console.warn('[Perf] FID/INP observer failed:', e.message);
       }
 
-      // Track CLS (Cumulative Layout Shift)
+      /**
+       * Track CLS (Cumulative Layout Shift)
+       * Measures visual stability - unexpected layout shifts
+       */
       var clsValue = 0;
+      var clsSessionValue = 0;
+      var clsSessionEntries = [];
+
       try {
         const clsObserver = new PerformanceObserver(function(list) {
           const entries = list.getEntries();
           for (var i = 0; i < entries.length; i++) {
             const entry = entries[i];
+
+            // Ignore inputs and recent inputs (user-initiated shifts)
             if (!entry.hadRecentInput) {
               clsValue += entry.value;
-              metrics.CLS = clsValue;
-              console.log('[Perf] CLS:', clsValue);
+              clsSessionValue += entry.value;
+              clsSessionEntries.push(entry);
+
+              // Log CLS every 0.1 to track progress
+              if (clsSessionValue >= 0.1) {
+                metrics.CLS = clsValue;
+                logMetric('CLS', clsValue.toFixed(3));
+
+                // Log session details
+                if (clsSessionEntries.length > 0) {
+                  console.log('[Perf] CLS Session:', clsSessionEntries.length, 'shifts, total:', clsSessionValue.toFixed(3));
+                  clsSessionValue = 0;
+                  clsSessionEntries = [];
+                }
+              }
             }
           }
         });
-        clsObserver.observe({ entryTypes: ['layout-shift'] });
+        clsObserver.observe({ type: 'layout-shift', buffered: true });
       } catch (e) {
-        console.warn('[Perf] CLS observer not supported');
+        console.warn('[Perf] CLS observer failed:', e.message);
       }
 
-      // Track FCP (First Contentful Paint)
+      /**
+       * Track FCP (First Contentful Paint)
+       * Measures when first content is painted
+       */
       try {
         const fcpObserver = new PerformanceObserver(function(list) {
           const entries = list.getEntries();
@@ -79,44 +150,154 @@ const isEnabled = isDev || new URLSearchParams(Astro.url.search).get('perf') ===
             const entry = entries[i];
             if (entry.name === 'first-contentful-paint') {
               metrics.FCP = entry.startTime;
-              console.log('[Perf] FCP:', metrics.FCP, 'ms');
+              logMetric('FCP', metrics.FCP);
             }
           }
         });
-        fcpObserver.observe({ entryTypes: ['paint'] });
+        fcpObserver.observe({ type: 'paint', buffered: true });
       } catch (e) {
-        console.warn('[Perf] FCP observer not supported');
+        console.warn('[Perf] FCP observer failed:', e.message);
       }
 
-      // Track TTFB and report all metrics
+      /**
+       * Track additional paint metrics
+       */
+      try {
+        const paintObserver = new PerformanceObserver(function(list) {
+          const entries = list.getEntries();
+          for (var i = 0; i < entries.length; i++) {
+            const entry = entries[i];
+            if (entry.name === 'first-paint') {
+              metrics.FP = entry.startTime;
+              console.log('[Perf] First Paint:', metrics.FP, 'ms');
+            }
+          }
+        });
+        paintObserver.observe({ type: 'paint', buffered: true });
+      } catch (e) {
+        console.warn('[Perf] Paint observer failed:', e.message);
+      }
+
+      /**
+       * Track TTFB (Time to First Byte)
+       * Measures server response time
+       */
       window.addEventListener('load', function() {
         const navigation = performance.getEntriesByType('navigation')[0];
         if (navigation) {
           metrics.TTFB = navigation.responseStart;
-          console.log('[Perf] TTFB:', metrics.TTFB, 'ms');
+          logMetric('TTFB', metrics.TTFB);
 
-          // Log all metrics after page load
-          setTimeout(function() {
-            console.table(metrics);
-            console.log('[Perf] All Core Web Vitals collected:', metrics);
+          // Additional navigation timings
+          metrics.DNS = navigation.domainLookupEnd - navigation.domainLookupStart;
+          metrics.TCP = navigation.connectEnd - navigation.connectStart;
+          metrics.Request = navigation.responseStart - navigation.requestStart;
+          metrics.Response = navigation.responseEnd - navigation.responseStart;
 
-            console.group('[Perf] Performance Assessment');
-            for (const key in metrics) {
-              const value = metrics[key];
-              const threshold = THRESHOLDS[key];
-              if (threshold) {
-                var rating = 'good';
-                if (value > threshold.poor) rating = 'poor';
-                else if (value > threshold.good) rating = 'needs-improvement';
-
-                const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
-                console.log(emoji + ' ' + key + ': ' + Math.round(value) + ' (' + rating + ')');
-              }
-            }
-            console.groupEnd();
-          }, 1000);
+          console.log('[Perf] Navigation Timings:');
+          console.log('  DNS:', metrics.DNS, 'ms');
+          console.log('  TCP:', metrics.TCP, 'ms');
+          console.log('  Request:', metrics.Request, 'ms');
+          console.log('  Response:', metrics.Response, 'ms');
         }
-      });
+      }, { once: true, passive: true });
+
+      /**
+       * Resource timing analysis
+       */
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const resources = performance.getEntriesByType('resource');
+
+          // Group resources by type
+          const resourceGroups = {};
+          for (var i = 0; i < resources.length; i++) {
+            const resource = resources[i];
+            const type = resource.initiatorType || 'other';
+            if (!resourceGroups[type]) {
+              resourceGroups[type] = { count: 0, total: 0, max: 0 };
+            }
+            resourceGroups[type].count++;
+            resourceGroups[type].total += resource.duration;
+            resourceGroups[type].max = Math.max(resourceGroups[type].max, resource.duration);
+          }
+
+          console.log('[Perf] Resource Timings:');
+          for (const type in resourceGroups) {
+            const group = resourceGroups[type];
+            console.log(
+              '  ' + type + ':',
+              group.count + ' resources,',
+              'avg: ' + Math.round(group.total / group.count) + 'ms,',
+              'max: ' + Math.round(group.max) + 'ms'
+            );
+          }
+        }, 2000);
+      }, { once: true, passive: true });
+
+      /**
+       * Final report and Lighthouse score estimation
+       */
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          console.log('');
+          console.log('═══════════════════════════════════════════════════');
+          console.log('[Perf] Core Web Vitals Report');
+          console.log('═══════════════════════════════════════════════════');
+          console.table(metrics);
+          console.log('');
+
+          // Calculate overall performance score
+          var goodCount = 0;
+          var needsImprovementCount = 0;
+          var poorCount = 0;
+
+          console.group('[Perf] Detailed Assessment');
+          for (const key in metrics) {
+            const value = metrics[key];
+            const rating = getRating(key, value);
+            const formattedValue = typeof value === 'number' ? Math.round(value) : value;
+
+            if (rating === 'good') goodCount++;
+            else if (rating === 'needs-improvement') needsImprovementCount++;
+            else if (rating === 'poor') poorCount++;
+
+            const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
+            console.log(emoji + ' ' + key + ': ' + formattedValue + ' (' + rating + ')');
+          }
+          console.groupEnd();
+
+          // Estimate Lighthouse score
+          const totalMetrics = goodCount + needsImprovementCount + poorCount;
+          const estimatedScore = totalMetrics > 0 ? Math.round((goodCount / totalMetrics) * 100) : 0;
+
+          console.log('');
+          console.log('═══════════════════════════════════════════════════');
+          console.log('[Perf] Estimated Lighthouse Score: ' + estimatedScore);
+          console.log('  ✅ Good: ' + goodCount);
+          console.log('  ⚠️  Needs Improvement: ' + needsImprovementCount);
+          console.log('  ❌ Poor: ' + poorCount);
+          console.log('═══════════════════════════════════════════════════');
+
+          // Show optimization tips
+          if (poorCount > 0) {
+            console.log('');
+            console.log('[Perf] Optimization Tips:');
+            if (metrics.LCP > THRESHOLDS.LCP.poor) {
+              console.log('  • LCP is poor: Preload hero images, inline critical CSS, reduce server response time');
+            }
+            if (metrics.FID > THRESHOLDS.FID.poor) {
+              console.log('  • FID is poor: Reduce JavaScript execution time, defer non-critical scripts');
+            }
+            if (metrics.CLS > THRESHOLDS.CLS.poor) {
+              console.log('  • CLS is poor: Reserve space for images, avoid injecting content above existing content');
+            }
+            if (metrics.TTFB > THRESHOLDS.TTFB.poor) {
+              console.log('  • TTFB is poor: Optimize server, use CDN, enable compression');
+            }
+          }
+        }, 3000);
+      }, { once: true, passive: true });
     })();
   </script>
 )}

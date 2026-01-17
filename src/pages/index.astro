@@ -49,19 +49,26 @@ const webApplicationSchema = {
   description={description}
   image="/og-image.png"
 >
+  <!-- Critical components: load immediately -->
   <Navigation client:load />
-  <SettingsModal client:load />
-  <TutorialOverlay client:load />
+
+  <!-- Defer non-critical components: load when browser is idle -->
+  <SettingsModal client:idle />
+  <TutorialOverlay client:idle />
 
   <main id="main-content" class="pt-16" tabindex="-1" role="main">
+    <!-- Static content: server-side rendered -->
     <Hero />
     <Features />
-    <PackPreview client:load />
+
+    <!-- Interactive components: lazy load when visible -->
+    <PackPreview client:visible />
     <FeaturedCards />
   </main>
 
+  <!-- Static footer: server-side rendered -->
   <Footer />
 
   <!-- Additional structured data for homepage -->
-  <script type="application/ld+json" set:html={JSON.stringify(webApplicationSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(webApplicationSchema)} />
 </BaseLayout>
