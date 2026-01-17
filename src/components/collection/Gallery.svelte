@@ -26,6 +26,7 @@
 
   // Filters
   let searchTerm = '';
+  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
   let selectedRarity: Rarity | null = null;
   let holoOnly = false;
   let selectedTypes = new Set<DadType>();
@@ -150,10 +151,25 @@
     applyFilters();
   }
 
-  // Handle search input
+  // Handle search input with debounce
   function handleSearch(event: Event) {
     const target = event.target as HTMLInputElement;
     searchTerm = target.value;
+
+    // Clear existing timeout
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    // Set new timeout for 300ms debounce
+    debounceTimeout = setTimeout(() => {
+      resetPagination();
+    }, 300);
+  }
+
+  // Clear search
+  function clearSearch() {
+    searchTerm = '';
     resetPagination();
   }
 
@@ -222,6 +238,9 @@
       if (observer) {
         observer.disconnect();
       }
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
     };
   });
 
@@ -246,6 +265,14 @@
         class="search-input"
       />
       <span class="search-icon">🔍</span>
+      {#if searchTerm}
+        <button
+          class="search-clear"
+          on:click={clearSearch}
+          aria-label="Clear search"
+          type="button"
+        >✕</button>
+      {/if}
     </div>
 
     <!-- Rarity Filter -->
@@ -440,6 +467,7 @@
   .search-input {
     width: 100%;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
+    padding-right: 2.5rem;
     background: rgba(30, 41, 59, 0.8);
     border: 1px solid rgba(71, 85, 105, 0.5);
     border-radius: 0.5rem;
@@ -464,6 +492,35 @@
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(71, 85, 105, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+  }
+
+  .search-clear:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+
+  .search-clear:active {
+    transform: translateY(-50%) scale(0.95);
   }
 
   .filter-group {
