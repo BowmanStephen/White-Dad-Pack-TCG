@@ -1052,12 +1052,13 @@
         "Cached in memory for instant playback"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "audio",
         "fx",
         "reward"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US053",
@@ -1073,12 +1074,13 @@
         "Previous/Next buttons to browse cards from pack"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "cards",
         "ui",
         "modal"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US054",
@@ -1093,12 +1095,13 @@
         "Works on mobile (tap to flip)"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "cards",
         "animation",
         "interaction"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US055",
@@ -1113,12 +1116,13 @@
         "Accessible via gear icon in nav"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "settings",
         "audio",
         "ui"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US056",
@@ -2030,6 +2034,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T11:21:09.690Z"
+    "updatedAt": "2026-01-17T11:39:09.410Z"
   }
 }

@@ -1,4 +1,78 @@
 import { atom } from 'nanostores';
+import { isLowEndDevice } from '../lib/utils/performance';
+
+// Animation Quality Settings
+export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
+
+const QUALITY_KEY = 'daddeck_animation_quality';
+
+// Initialize quality from localStorage or auto-detect
+const getInitialQuality = (): AnimationQuality => {
+  if (typeof window === 'undefined') return 'auto';
+
+  const saved = localStorage.getItem(QUALITY_KEY);
+  if (saved && ['auto', 'high', 'medium', 'low'].includes(saved)) {
+    return saved as AnimationQuality;
+  }
+
+  return 'auto'; // Default to auto-detect
+};
+
+export const $animationQuality = atom<AnimationQuality>(getInitialQuality());
+
+// Export without $ prefix for imports
+export const animationQuality = $animationQuality;
+
+/**
+ * Get the particle multiplier based on current quality setting
+ * @returns Multiplier (1.0 = full, 0.5 = half, 0.2 = minimal)
+ */
+export function getParticleMultiplier(): number {
+  const quality = $animationQuality.get();
+
+  if (quality === 'auto') {
+    // Auto-detect based on device capabilities
+    return isLowEndDevice() ? 0.5 : 1.0;
+  }
+
+  switch (quality) {
+    case 'high':
+      return 1.0;
+    case 'medium':
+      return 0.5;
+    case 'low':
+      return 0.2;
+    default:
+      return 1.0;
+  }
+}
+
+/**
+ * Set animation quality
+ * @param quality - Quality level to set
+ */
+export function setAnimationQuality(quality: AnimationQuality): void {
+  $animationQuality.set(quality);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(QUALITY_KEY, quality);
+  }
+}
+
+/**
+ * Get the effective quality (resolves 'auto' to actual quality)
+ * @returns Effective quality level
+ */
+export function getEffectiveQuality(): 'high' | 'medium' | 'low' {
+  const quality = $animationQuality.get();
+
+  if (quality === 'auto') {
+    return isLowEndDevice() ? 'medium' : 'high';
+  }
+
+  return quality as 'high' | 'medium' | 'low';
+}
 
 // Whether reduced motion is preferred
 export const $prefersReducedMotion = atom<boolean>(false);

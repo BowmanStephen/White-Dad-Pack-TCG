@@ -1,7 +1,8 @@
 <script lang="ts">
   import { fade, scale } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
-  import { modalOpen, closeModal } from '@/stores/ui';
+  import { modalOpen, closeModal, animationQuality, setAnimationQuality, getEffectiveQuality } from '@/stores/ui';
+  import type { AnimationQuality } from '@/stores/ui';
   import { muted, masterVolume, musicVolume, sfxVolume, toggleMute, setMasterVolume, setMusicVolume, setSfxVolume } from '@/stores/audio';
   import { onMount, onDestroy, untrack } from 'svelte';
   import Slider from './Slider.svelte';
@@ -17,6 +18,31 @@
   let masterVol = $state(70);
   let musicVol = $state(70);
   let sfxVol = $state(80);
+
+  // Graphics state
+  let quality: AnimationQuality = 'auto';
+  let qualityDropdownOpen = $state(false);
+  let qualityButtonElement: HTMLElement;
+  let qualityDropdownElement: HTMLElement;
+
+  /**
+   * Svelte action to detect clicks outside an element
+   */
+  function clickOutside(node: HTMLElement, callback: () => void) {
+    const handleClick = (event: MouseEvent) => {
+      if (node && !node.contains(event.target as Node) && !event.defaultPrevented) {
+        callback();
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+
+    return {
+      destroy() {
+        document.removeEventListener('click', handleClick, true);
+      }
+    };
+  }
 
   // Subscribe to modalOpen store
   if (typeof window !== 'undefined') {
@@ -54,12 +80,16 @@
     const unsubSfx = sfxVolume.subscribe((value) => {
       sfxVol = Math.round(value * 100);
     });
+    const unsubQuality = animationQuality.subscribe((value) => {
+      quality = value;
+    });
 
     return () => {
       unsubMuted();
       unsubMaster();
       unsubMusic();
       unsubSfx();
+      unsubQuality();
     };
   });
 
@@ -147,6 +177,45 @@
     sfxVol = val;
     setSfxVolume(val / 100);
   }
+
+  function handleQualityChange(q: AnimationQuality) {
+    setAnimationQuality(q);
+    qualityDropdownOpen = false;
+  }
+
+  function toggleQualityDropdown() {
+    qualityDropdownOpen = !qualityDropdownOpen;
+  }
+
+  function getQualityLabel(q: AnimationQuality): string {
+    switch (q) {
+      case 'auto':
+        return 'Auto-Detect';
+      case 'high':
+        return 'High';
+      case 'medium':
+        return 'Medium';
+      case 'low':
+        return 'Low';
+    }
+  }
+
+  function getQualityDescription(q: AnimationQuality): string {
+    switch (q) {
+      case 'auto':
+        const effective = getEffectiveQuality();
+        return `Automatically adjusted based on device (currently: ${effective.charAt(0).toUpperCase() + effective.slice(1)})`;
+      case 'high':
+        return 'All particle effects enabled for premium visuals';
+      case 'medium':
+        return 'Reduced particles (50%) for balanced performance';
+      case 'low':
+        return 'Minimal particles (20%) for maximum performance';
+    }
+  }
+
+  // Quality options for dropdown
+  const qualityOptions: AnimationQuality[] = ['auto', 'high', 'medium', 'low'];
 
   // Icon snippets
   const volumeIcon = `
@@ -296,15 +365,74 @@
           </div>
         </div>
 
-        <!-- Future Settings Sections -->
-        <!--
+        <!-- Graphics Settings Section -->
         <div class="settings-section">
-          <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wide mb-4">
+          <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wide mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
             Graphics
           </h3>
-          <p class="text-slate-500 text-sm">More settings coming soon...</p>
+
+          <div class="space-y-4">
+            <!-- Animation Quality Dropdown -->
+            <div class="setting-row">
+              <div class="relative" use:clickOutside={() => qualityDropdownOpen = false}>
+                <button
+                  bind:this={qualityButtonElement}
+                  on:click={toggleQualityDropdown}
+                  class="quality-select-button"
+                  aria-expanded={qualityDropdownOpen}
+                  aria-haspopup="listbox"
+                  type="button"
+                >
+                  <span class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <span class="font-medium text-white">Animation Quality</span>
+                  </span>
+                  <span class="flex items-center gap-2">
+                    <span class="text-slate-300">{getQualityLabel(quality)}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 transition-transform duration-200" class:rotate-180={qualityDropdownOpen} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </button>
+
+                {#if qualityDropdownOpen}
+                  <div
+                    bind:this={qualityDropdownElement}
+                    class="quality-dropdown-menu"
+                    role="listbox"
+                    aria-label="Animation quality options"
+                  >
+                    {#each qualityOptions as option}
+                      <button
+                        on:click={() => handleQualityChange(option)}
+                        class="quality-option"
+                        class:active={option === quality}
+                        role="option"
+                        aria-selected={option === quality}
+                        type="button"
+                      >
+                        <span class="flex-1 text-left">{getQualityLabel(option)}</span>
+                        {#if option === quality}
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        {/if}
+                      </button>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+              <p class="setting-description">
+                {getQualityDescription(quality)}
+              </p>
+            </div>
+          </div>
         </div>
-        -->
       </div>
 
       <!-- Footer -->
@@ -360,5 +488,91 @@
 
   :global(.overflow-y-auto::-webkit-scrollbar-thumb:hover) {
     background: #64748b;
+  }
+
+  /* Quality Select Button */
+  .quality-select-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .quality-select-button:hover {
+    background: #334155;
+    border-color: #475569;
+  }
+
+  .quality-select-button:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+  }
+
+  /* Quality Dropdown Menu */
+  .quality-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: dropdown-fade-in 0.2s ease-out;
+  }
+
+  @keyframes dropdown-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Quality Option */
+  .quality-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+    text-align: left;
+    transition: background 0.15s ease;
+    cursor: pointer;
+  }
+
+  .quality-option:hover {
+    background: #334155;
+  }
+
+  .quality-option.active {
+    background: #1e3a5f;
+    color: #60a5fa;
+  }
+
+  .quality-option:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: -2px;
+  }
+
+  .quality-option:not(:last-child) {
+    border-bottom: 1px solid #334155;
   }
 </style>

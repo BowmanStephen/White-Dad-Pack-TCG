@@ -1,34 +1,42 @@
 <script lang="ts">
   import type { Rarity } from '../../types';
   import { RARITY_CONFIG } from '../../types';
-  import { onMount, onDestroy } from 'svelte';
+  import { getParticleMultiplier } from '../../stores/ui';
 
-  export let rarity: Rarity;
-  export let active: boolean = false;
-  export let duration: number = 1500; // ms
+  interface Props {
+    rarity: Rarity;
+    active?: boolean;
+    duration?: number;
+  }
+
+  let { rarity, active = false, duration = 1500 }: Props = $props();
 
   const config = RARITY_CONFIG[rarity];
-  const particleCount = config.particleCount;
+  const baseParticleCount = config.particleCount;
 
+  // Reactive particle count based on quality settings
+  let particleCount = $state(Math.floor(baseParticleCount * getParticleMultiplier()));
   let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
 
-  onMount(() => {
+  // Regenerate particles when quality changes
+  $effect(() => {
+    const multiplier = getParticleMultiplier();
+    particleCount = Math.floor(baseParticleCount * multiplier);
+
     if (particleCount > 0) {
       particles = Array.from({ length: particleCount }, (_, i) => ({
         id: i,
-        x: 50, // Start from center (%)
-        y: 50, // Start from center (%)
-        vx: (Math.random() - 0.5) * 40, // Velocity X (%)
-        vy: (Math.random() - 0.5) * 40, // Velocity Y (%)
-        size: Math.random() * 6 + 2, // Particle size (px)
-        delay: Math.random() * 300, // Stagger start (ms)
+        x: 50,
+        y: 50,
+        vx: (Math.random() - 0.5) * 40,
+        vy: (Math.random() - 0.5) * 40,
+        size: Math.random() * 6 + 2,
+        delay: Math.random() * 300,
         color: Math.random() > 0.5 ? config.color : config.glowColor.replace(/[^,]+(?=\))/, '0.8'),
       }));
+    } else {
+      particles = [];
     }
-  });
-
-  onDestroy(() => {
-    particles = [];
   });
 </script>
 
