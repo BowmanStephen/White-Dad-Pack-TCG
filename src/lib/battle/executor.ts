@@ -21,7 +21,6 @@ import {
   executeAbility,
   getTypeAdvantage,
 } from '@/lib/mechanics/combat';
-import { RARITY_ORDER } from '@/types';
 
 // ============================================================================
 // BATTLE GENERATION

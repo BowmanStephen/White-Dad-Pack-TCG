@@ -45,9 +45,10 @@
     };
   }
 
-  // Subscribe to modalOpen store
+  // Subscribe to modalOpen store (with cleanup to prevent memory leak)
+  let modalUnsubscribe: (() => void) | null = null;
   if (typeof window !== 'undefined') {
-    modalOpen.subscribe((value) => {
+    modalUnsubscribe = modalOpen.subscribe((value) => {
       isOpen = value === 'settings';
       if (isOpen) {
         // Store the previously focused element
@@ -148,6 +149,10 @@
   });
 
   onDestroy(() => {
+    // Clean up modalOpen subscription to prevent memory leak
+    if (modalUnsubscribe) {
+      modalUnsubscribe();
+    }
     // Restore focus when modal is destroyed
     if (previouslyFocusedElement) {
       previouslyFocusedElement.focus();
