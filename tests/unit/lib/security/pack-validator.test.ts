@@ -9,8 +9,9 @@ import {
   generateServerEntropy,
   generateClientEntropy,
   validatePack,
-  // Note: detectAnomalies and checkRateLimit are not yet implemented
-  // These functions will be imported once they are added to pack-validator.ts
+  detectAnomalies,
+  // Note: checkRateLimit is not yet implemented
+  // This function will be imported once it is added to pack-validator.ts
 } from '../../../../src/lib/security/pack-validator';
 // Mock createMockPack already defined below
 import type { Pack, Rarity } from '../../../../src/types';
@@ -226,60 +227,57 @@ describe('Security System - US095', () => {
     });
   });
 
-  // SKIPPED: Anomaly Detection tests - detectAnomalies() function not yet implemented
-  // Uncomment these tests when detectAnomalies is added to src/lib/security/pack-validator.ts
-  //
-  // describe('Anomaly Detection', () => {
-  //   it('should detect too many high-rarity cards', () => {
-  //     const recentPacks = [
-  //       createMockPack({
-  //         cards: [
-  //           createMockCard('1', 'legendary'),
-  //           createMockCard('2', 'legendary'),
-  //           createMockCard('3', 'legendary'),
-  //           createMockCard('4', 'rare'),
-  //           createMockCard('5', 'rare'),
-  //           createMockCard('6', 'rare'),
-  //         ],
-  //       }),
-  //     ];
-  //
-  //     const anomalies = detectAnomalies(recentPacks);
-  //
-  //     expect(anomalies.length).toBeGreaterThan(0);
-  //     expect(anomalies[0].category).toBeDefined();
-  //   });
-  //
-  //   it('should detect statistical anomalies', () => {
-  //     // Generate 100 packs with impossible luck
-  //     const luckyPacks = Array.from({ length: 100 }, () =>
-  //       createMockPack({
-  //         cards: [
-  //           createMockCard(`${Math.random()}`, 'mythic'),
-  //           createMockCard(`${Math.random()}`, 'legendary'),
-  //           createMockCard(`${Math.random()}`, 'legendary'),
-  //           createMockCard(`${Math.random()}`, 'epic'),
-  //           createMockCard(`${Math.random()}`, 'rare'),
-  //           createMockCard(`${Math.random()}`, 'common'),
-  //         ],
-  //       })
-  //     );
-  //
-  //     const anomalies = detectAnomalies(luckyPacks);
-  //
-  //     expect(anomalies.length).toBeGreaterThan(0);
-  //   });
-  //
-  //   it('should not flag normal packs', () => {
-  //     const normalPacks = Array.from({ length: 10 }, () =>
-  //       createMockPack()
-  //     );
-  //
-  //     const anomalies = detectAnomalies(normalPacks);
-  //
-  //     expect(anomalies.length).toBe(0);
-  //   });
-  // });
+  describe('Anomaly Detection', () => {
+    it('should detect too many high-rarity cards', () => {
+      const recentPacks = [
+        createMockPack({
+          cards: [
+            createMockCard('1', 'legendary'),
+            createMockCard('2', 'legendary'),
+            createMockCard('3', 'legendary'),
+            createMockCard('4', 'rare'),
+            createMockCard('5', 'rare'),
+            createMockCard('6', 'rare'),
+          ],
+        }),
+      ];
+
+      const anomalies = detectAnomalies(recentPacks);
+
+      expect(anomalies.length).toBeGreaterThan(0);
+      expect(anomalies[0].category).toBeDefined();
+    });
+
+    it('should detect statistical anomalies', () => {
+      // Generate 100 packs with impossible luck
+      const luckyPacks = Array.from({ length: 100 }, () =>
+        createMockPack({
+          cards: [
+            createMockCard(`${Math.random()}`, 'mythic'),
+            createMockCard(`${Math.random()}`, 'legendary'),
+            createMockCard(`${Math.random()}`, 'legendary'),
+            createMockCard(`${Math.random()}`, 'epic'),
+            createMockCard(`${Math.random()}`, 'rare'),
+            createMockCard(`${Math.random()}`, 'common'),
+          ],
+        })
+      );
+
+      const anomalies = detectAnomalies(luckyPacks);
+
+      expect(anomalies.length).toBeGreaterThan(0);
+    });
+
+    it('should not flag normal packs', () => {
+      const normalPacks = Array.from({ length: 10 }, () =>
+        createMockPack()
+      );
+
+      const anomalies = detectAnomalies(normalPacks);
+
+      expect(anomalies.length).toBe(0);
+    });
+  });
 
   // SKIPPED: Rate Limiting tests - checkRateLimit() function not yet implemented
   // Uncomment these tests when checkRateLimit is added to src/lib/security/pack-validator.ts

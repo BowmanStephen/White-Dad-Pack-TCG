@@ -221,6 +221,112 @@ export function validateRarityDistribution(pack: Pack): string[] {
 }
 
 /**
+ * Anomaly detection interface
+ */
+interface PackAnomaly {
+  category: string;
+  message: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  packId?: string;
+}
+
+/**
+ * Detect anomalies across multiple packs
+ * Analyzes statistical patterns to identify suspicious behavior
+ */
+export function detectAnomalies(packs: Pack[]): PackAnomaly[] {
+  const anomalies: PackAnomaly[] = [];
+
+  if (packs.length === 0) {
+    return anomalies;
+  }
+
+  // Calculate rarity statistics across all packs
+  let totalMythic = 0;
+  let totalLegendary = 0;
+  let totalEpic = 0;
+  let totalRarityScore = 0;
+  let totalCards = 0;
+
+  for (const pack of packs) {
+    for (const card of pack.cards) {
+      totalCards++;
+      totalRarityScore += RARITY_ORDER[card.rarity];
+
+      if (card.rarity === 'mythic') totalMythic++;
+      if (card.rarity === 'legendary') totalLegendary++;
+      if (card.rarity === 'epic') totalEpic++;
+    }
+  }
+
+  // Calculate expected rates (based on standard pack probabilities)
+  // These are approximate thresholds for suspicious behavior
+  const expectedMythicRate = 0.01; // 1% mythic
+  const expectedLegendaryRate = 0.03; // 3% legendary
+  const expectedEpicRate = 0.08; // 8% epic
+
+  const actualMythicRate = totalMythic / totalCards;
+  const actualLegendaryRate = totalLegendary / totalCards;
+  const actualEpicRate = totalEpic / totalCards;
+  const averageRarityScore = totalRarityScore / totalCards;
+
+  // Detect too many high-rarity cards
+  if (actualMythicRate > expectedMythicRate * 5) {
+    anomalies.push({
+      category: 'high_rarity_rate',
+      message: `Mythic rate ${((actualMythicRate) * 100).toFixed(2)}% significantly exceeds expected ${expectedMythicRate * 100}%`,
+      severity: actualMythicRate > expectedMythicRate * 10 ? 'critical' : 'high',
+    });
+  }
+
+  if (actualLegendaryRate > expectedLegendaryRate * 5) {
+    anomalies.push({
+      category: 'high_rarity_rate',
+      message: `Legendary rate ${(actualLegendaryRate * 100).toFixed(2)}% significantly exceeds expected ${expectedLegendaryRate * 100}%`,
+      severity: actualLegendaryRate > expectedLegendaryRate * 10 ? 'high' : 'medium',
+    });
+  }
+
+  if (actualEpicRate > expectedEpicRate * 5) {
+    anomalies.push({
+      category: 'high_rarity_rate',
+      message: `Epic rate ${(actualEpicRate * 100).toFixed(2)}% significantly exceeds expected ${expectedEpicRate * 100}%`,
+      severity: 'medium',
+    });
+  }
+
+  // Detect statistically impossible patterns (all high rarity)
+  if (averageRarityScore > 3.5) {
+    anomalies.push({
+      category: 'statistical_impossibility',
+      message: `Average rarity score ${averageRarityScore.toFixed(2)} suggests manipulation`,
+      severity: 'critical',
+    });
+  }
+
+  // Detect patterns where user consistently gets max rare slots
+  const maxRarePacks = packs.filter(p => {
+    const rarePlus = p.cards.filter(c =>
+      c.rarity === 'rare' ||
+      c.rarity === 'epic' ||
+      c.rarity === 'legendary' ||
+      c.rarity === 'mythic'
+    ).length;
+    return rarePlus >= 3;
+  }).length;
+
+  if (maxRarePacks > packs.length * 0.5) {
+    anomalies.push({
+      category: 'consistent_high_luck',
+      message: `${maxRarePacks}/${packs.length} packs have 3+ rare+ cards (statistically improbable)`,
+      severity: 'high',
+    });
+  }
+
+  return anomalies;
+}
+
+/**
  * Validate card integrity (no modified stats)
  */
 export function validateCardIntegrity(pack: Pack): string[] {
