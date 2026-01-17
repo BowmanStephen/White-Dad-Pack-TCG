@@ -309,3 +309,21 @@ clicking inside the modal, but the overlay click still closes it. This is a comm
 orage | ✅ | `clearCollection()` in `collection.ts:206-225` resets persistent atom |\n| Resets all stats to zero | ✅ | All metadata reset: `totalPacksOpened: 0`, `uniqueCards: []`, `rarePulls: 0`, `holoPulls: 0` |\n| Confirmation notification on success | ✅ | Shows \"Collection cleared\" success message for 1.5s |\n\n### Key Files\n- **UI Component:** `src/components/collection/CollectionManager.svelte`\n- **Store Logic:** `src/stores/collection.ts`\n\n### Build Status\n✅ Build successful (2.02s)
 
 ---
+## ✓ Iteration 31 - US031: Routing - Collection Page
+*2026-01-17T08:59:56.665Z (103s)*
+
+**Status:** Completed
+
+**Notes:**
+onal `title` and `description` props via Astro.props destructuring with defaults. This is a clean pattern for layout inheritance—child pages can override metadata when needed while maintaining sensible defaults.\n\n**SEO Meta Tags**: The BaseLayout automatically generates OpenGraph and Twitter card meta tags from the same title/description props. This DRY approach ensures consistency across social sharing platforms without duplicating content.\n`─────────────────────────────────────────────────`
+
+---
+## ✓ Iteration 32 - US032: Routing - Navigation Component
+*2026-01-17T09:01:46.309Z (109s)*
+
+**Status:** Completed
+
+**Notes:**
+ages/index.astro` - Uses Navigation component\n- `src/pages/pack.astro` - Uses Navigation component  \n- `src/pages/collection.astro` - Uses Navigation component\n\n**Design Aesthetic:**\n- \"Suburban dad garage\" theme—warm amber glow on dark slate\n- Gradient background with backdrop blur for depth\n- Animated underline on hover for desktop links\n- Smooth hamburger-to-X transformation for mobile\n- Pulsing active indicator dot in mobile menu\n\n**Build Status:** ✅ Build successful (2.07s)\n\n
+
+---

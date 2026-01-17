@@ -1,33 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Logo from '../components/common/Logo.astro';
 import Hero from '../components/landing/Hero.astro';
 import Features from '../components/landing/Features.astro';
 import FeaturedCards from '../components/landing/FeaturedCards.astro';
 import PackPreview from '../components/landing/PackPreview.svelte';
 import Footer from '../components/landing/Footer.astro';
+import Navigation from '../components/common/Navigation.svelte';
 ---
 
 <BaseLayout>
-  <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/">
-        <Logo size="sm" />
-      </a>
-      <nav class="flex items-center gap-6">
-        <a href="/collection" class="text-slate-400 hover:text-white transition-colors text-sm">My Collection</a>
-        <a href="#features" class="text-slate-400 hover:text-white transition-colors text-sm">Features</a>
-        <a
-          href="/pack"
-          class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-white text-sm font-bold rounded-lg transition-colors"
-        >
-          Open Pack
-        </a>
-      </nav>
-    </div>
-  </header>
-  
+  <Navigation client:load />
+
   <main class="pt-16">
     <Hero />
     <Features />
