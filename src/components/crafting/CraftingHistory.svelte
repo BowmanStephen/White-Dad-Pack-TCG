@@ -7,7 +7,7 @@
    */
 
   import { RARITY_CONFIG, type CraftingHistoryEntry } from '../../types';
-  import { craftingHistory, getCraftingStats } from '../../stores/crafting';
+  import { craftingHistory, getCraftingStats, clearCraftingHistory } from '../../stores/crafting';
 
   export let onClose: () => void;
 
@@ -31,10 +31,7 @@
 
   function clearHistory() {
     if (confirm('Are you sure you want to clear your crafting history? This cannot be undone.')) {
-      // Import and call the clear function
-      import('../../stores/crafting').then(({ clearCraftingHistory }) => {
-        clearCraftingHistory();
-      });
+      clearCraftingHistory();
     }
   }
 </script>
