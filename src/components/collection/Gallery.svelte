@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { collection } from '../../stores/collection';
-  import { getCollectionStats } from '../../stores/collection';
   import {
     getUniqueCardsWithCounts,
     sortCardsByRarityAndName,
@@ -93,9 +92,6 @@
       selectedSort = sortParam as SortOption;
     }
   }
-
-  // Stats
-  let stats = $derived(getCollectionStats());
 
   // Intersection observer for infinite scroll
   let loadMoreTrigger: HTMLDivElement;
@@ -407,34 +403,6 @@
       </div>
     </div>
   {/if}
-
-  <!-- Stats Bar -->
-  <div class="stats-bar">
-    <div class="stat-item">
-      <span class="stat-value">{stats.totalCards}</span>
-      <span class="stat-label">Total Cards</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value">{stats.uniqueCards}</span>
-      <span class="stat-label">Unique</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value">{stats.totalPacks}</span>
-      <span class="stat-label">Packs Opened</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value" style="color: {RARITY_CONFIG.legendary.color}">
-        {stats.legendaryPulls + stats.mythicPulls}
-      </span>
-      <span class="stat-label">Legendary+</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value" style="color: {RARITY_CONFIG.mythic.color}">
-        {stats.mythicPulls}
-      </span>
-      <span class="stat-label">Mythic</span>
-    </div>
-  </div>
 
   <!-- Empty State -->
   {#if displayedCards.length === 0 && allCards.length === 0}
@@ -901,38 +869,6 @@
     text-align: center;
     line-height: 1.1;
     word-break: break-word;
-  }
-
-  /* Stats Bar */
-  .stats-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    padding: 1rem;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(71, 85, 105, 0.2);
-    border-radius: 0.75rem;
-    margin-bottom: 2rem;
-  }
-
-  .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #fbbf24;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
   }
 
   /* Empty State */

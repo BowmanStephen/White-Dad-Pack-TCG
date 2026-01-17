@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/common/Logo.astro';
+import CollectionStats from '../components/collection/CollectionStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 ---
 
@@ -30,6 +31,11 @@ import Gallery from '../components/collection/Gallery.svelte';
     </div>
   </div>
 
+  <!-- Collection Stats -->
+  <div class="stats-section">
+    <CollectionStats client:load />
+  </div>
+
   <!-- Gallery -->
   <main class="collection-main">
     <Gallery client:load />
@@ -46,5 +52,9 @@ import Gallery from '../components/collection/Gallery.svelte';
     min-height: calc(100vh - 200px);
     background: radial-gradient(ellipse at top, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
                 linear-gradient(to bottom, #0f172a, #1e293b);
+  }
+
+  .stats-section {
+    padding: 0 1rem 2rem 1rem;
   }
 </style>
