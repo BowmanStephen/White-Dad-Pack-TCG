@@ -12,6 +12,7 @@ export function getStoreValues() {
     allCardsRevealed: pack.allCardsRevealed.get(),
     packStats: pack.packStats.get(),
     packError: pack.packError.get(),
+    storageError: pack.storageError.get(),
   };
 }
 
@@ -27,6 +28,7 @@ export function subscribeToStores(callback: (values: ReturnType<typeof getStoreV
     pack.allCardsRevealed.subscribe(() => callback(getStoreValues())),
     pack.packStats.subscribe(() => callback(getStoreValues())),
     pack.packError.subscribe(() => callback(getStoreValues())),
+    pack.storageError.subscribe(() => callback(getStoreValues())),
   ];
 
   // Return unsubscribe function

@@ -1,5 +1,6 @@
 import { persistentAtom } from '@nanostores/persistent';
 import type { Collection, CollectionState, CollectionStats, Pack, Rarity } from '../types';
+import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
 
@@ -51,16 +52,6 @@ const collectionEncoder = {
     }
     return data;
   },
-};
-
-// Rarity order for comparison (common=0, mythic=5)
-const RARITY_ORDER: Record<Rarity, number> = {
-  common: 0,
-  uncommon: 1,
-  rare: 2,
-  epic: 3,
-  legendary: 4,
-  mythic: 5,
 };
 
 // Check if LocalStorage is available and has space

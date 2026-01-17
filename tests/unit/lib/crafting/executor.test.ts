@@ -158,6 +158,52 @@ describe('canAffordCraft', () => {
 });
 
 describe('executeCraft', () => {
+  describe('defensive handling - CP-004', () => {
+    it('should throw error when no cards exist for output rarity', () => {
+      // Create test recipe with non-existent rarity
+      const recipe = {
+        id: 'test_empty_pool',
+        name: 'Test Empty Pool',
+        description: 'Test recipe with empty card pool',
+        inputRarity: 'common' as const,
+        inputCount: 5,
+        outputRarity: 'mythic' as const,
+        outputCount: 1,
+        successRate: 1.0, // 100% success rate
+      };
+
+      // Create test input cards
+      const inputCards: Array<{ id: string; rarity: 'common'; }> = [
+        { id: 'card1', rarity: 'common' },
+        { id: 'card2', rarity: 'common' },
+        { id: 'card3', rarity: 'common' },
+        { id: 'card4', rarity: 'common' },
+        { id: 'card5', rarity: 'common' },
+      ];
+
+      // Empty card database (no mythic cards)
+      const emptyCardPool: any[] = [];
+
+      // Should throw error when no cards found
+      expect(() => {
+        executeCraft(recipe, inputCards as any, emptyCardPool);
+      }).toThrow('No cards found with rarity mythic');
+    });
+
+    it('should handle all rarities that exist in database', () => {
+      const allCards = getAllCards();
+
+      // Verify each rarity has at least one card
+      const rarities: Array<'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic'> =
+        ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+
+      rarities.forEach(rarity => {
+        const cardsOfRarity = allCards.filter(card => card.rarity === rarity);
+        expect(cardsOfRarity.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
   describe('failure path with failReturnRate', () => {
     it('should execute failed craft with zero fail return rate', () => {
       // Create test recipe with 0% return rate on failure

@@ -1,0 +1,164 @@
+{
+  "name": "DadDeck™ - Code Quality Fixes",
+  "description": "Code simplicity and quality improvements from code review",
+  "branchName": "fix/code-quality",
+  "userStories": [
+    {
+      "id": "US101",
+      "title": "Code Quality - Consolidate RARITY_ORDER Constant",
+      "description": "As a developer, I want a single source of truth for rarity ordering, so I avoid maintenance issues and inconsistent behavior.",
+      "acceptanceCriteria": [
+        "Export canonical RARITY_ORDER from src/types/index.ts",
+        "Remove duplicate definition from src/stores/collection.ts:34",
+        "Remove duplicate definition from src/lib/pack/generator.ts:118",
+        "Remove duplicate definition from src/stores/crafting.ts:340",
+        "Update all imports to use canonical version",
+        "Run tests to ensure no regressions"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "dry"
+      ]
+    },
+    {
+      "id": "US102",
+      "title": "Code Quality - Fix Cross-Store Communication Pattern",
+      "description": "As a developer, I want proper store imports instead of window object pollution, so I maintain type safety and follow best practices.",
+      "acceptanceCriteria": [
+        "Remove window.__dailyRewardsState from src/stores/daily-rewards.ts:541-547",
+        "Update src/stores/achievements.ts:186-227 to import dailyRewards store directly",
+        "Create a proper getter function for streak state if needed",
+        "Ensure all achievement checks work correctly",
+        "Run tests to ensure no regressions"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "type-safety"
+      ]
+    },
+    {
+      "id": "US103",
+      "title": "Code Quality - Create Shared Date Encoder Utility",
+      "description": "As a developer, I want a reusable date encoder utility, so I eliminate ~150 lines of duplicated code.",
+      "acceptanceCriteria": [
+        "Create src/lib/utils/encoders.ts with createDateEncoder<T>() utility",
+        "Refactor src/stores/collection.ts:6-31 to use shared encoder",
+        "Refactor src/stores/achievements.ts:13-31 to use shared encoder",
+        "Refactor src/stores/battle.ts:41-61 to use shared encoder",
+        "Refactor src/stores/daily-rewards.ts:94-117 to use shared encoder",
+        "Refactor src/stores/crafting.ts:66-113 to use shared encoder",
+        "Run tests to ensure persistence still works"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "dry"
+      ]
+    },
+    {
+      "id": "US104",
+      "title": "Code Quality - Simplify svelte-helpers.ts",
+      "description": "As a developer, I want efficient store subscriptions, so I don't trigger unnecessary re-reads on every store change.",
+      "acceptanceCriteria": [
+        "Evaluate if src/lib/stores/svelte-helpers.ts is still needed",
+        "If needed, refactor to use Nanostores computed() for derived values",
+        "If not needed, remove and update any components using it",
+        "Document the decision in code comments"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "performance"
+      ]
+    },
+    {
+      "id": "US105",
+      "title": "Code Quality - Refactor PackOpener Dynamic Imports",
+      "description": "As a developer, I want cleaner store imports in PackOpener, so code is more readable and maintainable.",
+      "acceptanceCriteria": [
+        "Import stores at component level in src/components/pack/PackOpener.svelte",
+        "Guard usage with onMount for SSR safety",
+        "Remove 8 dynamic import patterns (lines 37-97)",
+        "Ensure pack opening still works correctly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "svelte"
+      ]
+    },
+    {
+      "id": "US106",
+      "title": "Code Quality - Create Achievement Factory Function",
+      "description": "As a developer, I want a factory function for similar achievements, so I reduce verbose repetitive definitions.",
+      "acceptanceCriteria": [
+        "Create createStreakAchievement() factory in src/stores/achievements.ts",
+        "Refactor daily streak achievements (lines 180-264) to use factory",
+        "Consider factory functions for other achievement patterns",
+        "Maintain type safety"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "dry"
+      ]
+    },
+    {
+      "id": "US107",
+      "title": "Code Quality - Optimize Collection Stats Computation",
+      "description": "As a developer, I want cached rarity counts, so I avoid iterating all packs/cards on every stats call.",
+      "acceptanceCriteria": [
+        "Add cached counts to collection metadata",
+        "Update counts incrementally when packs are added",
+        "Refactor computeRarityCounts() in src/stores/collection.ts:92-109",
+        "Run performance tests to verify improvement"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "performance",
+        "optimization"
+      ]
+    },
+    {
+      "id": "US108",
+      "title": "Code Quality - Split Types File",
+      "description": "As a developer, I want types file split by domain, so IDE performance improves and navigation is easier.",
+      "acceptanceCriteria": [
+        "Create src/types/core.ts for Card, Pack, Rarity types",
+        "Create src/types/analytics.ts for Analytics event types",
+        "Create src/types/crafting.ts for Crafting types",
+        "Move constants to src/data/configs.ts",
+        "Update src/types/index.ts to re-export from new files",
+        "Update all imports project-wide"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "architecture"
+      ]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-17T19:40:00Z",
+    "version": "1.0.0",
+    "updatedAt": "2026-01-17T20:47:48.358Z"
+  }
+}

@@ -183,8 +183,8 @@
     <PackAnimation
       bestRarity={currentPack.bestRarity}
       design={currentPack.design}
-      on:complete={completePackAnimation}
-      on:skip={skipToResults}
+      on:complete={completePackAnimationHandler}
+      on:skip={skipToResultsHandler}
     />
 
   {:else if (packState === 'cards_ready' || packState === 'revealing') && currentPack}
@@ -193,15 +193,13 @@
       pack={currentPack}
       currentIndex={currentCardIndex}
       revealedIndices={revealedCards}
-      on:reveal={revealCurrentCard}
-      on:next={nextCard}
-      on:prev={prevCard}
-      on:skip={skipToResults}
+      on:reveal={revealCurrentCardHandler}
+      on:next={nextCardHandler}
+      on:prev={prevCardHandler}
+      on:skip={skipToResultsHandler}
       on:results={() => {
-        import('../../stores/pack').then(({ showResults }) => {
-          showResults();
-          loadFromStores();
-        });
+        showResults();
+        loadFromStores();
       }}
     />
 
