@@ -3,6 +3,7 @@ import type { Pack, PackState } from '../types';
 import { generatePack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
+import { createAppError, logError, type AppError } from '../lib/utils/errors';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -21,6 +22,12 @@ export const isSkipping = atom<boolean>(false);
 
 // Track which cards have been revealed
 export const revealedCards = atom<Set<number>>(new Set());
+
+// Error state store with full AppError object
+export const packError = atom<AppError | null>(null);
+
+// Storage error state with full AppError object
+export const storageError = atom<AppError | null>(null);
 
 // Computed: Get the current card being viewed
 export const currentCard = computed(
@@ -59,12 +66,6 @@ export const packProgress = computed(
  * Actions
  */
 
-// Error state store for pack generation failures
-export const packError = atom<string | null>(null);
-
-// Storage error state (for LocalStorage issues)
-export const storageError = atom<string | null>(null);
-
 // Start opening a new pack
 export async function openNewPack(): Promise<void> {
   // Reset state first
@@ -91,12 +92,27 @@ export async function openNewPack(): Promise<void> {
       await new Promise(resolve => setTimeout(resolve, remainingDelay));
     }
 
+    // Validate pack has cards
+    if (!pack || pack.cards.length === 0) {
+      throw new Error('Generated pack has no cards');
+    }
+
     // Save pack to collection (LocalStorage)
     const saveResult = addPackToCollection(pack);
     if (!saveResult.success) {
-      // Set storage error but don't block the pack opening
-      storageError.set(saveResult.error || 'Failed to save pack to collection');
-      console.warn('Collection save failed:', saveResult.error);
+      // Create storage error but don't block the pack opening
+      const storageAppError = createAppError(
+        'storage',
+        saveResult.error || 'Failed to save pack to collection',
+        [
+          {
+            label: 'Dismiss',
+            action: () => storageError.set(null),
+          },
+        ]
+      );
+      storageError.set(storageAppError);
+      logError(storageAppError, saveResult.error);
     }
 
     // Track pack open event
@@ -115,10 +131,27 @@ export async function openNewPack(): Promise<void> {
     // Record pack open start time for duration tracking
     packOpenStartTime = Date.now();
   } catch (error) {
-    // Handle generation errors
-    packError.set(error instanceof Error ? error.message : 'Failed to generate pack');
+    // Create friendly generation error
+    const appError = createAppError(
+      'generation',
+      error instanceof Error ? error : 'Failed to generate pack',
+      [
+        {
+          label: 'Try Again',
+          action: () => openNewPack(),
+          primary: true,
+        },
+        {
+          label: 'Go Home',
+          action: () => {
+            window.location.href = '/';
+          },
+        },
+      ]
+    );
+    packError.set(appError);
     packState.set('idle');
-    console.error('Pack generation failed:', error);
+    logError(appError, error);
   }
 }
 

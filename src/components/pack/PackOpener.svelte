@@ -1,12 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Pack, PackState } from '../../types';
+  import type { AppError } from '../../lib/utils/errors';
   import { getStoreValues } from '../../lib/stores/svelte-helpers';
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
   import PackSkeleton from '../loading/PackSkeleton.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
+  import ErrorDisplay from '../common/ErrorDisplay.svelte';
+  import ErrorMessage from '../common/ErrorMessage.svelte';
 
   // Reactive state using Svelte 5 runes
   let currentPack = $state<Pack | null>(null);
@@ -14,7 +17,8 @@
   let currentCardIndex = $state<number>(0);
   let revealedCards = $state<Set<number>>(new Set());
   let packStats = $state<any>(null);
-  let packError = $state<string | null>(null);
+  let packError = $state<AppError | null>(null);
+  let storageError = $state<AppError | null>(null);
 
   // Load initial values from stores
   function loadFromStores() {
@@ -24,7 +28,8 @@
     currentCardIndex = values.currentCardIndex;
     revealedCards = values.revealedCards;
     packStats = values.packStats;
-    packError = values.packError ?? null;
+    packError = (values.packError as AppError | null) ?? null;
+    storageError = (values.storageError as AppError | null) ?? null;
   }
 
   // Start pack opening on mount
@@ -144,7 +149,14 @@
 <!-- Error announcement (assertive for immediate attention) -->
 {#if packError}
   <div aria-live="assertive" aria-atomic="true" class="sr-only" role="alert" id="error-announcer">
-    Error: {packError}
+    Error: {packError.title}. {packError.message}
+  </div>
+{/if}
+
+<!-- Storage warning (non-modal, appears at top) -->
+{#if storageError && !packError}
+  <div class="fixed top-0 left-0 right-0 z-50 p-4">
+    <ErrorMessage error={storageError} compact={true} />
   </div>
 {/if}
 
@@ -161,18 +173,14 @@
     <PackSkeleton />
 
   {:else if packError}
-    <!-- Error state -->
-    <div class="text-center max-w-md">
-      <div class="text-5xl mb-4">⚠️</div>
-      <h2 class="text-xl text-red-400 mb-2">Pack Generation Failed</h2>
-      <p class="text-slate-400 mb-6">{packError}</p>
-      <button
-        onclick={handleOpenAnother}
-        class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg transition-colors"
-      >
-        Try Again
-      </button>
-    </div>
+    <!-- Error state - use friendly error display -->
+    <ErrorDisplay
+      error={packError}
+      onDismiss={() => {
+        packError = null;
+        import('../../stores/pack').then(({ packError: store }) => store.set(null));
+      }}
+    />
 
   {:else if packState === 'pack_animate' && currentPack}
     <!-- Pack opening animation -->
