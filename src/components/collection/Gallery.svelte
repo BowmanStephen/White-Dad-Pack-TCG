@@ -28,6 +28,31 @@
   let selectedRarity: Rarity | null = null;
   let holoOnly = false;
 
+  // URL query param helpers
+  function getQueryParam(param: string): string | null {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get(param);
+  }
+
+  function setQueryParam(param: string, value: string | null) {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (value === null) {
+      url.searchParams.delete(param);
+    } else {
+      url.searchParams.set(param, value);
+    }
+    window.history.replaceState({}, '', url.toString());
+  }
+
+  function initializeFromURL() {
+    const rarityParam = getQueryParam('rarity');
+    if (rarityParam && Object.keys(RARITY_CONFIG).includes(rarityParam)) {
+      selectedRarity = rarityParam as Rarity;
+    }
+  }
+
   // Stats
   let stats = $derived(getCollectionStats());
 
@@ -103,6 +128,7 @@
   // Handle rarity filter change
   function handleRarityFilter(rarity: Rarity | null) {
     selectedRarity = rarity;
+    setQueryParam('rarity', rarity);
     resetPagination();
   }
 
@@ -114,6 +140,7 @@
 
   // Setup intersection observer for infinite scroll
   onMount(() => {
+    initializeFromURL();
     loadCards();
 
     if (typeof IntersectionObserver !== 'undefined') {
