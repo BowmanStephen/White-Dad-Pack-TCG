@@ -4,6 +4,7 @@ import Logo from '../components/common/Logo.astro';
 import Hero from '../components/landing/Hero.astro';
 import Features from '../components/landing/Features.astro';
 import FeaturedCards from '../components/landing/FeaturedCards.astro';
+import PackPreview from '../components/landing/PackPreview.svelte';
 import Footer from '../components/landing/Footer.astro';
 ---
 
@@ -29,6 +30,7 @@ import Footer from '../components/landing/Footer.astro';
   <main class="pt-16">
     <Hero />
     <Features />
+    <PackPreview client:load />
     <FeaturedCards />
   </main>
   

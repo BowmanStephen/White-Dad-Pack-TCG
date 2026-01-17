@@ -25,3 +25,12 @@ ayout, hover effects","status":"completed","activeForm":"Updating Features compo
 {"type":"assistant","message":{"id":"msg_20260117152458fea19d91e1ce47d6","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 3 - US003: Landing Page - Featured Cards Showcase
+*2026-01-17T07:28:41.502Z (215s)*
+
+**Status:** Completed
+
+**Notes:**
+first, then hydrate in the browser.\n\n2. **Client Directives Matter**: The `client:visible` directive tells Astro to only hydrate the component when it enters the viewport, which is perfect for showcase sections below the fold.\n\n3. **Resource Cleanup**: Using Svelte's `onDestroy` lifecycle hook to clean up `requestAnimationFrame` prevents memory leaks, especially important for components that may be mounted/unmounted frequently.\n`─────────────────────────────────────────────────`\n\n---\n\n
+
+---
