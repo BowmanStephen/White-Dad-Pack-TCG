@@ -866,3 +866,12 @@ content":"4fc829b feat: API Integration - Discord Bot (US091)","is_error":false}
 {"type":"assistant","message":{"id":"msg_20260118004155f17b154da18543e2","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 92 - US092: Localization - Multi-language
+*2026-01-17T16:49:19.113Z (436s)*
+
+**Status:** Completed
+
+**Notes:**
+ated section header and feature cards\n- **Footer.astro** - Added language selector + translated links/copyright\n\n### 🎯 Usage\n\n```typescript\n// Import and use in components\nimport { t, localeStore } from '@/i18n';\n\n// Get current locale\nconst currentLocale = localeStore.get(); // 'en' | 'es' | 'fr' | 'de'\n\n// Get translation\nconst text = t('ui.open_pack'); // \"Open Pack\" (or translated)\n\n// Change language (persists to localStorage, reloads page)\nlocaleStore.set('es');\n```\n\n
+
+---

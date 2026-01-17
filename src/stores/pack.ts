@@ -1,6 +1,7 @@
 import { atom, computed } from 'nanostores';
-import type { Pack, PackState } from '../types';
+import type { Pack, PackState, PackType } from '../types';
 import { generatePack, getPackStats } from '../lib/pack/generator';
+import { generatePremiumPack } from '../lib/pack/premium-generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
@@ -8,6 +9,11 @@ import {
   checkAndUnlockAchievements,
   getAchievementContext,
 } from './achievements';
+import {
+  currentPackType,
+  usePremiumPack,
+  hasPremiumPacks,
+} from './premium';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -70,7 +76,7 @@ export const packProgress = computed(
  * Actions
  */
 
-// Start opening a new pack
+// Start opening a new pack (standard or premium)
 export async function openNewPack(): Promise<void> {
   // Reset state first
   currentCardIndex.set(0);
@@ -84,9 +90,31 @@ export async function openNewPack(): Promise<void> {
   packState.set('generating');
 
   try {
+    // Get current pack type (standard or premium)
+    const packType = currentPackType.get();
+    let pack: Pack;
+
+    if (packType === 'premium') {
+      // Check if user has premium packs available
+      if (!hasPremiumPacks()) {
+        throw new Error('No premium packs available. Please purchase a premium pack first.');
+      }
+
+      // Use a premium pack from inventory
+      const used = usePremiumPack('premium_single');
+      if (!used) {
+        throw new Error('Failed to use premium pack from inventory.');
+      }
+
+      // Generate premium pack with boosted rates
+      pack = generatePremiumPack('premium_single');
+    } else {
+      // Generate standard pack
+      pack = generatePack();
+    }
+
     // Simulate minimal delay to ensure loading state is visible (min 200ms)
     const startTime = performance.now();
-    const pack = await Promise.resolve(generatePack());
     const elapsed = performance.now() - startTime;
     const minDelay = 200;
 
@@ -125,6 +153,8 @@ export async function openNewPack(): Promise<void> {
       data: {
         packId: pack.id,
         cardCount: pack.cards.length,
+        packType,
+        ...(packType === 'premium' && { premiumConfigId: 'premium_single' }),
       },
     });
 

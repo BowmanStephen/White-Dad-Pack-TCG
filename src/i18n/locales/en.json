@@ -21,7 +21,10 @@
     "close": "Close",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "buy_premium": "Buy Premium",
+    "premium_pack": "Premium Pack",
+    "standard_pack": "Standard Pack"
   },
   "landing": {
     "hero_title": "Collect Every Dad",
@@ -204,5 +207,24 @@
     "friend_added": "Friend added!",
     "error_occurred": "An error occurred. Please try again.",
     "connection_error": "Connection error. Check your internet."
+  },
+  "premium": {
+    "title": "Premium Packs",
+    "description": "Boosted rates with guaranteed Rare or better!",
+    "features": {
+      "cards": "7 Cards",
+      "guaranteed": "Guaranteed Rare or Better",
+      "mythic_2x": "2x Mythic Chance",
+      "holo_50_more": "50% More Holo"
+    },
+    "price": "$0.99",
+    "buy_now": "Buy Premium Pack",
+    "owned": "Owned",
+    "purchase_success": "Purchase Successful!",
+    "purchase_error": "Purchase Failed",
+    "no_packs": "No premium packs available. Purchase a premium pack first.",
+    "select_pack": "Select a premium pack to purchase:",
+    "processing": "Processing your purchase...",
+    "dev_note": "Developer Note: Stripe checkout not yet configured."
   }
 }
