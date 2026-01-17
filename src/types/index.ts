@@ -107,6 +107,46 @@ export type PackState =
 // Pack Design Types (US068 - Pack Designs - Visual Variety)
 export type PackDesign = 'standard' | 'holiday' | 'premium';
 
+// ============================================================================
+// BATCH PACK OPENING TYPES (US076 - Batch Actions - Open Multiple Packs)
+// ============================================================================
+
+// Batch state machine
+export type BatchState =
+  | 'idle'              // Ready to start batch
+  | 'preparing'         // Preparing batch (validating, showing confirmation)
+  | 'opening'           // Currently opening packs
+  | 'paused'            // Batch paused (user cancelled mid-batch)
+  | 'complete'          // All packs opened
+  | 'reviewing';        // Reviewing individual packs
+
+// Batch configuration
+export interface BatchConfig {
+  totalPacks: number;           // Number of packs to open (1-50)
+  fastForward: boolean;         // Skip animations
+  autoSave: boolean;            // Auto-save to collection
+}
+
+// Batch progress tracking
+export interface BatchProgress {
+  currentPack: number;          // Current pack index (1-based)
+  totalPacks: number;           // Total packs to open
+  cardsOpened: number;          // Total cards opened so far
+  totalCards: number;           // Total cards to open
+  percentage: number;           // Progress percentage (0-100)
+}
+
+// Batch result summary
+export interface BatchSummary {
+  packsOpened: number;          // Number of packs opened
+  totalCards: number;           // Total cards obtained
+  rarityBreakdown: Record<Rarity, number>; // Cards by rarity
+  holoCount: number;            // Number of holo cards
+  bestPulls: PackCard[];        // Top 3 rarest cards
+  duration: number;             // Total duration (ms)
+  timestamp: Date;              // When batch was completed
+}
+
 // Pack Design Configuration
 export interface PackDesignConfig {
   name: string;

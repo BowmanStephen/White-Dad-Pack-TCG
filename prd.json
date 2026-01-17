@@ -1520,12 +1520,13 @@
         "Notification when reward available"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "gamification",
         "retention",
         "monetization"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US075",
@@ -1540,12 +1541,13 @@
         "Rich text support (bold, keywords)"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "cards",
         "ui",
         "ux"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US076",
@@ -2052,6 +2054,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T13:33:17.047Z"
+    "updatedAt": "2026-01-17T13:43:20.073Z"
   }
 }
