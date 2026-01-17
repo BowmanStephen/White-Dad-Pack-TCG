@@ -8,7 +8,7 @@ import { onMount } from 'svelte';
 import { t, localeStore } from '@/i18n';
 
 export let key: string;
-export let fallback?: string;
+export let fallback: string;
 
 let translation: string = fallback || key;
 

@@ -17,7 +17,7 @@
   } from '@/stores/admin-panel';
   import { CARDS, type Card } from '@/types';
 
-  let cards = $: CARDS || [];
+  let cards = CARDS || [];
   let filteredCards: Card[] = [];
 
   // Subscribe to store

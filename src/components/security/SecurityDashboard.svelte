@@ -34,19 +34,19 @@
   // Computed values
   const stats = $derived(getSecurityStats());
   const violations = $derived(sessionViolations.get());
-  const activeBans = $state<Array<{
+  let activeBans = $state<Array<{
     fingerprint: string;
     reason: string;
     expiresAt?: Date;
     permanent: boolean;
     violationCount: number;
   }>>([]);
-  const topOffenders = $state<Array<{
+  let topOffenders = $state<Array<{
     fingerprint: string;
     violationCount: number;
     lastViolation: Date;
   }>>([]);
-  const recentLogs = $state<AuditLogEntry[]>([]);
+  let recentLogs = $state<AuditLogEntry[]>([]);
   const logStats = $state(getLogStats());
 
   // Formatters
