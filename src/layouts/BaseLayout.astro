@@ -4,12 +4,23 @@ import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  canonicalURL?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
 }
 
 const {
   title = "DadDeck - The Ultimate White Dad Trading Card Simulator",
-  description = "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining."
+  description = "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining.",
+  image = "/og-image.png",
+  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  type = 'website',
+  noindex = false,
 } = Astro.props;
+
+const siteUrl = new URL(Astro.url.pathname, Astro.site!).href;
+const fullImageURL = new URL(image, Astro.site!).href;
 ---
 
 <!doctype html>
@@ -18,18 +29,50 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    
-    <!-- Open Graph / Social -->
-    <meta property="og:type" content="website" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Robots -->
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={siteUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/og-image.png" />
-    
+    <meta property="og:image" content={fullImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DadDeck - Trading Card Game" />
+    <meta property="og:site_name" content="DadDeck" />
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={siteUrl} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    
+    <meta name="twitter:image" content={fullImageURL} />
+    <meta name="twitter:image:alt" content="DadDeck - Trading Card Game" />
+
+    <!-- Structured Data (JSON-LD) - WebSite -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "DadDeck",
+      "url": siteUrl,
+      "description": "The Ultimate White Dad Trading Card Simulator - A free browser-based pack opening game",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${new URL(Astro.site!).href}/search?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    })} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
 

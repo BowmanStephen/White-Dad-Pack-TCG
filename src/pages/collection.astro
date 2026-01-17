@@ -6,11 +6,32 @@ import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 import SettingsModal from '../components/common/SettingsModal.svelte';
+
+// Enhanced SEO for collection page
+const title = "My Collection - DadDeck Trading Card Game";
+const description = "View and manage your complete DadDeck trading card collection. Track all opened packs, discover rare holographic cards, and organize your dad-themed card inventory in this free browser TCG simulator.";
+const collectionPageURL = new URL('/collection', Astro.site).href;
+const imageURL = new URL('/og-image.png', Astro.site).href;
+
+// CollectionPage structured data
+const collectionPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "DadDeck Card Collection",
+  "url": collectionPageURL,
+  "description": "Personal trading card collection viewer for DadDeck - the White Dad Trading Card Simulator",
+  "about": {
+    "@type": "Thing",
+    "name": "Trading Cards",
+    "description": "Collectible dad-themed trading cards"
+  }
+};
 ---
 
 <BaseLayout
-  title="My Collection - DadDeck"
-  description="View your complete DadDeck trading card collection. Track your packs, rare pulls, and holographic cards in this free browser-based TCG simulator."
+  title={title}
+  description={description}
+  image="/og-image.png"
 >
   <Navigation client:load />
   <SettingsModal client:load />
@@ -46,6 +67,9 @@ import SettingsModal from '../components/common/SettingsModal.svelte';
   <main id="main-content" class="collection-main" tabindex="-1" role="main" aria-label="Card collection gallery">
     <Gallery client:load />
   </main>
+
+  <!-- Structured data for collection page -->
+  <script type="application/ld+json" set:html={JSON.stringify(collectionPageSchema)} />
 </BaseLayout>
 
 <style>

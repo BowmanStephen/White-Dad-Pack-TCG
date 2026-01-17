@@ -3,7 +3,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Logo from '@/components/common/Logo.astro';
 ---
 
-<BaseLayout title="You're Offline - DadDeck™">
+<BaseLayout
+  title="You're Offline - DadDeck™"
+  description="Offline mode for DadDeck. Continue opening packs and viewing your collection even without an internet connection."
+  noindex={true}
+>
   <main class="min-h-screen flex items-center justify-center px-4">
     <div class="text-center max-w-md">
       <!-- Logo -->
