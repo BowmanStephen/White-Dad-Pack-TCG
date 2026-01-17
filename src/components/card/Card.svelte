@@ -4,6 +4,7 @@
   import CardStats from './CardStats.svelte';
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
+  import AbilityTooltip from './AbilityTooltip.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
   export let card: PackCard;
@@ -30,6 +31,7 @@
   let cardElement: HTMLDivElement;
   let time = 0;
   let animationFrameId: number | null = null;
+  let abilityElements: HTMLElement[] = [];
 
   // Check if we're in browser environment
   const isBrowser = typeof window !== 'undefined' && typeof requestAnimationFrame !== 'undefined';
@@ -357,6 +359,33 @@
         "{card.flavorText}"
       </div>
 
+      <!-- Abilities section -->
+      {#if card.abilities && card.abilities.length > 0}
+        <div class="relative z-20 mx-3 mt-2">
+          <div class="flex flex-wrap gap-1.5">
+            {#each card.abilities as ability, index}
+              <div class="ability-indicator" bind:this={abilityElements[index]}>
+                <button
+                  class="ability-badge px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-200 border flex items-center gap-1 hover:scale-105 active:scale-95"
+                  style="background: {rarityConfig.color}22; border-color: {rarityConfig.color}55; color: {rarityConfig.color};"
+                  aria-label="View ability: {ability.name}"
+                  aria-describedby="ability-tooltip-{card.id}-{index}"
+                >
+                  <span class="ability-icon">⚡</span>
+                  <span class="ability-name truncate max-w-[80px]">{ability.name}</span>
+                </button>
+                <AbilityTooltip
+                  ability={ability}
+                  triggerElement={abilityElements[index]}
+                  cardRarity={card.rarity}
+                  delay={500}
+                />
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
       <!-- Footer -->
       <div class="absolute bottom-0 left-0 right-0 z-20 px-3 py-2 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
         <div class="flex justify-between items-center text-[10px] text-slate-400">
@@ -537,5 +566,29 @@
       animation: none !important;
       transition: none !important;
     }
+    .ability-badge {
+      transform: none !important;
+    }
+  }
+
+  /* Ability badge styles */
+  .ability-badge {
+    position: relative;
+    cursor: help;
+    will-change: transform;
+  }
+
+  .ability-badge:hover {
+    box-shadow: 0 0 12px var(--rarity-glow);
+  }
+
+  .ability-icon {
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .ability-indicator {
+    position: relative;
+    display: inline-block;
   }
 </style>
