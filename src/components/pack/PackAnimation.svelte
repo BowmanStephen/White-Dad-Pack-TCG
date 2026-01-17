@@ -3,6 +3,7 @@
   import type { Rarity } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import * as uiStore from '../../stores/ui';
+  import { playPackTear } from '../../stores/audio';
 
   export let bestRarity: Rarity = 'common';
 
@@ -59,10 +60,8 @@
     // Phase 3: Pack tears open (the main event)
     phase = 'tear';
 
-    // Sound effect placeholder
-    // TODO: Add sound effect here
-    // Example: playSound('pack-tear');
-    // Sound should trigger at the exact moment of tear
+    // Play pack tear sound effect
+    playPackTear();
 
     // Initialize particles for burst phase
     if (!reducedMotion) {

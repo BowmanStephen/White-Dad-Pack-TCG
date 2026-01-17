@@ -4,6 +4,7 @@
   import { RARITY_CONFIG } from '../../types';
   import Card from '../card/Card.svelte';
   import ParticleEffects from '../card/ParticleEffects.svelte';
+  import { playCardReveal } from '../../stores/audio';
 
   export let pack: Pack;
   export let currentIndex: number;
@@ -51,6 +52,11 @@
 
       if (!revealedIndices.has(index)) {
         particlesActive = true;
+        // Play reveal sound based on card rarity
+        const cardRarity = pack.cards[index]?.rarity;
+        if (cardRarity) {
+          playCardReveal(cardRarity);
+        }
         dispatch('reveal');
         index++;
 
@@ -92,6 +98,11 @@
 
     if (!isCurrentRevealed) {
       particlesActive = true;
+      // Play reveal sound based on card rarity
+      const cardRarity = currentCard?.rarity;
+      if (cardRarity) {
+        playCardReveal(cardRarity);
+      }
       dispatch('reveal');
     } else if (currentIndex < pack.cards.length - 1) {
       dispatch('next');
@@ -109,6 +120,11 @@
     stopAutoRevealSequence();
     if (!isCurrentRevealed) {
       particlesActive = true;
+      // Play reveal sound based on card rarity
+      const cardRarity = currentCard?.rarity;
+      if (cardRarity) {
+        playCardReveal(cardRarity);
+      }
       dispatch('reveal');
     } else {
       dispatch('next');

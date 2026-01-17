@@ -1,11 +1,22 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { muted, toggleMute } from '../../stores/audio';
 
   interface NavLink {
     href: string;
     label: string;
     isCta?: boolean;
   }
+
+  let isMuted = $state(false);
+
+  // Subscribe to muted state
+  $effect(() => {
+    const unsubscribe = muted.subscribe((value) => {
+      isMuted = value;
+    });
+    return unsubscribe;
+  });
 
   const links: NavLink[] = [
     { href: '/', label: 'Home' },
@@ -82,6 +93,28 @@
           {link.label}
         </a>
       {/each}
+
+      <!-- Mute button -->
+      <button
+        class="mute-button"
+        on:click={toggleMute}
+        aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        aria-pressed={isMuted}
+        type="button"
+      >
+        {#if isMuted}
+          <!-- Muted icon -->
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        {:else}
+          <!-- Sound on icon -->
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+        {/if}
+      </button>
     </nav>
 
     <!-- Mobile Menu Button -->
@@ -120,6 +153,37 @@
           {/if}
         </a>
       {/each}
+
+      <!-- Mute button in mobile menu -->
+      <button
+        class="mobile-link"
+        on:click={() => {
+          toggleMute();
+          closeMenu();
+        }}
+        aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        aria-pressed={isMuted}
+        type="button"
+      >
+        <span class="mobile-link-text">
+          {#if isMuted}
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+              Unmute Sounds
+            </span>
+          {:else}
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+              Mute Sounds
+            </span>
+          {/if}
+        </span>
+      </button>
     </div>
   </nav>
 
@@ -272,6 +336,31 @@
 
   .nav-link.cta::after {
     display: none;
+  }
+
+  /* Mute Button */
+  .mute-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+
+  .mute-button:hover {
+    color: #f8fafc;
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  .mute-button:active {
+    transform: scale(0.95);
   }
 
   /* Hamburger Button */
