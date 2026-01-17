@@ -466,21 +466,41 @@ bun astro check          # Type check Astro components
 
 ---
 
-## 🎯 Current Sprint Focus
+## 🎯 Project Status & Recent Features
 
-**MVP Phase - Core Features:**
-1. ✅ Basic pack opening flow
-2. ✅ Card reveal animations
-3. ✅ Rarity-based visual effects
-4. 🔄 Social sharing functionality
-5. 🔄 Card collection persistence (LocalStorage)
-6. 🔄 Mobile responsiveness polish
+### Completed Features (US091-US099)
+**Latest Implementations:**
+- ✅ **US099: Live Events System** - Weekend Events & Event Shop
+- ✅ **US098: Referral System** - Growth Loop with rewards
+- ✅ **US097: Email System** - Notifications & updates
+- ✅ **US096: Admin Panel** - Content Management System
+- ✅ **US095: Security** - Anti-Cheat System
+- ✅ **US094: Monetization** - DadPass System (battle pass)
+- ✅ **US093: Monetization** - Premium Packs
+- ✅ **US092: Localization** - Multi-language support
+- ✅ **US091: API Integration** - Discord Bot
+- ✅ **US090: Card Battles** - Minigame
 
-**Next Up (Post-MVP):**
+**Core MVP Features:**
+- ✅ Basic pack opening flow
+- ✅ Card reveal animations
+- ✅ Rarity-based visual effects
+- ✅ Social sharing functionality
+- ✅ Card collection persistence (LocalStorage)
+- ✅ Mobile responsiveness polish
+
+### Additional Integration
+**Discord Bot** (US091):
+- Command: `bun run discord-bot` (dev) or `bun run discord-bot:dev` (watch mode)
+- Location: `discord-bot/index.ts`
+- Integrates with Discord.js v14.25.1
+
+### What's Next
+**Post-MVP Roadmap:**
 - Season 2 card expansion (30+ new cards)
 - User accounts & cloud collections
 - Trading system between players
-- Deck building mini-game
+- Enhanced deck building mini-game
 
 ---
 
