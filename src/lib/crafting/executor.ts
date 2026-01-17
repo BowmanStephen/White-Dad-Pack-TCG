@@ -294,3 +294,15 @@ export function calculateCraftingCost(recipe: CraftingRecipe): number {
   // Handle zero-cost recipes (round to 2 decimal places)
   return Math.round(totalCost * 100) / 100;
 }
+
+/**
+ * Check if player can afford to craft a recipe
+ *
+ * @param recipe - The recipe to check
+ * @param playerCurrency - The player's current crafting currency balance
+ * @returns true if player has sufficient currency, false otherwise
+ */
+export function canAffordCraft(recipe: CraftingRecipe, playerCurrency: number): boolean {
+  const cost = calculateCraftingCost(recipe);
+  return playerCurrency >= cost;
+}

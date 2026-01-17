@@ -2,7 +2,18 @@
   import { onMount } from 'svelte';
   import type { Pack, PackState } from '../../types';
   import type { AppError } from '../../lib/utils/errors';
-  import { getStoreValues } from '../../lib/stores/svelte-helpers';
+  import { getStoreValues, subscribeToStores } from '../../lib/stores/svelte-helpers';
+  import {
+    openNewPack,
+    completePackAnimation,
+    skipToResults,
+    stopAutoReveal,
+    revealCurrentCard,
+    nextCard,
+    prevCard,
+    resetPack,
+    showResults,
+  } from '../../stores/pack';
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
@@ -35,65 +46,46 @@
 
   // Start pack opening on mount
   onMount(() => {
-    // Import dynamically to avoid SSR issues
-    import('../../stores/pack').then(({ openNewPack }) => {
-      openNewPack();
+    openNewPack();
 
-      // Subscribe to store changes
-      const unsubscribe = import('../../lib/stores/svelte-helpers').then(({ subscribeToStores }) => {
-        return subscribeToStores((values) => {
-          loadFromStores();
-        });
-      });
-
-      return () => {
-        unsubscribe.then(unsub => unsub());
-      };
+    // Subscribe to store changes for reactive updates
+    const unsubscribe = subscribeToStores(() => {
+      loadFromStores();
     });
+
+    return unsubscribe;
   });
 
-  // Actions
-  function completePackAnimation() {
-    import('../../stores/pack').then(({ completePackAnimation }) => {
-      completePackAnimation();
-      loadFromStores();
-    });
+  // Actions (now using direct imports for better performance)
+  function completePackAnimationHandler() {
+    completePackAnimation();
+    loadFromStores();
   }
 
-  function skipToResults() {
-    import('../../stores/pack').then(({ skipToResults, stopAutoReveal }) => {
-      stopAutoReveal();
-      skipToResults();
-      loadFromStores();
-    });
+  function skipToResultsHandler() {
+    stopAutoReveal();
+    skipToResults();
+    loadFromStores();
   }
 
-  function revealCurrentCard() {
-    import('../../stores/pack').then(({ revealCurrentCard }) => {
-      revealCurrentCard();
-      loadFromStores();
-    });
+  function revealCurrentCardHandler() {
+    revealCurrentCard();
+    loadFromStores();
   }
 
-  function nextCard() {
-    import('../../stores/pack').then(({ nextCard }) => {
-      nextCard();
-      loadFromStores();
-    });
+  function nextCardHandler() {
+    nextCard();
+    loadFromStores();
   }
 
-  function prevCard() {
-    import('../../stores/pack').then(({ prevCard }) => {
-      prevCard();
-      loadFromStores();
-    });
+  function prevCardHandler() {
+    prevCard();
+    loadFromStores();
   }
 
   function handleOpenAnother() {
-    import('../../stores/pack').then(({ openNewPack }) => {
-      openNewPack();
-      setTimeout(() => loadFromStores(), 150);
-    });
+    openNewPack();
+    setTimeout(() => loadFromStores(), 150);
   }
 
   function handleGoHome() {
@@ -104,24 +96,22 @@
   function handleKeydown(event: KeyboardEvent) {
     if (packState === 'cards_ready' || packState === 'revealing') {
       // Cancel auto-reveal on any keyboard interaction
-      import('../../stores/pack').then(({ stopAutoReveal }) => {
-        stopAutoReveal();
-      });
+      stopAutoReveal();
 
       switch (event.key) {
         case 'ArrowRight':
         case ' ':
           if (!currentPack?.cards[currentCardIndex]?.isRevealed) {
-            revealCurrentCard();
+            revealCurrentCardHandler();
           } else {
-            nextCard();
+            nextCardHandler();
           }
           break;
         case 'ArrowLeft':
-          prevCard();
+          prevCardHandler();
           break;
         case 'Escape':
-          skipToResults();
+          skipToResultsHandler();
           break;
       }
     }

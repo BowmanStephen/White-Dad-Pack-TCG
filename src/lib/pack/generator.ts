@@ -226,7 +226,29 @@ export function rollPackDesign(rng: SeededRandom): PackDesign {
 }
 
 /**
- * Generate a single pack of cards
+ * Generate a single pack of cards based on configuration
+ *
+ * @param config - Pack configuration defining rarity slots and probabilities
+ * @param seed - Optional seed for reproducible random generation (useful for testing)
+ * @returns A complete Pack object with 6 cards, design, and metadata
+ *
+ * @example
+ * // Generate a random pack
+ * const pack = generatePack();
+ *
+ * @example
+ * // Generate a reproducible pack (same seed = same cards)
+ * const pack1 = generatePack(DEFAULT_PACK_CONFIG, 12345);
+ * const pack2 = generatePack(DEFAULT_PACK_CONFIG, 12345);
+ * // pack1 === pack2 (identical cards and design)
+ *
+ * @description
+ * This function implements the core pack opening mechanics:
+ * - Processes each rarity slot in the config (guaranteed or probabilistic)
+ * - Selects cards without duplicates within the pack
+ * - Determines holo variants based on rarity probabilities
+ * - Shuffles cards to prevent position-based prediction
+ * - Assigns pack design (standard/holiday/premium)
  */
 export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: number): Pack {
   const rng = new SeededRandom(seed);
