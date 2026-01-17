@@ -2292,3 +2292,612 @@ export const PREMIUM_PACK_VISUAL_CONFIG = {
   shimmerEffect: true,            // Premium shimmer animation
   rainbowHoloChance: 0.10,        // 10% chance for rainbow holo border
 };
+
+// ============================================================================
+// DADPASS TYPES (US094 - Monetization - Pass System)
+// ============================================================================
+
+// DadPass subscription status
+export type DadPassStatus = 'inactive' | 'active' | 'expired' | 'pending';
+
+// DadPass tier reward types
+export type DadPassRewardType =
+  | 'daily_reward_unlock'      // Unlocks daily rewards
+  | 'premium_pack'            // Premium pack (every 3 days)
+  | 'exclusive_card'          // Exclusive card at specific tier
+  | 'bonus_packs'             // Bonus standard packs
+  | 'currency'                // In-game currency (future)
+  | 'card_back'               // Exclusive card back
+  | 'title'                   // Exclusive title
+  | 'avatar_border';          // Profile avatar border
+
+// DadPass tier reward interface
+export interface DadPassReward {
+  tier: number;                    // Tier number (1-30)
+  rewardType: DadPassRewardType;   // Type of reward
+  description: string;             // Reward description
+  icon: string;                    // Icon/emoji
+  claimed: boolean;                // Whether reward has been claimed
+  claimedAt?: Date;                // When reward was claimed
+  metadata?: {
+    // Additional data based on reward type
+    cardId?: string;               // For exclusive_card
+    packCount?: number;            // For premium_pack, bonus_packs
+    currencyAmount?: number;       // For currency
+    cardBackId?: string;           // For card_back
+    titleId?: string;              // For title
+    avatarBorderId?: string;       // For avatar_border
+  };
+}
+
+// DadPass subscription interface
+export interface DadPassSubscription {
+  status: DadPassStatus;           // Current status
+  startDate: Date;                 // When pass started
+  endDate: Date;                   // When pass expires (30 days)
+  autoRenew: boolean;              // Auto-renew enabled
+  currentTier: number;             // Current unlocked tier (0-30)
+  totalXP: number;                 // Total XP earned
+  xpToNextTier: number;            // XP needed for next tier
+  lastClaimDate?: Date;            // Last daily login reward claimed
+  premiumPacksAwarded: number;     // Premium packs awarded (every 3 days)
+  lastPremiumPackDate?: Date;      // Last premium pack award date
+}
+
+// DadPass tier configuration
+export interface DadPassTier {
+  tier: number;                    // Tier number (1-30)
+  xpRequired: number;              // XP needed to unlock
+  rewards: DadPassReward[];        // Rewards at this tier
+  isFreeTier: boolean;             // Whether this is a free or premium tier
+}
+
+// DadPass configuration
+export interface DadPassConfig {
+  duration: number;                // Pass duration in days (30)
+  price: number;                   // Price in USD ($4.99)
+  currency: string;                // Currency code
+  maxTier: number;                 // Maximum tier (30)
+  xpPerDailyLogin: number;         // XP earned for daily login (100)
+  xpPerPackOpened: number;         // XP earned per pack opened (10)
+  premiumPackInterval: number;     // Days between premium packs (3)
+  exclusiveCardTier: number;       // Tier with exclusive card (10)
+}
+
+// DadPass state for UI
+export interface DadPassState {
+  subscription: DadPassSubscription | null; // Active subscription
+  availableTiers: DadPassTier[];   // All available tiers
+  claimedRewards: string[];        // IDs of claimed rewards
+  purchasePending: boolean;        // Purchase in progress
+  lastDailyCheck?: Date;           // Last daily check for rewards
+}
+
+// DadPass summary for display
+export interface DadPassSummary {
+  isActive: boolean;
+  status: DadPassStatus;
+  currentTier: number;
+  maxTier: number;
+  totalXP: number;
+  daysRemaining: number;
+  progressPercent: number;
+  claimableRewards: number;
+  autoRenew: boolean;
+  premiumPacksAwarded: number;
+}
+
+// DadPass purchase session
+export interface DadPassPurchaseSession {
+  sessionId: string;               // Unique session ID
+  status: 'pending' | 'completed' | 'failed';
+  stripeCheckoutUrl?: string;      // Stripe checkout URL (when implemented)
+  timestamp: Date;                 // When purchase was initiated
+  completedAt?: Date;              // When purchase completed
+  error?: string;                  // Error message if failed
+}
+
+// Default DadPass configuration
+export const DEFAULT_DADPASS_CONFIG: DadPassConfig = {
+  duration: 30,                    // 30-day pass
+  price: 4.99,                     // $4.99
+  currency: 'USD',
+  maxTier: 30,                     // 30 tiers
+  xpPerDailyLogin: 100,            // 100 XP per day login
+  xpPerPackOpened: 10,             // 10 XP per pack opened
+  premiumPackInterval: 3,          // Premium pack every 3 days
+  exclusiveCardTier: 10,           // Exclusive card at tier 10
+};
+
+// DadPass tier rewards configuration
+// Free tiers (1, 4, 7, 10, 13, 16, 19, 22, 25, 28) - everyone gets these
+// Premium tiers (2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30)
+export const DADPASS_TIERS: DadPassTier[] = [
+  // Tier 1 (Free) - Daily rewards unlock
+  {
+    tier: 1,
+    xpRequired: 0,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 1,
+        rewardType: 'daily_reward_unlock',
+        description: 'Unlock Daily Rewards',
+        icon: '🎁',
+        claimed: false,
+      },
+    ],
+  },
+  // Tier 2 (Premium) - 1 Premium Pack
+  {
+    tier: 2,
+    xpRequired: 100,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 2,
+        rewardType: 'premium_pack',
+        description: '1 Premium Pack',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 1 },
+      },
+    ],
+  },
+  // Tier 3 (Premium) - 3 Standard Packs
+  {
+    tier: 3,
+    xpRequired: 250,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 3,
+        rewardType: 'bonus_packs',
+        description: '3 Bonus Standard Packs',
+        icon: '📦',
+        claimed: false,
+        metadata: { packCount: 3 },
+      },
+    ],
+  },
+  // Tier 4 (Free) - 1 Standard Pack
+  {
+    tier: 4,
+    xpRequired: 400,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 4,
+        rewardType: 'bonus_packs',
+        description: '1 Bonus Standard Pack',
+        icon: '📦',
+        claimed: false,
+        metadata: { packCount: 1 },
+      },
+    ],
+  },
+  // Tier 5 (Premium) - Exclusive Title
+  {
+    tier: 5,
+    xpRequired: 600,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 5,
+        rewardType: 'title',
+        description: 'Exclusive Title: "Pass Dad"',
+        icon: '🏷️',
+        claimed: false,
+        metadata: { titleId: 'pass_dad' },
+      },
+    ],
+  },
+  // Tier 6 (Premium) - 1 Premium Pack
+  {
+    tier: 6,
+    xpRequired: 800,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 6,
+        rewardType: 'premium_pack',
+        description: '1 Premium Pack',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 1 },
+      },
+    ],
+  },
+  // Tier 7 (Free) - Exclusive Card Back
+  {
+    tier: 7,
+    xpRequired: 1000,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 7,
+        rewardType: 'card_back',
+        description: 'DadPass Card Back',
+        icon: '🎴',
+        claimed: false,
+        metadata: { cardBackId: 'daddypass_season1' },
+      },
+    ],
+  },
+  // Tier 8 (Premium) - Avatar Border
+  {
+    tier: 8,
+    xpRequired: 1250,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 8,
+        rewardType: 'avatar_border',
+        description: 'Golden Avatar Border',
+        icon: '👑',
+        claimed: false,
+        metadata: { avatarBorderId: 'gold_daddypass' },
+      },
+    ],
+  },
+  // Tier 9 (Premium) - 2 Premium Packs
+  {
+    tier: 9,
+    xpRequired: 1500,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 9,
+        rewardType: 'premium_pack',
+        description: '2 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 2 },
+      },
+    ],
+  },
+  // Tier 10 (Premium) - EXCLUSIVE CARD (The big reward!)
+  {
+    tier: 10,
+    xpRequired: 1800,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 10,
+        rewardType: 'exclusive_card',
+        description: 'EXCLUSIVE: Legendary DadPass Dad Card',
+        icon: '💎',
+        claimed: false,
+        metadata: { cardId: 'daddypass_exclusive_legendary' },
+      },
+    ],
+  },
+  // Tier 11 (Premium) - 1 Premium Pack
+  {
+    tier: 11,
+    xpRequired: 2100,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 11,
+        rewardType: 'premium_pack',
+        description: '1 Premium Pack',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 1 },
+      },
+    ],
+  },
+  // Tier 12 (Premium) - 5 Standard Packs
+  {
+    tier: 12,
+    xpRequired: 2400,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 12,
+        rewardType: 'bonus_packs',
+        description: '5 Bonus Standard Packs',
+        icon: '📦',
+        claimed: false,
+        metadata: { packCount: 5 },
+      },
+    ],
+  },
+  // Tier 13 (Free) - 2 Standard Packs
+  {
+    tier: 13,
+    xpRequired: 2700,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 13,
+        rewardType: 'bonus_packs',
+        description: '2 Bonus Standard Packs',
+        icon: '📦',
+        claimed: false,
+        metadata: { packCount: 2 },
+      },
+    ],
+  },
+  // Tier 14 (Premium) - Exclusive Title
+  {
+    tier: 14,
+    xpRequired: 3000,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 14,
+        rewardType: 'title',
+        description: 'Exclusive Title: "DadPass Elite"',
+        icon: '🏷️',
+        claimed: false,
+        metadata: { titleId: 'daddypass_elite' },
+      },
+    ],
+  },
+  // Tier 15 (Premium) - 2 Premium Packs
+  {
+    tier: 15,
+    xpRequired: 3400,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 15,
+        rewardType: 'premium_pack',
+        description: '2 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 2 },
+      },
+    ],
+  },
+  // Tier 16 (Free) - Exclusive Card Back
+  {
+    tier: 16,
+    xpRequired: 3800,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 16,
+        rewardType: 'card_back',
+        description: 'DadPass Elite Card Back',
+        icon: '🎴',
+        claimed: false,
+        metadata: { cardBackId: 'daddypass_elite' },
+      },
+    ],
+  },
+  // Tier 17 (Premium) - 1 Premium Pack
+  {
+    tier: 17,
+    xpRequired: 4200,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 17,
+        rewardType: 'premium_pack',
+        description: '1 Premium Pack',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 1 },
+      },
+    ],
+  },
+  // Tier 18 (Premium) - Avatar Border
+  {
+    tier: 18,
+    xpRequired: 4600,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 18,
+        rewardType: 'avatar_border',
+        description: 'Platinum Avatar Border',
+        icon: '💎',
+        claimed: false,
+        metadata: { avatarBorderId: 'platinum_daddypass' },
+      },
+    ],
+  },
+  // Tier 19 (Free) - 3 Standard Packs
+  {
+    tier: 19,
+    xpRequired: 5000,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 19,
+        rewardType: 'bonus_packs',
+        description: '3 Bonus Standard Packs',
+        icon: '📦',
+        claimed: false,
+        metadata: { packCount: 3 },
+      },
+    ],
+  },
+  // Tier 20 (Premium) - 3 Premium Packs
+  {
+    tier: 20,
+    xpRequired: 5500,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 20,
+        rewardType: 'premium_pack',
+        description: '3 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 3 },
+      },
+    ],
+  },
+  // Tier 21 (Premium) - Exclusive Title
+  {
+    tier: 21,
+    xpRequired: 6000,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 21,
+        rewardType: 'title',
+        description: 'Exclusive Title: "DadPass Legend"',
+        icon: '🏷️',
+        claimed: false,
+        metadata: { titleId: 'daddypass_legend' },
+      },
+    ],
+  },
+  // Tier 22 (Free) - Exclusive Card Back
+  {
+    tier: 22,
+    xpRequired: 6500,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 22,
+        rewardType: 'card_back',
+        description: 'DadPass Legend Card Back',
+        icon: '🎴',
+        claimed: false,
+        metadata: { cardBackId: 'daddypass_legend' },
+      },
+    ],
+  },
+  // Tier 23 (Premium) - 2 Premium Packs
+  {
+    tier: 23,
+    xpRequired: 7000,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 23,
+        rewardType: 'premium_pack',
+        description: '2 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 2 },
+      },
+    ],
+  },
+  // Tier 24 (Premium) - Avatar Border
+  {
+    tier: 24,
+    xpRequired: 7500,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 24,
+        rewardType: 'avatar_border',
+        description: 'Diamond Avatar Border',
+        icon: '💠',
+        claimed: false,
+        metadata: { avatarBorderId: 'diamond_daddypass' },
+      },
+    ],
+  },
+  // Tier 25 (Free) - 5 Standard Packs
+  {
+    tier: 25,
+    xpRequired: 8000,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 25,
+        rewardType: 'bonus_packs',
+        description: '5 Bonus Standard Packs',
+        icon: '📦',
+        claimed: false,
+        metadata: { packCount: 5 },
+      },
+    ],
+  },
+  // Tier 26 (Premium) - 3 Premium Packs
+  {
+    tier: 26,
+    xpRequired: 8500,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 26,
+        rewardType: 'premium_pack',
+        description: '3 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 3 },
+      },
+    ],
+  },
+  // Tier 27 (Premium) - Exclusive Title
+  {
+    tier: 27,
+    xpRequired: 9000,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 27,
+        rewardType: 'title',
+        description: 'Exclusive Title: "Ultimate Dad"',
+        icon: '🏷️',
+        claimed: false,
+        metadata: { titleId: 'ultimate_dad' },
+      },
+    ],
+  },
+  // Tier 28 (Free) - Exclusive Card Back
+  {
+    tier: 28,
+    xpRequired: 9500,
+    isFreeTier: true,
+    rewards: [
+      {
+        tier: 28,
+        rewardType: 'card_back',
+        description: 'Ultimate Dad Card Back',
+        icon: '🎴',
+        claimed: false,
+        metadata: { cardBackId: 'ultimate_dad' },
+      },
+    ],
+  },
+  // Tier 29 (Premium) - 5 Premium Packs
+  {
+    tier: 29,
+    xpRequired: 10000,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 29,
+        rewardType: 'premium_pack',
+        description: '5 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 5 },
+      },
+    ],
+  },
+  // Tier 30 (Premium) - GRAND FINALE
+  {
+    tier: 30,
+    xpRequired: 11000,
+    isFreeTier: false,
+    rewards: [
+      {
+        tier: 30,
+        rewardType: 'exclusive_card',
+        description: 'EXCLUSIVE: Mythic DadPass Dad Card',
+        icon: '👑',
+        claimed: false,
+        metadata: { cardId: 'daddypass_exclusive_mythic' },
+      },
+      {
+        tier: 30,
+        rewardType: 'premium_pack',
+        description: '10 Premium Packs',
+        icon: '✨',
+        claimed: false,
+        metadata: { packCount: 10 },
+      },
+    ],
+  },
+];

@@ -26,6 +26,7 @@
     { href: '/collection', label: 'My Collection' },
     { href: '/battle', label: 'Battle' },
     { href: '/friends', label: 'Friends' },
+    { href: '/daddypass', label: 'DadPass', isCta: true },
     { href: '/profile', label: 'Profile' },
     { href: '/voting', label: 'Vote' },
     { href: '/upgrade', label: 'Upgrades' },

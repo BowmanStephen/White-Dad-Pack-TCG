@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/BaseLayout.astro';
+import DadPassPage from '../components/daddypass/DadPassPage.svelte';
+import { t } from '@/i18n';
+---
+
+<Layout title={t('ui.daddypass')}>
+  <DadPassPage client:load />
+</Layout>

@@ -1563,6 +1563,80 @@
       "totalInSeries": 150,
       "artist": "DadArt Studios",
       "seasonId": 1
+    },
+    {
+      "id": "daddypass_exclusive_legendary",
+      "name": "DadPass Legend",
+      "subtitle": "Pass Holder Supreme",
+      "type": "ITEM",
+      "rarity": "legendary",
+      "artwork": "/cards/daddypass-legendary.svg",
+      "stats": {
+        "dadJoke": 100,
+        "grillSkill": 100,
+        "fixIt": 100,
+        "napPower": 100,
+        "remoteControl": 100,
+        "thermostat": 100,
+        "sockSandal": 100,
+        "beerSnob": 100
+      },
+      "flavorText": "He didn't just buy the pass. He BECAME the pass. Nowhere is safe from his daily rewards.",
+      "abilities": [
+        {
+          "name": "Premium Pass",
+          "description": "All stats are maxed out. Because you paid $4.99 and you deserve it."
+        },
+        {
+          "name": "Daily Rewards",
+          "description": "Unlocks premium rewards every 3 days. The other dads are jealous."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 51,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1,
+      "holoVariant": "full_art"
+    },
+    {
+      "id": "daddypass_exclusive_mythic",
+      "name": "Ultimate DadPass Dad",
+      "subtitle": "The Final Tier",
+      "type": "ITEM",
+      "rarity": "mythic",
+      "artwork": "/cards/daddypass-mythic.svg",
+      "stats": {
+        "dadJoke": 100,
+        "grillSkill": 100,
+        "fixIt": 100,
+        "napPower": 100,
+        "remoteControl": 100,
+        "thermostat": 100,
+        "sockSandal": 100,
+        "beerSnob": 100
+      },
+      "flavorText": "30 days of dedication. 30 tiers conquered. 10 premium packs. You are now the DadPass Dad.",
+      "abilities": [
+        {
+          "name": "Mythic Pass",
+          "description": "Grants prismatic holo effect to all packs opened. Pure dad energy."
+        },
+        {
+          "name": "Tier 30 Mastery",
+          "description": "Auto-awards daily rewards even when you forget to log in. The pass remembers."
+        },
+        {
+          "name": "Premium For Life",
+          "description": "All future DadPass rewards are automatically claimed. Forever."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 52,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1,
+      "holoVariant": "prismatic"
     }
   ]
 }
