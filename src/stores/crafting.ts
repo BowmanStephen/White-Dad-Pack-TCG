@@ -137,6 +137,74 @@ export const craftingHistory = persistentAtom<CraftingHistory>(
 );
 
 // ============================================================================
+// CRAFTING MUTEX (Prevents concurrent crafts)
+// ============================================================================
+
+/**
+ * Crafting mutex to prevent simultaneous crafting operations
+ * - isCrafting: true if a craft is currently in progress
+ * - queue: array of pending craft operations that will execute sequentially
+ */
+interface CraftingMutex {
+  isCrafting: boolean;
+  queue: Array<() => void>;
+}
+
+const craftingMutex: CraftingMutex = {
+  isCrafting: false,
+  queue: [],
+};
+
+/**
+ * Acquire the crafting mutex
+ * Returns true if acquired immediately, false if queued
+ */
+export function acquireCraftingMutex(): boolean {
+  if (!craftingMutex.isCrafting) {
+    craftingMutex.isCrafting = true;
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Release the crafting mutex and process next queued operation
+ */
+export function releaseCraftingMutex(): void {
+  craftingMutex.isCrafting = false;
+
+  // Process next queued operation if any
+  if (craftingMutex.queue.length > 0) {
+    const nextOperation = craftingMutex.queue.shift();
+    if (nextOperation) {
+      // Execute next operation
+      nextOperation();
+    }
+  }
+}
+
+/**
+ * Queue a crafting operation for later execution
+ */
+export function queueCraftingOperation(operation: () => void): void {
+  craftingMutex.queue.push(operation);
+}
+
+/**
+ * Check if crafting is currently in progress
+ */
+export function isCraftingInProgress(): boolean {
+  return craftingMutex.isCrafting;
+}
+
+/**
+ * Get the number of queued crafting operations
+ */
+export function getQueuedCraftingCount(): number {
+  return craftingMutex.queue.length;
+}
+
+// ============================================================================
 // UI STATE
 // ============================================================================
 
@@ -221,6 +289,7 @@ export function clearCardSelection(): void {
 
 /**
  * Execute crafting (determine success/failure)
+ * Uses mutex to prevent concurrent crafting operations
  */
 export function executeCrafting(resultCard: PackCard | null, success: boolean): void {
   const session = craftingSession.get();
@@ -228,51 +297,71 @@ export function executeCrafting(resultCard: PackCard | null, success: boolean): 
   const recipe = selectedRecipe.get();
   const cards = selectedCards.get();
 
-  if (!session || !recipe) return;
+  if (!session || !recipe) {
+    console.warn('[Crafting] Cannot execute: no active session or recipe');
+    return;
+  }
 
-  // Create history entry
-  const historyEntry: CraftingHistoryEntry = {
-    id: `history_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-    sessionId: session.id,
-    recipe,
-    inputCards: cards,
-    result: resultCard ?? undefined,
-    success,
-    timestamp: new Date(),
-  };
+  // Check if crafting is already in progress
+  if (!acquireCraftingMutex()) {
+    console.warn('[Crafting] Cannot execute: crafting already in progress');
+    return;
+  }
 
-  // Update history
-  const newEntries = [historyEntry, ...history.entries].slice(
-    0,
-    craftingConfig.get().maxHistoryEntries
-  );
+  try {
+    // Create history entry
+    const historyEntry: CraftingHistoryEntry = {
+      id: `history_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      sessionId: session.id,
+      recipe,
+      inputCards: cards,
+      result: resultCard ?? undefined,
+      success,
+      timestamp: new Date(),
+    };
 
-  craftingHistory.set({
-    entries: newEntries,
-    totalAttempts: history.totalAttempts + 1,
-    successfulCrafts: success ? history.successfulCrafts + 1 : history.successfulCrafts,
-    failedCrafts: success ? history.failedCrafts : history.failedCrafts + 1,
-    bestCraft: resultCard && (!history.bestCraft || isBetterRarity(resultCard.rarity, history.bestCraft.rarity))
-      ? resultCard
-      : history.bestCraft,
-  });
+    // Update history
+    const newEntries = [historyEntry, ...history.entries].slice(
+      0,
+      craftingConfig.get().maxHistoryEntries
+    );
 
-  // Update session with result
-  craftingSession.set({
-    ...session,
-    result: resultCard ?? undefined,
-    status: success ? 'success' : 'failed',
-    completedAt: new Date(),
-  });
+    craftingHistory.set({
+      entries: newEntries,
+      totalAttempts: history.totalAttempts + 1,
+      successfulCrafts: success ? history.successfulCrafts + 1 : history.successfulCrafts,
+      failedCrafts: success ? history.failedCrafts : history.failedCrafts + 1,
+      bestCraft: resultCard && (!history.bestCraft || isBetterRarity(resultCard.rarity, history.bestCraft.rarity))
+        ? resultCard
+        : history.bestCraft,
+    });
 
-  craftingState.set(success ? 'success' : 'failed');
-  craftingUI.setKey('showResult', true);
+    // Update session with result
+    craftingSession.set({
+      ...session,
+      result: resultCard ?? undefined,
+      status: success ? 'success' : 'failed',
+      completedAt: new Date(),
+    });
+
+    craftingState.set(success ? 'success' : 'failed');
+    craftingUI.setKey('showResult', true);
+  } finally {
+    // Always release the mutex, even if an error occurs
+    releaseCraftingMutex();
+  }
 }
 
 /**
  * Reset crafting session
+ * Releases mutex if crafting was in progress
  */
 export function resetCraftingSession(): void {
+  // Release mutex if we're interrupting a craft
+  if (craftingMutex.isCrafting) {
+    releaseCraftingMutex();
+  }
+
   craftingSession.set(null);
   craftingState.set('idle');
   selectedCards.set([]);
