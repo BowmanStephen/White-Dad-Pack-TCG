@@ -137,14 +137,66 @@ export function getHighestRarity(cards: Card[]): Rarity {
 }
 
 /**
- * Determine holographic variant type
+ * Roll for holographic variant based on US038 distribution.
+ *
+ * Distribution:
+ * - 80% none (no holo)
+ * - 15% standard (basic holo shine)
+ * - 3% reverse (reverse holo - background only)
+ * - 1.5% full_art (full art holo - legendary+ only)
+ * - 0.5% prismatic (prismatic rainbow holo - mythic only)
+ *
+ * Rarity restrictions:
+ * - Prismatic only available for mythic rarity
+ * - Full art only available for legendary or mythic rarity
+ * - Standard and reverse available for any rarity
+ *
+ * When a rarity-locked holo variant is rolled (e.g., prismatic on a legendary card),
+ * that probability falls through to the next lower holo variant.
+ *
+ * @param rarity - The card's rarity tier (restricts available holo variants)
+ * @param rng - Seeded random number generator
+ * @returns The appropriate HoloVariant based on rarity and probability roll
  */
-function determineHoloVariant(rng: SeededRandom): HoloVariant {
+export function rollHolo(rarity: Rarity, rng: SeededRandom): HoloVariant {
   const roll = rng.next();
-  if (roll < 0.6) return 'standard';
-  if (roll < 0.85) return 'reverse';
-  if (roll < 0.97) return 'full_art';
-  return 'prismatic';
+
+  // Cumulative probability thresholds for the full distribution
+  // 0.000 - 0.800: none (80%)
+  // 0.800 - 0.950: standard (15%)
+  // 0.950 - 0.980: reverse (3%)
+  // 0.980 - 0.995: full_art (1.5%) - legendary+ only
+  // 0.995 - 1.000: prismatic (0.5%) - mythic only
+
+  // 80% no holo
+  if (roll < 0.80) return 'none';
+
+  // 15% standard holo (0.80 - 0.95)
+  if (roll < 0.95) return 'standard';
+
+  // 3% reverse holo (0.95 - 0.98)
+  if (roll < 0.98) return 'reverse';
+
+  // 1.5% full art holo (0.98 - 0.995) - legendary or mythic only
+  if (roll < 0.995) {
+    // If card can have full art, grant it
+    if (rarity === 'legendary' || rarity === 'mythic') {
+      return 'full_art';
+    }
+    // Otherwise fall through to reverse (no extra probability, just redirect)
+    return 'reverse';
+  }
+
+  // 0.5% prismatic holo (0.995 - 1.0) - mythic only
+  if (rarity === 'mythic') {
+    return 'prismatic';
+  }
+  // If not mythic but prismatic was rolled, fall through to full art or reverse
+  if (rarity === 'legendary') {
+    return 'full_art';
+  }
+  // All other rarities fall through to reverse
+  return 'reverse';
 }
 
 /**
@@ -178,9 +230,9 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
       continue;
     }
 
-    // Determine if this card is holographic
-    const isHolo = rng.next() < config.holoChance;
-    const holoType: HoloVariant = isHolo ? determineHoloVariant(rng) : 'none';
+    // Determine holographic variant using rollHolo (US038)
+    const holoType = rollHolo(rarity, rng);
+    const isHolo = holoType !== 'none';
 
     // Create pack card with runtime properties
     const packCard: PackCard = {
