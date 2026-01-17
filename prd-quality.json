@@ -22,26 +22,30 @@
         "refactor",
         "dry"
       ],
-      "completionNotes": "Completed by agent"
+      "completionNotes": "Completed by agent",
+      "phase": "Phase 1"
     },
     {
       "id": "US102",
       "title": "Code Quality - Fix Cross-Store Communication Pattern",
-      "description": "As a developer, I want proper store imports instead of window object pollution, so I maintain type safety and follow best practices. NOTE: There is a screenshot file 'Screenshot 2026-01-17 at 2.51.08 PM.png' in the project directory that the AI model cannot read. This file should be ignored or removed before running Ralph to avoid errors.",
+      "description": "As a developer, I want proper store imports instead of window object pollution, so I maintain type safety and follow best practices. NOTE: There is a screenshot file 'Screenshot 2026-01-17 at 2.51.08 PM.png' in the project directory that the AI model cannot read. This file should be ignored or removed before running Ralph to avoid errors. NOTE: Multiple screenshot files exist (e.g., 'Screenshot 2026-01-17 at 2.51.08 PM.png', 'Screenshot 2026-01-17 at 2.59.50 PM.png'). Ralph cannot read these files. They should be ignored or deleted before running Ralph.",
       "acceptanceCriteria": [
         "Remove window.__dailyRewardsState from src/stores/daily-rewards.ts:541-547",
         "Update src/stores/achievements.ts:186-227 to import dailyRewards store directly",
         "Create a proper getter function for streak state if needed",
         "Ensure all achievement checks work correctly",
-        "Run tests to ensure no regressions"
+        "Run tests to ensure no regressions",
+        "Ignore all screenshot files (*.png screenshots in project root)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "code-quality",
         "refactor",
         "type-safety"
-      ]
+      ],
+      "completionNotes": "Completed by agent",
+      "phase": "Phase 1"
     },
     {
       "id": "US103",
@@ -57,12 +61,14 @@
         "Run tests to ensure persistence still works"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "code-quality",
         "refactor",
         "dry"
-      ]
+      ],
+      "phase": "Phase 1",
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US104",
@@ -80,7 +86,8 @@
         "code-quality",
         "refactor",
         "performance"
-      ]
+      ],
+      "phase": "Phase 1"
     },
     {
       "id": "US105",
@@ -93,12 +100,14 @@
         "Ensure pack opening still works correctly"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "code-quality",
         "refactor",
         "svelte"
-      ]
+      ],
+      "phase": "Phase 1",
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US106",
@@ -111,12 +120,14 @@
         "Maintain type safety"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "code-quality",
         "refactor",
         "dry"
-      ]
+      ],
+      "phase": "Phase 1",
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US107",
@@ -134,7 +145,8 @@
         "code-quality",
         "performance",
         "optimization"
-      ]
+      ],
+      "phase": "Phase 1"
     },
     {
       "id": "US108",
@@ -154,7 +166,8 @@
         "code-quality",
         "refactor",
         "types"
-      ]
+      ],
+      "phase": "Phase 1"
     },
     {
       "id": "US110",
@@ -171,7 +184,8 @@
         "code-quality",
         "fix",
         "typescript"
-      ]
+      ],
+      "phase": "Phase 2"
     },
     {
       "id": "US111",
@@ -187,7 +201,8 @@
       "labels": [
         "code-quality",
         "cleanup"
-      ]
+      ],
+      "phase": "Phase 3"
     },
     {
       "id": "US112",
@@ -203,7 +218,8 @@
       "labels": [
         "git",
         "cleanup"
-      ]
+      ],
+      "phase": "Phase 4"
     },
     {
       "id": "US113",
@@ -220,7 +236,8 @@
       "labels": [
         "code-quality",
         "testing"
-      ]
+      ],
+      "phase": "Phase 4"
     },
     {
       "id": "US114",
@@ -254,7 +271,8 @@
       "labels": [
         "code-quality",
         "documentation"
-      ]
+      ],
+      "phase": "Phase 4"
     },
     {
       "id": "US116",
@@ -283,17 +301,377 @@
         "Ensure tests cover edge cases and error scenarios",
         "Run tests and verify all pass"
       ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "testing"
+      ],
+      "phase": "Phase 6"
+    },
+    {
+      "id": "US118",
+      "title": "Code Quality - Improve Error Handling Consistency",
+      "description": "As a developer, I want consistent error handling patterns across codebase, so error behavior is predictable and maintainable.",
+      "acceptanceCriteria": [
+        "Review error handling patterns across src/ directory",
+        "Standardize on error types (custom Error classes vs plain Error)",
+        "Add error logging utility for consistent error tracking",
+        "Ensure all async operations have try-catch blocks",
+        "Update AGENTS.md with error handling guidelines"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "refactor",
+        "error-handling"
+      ],
+      "phase": "Phase 10"
+    },
+    {
+      "id": "US119",
+      "title": "Code Quality - Add TypeScript Strict Mode Compliance",
+      "description": "As a developer, I want to ensure codebase follows TypeScript strict mode requirements, so type safety is maximized.",
+      "acceptanceCriteria": [
+        "Fix all implicit any types",
+        "Add proper null/undefined checks before usage",
+        "Enable strict mode in tsconfig.json if not enabled",
+        "Fix all implicit this returns",
+        "Ensure all variables are properly typed"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "typescript"
+      ],
+      "phase": "Phase 2"
+    },
+    {
+      "id": "US120",
+      "title": "Code Quality - Implement Memoization Pattern",
+      "description": "As a developer, I want to implement memoization for expensive computations, so performance is improved without code complexity.",
+      "acceptanceCriteria": [
+        "Identify expensive computations (e.g., rarity counts, stats calculations)",
+        "Implement memoization using closure-based cache or WeakMap",
+        "Add cache invalidation logic when data changes",
+        "Run performance benchmarks to verify improvement"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "performance"
+      ],
+      "phase": "Phase 5"
+    },
+    {
+      "id": "US121",
+      "title": "Code Quality - Add Debouncing to User Inputs",
+      "description": "As a developer, I want to add debouncing to user input handlers (search, filter), so excessive function calls are avoided.",
+      "acceptanceCriteria": [
+        "Create debounce utility in src/lib/utils/debounce.ts",
+        "Apply to search inputs (collection search, card name search)",
+        "Apply to filter dropdowns (rarity, type filters)",
+        "Set appropriate debounce delay (300ms recommended)",
+        "Test debouncing works correctly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "performance"
+      ],
+      "phase": "Phase 5"
+    },
+    {
+      "id": "US122",
+      "title": "Code Quality - Improve Accessibility ARIA Labels",
+      "description": "As a developer, I want to ensure all interactive elements have proper ARIA labels, so app is accessible to screen readers.",
+      "acceptanceCriteria": [
+        "Audit all interactive components for missing ARIA labels",
+        "Add aria-label to all buttons without visible text",
+        "Add aria-live regions for dynamic content updates",
+        "Add aria-describedby to error messages and forms",
+        "Run accessibility audit (use a11y-auditor skill)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "accessibility",
+        "a11y"
+      ],
+      "phase": "Phase 7"
+    },
+    {
+      "id": "US123",
+      "title": "Code Quality - Optimize CSS Bundle Size",
+      "description": "As a developer, I want to optimize CSS bundle size by removing unused styles and purging unused Tailwind utilities, so initial load time is faster.",
+      "acceptanceCriteria": [
+        "Audit CSS usage across all components",
+        "Remove unused Tailwind classes and custom CSS",
+        "Enable CSS purge in Tailwind config if not enabled",
+        "Measure and reduce bundle size impact"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "performance",
+        "css"
+      ],
+      "phase": "Phase 5"
+    },
+    {
+      "id": "US124",
+      "title": "Code Quality - Add Component Prop Validation",
+      "description": "As a developer, I want to add prop validation for key components to prevent invalid states and improve type safety.",
+      "acceptanceCriteria": [
+        "Identify components requiring prop validation",
+        "Add validation schemas (using Zod or similar)",
+        "Add runtime prop validation with clear error messages",
+        "Document prop types in JSDoc"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "typescript",
+        "validation"
+      ],
+      "phase": "Phase 6"
+    },
+    {
+      "id": "US125",
+      "title": "Code Quality - Implement Input Sanitization",
+      "description": "As a developer, I want to add input sanitization for all user inputs to prevent XSS attacks and ensure data integrity.",
+      "acceptanceCriteria": [
+        "Identify all user input points (forms, URLs, search queries)",
+        "Implement DOMPurify sanitization for HTML content",
+        "Add URL validation and encoding",
+        "Add input length limits and validation"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "security",
+        "validation"
+      ],
+      "phase": "Phase 7"
+    },
+    {
+      "id": "US126",
+      "title": "Code Quality - Code Splitting for Better Caching",
+      "description": "As a developer, I want to implement code splitting for better browser caching and faster subsequent page loads.",
+      "acceptanceCriteria": [
+        "Identify route-level code splitting opportunities",
+        "Configure dynamic imports for code splitting in Astro/Vite",
+        "Add cache headers and service worker pre-fetching",
+        "Measure cache hit rates and optimization impact"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "performance",
+        "caching"
+      ],
+      "phase": "Phase 5"
+    },
+    {
+      "id": "US127",
+      "title": "Code Quality - Add Integration Tests",
+      "description": "As a developer, I want to add integration tests for critical user flows (pack opening, crafting, collection management) to catch regressions and ensure system stability.",
+      "acceptanceCriteria": [
+        "Identify missing integration test coverage",
+        "Add integration tests for pack opening flow",
+        "Add integration tests for crafting system",
+        "Add integration tests for collection persistence",
+        "Add integration tests for social sharing",
+        "Ensure tests run in CI pipeline"
+      ],
       "priority": 2,
       "passes": false,
       "labels": [
         "code-quality",
         "testing"
-      ]
+      ],
+      "phase": "Phase 6"
+    },
+    {
+      "id": "US128",
+      "title": "Code Quality - Improve Logging Strategy",
+      "description": "As a developer, I want to improve logging strategy to enable better debugging and production error tracking while reducing console noise.",
+      "acceptanceCriteria": [
+        "Create configurable logger utility in src/lib/utils/logger.ts",
+        "Add log levels (debug, info, warn, error)",
+        "Filter console logs by environment (dev vs production)",
+        "Add structured logging for easier parsing in production",
+        "Update AGENTS.md with logging guidelines"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "logging",
+        "observability"
+      ],
+      "phase": "Phase 9"
+    },
+    {
+      "id": "US129",
+      "title": "Code Quality - Add Performance Monitoring",
+      "description": "As a developer, I want to add performance monitoring to track key metrics and identify bottlenecks before they affect users.",
+      "acceptanceCriteria": [
+        "Add performance marks for critical operations (pack generation, card renders)",
+        "Implement metric collection (FPS, memory usage, bundle size)",
+        "Add performance budget enforcement in CI",
+        "Integrate with existing PerformanceMonitor component"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "performance"
+      ],
+      "phase": "Phase 9"
+    },
+    {
+      "id": "US130",
+      "title": "Code Quality - Standardize Async/Await Patterns",
+      "description": "As a developer, I want to standardize async/await usage patterns to improve error handling and code readability.",
+      "acceptanceCriteria": [
+        "Review all async functions for consistent try-catch patterns",
+        "Add type-safe async helpers (wrap in try-catch)",
+        "Document when to use Promise.all() vs sequential awaits",
+        "Ensure proper error propagation in async chains"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "typescript",
+        "async"
+      ],
+      "phase": "Phase 10"
+    },
+    {
+      "id": "US131",
+      "title": "Code Quality - Improve Code Organization",
+      "description": "As a developer, I want to improve code organization by better structuring features and utilities, so code is more discoverable and maintainable.",
+      "acceptanceCriteria": [
+        "Review and reorganize src/lib/ directory structure",
+        "Group related utilities in feature folders",
+        "Add index barrel exports for cleaner imports",
+        "Document folder structure in AGENTS.md"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "architecture"
+      ],
+      "phase": "Phase 8"
+    },
+    {
+      "id": "US132",
+      "title": "Code Quality - Add End-to-End Tests",
+      "description": "As a developer, I want to add end-to-end tests using Playwright or similar tool to verify critical user journeys work correctly.",
+      "acceptanceCriteria": [
+        "Set up Playwright test framework",
+        "Add E2E test for complete pack opening flow",
+        "Add E2E test for crafting system",
+        "Add E2E test for collection management",
+        "Add E2E test for card battles",
+        "Integrate E2E tests in CI pipeline"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "testing"
+      ],
+      "phase": "Phase 6"
+    },
+    {
+      "id": "US133",
+      "title": "Code Quality - Implement Feature Flags",
+      "description": "As a developer, I want to implement feature flags system to enable/disable features safely and run A/B tests.",
+      "acceptanceCriteria": [
+        "Create feature flags configuration in src/lib/flags.ts",
+        "Add feature flag provider component for runtime toggles",
+        "Implement flag-based code branching for gradual rollouts",
+        "Add flag analytics and A/B testing support"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "feature-flags"
+      ],
+      "phase": "Phase 8"
+    },
+    {
+      "id": "US134",
+      "title": "Code Quality - Improve Error Recovery",
+      "description": "As a developer, I want to improve error recovery patterns so app gracefully recovers from errors and maintains user progress.",
+      "acceptanceCriteria": [
+        "Add automatic retry logic for failed operations",
+        "Add error boundaries for component error recovery",
+        "Implement exponential backoff for retry attempts",
+        "Add user-friendly error messages with recovery options"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "error-handling"
+      ],
+      "phase": "Phase 10"
+    },
+    {
+      "id": "US136",
+      "title": "Code Quality - Remove Screenshot Files",
+      "description": "As a developer, I want to remove screenshot files that appear during Ralph sessions, preventing AI model errors and keeping the project clean.",
+      "acceptanceCriteria": [
+        "Delete all screenshot files from project root",
+        "Add *.png to .gitignore",
+        "Update PRD notes to skip screenshot files",
+        "Verify Ralph runs without screenshot errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "cleanup"
+      ],
+      "phase": "Phase 3"
+    },
+    {
+      "id": "US135",
+      "title": "Code Quality - Reduce Code Duplication",
+      "description": "As a developer, I want to reduce code duplication by extracting common patterns into reusable utilities and components.",
+      "acceptanceCriteria": [
+        "Identify duplicated code patterns across codebase",
+        "Extract common patterns into utility functions",
+        "Create reusable UI components (Card, Button, Modal variants)",
+        "Measure reduction in lines of code and bundle size"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "dry"
+      ],
+      "phase": "Phase 8"
     }
   ],
   "metadata": {
     "createdAt": "2026-01-17T19:40:00Z",
-    "version": "1.0.0",
-    "updatedAt": "2026-01-17T20:55:29.494Z"
+    "version": "1.2.0",
+    "updatedAt": "2026-01-17T21:52:31.087Z"
   }
 }

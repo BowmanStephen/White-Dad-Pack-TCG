@@ -5,6 +5,18 @@ import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
 import { createDateEncoder } from '../lib/utils/encoders';
 
+// Initialize empty rarity counts
+function initializeRarityCounts(): Record<Rarity, number> {
+  return {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+  };
+}
+
 // Custom encoder for Collection type (handles Date serialization)
 const baseCollectionEncoder = createDateEncoder<Collection>({
   dateFields: ['metadata.created', 'metadata.lastOpenedAt', 'packs.openedAt'],
@@ -20,17 +32,14 @@ const collectionEncoder = {
       // Return empty collection if parsing fails
       return {
         packs: [],
-        cards: {},
-        stats: {
-          totalPacksOpened: 0,
-          totalCardsCollected: 0,
-          uniqueCardsOwned: 0,
-          completionPercentage: 0,
-          rarities: {},
-        },
         metadata: {
+          totalPacksOpened: 0,
+          lastOpenedAt: null,
+          uniqueCards: [],
+          rarePulls: 0,
+          holoPulls: 0,
           created: new Date(),
-          lastOpenedAt: new Date(),
+          rarityCounts: initializeRarityCounts(), // Initialize rarity counts (US107)
         },
       };
     }
@@ -86,7 +95,7 @@ export const collection = persistentAtom<Collection>(
   collectionEncoder
 );
 
-// Compute rarity counts from all packs
+// Compute rarity counts from all packs (fallback for uncached data)
 function computeRarityCounts(packs: Pack[]): Record<Rarity, number> {
   const counts: Record<Rarity, number> = {
     common: 0,
@@ -106,6 +115,29 @@ function computeRarityCounts(packs: Pack[]): Record<Rarity, number> {
   return counts;
 }
 
+// Initialize empty rarity counts
+function initializeRarityCounts(): Record<Rarity, number> {
+  return {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+  };
+}
+
+// Get rarity counts from metadata or compute them
+function getRarityCounts(packs: Pack[], metadata: CollectionMetadata): Record<Rarity, number> {
+  // Return cached counts if available
+  if (metadata.rarityCounts) {
+    return metadata.rarityCounts;
+  }
+
+  // Fallback: compute from packs (migration for old collections)
+  return computeRarityCounts(packs);
+}
+
 // Get the reactive collection state for UI components
 export function getCollectionState(): CollectionState {
   const current = collection.get();
@@ -114,14 +146,14 @@ export function getCollectionState(): CollectionState {
     openedPacks: current.packs,
     uniqueCards: current.metadata.uniqueCards,
     totalCards: current.packs.reduce((sum, pack) => sum + pack.cards.length, 0),
-    rarityCounts: computeRarityCounts(current.packs),
+    rarityCounts: getRarityCounts(current.packs, current.metadata),
   };
 }
 
 // Get computed collection statistics
 export function getCollectionStats(): CollectionStats {
   const current = collection.get();
-  const rarityCounts = computeRarityCounts(current.packs);
+  const rarityCounts = getRarityCounts(current.packs, current.metadata);
 
   return {
     totalPacks: current.packs.length,
@@ -180,6 +212,13 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
     // Count holo pulls
     const holoPullsInPack = pack.cards.filter((card) => card.isHolo).length;
 
+    // Incrementally update rarity counts (US107)
+    const currentRarityCounts = current.metadata.rarityCounts || initializeRarityCounts();
+    const newRarityCounts = { ...currentRarityCounts };
+    for (const card of pack.cards) {
+      newRarityCounts[card.rarity]++;
+    }
+
     // Update collection with new pack
     collection.set({
       packs: [pack, ...current.packs], // New packs first
@@ -189,6 +228,8 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
         uniqueCards: newUniqueCards,
         rarePulls: current.metadata.rarePulls + rarePullsInPack,
         holoPulls: current.metadata.holoPulls + holoPullsInPack,
+        created: current.metadata.created,
+        rarityCounts: newRarityCounts, // Cache rarity counts (US107)
       },
     });
 
@@ -212,6 +253,8 @@ export function clearCollection(): { success: boolean; error?: string } {
         uniqueCards: [],
         rarePulls: 0,
         holoPulls: 0,
+        created: new Date(), // Reset creation date when clearing
+        rarityCounts: initializeRarityCounts(), // Reset rarity counts (US107)
       },
     });
     return { success: true };
@@ -252,7 +295,7 @@ export function importCollection(
   jsonData: string
 ): { success: boolean; error?: string; imported?: number } {
   const data = safeJsonParse<Collection>(jsonData);
-  
+
   if (!data) {
     return { success: false, error: 'Failed to parse collection JSON' };
   }
@@ -264,6 +307,11 @@ export function importCollection(
 
   if (!data.metadata || typeof data.metadata !== 'object') {
     return { success: false, error: 'Invalid collection data: missing metadata' };
+  }
+
+  // Recalculate rarity counts if missing (migration for old collections) (US107)
+  if (!data.metadata.rarityCounts) {
+    data.metadata.rarityCounts = computeRarityCounts(data.packs);
   }
 
   collection.set(data);

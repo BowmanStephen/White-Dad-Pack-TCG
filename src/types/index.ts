@@ -186,6 +186,7 @@ export interface CollectionMetadata {
   rarePulls: number; // Number of rare+ pulls
   holoPulls: number; // Number of holo pulls
   created?: Date; // When the collection was first created
+  rarityCounts?: Record<Rarity, number>; // Cached rarity counts for performance (US107)
 }
 
 // Collection - All packs owned by the user
