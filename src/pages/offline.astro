@@ -1,0 +1,188 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Logo from '@/components/common/Logo.astro';
+---
+
+<BaseLayout title="You're Offline - DadDeck™">
+  <main class="min-h-screen flex items-center justify-center px-4">
+    <div class="text-center max-w-md">
+      <!-- Logo -->
+      <div class="mb-8 flex justify-center">
+        <Logo size="lg" />
+      </div>
+
+      <!-- Offline Illustration -->
+      <div class="mb-8">
+        <svg
+          class="mx-auto w-32 h-32 text-slate-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+          />
+        </svg>
+      </div>
+
+      <!-- Message -->
+      <h1 class="text-3xl font-bold text-white mb-4">
+        You're Offline
+      </h1>
+
+      <p class="text-slate-400 mb-8">
+        No worries! DadDeck™ works offline. Your collection is safe and you can still open packs.
+      </p>
+
+      <!-- Available Actions -->
+      <div class="space-y-4 mb-8">
+        <div class="flex items-center justify-center gap-3 text-slate-300">
+          <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>Open packs offline</span>
+        </div>
+        <div class="flex items-center justify-center gap-3 text-slate-300">
+          <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>View your collection</span>
+        </div>
+        <div class="flex items-center justify-center gap-3 text-slate-300">
+          <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>All progress saved locally</span>
+        </div>
+      </div>
+
+      <!-- Retry Button -->
+      <button
+        id="retry-btn"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-colors duration-200"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+        Try Reconnecting
+      </button>
+
+      <!-- Reconnecting Indicator -->
+      <div id="reconnecting" class="hidden mt-4 text-amber-400 text-sm">
+        <svg class="animate-spin inline w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        <span id="reconnecting-text">Attempting to reconnect...</span>
+      </div>
+    </div>
+  </main>
+
+  <script define:vars={{}}>
+    const retryBtn = document.getElementById('retry-btn');
+    const reconnecting = document.getElementById('reconnecting');
+    const reconnectingText = document.getElementById('reconnecting-text');
+
+    // Check connection status
+    function isOnline() {
+      return navigator.onLine;
+    }
+
+    // Update reconnecting text safely
+    function setReconnectingText(text) {
+      if (reconnectingText) {
+        reconnectingText.textContent = text;
+      }
+    }
+
+    // Reload page when back online
+    function handleOnline() {
+      reconnecting.classList.add('hidden');
+      window.location.reload();
+    }
+
+    // Listen for online event
+    window.addEventListener('online', handleOnline);
+
+    // Manual retry button
+    retryBtn?.addEventListener('click', () => {
+      reconnecting.classList.remove('hidden');
+
+      if (isOnline()) {
+        // If online, reload
+        window.location.reload();
+      } else {
+        // Show "still offline" message briefly
+        setTimeout(() => {
+          if (!isOnline()) {
+            setReconnectingText('Still offline. Check your connection.');
+            setTimeout(() => {
+              reconnecting.classList.add('hidden');
+              // Reset message
+              setTimeout(() => {
+                setReconnectingText('Attempting to reconnect...');
+              }, 100);
+            }, 2000);
+          }
+        }, 1000);
+      }
+    });
+
+    // Log current status
+    console.log('[Offline Page] Online:', isOnline());
+  </script>
+</BaseLayout>
+
+<style>
+  /* Pulse animation for the offline icon */
+  svg {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+</style>

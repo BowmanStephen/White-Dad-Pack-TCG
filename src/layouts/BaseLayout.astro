@@ -33,6 +33,10 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#f59e0b" />
+
     <!-- Preload critical fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -49,6 +53,54 @@ const {
       Skip to main content
     </a>
     <slot />
+
+    <!-- Service Worker Registration -->
+    <script define:vars={{}}>
+      // Only register service worker in production and when supported
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
+            });
+
+            console.log('[SW] Service Worker registered:', registration.scope);
+
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New version available
+                    console.log('[SW] New content is available; please refresh.');
+                    // You could show a notification to the user here
+                  }
+                });
+              }
+            });
+          } catch (error) {
+            console.error('[SW] Service Worker registration failed:', error);
+          }
+        });
+      }
+
+      // Handle online/offline events
+      window.addEventListener('online', () => {
+        console.log('[App] Connection restored');
+        document.body.classList.remove('offline');
+      });
+
+      window.addEventListener('offline', () => {
+        console.log('[App] Connection lost');
+        document.body.classList.add('offline');
+      });
+
+      // Set initial state
+      if (!navigator.onLine) {
+        document.body.classList.add('offline');
+      }
+    </script>
   </body>
 </html>
 
@@ -132,5 +184,26 @@ const {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+
+  /* Offline indicator */
+  body.offline::before {
+    content: 'You\'re offline - some features may be limited';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+    color: white;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 10001;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  body.offline {
+    padding-top: 2.5rem;
   }
 </style>
