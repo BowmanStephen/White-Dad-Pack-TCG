@@ -391,6 +391,7 @@ export function updateAchievementProgress(
 /**
  * Unlock an achievement
  * Returns true if newly unlocked, false if already unlocked
+ * Shows notification when achievement is unlocked
  */
 export function unlockAchievement(
   achievementId: string
@@ -427,6 +428,13 @@ export function unlockAchievement(
 
   // Get the unlocked achievement
   const unlocked = updatedAchievements.find((a) => a.id === achievementId);
+
+  // Show notification about achievement unlock
+  if (typeof window !== 'undefined' && unlocked) {
+    import('./notifications.js').then(({ notifyAchievementUnlocked }) => {
+      notifyAchievementUnlocked(unlocked.name, unlocked.icon);
+    });
+  }
 
   // Track achievement unlock event
   trackEvent({

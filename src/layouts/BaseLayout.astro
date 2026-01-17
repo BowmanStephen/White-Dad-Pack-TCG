@@ -1,5 +1,6 @@
 ---
 import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
+import NotificationContainer from '../components/notifications/NotificationContainer.svelte';
 
 interface Props {
   title?: string;
@@ -99,6 +100,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
       Skip to main content
     </a>
     <slot />
+
+    <!-- Notification Container (client-side) -->
+    <NotificationContainer client:load />
 
     <!-- Service Worker Registration (deferred for performance) -->
     <script is:inline define:vars={{}}>

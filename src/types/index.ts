@@ -979,6 +979,94 @@ export const CRAFTING_RECIPES: CraftingRecipe[] = [
 export * from './leaderboard';
 
 // ============================================================================
+// NOTIFICATION TYPES (US081 - Notification System - Browser Push)
+// ============================================================================
+
+// Notification types
+export type NotificationType = 'success' | 'error' | 'info' | 'warning' | 'achievement';
+
+// Notification categories for push notifications
+export type NotificationCategory = 'daily_reward' | 'trade' | 'achievement' | 'general';
+
+// Notification interface
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  category?: NotificationCategory;
+  duration?: number; // Auto-dismiss duration in ms (0 = no auto-dismiss)
+  persistent?: boolean; // Show in notification center
+  timestamp: Date;
+  read?: boolean;
+  actions?: NotificationAction[];
+  icon?: string; // Emoji or icon identifier
+  data?: Record<string, any>; // Additional data for the notification
+}
+
+// Notification action (button/link in notification)
+export interface NotificationAction {
+  id: string;
+  label: string;
+  primary?: boolean;
+  action: () => void | Promise<void>;
+}
+
+// Notification preferences (user settings)
+export interface NotificationPreferences {
+  // Browser push notification settings
+  pushEnabled: boolean;
+  pushPermission: 'default' | 'granted' | 'denied';
+
+  // Per-category settings
+  dailyRewardNotifications: boolean;
+  tradeNotifications: boolean;
+  achievementNotifications: boolean;
+  generalNotifications: boolean;
+
+  // In-app notification settings
+  soundEnabled: boolean;
+  vibrationEnabled: boolean;
+  quietHoursEnabled: boolean;
+  quietHoursStart: string; // HH:mm format
+  quietHoursEnd: string; // HH:mm format
+}
+
+// Notification state
+export interface NotificationState {
+  notifications: Notification[];
+  preferences: NotificationPreferences;
+  unreadCount: number;
+}
+
+// Browser push notification payload
+export interface PushNotificationPayload {
+  title: string;
+  body: string;
+  icon?: string;
+  badge?: string;
+  image?: string;
+  data?: Record<string, any>;
+  actions?: Array<{
+    action: string;
+    title: string;
+    icon?: string;
+  }>;
+  tag?: string; // For grouping/replacing notifications
+  requireInteraction?: boolean;
+  timestamp?: number;
+}
+
+// Push notification subscription info
+export interface PushSubscription {
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+}
+
+// ============================================================================
 // PACK DESIGNS (US068 - Pack Designs - Visual Variety)
 // ============================================================================
 

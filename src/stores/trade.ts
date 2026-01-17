@@ -485,6 +485,7 @@ export function cancelTrade(tradeId: string): { success: boolean; error?: string
 
 /**
  * Add a trade to received trades (when receiving a shared trade)
+ * Shows notification to the user
  */
 export function addReceivedTrade(trade: TradeOffer): void {
   const state = tradeStore.get();
@@ -496,6 +497,13 @@ export function addReceivedTrade(trade: TradeOffer): void {
 
   state.receivedTrades.unshift(trade);
   tradeStore.set({ ...state });
+
+  // Show notification about new trade offer
+  if (typeof window !== 'undefined') {
+    import('./notifications.js').then(({ notifyTradeOffer }) => {
+      notifyTradeOffer(trade.senderName, trade.offeredCards.length);
+    });
+  }
 }
 
 /**

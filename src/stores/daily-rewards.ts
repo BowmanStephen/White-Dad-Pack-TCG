@@ -293,6 +293,7 @@ export const todaysReward = computed(dailyRewards, (state) => {
 /**
  * Initialize daily rewards on app load
  * Checks for missed days and updates streak accordingly
+ * Shows notification if daily reward is ready
  */
 export function initializeDailyRewards(): void {
   const state = dailyRewards.get();
@@ -341,6 +342,13 @@ export function initializeDailyRewards(): void {
 
     // Check for achievements on streak increase
     checkDailyAchievements();
+
+    // Notify that daily reward is ready
+    if (typeof window !== 'undefined') {
+      import('./notifications.js').then(({ notifyDailyRewardReady }) => {
+        notifyDailyRewardReady();
+      });
+    }
   } else if (daysSinceLastLogin > 1) {
     // Missed a day - reset streak
     dailyRewards.set({
@@ -352,6 +360,13 @@ export function initializeDailyRewards(): void {
       rewards: generateRewardsForStreak(1),
       missedDay: true,
     });
+
+    // Notify that daily reward is ready (even after reset)
+    if (typeof window !== 'undefined') {
+      import('./notifications.js').then(({ notifyDailyRewardReady }) => {
+        notifyDailyRewardReady();
+      });
+    }
   }
 }
 
