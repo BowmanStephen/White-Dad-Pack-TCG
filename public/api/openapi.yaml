@@ -1,0 +1,1042 @@
+openapi: 3.0.3
+info:
+  title: DadDeck API
+  version: 1.0.0
+  description: |
+    The official DadDeck API provides programmatic access to the White Dad Trading Card Game.
+
+    ## Authentication
+
+    All API requests require an API key in the `Authorization` header:
+
+    ```
+    Authorization: Bearer YOUR_API_KEY
+    ```
+
+    ## Rate Limiting
+
+    Rate limits vary by tier:
+
+    | Tier | Requests/Minute | Requests/Hour | Requests/Day | Price |
+    |------|----------------|---------------|--------------|-------|
+    | Free | 10 | 100 | 500 | $0 |
+    | Basic | 60 | 1,000 | 10,000 | $9.99 |
+    | Pro | 300 | 10,000 | 100,000 | $49.99 |
+    | Enterprise | 1,000 | 100,000 | 1,000,000 | $499.99 |
+
+    Rate limit info is returned in response headers:
+    - `X-RateLimit-Limit`: Request limit
+    - `X-RateLimit-Remaining`: Remaining requests
+    - `X-RateLimit-Reset`: Unix timestamp when limit resets
+    - `X-RateLimit-Tier`: Your current tier
+
+  termsOfService: https://dadddeck.com/terms
+  contact:
+    name: DadDeck API Support
+    email: api@dadddeck.com
+    url: https://dadddeck.com/support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.dadddeck.com/v1
+    description: Production server
+  - url: https://api-staging.dadddeck.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Local development server
+
+tags:
+  - name: Cards
+    description: Card database operations
+  - name: Packs
+    description: Pack generation and opening
+  - name: Collections
+    description: User collection management
+  - name: Leaderboard
+    description: Global rankings and statistics
+  - name: Events
+    description: Live events and bonuses
+  - name: Auth
+    description: API key management
+
+paths:
+  /cards:
+    get:
+      tags: [Cards]
+      summary: List all cards
+      description: Retrieve a paginated list of all cards in the database
+      operationId: listCards
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          description: Number of cards per page
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+        - name: rarity
+          in: query
+          description: Filter by card rarity
+          required: false
+          schema:
+            type: string
+            enum: [common, uncommon, rare, epic, legendary, mythic]
+        - name: type
+          in: query
+          description: Filter by dad type
+          required: false
+          schema:
+            type: string
+            enum: [BBQ_DAD, FIX_IT_DAD, GOLF_DAD, COUCH_DAD, LAWN_DAD, CAR_DAD, OFFICE_DAD, COOL_DAD, COACH_DAD, CHEF_DAD, HOLIDAY_DAD, WAREHOUSE_DAD, VINTAGE_DAD, FASHION_DAD, TECH_DAD, ITEM]
+        - name: series
+          in: query
+          description: Filter by series number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: search
+          in: query
+          description: Search in card name and flavor text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved cards
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardsResponse'
+              example:
+                success: true
+                data:
+                  cards:
+                    - id: bbq_dad_001
+                      name: Grillmaster Gary
+                      subtitle: The Flame Keeper
+                      type: BBQ_DAD
+                      rarity: rare
+                      stats:
+                        dadJoke: 75
+                        grillSkill: 95
+                        fixIt: 40
+                        napPower: 30
+                        remoteControl: 50
+                        thermostat: 60
+                        sockSandal: 45
+                        beerSnob: 70
+                      flavorText: '"Propane is just a suggestion."'
+                  pagination:
+                    page: 1
+                    pageSize: 50
+                    totalCards: 250
+                    totalPages: 5
+                    hasNext: true
+                    hasPrevious: false
+                meta:
+                  requestId: req_abc123
+                  timestamp: '2026-01-17T12:00:00Z'
+                  version: '1.0.0'
+                  rateLimit:
+                    limit: 10
+                    remaining: 9
+                    resetAt: '2026-01-17T12:01:00Z'
+                    tier: free
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /cards/{cardId}:
+    get:
+      tags: [Cards]
+      summary: Get card by ID
+      description: Retrieve detailed information about a specific card
+      operationId: getCard
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: cardId
+          in: path
+          description: Unique card identifier
+          required: true
+          schema:
+            type: string
+          example: bbq_dad_001
+      responses:
+        '200':
+          description: Successfully retrieved card
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Card'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /cards/random:
+    post:
+      tags: [Cards]
+      summary: Get random cards
+      description: Retrieve one or more random cards with optional filters
+      operationId: getRandomCards
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: count
+          in: query
+          description: Number of random cards to return (1-10)
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+            maximum: 10
+        - name: rarity
+          in: query
+          description: Filter to specific rarity
+          required: false
+          schema:
+            type: string
+            enum: [common, uncommon, rare, epic, legendary, mythic]
+        - name: type
+          in: query
+          description: Filter to specific dad type
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exclude:
+                  type: array
+                  items:
+                    type: string
+                  description: Card IDs to exclude from results
+      responses:
+        '200':
+          description: Successfully retrieved random cards
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          cards:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Card'
+
+  /packs/generate:
+    post:
+      tags: [Packs]
+      summary: Generate pack(s)
+      description: |
+        Generate one or more random packs based on rarity probabilities.
+
+        **Rate Limit Cost:** 1 request per pack
+      operationId: generatePacks
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackGenerateRequest'
+            example:
+              packType: standard
+              count: 3
+      responses:
+        '200':
+          description: Successfully generated packs
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PackGenerateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /collections/{userId}:
+    get:
+      tags: [Collections]
+      summary: Get user collection
+      description: Retrieve a user's card collection (requires proper permissions)
+      operationId: getCollection
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: userId
+          in: path
+          description: User identifier
+          required: true
+          schema:
+            type: string
+        - name: rarity
+          in: query
+          description: Filter by rarity
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [rarity, name, date_obtained]
+            default: rarity
+        - name: sortOrder
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Successfully retrieved collection
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          userId:
+                            type: string
+                          packs:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Pack'
+                          stats:
+                            $ref: '#/components/schemas/CollectionStats'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /leaderboard:
+    get:
+      tags: [Leaderboard]
+      summary: Get global leaderboard
+      description: Retrieve the current global rankings
+      operationId: getLeaderboard
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of entries to return
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+        - name: offset
+          in: query
+          description: Number of entries to skip
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Successfully retrieved leaderboard
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          entries:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/LeaderboardEntry'
+                          total:
+                            type: integer
+
+  /events:
+    get:
+      tags: [Events]
+      summary: List current events
+      description: Get all active, upcoming, and recent events
+      operationId: listEvents
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by event status
+          schema:
+            type: string
+            enum: [active, upcoming, ended]
+      responses:
+        '200':
+          description: Successfully retrieved events
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          events:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Event'
+
+  /events/{eventId}:
+    get:
+      tags: [Events]
+      summary: Get event details
+      description: Get detailed information about a specific event
+      operationId: getEvent
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          description: Event identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved event
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Event'
+
+  /auth/keys:
+    get:
+      tags: [Auth]
+      summary: List API keys
+      description: List all API keys for your account
+      operationId: listApiKeys
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved API keys
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          keys:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ApiKey'
+    post:
+      tags: [Auth]
+      summary: Create API key
+      description: Generate a new API key for your account
+      operationId: createApiKey
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, tier]
+              properties:
+                name:
+                  type: string
+                  description: Human-readable name for the key
+                  example: My Project API Key
+                tier:
+                  type: string
+                  enum: [free, basic, pro, enterprise]
+                  description: Tier level for the key
+                expiresAt:
+                  type: string
+                  format: date-time
+                  description: Optional expiration date
+                  nullable: true
+                allowedOrigins:
+                  type: array
+                  items:
+                    type: string
+                  description: CORS allowed origins (empty = all)
+      responses:
+        '201':
+          description: Successfully created API key
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          key:
+                            type: string
+                            example: ddpk_live_abc123def456...
+                          apiKey:
+                            $ref: '#/components/schemas/ApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/keys/{keyId}:
+    delete:
+      tags: [Auth]
+      summary: Revoke API key
+      description: Permanently revoke an API key
+      operationId: revokeApiKey
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: keyId
+          in: path
+          description: API key identifier (not the key itself)
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully revoked API key
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: |
+        Use your API key in the format: `Bearer YOUR_API_KEY`
+
+        Example: `Authorization: Bearer ddpk_live_abc123def456`
+
+  schemas:
+    ApiResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          description: Response data (if successful)
+        error:
+          $ref: '#/components/schemas/ApiError'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    ApiError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+          example: RATE_LIMIT_EXCEEDED
+        message:
+          type: string
+          description: Human-readable error message
+          example: Rate limit exceeded. Try again in 60 seconds.
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+
+    ApiMeta:
+      type: object
+      required: [requestId, timestamp, version]
+      properties:
+        requestId:
+          type: string
+          format: uuid
+          description: Unique request identifier
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          description: API version
+        rateLimit:
+          $ref: '#/components/schemas/RateLimitInfo'
+
+    RateLimitInfo:
+      type: object
+      properties:
+        limit:
+          type: integer
+        remaining:
+          type: integer
+        resetAt:
+          type: string
+          format: date-time
+        tier:
+          type: string
+          enum: [free, basic, pro, enterprise]
+
+    Card:
+      type: object
+      required: [id, name, subtitle, type, rarity, stats, flavorText]
+      properties:
+        id:
+          type: string
+          example: bbq_dad_001
+        name:
+          type: string
+          example: Grillmaster Gary
+        subtitle:
+          type: string
+          example: The Flame Keeper
+        type:
+          type: string
+          enum: [BBQ_DAD, FIX_IT_DAD, GOLF_DAD, COUCH_DAD, LAWN_DAD, CAR_DAD, OFFICE_DAD, COOL_DAD, COACH_DAD, CHEF_DAD, HOLIDAY_DAD, WAREHOUSE_DAD, VINTAGE_DAD, FASHION_DAD, TECH_DAD, ITEM]
+        rarity:
+          type: string
+          enum: [common, uncommon, rare, epic, legendary, mythic]
+        artwork:
+          type: string
+          format: uri
+        stats:
+          $ref: '#/components/schemas/CardStats'
+        flavorText:
+          type: string
+        abilities:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+        series:
+          type: integer
+        cardNumber:
+          type: integer
+        totalInSeries:
+          type: integer
+        artist:
+          type: string
+        seasonId:
+          type: integer
+
+    CardStats:
+      type: object
+      required: [dadJoke, grillSkill, fixIt, napPower, remoteControl, thermostat, sockSandal, beerSnob]
+      properties:
+        dadJoke:
+          type: integer
+          minimum: 0
+          maximum: 100
+        grillSkill:
+          type: integer
+          minimum: 0
+          maximum: 100
+        fixIt:
+          type: integer
+          minimum: 0
+          maximum: 100
+        napPower:
+          type: integer
+          minimum: 0
+          maximum: 100
+        remoteControl:
+          type: integer
+          minimum: 0
+          maximum: 100
+        thermostat:
+          type: integer
+          minimum: 0
+          maximum: 100
+        sockSandal:
+          type: integer
+          minimum: 0
+          maximum: 100
+        beerSnob:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    PackGenerateRequest:
+      type: object
+      properties:
+        packType:
+          type: string
+          enum: [standard, premium]
+          default: standard
+        count:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 1
+        design:
+          type: string
+          description: Specific pack design
+        series:
+          type: integer
+          description: Specific series number
+
+    PackGenerateResponse:
+      type: object
+      properties:
+        packs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pack'
+        meta:
+          type: object
+          properties:
+            totalCards:
+              type: integer
+            rarityBreakdown:
+              type: object
+              additionalProperties:
+                type: integer
+            holoCount:
+              type: integer
+            generationTime:
+              type: integer
+              description: Generation time in milliseconds
+
+    Pack:
+      type: object
+      properties:
+        id:
+          type: string
+        design:
+          type: string
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+        openedAt:
+          type: string
+          format: date-time
+        bestRarity:
+          type: string
+
+    CollectionStats:
+      type: object
+      properties:
+        totalPacks:
+          type: integer
+        totalCards:
+          type: integer
+        uniqueCards:
+          type: integer
+        rarePulls:
+          type: integer
+        epicPulls:
+          type: integer
+        legendaryPulls:
+          type: integer
+        mythicPulls:
+          type: integer
+        holoPulls:
+          type: integer
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        playerId:
+          type: string
+        username:
+          type: string
+        pseudonym:
+          type: string
+        avatarId:
+          type: string
+        stats:
+          type: object
+          properties:
+            totalPacks:
+              type: integer
+            totalCards:
+              type: integer
+            uniqueCards:
+              type: integer
+            rarePulls:
+              type: integer
+            epicPulls:
+              type: integer
+            legendaryPulls:
+              type: integer
+            mythicPulls:
+              type: integer
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+          enum: [active, upcoming, ended]
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        bonuses:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              description:
+                type: string
+              multiplier:
+                type: number
+
+    ApiKey:
+      type: object
+      properties:
+        key:
+          type: string
+          description: API key token (truncated for security)
+          example: ddpk_live_abc...xyz
+        name:
+          type: string
+        tier:
+          type: string
+          enum: [free, basic, pro, enterprise]
+        status:
+          type: string
+          enum: [active, suspended, revoked, pending]
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        rateLimit:
+          $ref: '#/components/schemas/RateLimitInfo'
+        usageStats:
+          type: object
+          properties:
+            totalRequests:
+              type: integer
+            requestsThisMonth:
+              type: integer
+            requestsToday:
+              type: integer
+        allowedOrigins:
+          type: array
+          items:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+
+    CardsResponse:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+            totalCards:
+              type: integer
+            totalPages:
+              type: integer
+            hasNext:
+              type: boolean
+            hasPrevious:
+              type: boolean
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: BAD_REQUEST
+              message: Invalid parameter: 'rarity' must be one of: common, uncommon, rare, epic, legendary, mythic
+            meta:
+              requestId: req_xyz789
+              timestamp: '2026-01-17T12:00:00Z'
+              version: '1.0.0'
+
+    Unauthorized:
+      description: Unauthorized - missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid API key
+            meta:
+              requestId: req_xyz789
+              timestamp: '2026-01-17T12:00:00Z'
+              version: '1.0.0'
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: FORBIDDEN
+              message: This operation requires 'collections:read' permission
+            meta:
+              requestId: req_xyz789
+              timestamp: '2026-01-17T12:00:00Z'
+              version: '1.0.0'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: Card 'invalid_id' not found
+            meta:
+              requestId: req_xyz789
+              timestamp: '2026-01-17T12:00:00Z'
+              version: '1.0.0'
+
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: Rate limit exceeded. Try again in 45 seconds.
+              details:
+                retryAfter: 45
+                limit: 10
+                tier: free
+            meta:
+              requestId: req_xyz789
+              timestamp: '2026-01-17T12:00:00Z'
+              version: '1.0.0'
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Unix timestamp when limit resets
+        X-RateLimit-Tier:
+          schema:
+            type: string
+          description: Current tier
+
+security:
+  - ApiKeyAuth: []
