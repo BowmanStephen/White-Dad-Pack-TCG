@@ -1,5 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
-import type { Collection, CollectionState, CollectionStats, Pack, Rarity } from '../types';
+import type { Collection, CollectionMetadata, CollectionState, CollectionStats, Pack, Rarity } from '../types';
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
@@ -113,18 +113,6 @@ function computeRarityCounts(packs: Pack[]): Record<Rarity, number> {
   }
 
   return counts;
-}
-
-// Initialize empty rarity counts
-function initializeRarityCounts(): Record<Rarity, number> {
-  return {
-    common: 0,
-    uncommon: 0,
-    rare: 0,
-    epic: 0,
-    legendary: 0,
-    mythic: 0,
-  };
 }
 
 // Get rarity counts from metadata or compute them
