@@ -6,6 +6,7 @@ import { trackEvent } from './analytics';
 export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
 
 const QUALITY_KEY = 'daddeck_animation_quality';
+const SCREEN_SHAKE_KEY = 'daddeck_screen_shake_enabled';
 
 // Modal open time tracking
 let modalOpenTime: Record<string, number> = {};
@@ -102,6 +103,41 @@ export const $modalOpen = atom<string | null>(null);
 
 // Toast notifications
 export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>([]);
+
+// Screen shake enabled state
+const getInitialScreenShake = (): boolean => {
+  if (typeof window === 'undefined') return true;
+
+  const saved = localStorage.getItem(SCREEN_SHAKE_KEY);
+  if (saved !== null) {
+    return saved === 'true';
+  }
+
+  return true; // Default to enabled
+};
+
+export const $screenShakeEnabled = atom<boolean>(getInitialScreenShake());
+export const screenShakeEnabled = $screenShakeEnabled;
+
+/**
+ * Set screen shake enabled state
+ */
+export function setScreenShakeEnabled(enabled: boolean): void {
+  $screenShakeEnabled.set(enabled);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SCREEN_SHAKE_KEY, String(enabled));
+  }
+}
+
+/**
+ * Toggle screen shake enabled state
+ */
+export function toggleScreenShake(): void {
+  const current = $screenShakeEnabled.get();
+  setScreenShakeEnabled(!current);
+}
 
 // Export stores without $ prefix for imports
 // The $ prefix versions above are used in Svelte templates

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade, scale } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
-  import { modalOpen, closeModal, animationQuality, setAnimationQuality, getEffectiveQuality } from '@/stores/ui';
+  import { modalOpen, closeModal, animationQuality, setAnimationQuality, getEffectiveQuality, screenShakeEnabled, setScreenShakeEnabled, toggleScreenShake } from '@/stores/ui';
   import type { AnimationQuality } from '@/stores/ui';
   import { muted, masterVolume, musicVolume, sfxVolume, toggleMute, setMasterVolume, setMusicVolume, setSfxVolume } from '@/stores/audio';
   import { onMount, onDestroy, untrack } from 'svelte';
@@ -24,6 +24,7 @@
   let qualityDropdownOpen = $state(false);
   let qualityButtonElement: HTMLElement;
   let qualityDropdownElement: HTMLElement;
+  let isScreenShakeEnabled = $state(true);
 
   /**
    * Svelte action to detect clicks outside an element
@@ -83,6 +84,9 @@
     const unsubQuality = animationQuality.subscribe((value) => {
       quality = value;
     });
+    const unsubScreenShake = screenShakeEnabled.subscribe((value) => {
+      isScreenShakeEnabled = value;
+    });
 
     return () => {
       unsubMuted();
@@ -90,6 +94,7 @@
       unsubMusic();
       unsubSfx();
       unsubQuality();
+      unsubScreenShake();
     };
   });
 
@@ -181,6 +186,10 @@
   function handleQualityChange(q: AnimationQuality) {
     setAnimationQuality(q);
     qualityDropdownOpen = false;
+  }
+
+  function handleScreenShakeChange() {
+    toggleScreenShake();
   }
 
   function toggleQualityDropdown() {
@@ -375,6 +384,19 @@
           </h3>
 
           <div class="space-y-4">
+            <!-- Screen Shake Toggle -->
+            <div class="setting-row">
+              <Toggle
+                bind:checked={isScreenShakeEnabled}
+                label="Screen Shake Effects"
+                ariaLabel="Toggle screen shake effects"
+                onchange={handleScreenShakeChange}
+              />
+              <p class="setting-description">
+                Subtle screen shake on mythic card reveals for epic moments. Disabled automatically if you prefer reduced motion.
+              </p>
+            </div>
+
             <!-- Animation Quality Dropdown -->
             <div class="setting-row">
               <div class="relative" use:clickOutside={() => qualityDropdownOpen = false}>

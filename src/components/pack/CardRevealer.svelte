@@ -8,6 +8,7 @@
   import FadeIn from '../loading/FadeIn.svelte';
   import { playCardReveal } from '../../stores/audio';
   import ConfettiEffects from '../card/ConfettiEffects.svelte';
+  import ScreenShake from '../card/ScreenShake.svelte';
 
   export let pack: Pack;
   export let currentIndex: number;
@@ -24,6 +25,7 @@
   let autoRevealActive = false;
   let particlesActive = false;
   let confettiActive = false;
+  let screenShakeActive = false;
   let autoRevealTimers: number[] = [];
 
   // Debounced reveal using requestAnimationFrame for smoother 60fps
@@ -62,6 +64,12 @@
           confettiActive = true;
           // Auto-deactivate confetti after animation (handled internally by component)
           setTimeout(() => { confettiActive = false; }, 3500);
+        }
+        // Activate screen shake for mythic cards only (epic moment!)
+        if (cardRarity === 'mythic') {
+          screenShakeActive = true;
+          // Auto-deactivate screen shake after animation completes
+          setTimeout(() => { screenShakeActive = false; }, 300);
         }
         // Play reveal sound based on card rarity
         if (cardRarity) {
@@ -114,6 +122,11 @@
         confettiActive = true;
         setTimeout(() => { confettiActive = false; }, 3500);
       }
+      // Activate screen shake for mythic cards only (epic moment!)
+      if (cardRarity === 'mythic') {
+        screenShakeActive = true;
+        setTimeout(() => { screenShakeActive = false; }, 300);
+      }
       // Play reveal sound based on card rarity
       if (cardRarity) {
         playCardReveal(cardRarity);
@@ -140,6 +153,11 @@
       if (cardRarity === 'legendary' || cardRarity === 'mythic') {
         confettiActive = true;
         setTimeout(() => { confettiActive = false; }, 3500);
+      }
+      // Activate screen shake for mythic cards only (epic moment!)
+      if (cardRarity === 'mythic') {
+        screenShakeActive = true;
+        setTimeout(() => { screenShakeActive = false; }, 300);
       }
       // Play reveal sound based on card rarity
       if (cardRarity) {
@@ -210,6 +228,8 @@
     tabindex="0"
   >
     {#if currentCard}
+      <!-- Screen shake effect for mythic cards -->
+      <ScreenShake active={screenShakeActive} intensity="subtle" duration={300} />
       <!-- Card skeleton while loading (before reveal) -->
       {#if !isCurrentRevealed}
         <CardSkeleton size="lg" rarity={currentCard.rarity} />
