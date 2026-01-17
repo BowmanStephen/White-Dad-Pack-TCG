@@ -21,6 +21,9 @@
   let touchHoldTimeout: ReturnType<typeof setTimeout> | null = null;
 
   onMount(() => {
+    // Guard for SSR
+    if (typeof window === 'undefined') return;
+
     // Check if mobile device
     isMobile = 'ontouchstart' in window;
 
@@ -41,15 +44,18 @@
   });
 
   onDestroy(() => {
+    // Guard for SSR
+    if (typeof window === 'undefined') return;
+
     if (showTimeout) clearTimeout(showTimeout);
     if (hideTimeout) clearTimeout(hideTimeout);
     if (touchHoldTimeout) clearTimeout(touchHoldTimeout);
 
-    if (isMobile) {
+    if (isMobile && triggerElement) {
       triggerElement.removeEventListener('touchstart', handleTouchStart);
       triggerElement.removeEventListener('touchend', handleTouchEnd);
       triggerElement.removeEventListener('touchcancel', handleTouchEnd);
-    } else {
+    } else if (triggerElement) {
       triggerElement.removeEventListener('mouseenter', handleMouseEnter);
       triggerElement.removeEventListener('mouseleave', handleMouseLeave);
     }

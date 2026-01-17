@@ -7,8 +7,18 @@
   // Total unique cards in the database
   const TOTAL_UNIQUE_CARDS = getCardCount();
 
-  // Reactive stats from collection
-  let stats = $derived(getCollectionStats());
+  // Reactive stats from collection (guard for SSR)
+  let stats = $derived(typeof window !== 'undefined' ? getCollectionStats() : {
+    totalPacks: 0,
+    totalCards: 0,
+    uniqueCards: 0,
+    rarePulls: 0,
+    epicPulls: 0,
+    legendaryPulls: 0,
+    mythicPulls: 0,
+    holoPulls: 0,
+    lastOpenedAt: null,
+  });
 
   // Compute rarity counts from all packs
   function getRarityCounts(): Record<Rarity, number> {

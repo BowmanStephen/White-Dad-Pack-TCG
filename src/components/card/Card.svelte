@@ -6,6 +6,7 @@
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
+  import { getCardUpgradeLevel } from '../../stores/upgrade';
 
   export let card: PackCard;
   export let isFlipped: boolean = false;
@@ -13,12 +14,15 @@
   export let size: 'sm' | 'md' | 'lg' = 'md';
   export let interactive: boolean = true;
   export let enableShare: boolean = false;
+  export let showUpgradeButton: boolean = false;
+  export let onUpgradeClick: (() => void) | undefined = undefined;
 
   $: rarityConfig = RARITY_CONFIG[card.rarity];
   $: typeIcon = DAD_TYPE_ICONS[card.type];
   $: typeName = DAD_TYPE_NAMES[card.type];
   $: shareSupport = checkShareSupport();
   $: canShare = enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles;
+  $: upgradeLevel = typeof window !== 'undefined' ? getCardUpgradeLevel(card.id) : 0;
 
   const sizeClasses = {
     sm: 'w-48 h-[268px]',
@@ -320,10 +324,21 @@
           <span>{typeIcon}</span>
           <span>{typeName}</span>
         </div>
-        <div class="flex gap-0.5">
-          {#each Array(rarityStars) as _, i}
-            <span class="text-xs" style="color: {rarityConfig.color}; text-shadow: 0 0 5px {rarityConfig.glowColor};">★</span>
-          {/each}
+        <div class="flex gap-0.5 items-center">
+          <!-- Upgrade Level Indicator (US085) -->
+          {#if upgradeLevel > 0}
+            <div class="flex items-center gap-0.5 px-1.5 py-0.5 rounded" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3)); border: 1px solid rgba(251, 191, 36, 0.5);">
+              {#each Array(upgradeLevel) as _}
+                <span class="upgrade-star text-xs" style="color: #fbbf24; text-shadow: 0 0 4px rgba(251, 191, 36, 0.8);">⬡</span>
+              {/each}
+            </div>
+          {/if}
+          <!-- Rarity Stars -->
+          <div class="flex gap-0.5">
+            {#each Array(rarityStars) as _, i}
+              <span class="text-xs" style="color: {rarityConfig.color}; text-shadow: 0 0 5px {rarityConfig.glowColor};">★</span>
+            {/each}
+          </div>
         </div>
       </div>
 
@@ -448,6 +463,26 @@
   {#if shareError}
     <div class="mt-2 text-center text-xs text-red-400">{shareError}</div>
   {/if}
+{/if}
+
+<!-- Upgrade Button (US085) -->
+{#if showUpgradeButton && !isFlipped && onUpgradeClick}
+  <div class="flex justify-center mt-3">
+    <button
+      on:click={onUpgradeClick}
+      class="upgrade-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
+      style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);"
+      aria-label="Upgrade {card.name}"
+    >
+      <span>⚡</span>
+      <span>Upgrade Card</span>
+      {#if upgradeLevel > 0}
+        <span class="upgrade-badge" style="background: rgba(255,255,255,0.2); padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.625rem;">
+          Lv.{upgradeLevel}
+        </span>
+      {/if}
+    </button>
+  </div>
 {/if}
 
 <style>

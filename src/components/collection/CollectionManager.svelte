@@ -17,8 +17,8 @@
   // File input ref
   let fileInput: HTMLInputElement;
 
-  // Get current collection stats
-  let currentPackCount = $derived(collection.get().packs.length);
+  // Get current collection stats (guard for SSR)
+  let currentPackCount = $derived(typeof window !== 'undefined' ? collection.get().packs.length : 0);
 
   /**
    * Export collection as JSON file

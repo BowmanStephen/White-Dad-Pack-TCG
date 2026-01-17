@@ -31,6 +31,7 @@
   let shareError: string | null = null;
   let lightboxElement: HTMLDivElement;
   let cardImageElement: HTMLDivElement;
+  let hasKeyListener = false;
 
   // Keyboard navigation
   function handleKeyDown(event: KeyboardEvent) {
@@ -98,11 +99,16 @@
 
   // Setup keyboard listener
   onMount(() => {
-    document.addEventListener('keydown', handleKeyDown);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', handleKeyDown);
+      hasKeyListener = true;
+    }
   });
 
   onDestroy(() => {
-    document.removeEventListener('keydown', handleKeyDown);
+    if (hasKeyListener && typeof document !== 'undefined') {
+      document.removeEventListener('keydown', handleKeyDown);
+    }
   });
 
   // Prevent body scroll when lightbox is open
