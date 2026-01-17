@@ -5,6 +5,7 @@ import type {
   AnalyticsSession,
   EventQueue,
 } from '@/types';
+import { safeJsonParse } from '@/lib/utils/safe-parse';
 
 // ============================================================================
 // DEFAULT CONFIGURATION
@@ -198,7 +199,9 @@ function persistEventsToStorage(events: AnyAnalyticsEvent[]): void {
   try {
     // Get existing events from storage
     const existing = localStorage.getItem('analytics_events');
-    const storedEvents: AnyAnalyticsEvent[] = existing ? JSON.parse(existing) : [];
+    const storedEvents: AnyAnalyticsEvent[] = existing 
+      ? safeJsonParse<AnyAnalyticsEvent[]>(existing, []) ?? []
+      : [];
 
     // Append new events
     const updatedEvents = [...storedEvents, ...events];
@@ -239,12 +242,8 @@ async function sendEventsToProviders(events: AnyAnalyticsEvent[]): Promise<void>
 export function getStoredEvents(): AnyAnalyticsEvent[] {
   if (typeof window === 'undefined') return [];
 
-  try {
-    const stored = localStorage.getItem('analytics_events');
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  const stored = localStorage.getItem('analytics_events');
+  return stored ? safeJsonParse<AnyAnalyticsEvent[]>(stored, []) ?? [] : [];
 }
 
 /**

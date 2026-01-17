@@ -7,6 +7,66 @@ import Footer from '../../components/landing/Footer.astro';
 const title = "DadDeck API - Developer Documentation";
 const description = "Official DadDeck API documentation. Build apps and integrations with our public API. Includes OpenAPI spec, code examples, and interactive explorer.";
 const image = "/api/og-image.png";
+
+// Code examples as strings to avoid JSX parsing issues
+const jsExample = `// Using the JavaScript SDK
+import { DadDeckAPI } from './dadddeck-js.js';
+
+const client = new DadDeckAPI({
+  apiKey: process.env.DADDECK_API_KEY
+});
+
+// List all rare cards
+const response = await client.cards.list({
+  rarity: 'rare',
+  pageSize: 50
+});
+
+console.log(response.data.cards);`;
+
+const pythonExample = `# Install: pip install requests
+from dadddeck_api import DadDeckAPI
+
+client = DadDeckAPI(api_key="your_api_key_here")
+
+# Generate a pack
+response = client.packs.generate(count=1, pack_type="standard")
+pack = response.data
+
+print(f"Pack ID: {pack['id']}")
+print(f"Cards: {len(pack['cards'])}")
+print(f"Best rarity: {pack['bestRarity']}")`;
+
+const curlExample = `curl "https://api.dadddeck.com/v1/cards" \\
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+curl -X POST "https://api.dadddeck.com/v1/packs/generate" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"count": 1, "packType": "standard"}'`;
+
+const requestBodyExample = `{
+  "packType": "standard",  // or "premium"
+  "count": 1,             // 1-10 packs
+  "design": "standard",   // optional
+  "series": 1             // optional
+}`;
+
+const responseFormatExample = `{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "requestId": "req_abc123",
+    "timestamp": "2026-01-17T12:00:00Z",
+    "version": "1.0.0",
+    "rateLimit": {
+      "limit": 10,
+      "remaining": 9,
+      "resetAt": "2026-01-17T12:01:00Z",
+      "tier": "free"
+    }
+  }
+}`;
 ---
 
 <BaseLayout title={title} description={description} image={image}>
@@ -149,21 +209,7 @@ const image = "/api/og-image.png";
         <div class="mb-8">
           <h3 class="text-lg font-bold text-gray-900 mb-3">JavaScript (Node.js/Browser)</h3>
           <div class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto">
-            <pre class="text-sm"><code>// Using the JavaScript SDK
-import { DadDeckAPI } from './dadddeck-js.js';
-
-const client = new DadDeckAPI({
-  apiKey: process.env.DADDECK_API_KEY
-});
-
-// List all rare cards
-const response = await client.cards.list({
-  rarity: 'rare',
-  pageSize: 50
-});
-
-console.log(response.data.cards);
-</code></pre>
+            <pre class="text-sm"><code set:text={jsExample}></code></pre>
           </div>
         </div>
 
@@ -171,18 +217,7 @@ console.log(response.data.cards);
         <div class="mb-8">
           <h3 class="text-lg font-bold text-gray-900 mb-3">Python</h3>
           <div class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto">
-            <pre class="text-sm"><code># Install: pip install requests
-from dadddeck_api import DadDeckAPI
-
-client = DadDeckAPI(api_key="your_api_key_here")
-
-# Generate a pack
-response = client.packs.generate(count=1, pack_type="standard")
-pack = response.data['packs'][0]
-
-print(f"Pulled {len(pack['cards'])} cards!")
-print(f"Best rarity: {pack['bestRarity']}")
-</code></pre>
+            <pre class="text-sm"><code set:text={pythonExample}></code></pre>
           </div>
         </div>
 
@@ -190,16 +225,7 @@ print(f"Best rarity: {pack['bestRarity']}")
         <div>
           <h3 class="text-lg font-bold text-gray-900 mb-3">cURL</h3>
           <div class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto">
-            <pre class="text-sm"><code># List cards
-curl "https://api.dadddeck.com/v1/cards" \
-  -H "Authorization: Bearer YOUR_API_KEY"
-
-# Generate a pack
-curl -X POST "https://api.dadddeck.com/v1/packs/generate" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"count": 1, "packType": "standard"}'
-</code></pre>
+            <pre class="text-sm"><code set:text={curlExample}></code></pre>
           </div>
         </div>
       </section>
@@ -240,12 +266,7 @@ curl -X POST "https://api.dadddeck.com/v1/packs/generate" \
             </p>
             <h4 class="font-bold text-gray-900 mb-2">Request Body</h4>
             <div class="bg-gray-100 rounded p-3 text-sm">
-              <code>{`{
-  "packType": "standard",  // or "premium"
-  "count": 1,             // 1-10 packs
-  "design": "standard",   // optional
-  "series": 1             // optional
-}`}</code>
+              <code set:text={requestBodyExample}></code>
             </div>
           </div>
 
@@ -253,7 +274,7 @@ curl -X POST "https://api.dadddeck.com/v1/packs/generate" \
           <div class="border border-gray-200 rounded-lg p-6">
             <div class="flex items-center gap-3 mb-4">
               <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">GET</span>
-              <code class="text-lg font-mono">/collections/{userId}</code>
+              <code class="text-lg font-mono">/collections/&#123;userId&#125;</code>
             </div>
             <p class="text-gray-600 mb-4">
               Retrieve a user's card collection (requires proper permissions).
@@ -300,21 +321,7 @@ curl -X POST "https://api.dadddeck.com/v1/packs/generate" \
         </p>
 
         <div class="bg-gray-100 rounded-lg p-4">
-          <pre class="text-sm"><code>{
-  "success": true,
-  "data": { ... },
-  "meta": {
-    "requestId": "req_abc123",
-    "timestamp": "2026-01-17T12:00:00Z",
-    "version": "1.0.0",
-    "rateLimit": {
-      "limit": 10,
-      "remaining": 9,
-      "resetAt": "2026-01-17T12:01:00Z",
-      "tier": "free"
-    }
-  }
-}</code></pre>
+          <pre class="text-sm"><code set:text={responseFormatExample}></code></pre>
         </div>
       </section>
 

@@ -45,7 +45,12 @@ bun install              # Install dependencies
 bun run dev              # Start dev server (localhost:4321)
 bun run build            # Build for production
 bun run preview          # Preview production build
-bun test                 # Run tests
+bun test                 # Run tests (watch mode)
+bun run test:run         # Run tests once
+bun run optimize:images  # Optimize images in public/
+bun run generate-sitemap # Generate sitemap.xml
+bun run discord-bot      # Run Discord bot
+bun run discord-bot:dev  # Run Discord bot in watch mode
 ```
 
 ---
@@ -78,11 +83,15 @@ bun test                 # Run tests
 │   │   └── BaseLayout.astro # Root layout with global styles
 │   ├── lib/                 # Business logic
 │   │   ├── cards/
-│   │   │   └── database.ts  # Card database & data access
+│   │   │   └── database.ts  # Card data access layer (wraps JSON)
 │   │   ├── pack/
-│   │   │   └── generator.ts # Pack generation logic
+│   │   │   └── generator.ts # Pack generation logic (512 lines)
+│   │   ├── security/
+│   │   │   └── pack-validator.ts # Anti-cheat validation
 │   │   └── utils/
 │   │       └── random.ts    # Random number utilities
+│   ├── data/                # Static data files
+│   │   └── cards.json       # Card database (50+ cards)
 │   ├── stores/              # Nanostores (state management)
 │   │   ├── pack.ts          # Pack state & operations
 │   │   └── ui.ts            # UI state (animations, routing)
@@ -91,11 +100,16 @@ bun test                 # Run tests
 │   └── pages/               # Astro routes
 │       └── index.astro      # Landing page
 ├── tests/                   # Test files (Vitest)
-├── astro.config.mjs         # Astro configuration
-├── tailwind.config.mjs      # Tailwind configuration
-├── tsconfig.json            # TypeScript configuration
-├── package.json             # Dependencies & scripts
-└── bun.lock                # Bun lockfile
+├── discord-bot/            # Discord bot integration
+├── scripts/                # Build utility scripts
+│   ├── optimize-images.mjs # Image optimization
+│   └── generate-sitemap.mjs # Sitemap generation
+├── astro.config.mjs        # Astro configuration + Vite optimization
+├── vitest.config.ts        # Vitest configuration with path aliases
+├── tailwind.config.mjs     # Tailwind configuration
+├── tsconfig.json           # TypeScript configuration (strict mode)
+├── package.json            # Dependencies & scripts
+└── bun.lock               # Bun lockfile
 ```
 
 ---
@@ -224,54 +238,63 @@ mythic:   40 particles, 3x intensity
 ## 🗄️ Data Layer
 
 ### Card Database Location
-**`src/lib/cards/database.ts`** - Contains all card data
+**`src/data/cards.json`** - Contains all card data (50+ cards)
+**`src/lib/cards/database.ts`** - Data access layer that loads and wraps the JSON
 
 ### Adding New Cards
-```typescript
-// In src/lib/cards/database.ts
-import { Card } from '@/types';
+1. **Add card to `src/data/cards.json`**: Follow the JSON structure with all required fields
+2. **Update database.ts** if needed: The data access layer in `src/lib/cards/database.ts` provides helper functions
 
-export const CARDS: Card[] = [
-  {
-    id: 'bbq_dad_001',
-    name: 'Grillmaster Gary',
-    subtitle: 'The Flame Keeper',
-    type: 'BBQ_DAD',
-    rarity: 'rare',
-    artwork: '/images/cards/bbq-dad-001.png',
-    stats: {
-      dadJoke: 75,
-      grillSkill: 95,
-      fixIt: 40,
-      napPower: 30,
-      remoteControl: 50,
-      thermostat: 60,
-      sockSandal: 45,
-      beerSnob: 70,
-    },
-    flavorText: '"Propane is just a suggestion."',
-    abilities: [{
-      name: 'Perfect Sear',
-      description: 'Flip a burger. If it lands rare, gain +10 Grill Skill.',
-    }],
-    series: 1,
-    cardNumber: 1,
-    totalInSeries: 50,
-    artist: 'AI Assistant',
-    holoVariant: 'reverse',
+**Card structure (JSON):**
+```json
+{
+  "id": "bbq_dad_001",
+  "name": "Grillmaster Gary",
+  "subtitle": "The Flame Keeper",
+  "type": "BBQ_DAD",
+  "rarity": "rare",
+  "artwork": "/images/cards/bbq-dad-001.png",
+  "stats": {
+    "dadJoke": 75,
+    "grillSkill": 95,
+    "fixIt": 40,
+    "napPower": 30,
+    "remoteControl": 50,
+    "thermostat": 60,
+    "sockSandal": 45,
+    "beerSnob": 70
   },
-  // ... more cards
-];
+  "flavorText": "Propane is just a suggestion.",
+  "abilities": [{
+    "name": "Perfect Sear",
+    "description": "Flip a burger. If it lands rare, gain +10 Grill Skill."
+  }],
+  "series": 1,
+  "cardNumber": 1,
+  "totalInSeries": 50,
+  "artist": "AI Assistant",
+  "holoVariant": "reverse"
+}
+```
+
+### Path Aliases (Import Shortcuts)
+Configured in both `tsconfig.json` and `vitest.config.ts`:
+```typescript
+import { Card } from '@/types';           // src/types/
+import { packStore } from '@/stores/pack'; // src/stores/pack
+import { generatePack } from '@lib/pack/generator'; // src/lib/pack/generator
 ```
 
 ### Pack Generation Logic
-**`src/lib/pack/generator.ts`** - Generates random packs
+**`src/lib/pack/generator.ts`** - Generates random packs (512 lines)
 
 **Key functions:**
 - `generatePack()` - Creates a new pack with rarity slots
 - `rollRarity(slot)` - Determines card rarity based on slot
 - `rollHolo()` - Determines if card gets holo variant
 - `selectCards(rarity)` - Randomly selects card from rarity pool
+
+**Seeded Randomness:** The generator supports seeded randomness for reproducible pack generation (useful for testing and events).
 
 ---
 
@@ -306,6 +329,12 @@ bun test                    # Watch mode
 bun run test:run            # Single run
 ```
 
+### Test Configuration
+**Vitest setup** (`vitest.config.ts`):
+- **Environment:** Node (for unit tests)
+- **Include pattern:** `tests/**/*.test.ts`
+- **Path aliases:** Same as tsconfig.json (`@/`, `@lib/`, `@stores/`, etc.)
+
 ### Test Structure
 ```
 tests/
@@ -313,8 +342,10 @@ tests/
 │   └── generator.test.ts   # Pack generation logic tests
 ├── card/
 │   └── database.test.ts    # Card data validation tests
-└── utils/
-    └── random.test.ts      # Random utility tests
+├── unit/
+│   ├── lib/security/pack-validator.test.ts  # Anti-cheat tests
+│   └── stores/collection.test.ts            # Store tests
+└── integration/            # End-to-end flow tests
 ```
 
 ### What to Test
@@ -322,14 +353,39 @@ tests/
 - **Card data** - Valid stats, types, required fields
 - **Random functions** - Distribution accuracy
 - **UI state** - State transitions work correctly
+- **Security** - Pack validation, anti-cheat measures
 
 ---
 
 ## 🚀 Deployment
 
+### Build Configuration
+**Astro + Vite setup** (`astro.config.mjs`):
+
+**Code Splitting Strategy:**
+- `vendor-html2canvas` - html2canvas library (largest dependency)
+- `vendor-svelte` - Svelte runtime and animations
+- `vendor-nanostores` - State management
+- `vendor` - Other node modules
+
+**Production Optimizations:**
+- **Inline critical CSS** for faster initial render
+- **Terser minification** with console.log removal
+- **ES2020 target** for modern browsers
+- **Image service** using Sharp (quality: 85)
+- **HTML compression** enabled
+- **Client prerender** experimental feature
+
+**Pre-build Hooks:**
+```bash
+# Runs automatically before 'bun run build'
+bun run optimize:images    # Optimize images in public/
+bun run generate-sitemap   # Generate sitemap.xml
+```
+
 ### Build for Production
 ```bash
-bun run build              # Outputs to ./dist/
+bun run build              # Outputs to ./dist/ (runs prebuild hooks)
 ```
 
 ### Preview Build
@@ -415,8 +471,10 @@ PUBLIC_ANALYTICS_ID=      # For tracking (GA, Plausible, etc.)
 
 ### Quick Reference Files
 - **`tailwind.config.mjs`** - Custom design tokens
-- **`astro.config.mjs`** - Integrations & build config
-- **`src/lib/cards/database.ts`** - All card data
+- **`astro.config.mjs`** - Integrations & build config (code splitting, terser)
+- **`vitest.config.ts`** - Test configuration with path aliases
+- **`src/data/cards.json`** - All card data (50+ cards)
+- **`src/lib/security/pack-validator.ts`** - Anti-cheat validation logic
 
 ---
 
@@ -454,10 +512,16 @@ bun run dev              # Start dev server (http://localhost:4321)
 # Building
 bun run build            # Build production site to ./dist/
 bun run preview          # Preview production build
+bun run optimize:images  # Optimize images in public/
+bun run generate-sitemap # Generate sitemap.xml
 
 # Testing
 bun test                 # Run tests in watch mode
 bun run test:run         # Run tests once
+
+# Discord Bot
+bun run discord-bot      # Run Discord bot
+bun run discord-bot:dev  # Run Discord bot in watch mode
 
 # Astro CLI
 bun astro add <package>  # Add Astro integration
@@ -501,6 +565,43 @@ bun astro check          # Type check Astro components
 - User accounts & cloud collections
 - Trading system between players
 - Enhanced deck building mini-game
+
+---
+
+## 🎯 Claude Skills for DadDeck Development
+
+### High-Priority Skills (Use First)
+
+| Skill | When to Use |
+|:------|:------------|
+| **`performance-analyst`** | Optimizing animations, hitting 60fps target on pack opening |
+| **`a11y-auditor`** | Accessibility review for pack opening flow, keyboard nav, screen readers |
+| **`code-quality`** | Validate TypeScript strict mode, pre-commit checks, linting |
+| **`frontend-design`** | Designing holo effects, premium visual polish, animations |
+| **`systematic-debugging`** | Complex state machine bugs in pack flow, state transitions |
+
+### Task-Specific Skills
+
+| Task | Skill to Use |
+|:-----|:------------|
+| Adding new cards | `/code-quality` → validate data structure, then `/documentation-engineer` |
+| Refactoring stores | `/architecture-advisor` → review Nanostores patterns |
+| Animation issues | `/performance-analyst` → profile, then `/frontend-design` → optimize |
+| Deployment | `/deployment-engineer` → Vercel optimization |
+| New features | `/test-driven-development` → TDD workflow |
+| State management | `/architecture-advisor` → review patterns, then `/systematic-debugging` if needed |
+
+### Auto-Activating Skills
+
+These trigger automatically on relevant files or keywords:
+- `react-best-practices` → `.svelte` / `.astro` files
+- `code-quality` → Keywords: "validate", "lint", "check"
+- `performance-analyst` → Keywords: "performance", "slow", "optimize"
+- `systematic-debugging` → Keywords: "bug", "error", "fail"
+
+### Manual Activation
+
+Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analyst`).
 
 ---
 

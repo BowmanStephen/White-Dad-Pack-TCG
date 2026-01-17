@@ -1,6 +1,7 @@
 import { persistentAtom } from '@nanostores/persistent';
 import type { Collection, CollectionState, CollectionStats, Pack, Rarity } from '../types';
 import { trackEvent } from './analytics';
+import { safeJsonParse } from '../lib/utils/safe-parse';
 
 // Custom encoder for Collection type (handles Date serialization)
 const collectionEncoder = {
@@ -14,10 +15,32 @@ const collectionEncoder = {
     });
   },
   decode(str: string): Collection {
-    const data = JSON.parse(str);
+    const data = safeJsonParse<Collection>(str);
+    if (!data) {
+      // Return empty collection if parsing fails
+      return {
+        packs: [],
+        cards: {},
+        stats: {
+          totalPacksOpened: 0,
+          totalCardsCollected: 0,
+          uniqueCardsOwned: 0,
+          completionPercentage: 0,
+          rarities: {},
+        },
+        metadata: {
+          created: new Date(),
+          lastOpenedAt: new Date(),
+        },
+      };
+    }
+
     // Convert ISO strings back to Date objects
     if (data.metadata?.lastOpenedAt) {
       data.metadata.lastOpenedAt = new Date(data.metadata.lastOpenedAt);
+    }
+    if (data.metadata?.created) {
+      data.metadata.created = new Date(data.metadata.created);
     }
     // Convert openedAt dates in packs
     if (data.packs) {
@@ -253,26 +276,23 @@ export function exportCollection(): string {
 export function importCollection(
   jsonData: string
 ): { success: boolean; error?: string; imported?: number } {
-  try {
-    const data = JSON.parse(jsonData) as Collection;
-
-    // Validate basic structure
-    if (!data.packs || !Array.isArray(data.packs)) {
-      return { success: false, error: 'Invalid collection data: missing packs array' };
-    }
-
-    if (!data.metadata || typeof data.metadata !== 'object') {
-      return { success: false, error: 'Invalid collection data: missing metadata' };
-    }
-
-    collection.set(data);
-    return { success: true, imported: data.packs.length };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to import collection',
-    };
+  const data = safeJsonParse<Collection>(jsonData);
+  
+  if (!data) {
+    return { success: false, error: 'Failed to parse collection JSON' };
   }
+
+  // Validate basic structure
+  if (!data.packs || !Array.isArray(data.packs)) {
+    return { success: false, error: 'Invalid collection data: missing packs array' };
+  }
+
+  if (!data.metadata || typeof data.metadata !== 'object') {
+    return { success: false, error: 'Invalid collection data: missing metadata' };
+  }
+
+  collection.set(data);
+  return { success: true, imported: data.packs.length };
 }
 
 // Track collection view event
