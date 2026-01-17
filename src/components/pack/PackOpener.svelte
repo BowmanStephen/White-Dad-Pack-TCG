@@ -37,39 +37,49 @@
   let packStats = $state<any>(null);
   let packError = $state<AppError | null>(null);
   let storageError = $state<AppError | null>(null);
+  let isBrowser = $state(false);
+
+  // Start pack opening on mount (ensures we're in browser environment)
+  onMount(() => {
+    isBrowser = true;
+    openNewPack();
+  });
 
   // Auto-sync Nanostores to Svelte 5 state using $effect
+  // Guarded to only run in browser environment for SSR safety
   $effect(() => {
+    if (!isBrowser) return;
     currentPack = packStore.get();
   });
 
   $effect(() => {
+    if (!isBrowser) return;
     packState = packStateStore.get();
   });
 
   $effect(() => {
+    if (!isBrowser) return;
     currentCardIndex = currentCardIndexStore.get();
   });
 
   $effect(() => {
+    if (!isBrowser) return;
     revealedCards = revealedCardsStore.get();
   });
 
   $effect(() => {
+    if (!isBrowser) return;
     packStats = packStatsStore.get();
   });
 
   $effect(() => {
+    if (!isBrowser) return;
     packError = packErrorStore.get() as AppError | null;
   });
 
   $effect(() => {
+    if (!isBrowser) return;
     storageError = storageErrorStore.get() as AppError | null;
-  });
-
-  // Start pack opening on mount
-  onMount(() => {
-    openNewPack();
   });
 
   // Actions (reactivity is now automatic via $effect)
