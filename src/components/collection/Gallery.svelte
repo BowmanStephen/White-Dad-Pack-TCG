@@ -5,6 +5,8 @@
   import {
     getUniqueCardsWithCounts,
     sortCardsByRarityAndName,
+    sortCardsByOption,
+    getCardObtainedDates,
     filterCardsBySearch,
     filterCardsByRarity,
     filterCardsByHolo,
@@ -12,9 +14,9 @@
     getPaginatedCards,
     formatCardCount,
   } from '../../lib/collection/utils';
-  import type { CollectionDisplayCard, Rarity, DadType } from '../../types';
+  import type { CollectionDisplayCard, Rarity, DadType, SortOption } from '../../types';
   import Card from '../card/Card.svelte';
-  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
+  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG } from '../../types';
 
   // State
   let allCards: CollectionDisplayCard[] = [];
@@ -31,6 +33,11 @@
   let holoOnly = false;
   let selectedTypes = new Set<DadType>();
   let showTypeFilter = false;
+
+  // Sort
+  let selectedSort: SortOption = 'rarity_desc';
+  let showSortDropdown = false;
+  let cardObtainedDates = new Map<string, Date>();
 
   // URL query param helpers
   function getQueryParam(param: string): string | null {
@@ -80,6 +87,11 @@
       selectedTypes = new Set(validTypes);
       showTypeFilter = true;
     }
+
+    const sortParam = getQueryParam('sort');
+    if (sortParam && Object.keys(SORT_OPTION_CONFIG).includes(sortParam)) {
+      selectedSort = sortParam as SortOption;
+    }
   }
 
   // Stats
@@ -93,7 +105,8 @@
   function loadCards() {
     const currentCollection = collection.get();
     const uniqueCards = getUniqueCardsWithCounts(currentCollection.packs);
-    allCards = sortCardsByRarityAndName(uniqueCards);
+    cardObtainedDates = getCardObtainedDates(currentCollection.packs);
+    allCards = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
     applyFilters();
   }
 
@@ -128,7 +141,7 @@
 
     const currentCollection = collection.get();
     const uniqueCards = getUniqueCardsWithCounts(currentCollection.packs);
-    let filtered = sortCardsByRarityAndName(uniqueCards);
+    let filtered = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
 
     // Apply all filters
     filtered = filterCardsByRarity(filtered, selectedRarity);
@@ -211,6 +224,27 @@
     resetPagination();
   }
 
+  // Handle sort selection
+  function handleSortChange(sortOption: SortOption) {
+    selectedSort = sortOption;
+    setQueryParam('sort', sortOption);
+    showSortDropdown = false;
+    resetPagination();
+  }
+
+  // Toggle sort dropdown
+  function toggleSortDropdown() {
+    showSortDropdown = !showSortDropdown;
+  }
+
+  // Close sort dropdown when clicking outside
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.sort-dropdown-container')) {
+      showSortDropdown = false;
+    }
+  }
+
   // Get all dad types as an array for iteration
   const dadTypes: DadType[] = Object.keys(DAD_TYPE_NAMES) as DadType[];
 
@@ -234,6 +268,9 @@
       }
     }
 
+    // Add click outside listener for dropdowns
+    document.addEventListener('click', handleClickOutside);
+
     return () => {
       if (observer) {
         observer.disconnect();
@@ -241,6 +278,7 @@
       if (debounceTimeout) {
         clearTimeout(debounceTimeout);
       }
+      document.removeEventListener('click', handleClickOutside);
     };
   });
 
@@ -304,6 +342,34 @@
     >
       ✨ Holo Only
     </button>
+
+    <!-- Sort Dropdown -->
+    <div class="sort-dropdown-container">
+      <button
+        class="sort-button"
+        class:active={showSortDropdown}
+        on:click={toggleSortDropdown}
+      >
+        <span class="sort-icon">📶</span>
+        <span class="sort-label">{SORT_OPTION_CONFIG[selectedSort].name}</span>
+        <span class="sort-arrow" class:rotated={showSortDropdown}>▼</span>
+      </button>
+      {#if showSortDropdown}
+        <div class="sort-dropdown-menu">
+          {#each Object.entries(SORT_OPTION_CONFIG) as [key, config]}
+            {@const option = key as SortOption}
+            <button
+              class="sort-option"
+              class:selected={selectedSort === option}
+              on:click={() => handleSortChange(option)}
+            >
+              <span class="sort-option-name">{config.name}</span>
+              <span class="sort-option-desc">{config.description}</span>
+            </button>
+          {/each}
+        </div>
+      {/if}
+    </div>
 
     <!-- Type Filter Toggle -->
     <button
@@ -392,7 +458,7 @@
 
   <!-- Card Grid -->
   {#if displayedCards.length > 0}
-    <div class="card-grid">
+    <div class="card-grid" class:animate-sort={true}>
       {#each displayedCards as card (card.id)}
         <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1}>
           <Card
@@ -577,6 +643,127 @@
     border-color: #ec4899;
     color: white;
     box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+  }
+
+  /* Sort Dropdown */
+  .sort-dropdown-container {
+    position: relative;
+  }
+
+  .sort-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sort-button:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+    border-color: rgba(251, 191, 36, 0.5);
+  }
+
+  .sort-button.active {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: #fbbf24;
+    color: #fbbf24;
+  }
+
+  .sort-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .sort-label {
+    flex: 1;
+    text-align: left;
+  }
+
+  .sort-arrow {
+    font-size: 0.6rem;
+    transition: transform 0.2s;
+  }
+
+  .sort-arrow.rotated {
+    transform: rotate(180deg);
+  }
+
+  .sort-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 200px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .sort-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+    color: #94a3b8;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sort-option:last-child {
+    border-bottom: none;
+  }
+
+  .sort-option:hover {
+    background: rgba(51, 65, 85, 0.5);
+    color: white;
+  }
+
+  .sort-option.selected {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+  }
+
+  .sort-option-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .sort-option-desc {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  .sort-option.selected .sort-option-desc {
+    opacity: 1;
   }
 
   .type-filter-toggle {
@@ -839,6 +1026,22 @@
     z-index: 10;
     min-width: 2rem;
     text-align: center;
+  }
+
+  /* Card reordering animation */
+  .card-grid.animate-sort .card-wrapper {
+    animation: cardReorder 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes cardReorder {
+    0% {
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 
   /* Load More Trigger */

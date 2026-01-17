@@ -167,6 +167,16 @@ export const RARITY_ORDER: Record<Rarity, number> = {
   mythic: 5,
 };
 
+// Sort options for collection
+export type SortOption = 'rarity_desc' | 'name_asc' | 'date_obtained_desc';
+
+// Sort option display names and configurations
+export const SORT_OPTION_CONFIG: Record<SortOption, { name: string; description: string }> = {
+  rarity_desc: { name: 'Rarity', description: 'Rarest first' },
+  name_asc: { name: 'Name', description: 'A to Z' },
+  date_obtained_desc: { name: 'Recently Obtained', description: 'Newest first' },
+};
+
 // Rarity configurations map
 export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
   common: {

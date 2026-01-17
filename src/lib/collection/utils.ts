@@ -1,4 +1,4 @@
-import type { Pack, PackCard, Rarity, CollectionDisplayCard, DadType } from '../../types';
+import type { Pack, Rarity, CollectionDisplayCard, DadType, SortOption } from '../../types';
 import { RARITY_ORDER } from '../../types';
 
 /**
@@ -152,4 +152,83 @@ export function getCardsByRarity(cards: CollectionDisplayCard[]): Record<Rarity,
   }
 
   return counts;
+}
+
+/**
+ * Sort cards by name (ascending A-Z)
+ */
+export function sortCardsByName(cards: CollectionDisplayCard[]): CollectionDisplayCard[] {
+  return [...cards].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Get the date a card was first obtained from packs
+ * Returns a Map of card ID to first obtained date
+ */
+export function getCardObtainedDates(packs: Pack[]): Map<string, Date> {
+  const obtainedDates = new Map<string, Date>();
+
+  // Sort packs by openedAt date (oldest first) to find first occurrence
+  const sortedPacks = [...packs].sort((a, b) =>
+    a.openedAt.getTime() - b.openedAt.getTime()
+  );
+
+  for (const pack of sortedPacks) {
+    for (const card of pack.cards) {
+      if (!obtainedDates.has(card.id)) {
+        obtainedDates.set(card.id, pack.openedAt);
+      }
+    }
+  }
+
+  return obtainedDates;
+}
+
+/**
+ * Sort cards by date obtained (descending - newest first)
+ * Cards obtained more recently appear first
+ */
+export function sortCardsByDateObtained(
+  cards: CollectionDisplayCard[],
+  obtainedDates: Map<string, Date>
+): CollectionDisplayCard[] {
+  return [...cards].sort((a, b) => {
+    const dateA = obtainedDates.get(a.id);
+    const dateB = obtainedDates.get(b.id);
+
+    // Cards without dates go last
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+
+    // Newest first (descending)
+    return dateB.getTime() - dateA.getTime();
+  });
+}
+
+/**
+ * Sort cards by the specified option
+ * - rarity_desc: Rarity descending (mythic first), then name ascending
+ * - name_asc: Name ascending (A-Z)
+ * - date_obtained_desc: Date obtained descending (newest first)
+ */
+export function sortCardsByOption(
+  cards: CollectionDisplayCard[],
+  option: SortOption,
+  obtainedDates?: Map<string, Date>
+): CollectionDisplayCard[] {
+  switch (option) {
+    case 'rarity_desc':
+      return sortCardsByRarityAndName(cards);
+    case 'name_asc':
+      return sortCardsByName(cards);
+    case 'date_obtained_desc':
+      if (!obtainedDates) {
+        // Fallback to rarity sort if no dates provided
+        return sortCardsByRarityAndName(cards);
+      }
+      return sortCardsByDateObtained(cards, obtainedDates);
+    default:
+      return sortCardsByRarityAndName(cards);
+  }
 }
