@@ -3,35 +3,37 @@ import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
 
 /**
- * Default pack configuration based on PRD specifications
+ * Default pack configuration based on US036 rarity distribution rules
+ *
+ * Slot breakdown:
+ * - Slot 1-3: Common (100%)
+ * - Slot 4-5: Uncommon or better (74% uncommon, 20% rare, 5% epic, 1% legendary+)
+ * - Slot 6: Rare or better (50% rare, 10% epic, 2% legendary+, 0.1% mythic)
+ * - Holo chance: 1 in 6 cards (~16.67%)
  */
 export const DEFAULT_PACK_CONFIG: PackConfig = {
-  cardsPerPack: 7,
+  cardsPerPack: 6,
   raritySlots: [
     { slot: 1, guaranteedRarity: 'common' },
     { slot: 2, guaranteedRarity: 'common' },
     { slot: 3, guaranteedRarity: 'common' },
-    { slot: 4, guaranteedRarity: 'uncommon' },
-    { slot: 5, guaranteedRarity: 'uncommon' },
-    { 
-      slot: 6, 
-      rarityPool: true, 
-      probability: { rare: 0.6, epic: 0.3, legendary: 0.1 }
+    {
+      slot: 4,
+      rarityPool: true,
+      probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 }
     },
-    { 
-      slot: 7, 
-      rarityPool: true, 
-      probability: { 
-        common: 0.35, 
-        uncommon: 0.30, 
-        rare: 0.20, 
-        epic: 0.10, 
-        legendary: 0.04,
-        mythic: 0.01 
-      }
+    {
+      slot: 5,
+      rarityPool: true,
+      probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 }
+    },
+    {
+      slot: 6,
+      rarityPool: true,
+      probability: { rare: 0.879, epic: 0.10, legendary: 0.0199, mythic: 0.001 }
     },
   ],
-  holoChance: 0.10, // 10% chance for any card to be holographic
+  holoChance: 1 / 6, // ~16.67% chance for any card to be holographic
 };
 
 /**
