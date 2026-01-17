@@ -86,3 +86,39 @@ tate machine idle state implementation","status":"completed","activeForm":"Verif
 {"type":"assistant","message":{"id":"msg_202601171546281be3ce63fedb4ad9","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 10 - US010: Pack State Machine - Generating State
+*2026-01-17T07:48:55.642Z (144s)*
+
+**Status:** Completed
+
+---
+## ✓ Iteration 11 - US011: Pack State Machine - Pack Animate State
+*2026-01-17T07:51:01.869Z (125s)*
+
+**Status:** Completed
+
+**Notes:**
+The pack_animate state was implemented in iteration 6 (US006) as part of the premium pack tear animation feature. The state machine design follows a clear linear progression, which makes the flow predictable and easier to debug. The 1.8s duration is intentional - it's long enough to feel premium but short enough to not frustrate users wanting to see their cards.
+
+---
+
+## ✓ Iteration 12 - US012: Pack State Machine - Cards Ready State
+*2026-01-17T07:52:15.000Z (30s)*
+
+**Status:** Completed
+
+**Notes:**
+The cards_ready state was already fully implemented in the codebase. Verification against acceptance criteria:
+
+✅ State transitions to 'cards_ready' after pack animation - `completePackAnimation()` in pack.ts:97-99
+✅ Cards generated but not yet displayed - Pack exists with all cards, `isRevealed: false` by default
+✅ Reveal phase begins automatically - `CardRevealer.svelte` uses `onMount` to trigger `startAutoRevealSequence()`
+✅ State transitions to 'revealing' - `revealCard()` in pack.ts:115 sets state to 'revealing'
+
+`★ Insight ─────────────────────────────────────`
+The cards_ready state serves as a brief "holding pattern" between pack animation and card reveal. It's the moment when the system knows cards are loaded but hasn't started revealing them yet. The auto-reveal begins automatically via Svelte's onMount hook, but users can cancel at any time by interacting (click, tap, keyboard).
+
+State machine flow: `idle` → `generating` → `pack_animate` → `cards_ready` → `revealing` → `results`
+`─────────────────────────────────────────────────`
+
+---
