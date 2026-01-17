@@ -122,6 +122,30 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
+<!-- Live region for screen reader announcements -->
+<div aria-live="polite" aria-atomic="true" class="sr-only" id="pack-announcer" role="status">
+  {#if packState === 'generating'}
+    Generating your pack. Please wait.
+  {:else if packState === 'pack_animate'}
+    Opening pack. Get ready for your cards!
+  {:else if packState === 'cards_ready'}
+    Pack opened! {currentPack?.cards.length || 0} cards ready to reveal.
+  {:else if packState === 'revealing'}
+    Revealing card {currentCardIndex + 1} of {currentPack?.cards.length || 0}.
+  {:else if packState === 'results'}
+    All cards revealed! View your results.
+  {:else if packState === 'idle'}
+    Ready to open a pack.
+  {/if}
+</div>
+
+<!-- Error announcement (assertive for immediate attention) -->
+{#if packError}
+  <div aria-live="assertive" aria-atomic="true" class="sr-only" role="alert" id="error-announcer">
+    Error: {packError}
+  </div>
+{/if}
+
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
   {#if packState === 'idle'}
     <!-- Idle state - waiting to open -->

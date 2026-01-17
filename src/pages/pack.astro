@@ -7,7 +7,7 @@ import Navigation from '../components/common/Navigation.svelte';
 <BaseLayout title="Open Pack - DadDeck">
   <Navigation client:load />
 
-  <main id="main-content" class="pt-20 pb-8 min-h-screen" tabindex="-1">
+  <main id="main-content" class="pt-20 pb-8 min-h-screen" tabindex="-1" role="main" aria-label="Pack opening area">
     <PackOpener client:load />
   </main>
 </BaseLayout>

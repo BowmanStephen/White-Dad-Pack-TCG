@@ -3,7 +3,7 @@ import Button from '../common/Button.astro';
 import PackPreview from './PackPreview.astro';
 ---
 
-<section class="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
+<section aria-labelledby="hero-heading" class="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
   <!-- Background effects -->
   <div class="absolute inset-0 overflow-hidden">
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
@@ -14,7 +14,7 @@ import PackPreview from './PackPreview.astro';
     <div class="grid lg:grid-cols-2 gap-12 items-center">
       <!-- Text content -->
       <div class="text-center lg:text-left">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+        <h1 id="hero-heading" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
           <span class="text-amber-400">Collect Every Dad</span>
           <br />
           <span class="text-white">in the Cul-de-sac</span>

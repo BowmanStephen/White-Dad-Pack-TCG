@@ -405,12 +405,13 @@
         class:opacity-50={isGeneratingImage}
         class:cursor-not-allowed={isGeneratingImage}
         style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); color: white; box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
+        aria-label="Share {card.name} card"
       >
         {#if isGeneratingImage}
-          <span class="animate-spin">⟳</span>
+          <span class="animate-spin" aria-hidden="true">⟳</span>
           <span>Generating...</span>
         {:else}
-          <span>📤</span>
+          <span aria-hidden="true">📤</span>
           <span>Share</span>
         {/if}
       </button>
@@ -422,12 +423,13 @@
       class:opacity-50={isGeneratingImage}
       class:cursor-not-allowed={isGeneratingImage}
       style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); color: white; box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
+      aria-label="Download {card.name} card"
     >
       {#if isGeneratingImage}
-        <span class="animate-spin">⟳</span>
+        <span class="animate-spin" aria-hidden="true">⟳</span>
         <span>Generating...</span>
       {:else}
-        <span>💾</span>
+        <span aria-hidden="true">💾</span>
         <span>Download</span>
       {/if}
     </button>

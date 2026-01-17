@@ -61,6 +61,7 @@
   class="nav-header"
   class:scrolled={false}
   on:keydown={handleKeydown}
+  role="banner"
 >
   <div class="nav-container">
     <!-- Logo -->
@@ -70,7 +71,7 @@
     </a>
 
     <!-- Desktop Navigation -->
-    <nav class="desktop-nav">
+    <nav class="desktop-nav" role="navigation" aria-label="Main navigation">
       {#each links as link}
         <a
           href={link.href}
@@ -101,6 +102,8 @@
   <nav
     class="mobile-nav"
     class:open={isMenuOpen}
+    role="navigation"
+    aria-label="Mobile navigation"
   >
     <div class="mobile-nav-inner">
       {#each links as link}
