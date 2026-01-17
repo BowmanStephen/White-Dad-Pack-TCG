@@ -1,10 +1,12 @@
 ---
+import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
+
 interface Props {
   title?: string;
   description?: string;
 }
 
-const { 
+const {
   title = "DadDeck - The Ultimate White Dad Trading Card Simulator",
   description = "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining."
 } = Astro.props;
@@ -30,10 +32,13 @@ const {
     
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
-    
+
     <!-- Preload critical fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Performance Monitoring (dev only) -->
+    <PerformanceMonitor />
   </head>
   <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased">
     <slot />

@@ -1,0 +1,122 @@
+---
+/**
+ * Performance Monitor Component
+ *
+ * Tracks Core Web Vitals and reports performance metrics.
+ * Only active in development mode or when enabled via query param.
+ */
+const isDev = import.meta.env.DEV;
+const isEnabled = isDev || new URLSearchParams(Astro.url.search).get('perf') === 'true';
+---
+
+{isEnabled && (
+  <script is:inline>
+    // Performance monitoring script (client-side only)
+    (function() {
+      if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+
+      const metrics = {};
+      const THRESHOLDS = {
+        LCP: { good: 2500, poor: 4000 },
+        FID: { good: 100, poor: 300 },
+        CLS: { good: 0.1, poor: 0.25 },
+        FCP: { good: 1800, poor: 3000 },
+        TTFB: { good: 800, poor: 1800 },
+      };
+
+      // Track LCP (Largest Contentful Paint)
+      try {
+        const lcpObserver = new PerformanceObserver(function(list) {
+          const entries = list.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          metrics.LCP = lastEntry.renderTime || lastEntry.loadTime;
+          console.log('[Perf] LCP:', metrics.LCP, 'ms');
+        });
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+      } catch (e) {
+        console.warn('[Perf] LCP observer not supported');
+      }
+
+      // Track FID (First Input Delay)
+      try {
+        const fidObserver = new PerformanceObserver(function(list) {
+          const entries = list.getEntries();
+          for (var i = 0; i < entries.length; i++) {
+            const entry = entries[i];
+            metrics.FID = entry.processingStart - entry.startTime;
+            console.log('[Perf] FID:', metrics.FID, 'ms');
+          }
+        });
+        fidObserver.observe({ entryTypes: ['first-input'] });
+      } catch (e) {
+        console.warn('[Perf] FID observer not supported');
+      }
+
+      // Track CLS (Cumulative Layout Shift)
+      var clsValue = 0;
+      try {
+        const clsObserver = new PerformanceObserver(function(list) {
+          const entries = list.getEntries();
+          for (var i = 0; i < entries.length; i++) {
+            const entry = entries[i];
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value;
+              metrics.CLS = clsValue;
+              console.log('[Perf] CLS:', clsValue);
+            }
+          }
+        });
+        clsObserver.observe({ entryTypes: ['layout-shift'] });
+      } catch (e) {
+        console.warn('[Perf] CLS observer not supported');
+      }
+
+      // Track FCP (First Contentful Paint)
+      try {
+        const fcpObserver = new PerformanceObserver(function(list) {
+          const entries = list.getEntries();
+          for (var i = 0; i < entries.length; i++) {
+            const entry = entries[i];
+            if (entry.name === 'first-contentful-paint') {
+              metrics.FCP = entry.startTime;
+              console.log('[Perf] FCP:', metrics.FCP, 'ms');
+            }
+          }
+        });
+        fcpObserver.observe({ entryTypes: ['paint'] });
+      } catch (e) {
+        console.warn('[Perf] FCP observer not supported');
+      }
+
+      // Track TTFB and report all metrics
+      window.addEventListener('load', function() {
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (navigation) {
+          metrics.TTFB = navigation.responseStart;
+          console.log('[Perf] TTFB:', metrics.TTFB, 'ms');
+
+          // Log all metrics after page load
+          setTimeout(function() {
+            console.table(metrics);
+            console.log('[Perf] All Core Web Vitals collected:', metrics);
+
+            console.group('[Perf] Performance Assessment');
+            for (const key in metrics) {
+              const value = metrics[key];
+              const threshold = THRESHOLDS[key];
+              if (threshold) {
+                var rating = 'good';
+                if (value > threshold.poor) rating = 'poor';
+                else if (value > threshold.good) rating = 'needs-improvement';
+
+                const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
+                console.log(emoji + ' ' + key + ': ' + Math.round(value) + ' (' + rating + ')');
+              }
+            }
+            console.groupEnd();
+          }, 1000);
+        }
+      });
+    })();
+  </script>
+)}
