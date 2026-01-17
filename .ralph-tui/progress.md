@@ -738,3 +738,22 @@ indicators"},{"content":"Implement hover delay and mobile tap-and-hold","status"
 {"type":"assistant","message":{"id":"msg_20260117214311face02870ffb4cbc","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
 
 ---
+## ✓ Iteration 76 - US076: Batch Actions - Open Multiple Packs
+*2026-01-17T13:52:15.078Z (535s)*
+
+**Status:** Completed
+
+**Notes:**
+ating BatchReview component"},{"content":"Run typecheck to verify types","status":"completed","activeForm":"Running typecheck"},{"content":"Run tests and verify functionality","status":"completed","activeForm":"Running tests"},{"content":"Commit changes with descriptive message","status":"completed","activeForm":"Committing changes"}]}}
+{"type":"assistant","message":{"id":"msg_202601172152107ee42c6fd9614741","type":"message","role":"assistant","model":"glm-4.7","content":[{"type":"text","text":"
+
+---
+## ✓ Iteration 77 - US077: Card Search - Advanced Filters
+*2026-01-17T14:05:43.113Z (807s)*
+
+**Status:** Completed
+
+**Notes:**
+ing powerful queries like \"high Grill Skill AND high Fix-It\" for tanky cards\n- **Presets as starting points**: Each saved search demonstrates a different aspect of the filtering system - some use stat ranges, some use type + stat combos, some use rarity + holo variants\n- **Holo variant vs. legacy toggle**: Maintained backward compatibility with the existing \"Holo Only\" toggle while adding the more powerful multi-select variant filter\n`─────────────────────────────────────────────────`\n\n
+
+---
