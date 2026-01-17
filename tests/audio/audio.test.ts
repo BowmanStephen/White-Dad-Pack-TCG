@@ -271,11 +271,13 @@ describe('Audio Store', () => {
 
       const config = getAudioConfig();
 
-      expect(config).toEqual({
+      expect(config).toMatchObject({
         muted: false,
         masterVolume: 0.7,
-        cacheSize: expect.any(Number),
       });
+      expect(config.cacheSize).toEqual(expect.any(Number));
+      expect(config.musicVolume).toEqual(expect.any(Number));
+      expect(config.sfxVolume).toEqual(expect.any(Number));
     });
   });
 

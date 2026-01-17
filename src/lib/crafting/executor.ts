@@ -255,3 +255,42 @@ export function getFailureReturnText(recipe: CraftingRecipe): string {
   const returnCount = Math.ceil(recipe.inputCount * recipe.failReturnRate);
   return `On failure: ${returnCount} of ${recipe.inputCount} cards returned (${returnPercent}%)`;
 }
+
+/**
+ * Calculate crafting cost for a recipe
+ *
+ * Cost is based on:
+ * - Base cost per card
+ * - Input rarity multiplier (rarer inputs = higher cost)
+ * - Output rarity multiplier (rarer outputs = higher cost)
+ *
+ * @param recipe - The recipe to calculate cost for
+ * @returns Cost in crafting currency (0 for zero-cost recipes)
+ */
+export function calculateCraftingCost(recipe: CraftingRecipe): number {
+  // Base cost per card in the recipe
+  const BASE_COST_PER_CARD = 10;
+
+  // Rarity multipliers (higher rarity = higher multiplier)
+  const RARITY_MULTIPLIERS: Record<Rarity, number> = {
+    common: 1.0,
+    uncommon: 1.5,
+    rare: 2.0,
+    epic: 3.0,
+    legendary: 5.0,
+    mythic: 10.0,
+  };
+
+  // Get multipliers for input and output rarities
+  const inputMultiplier = RARITY_MULTIPLIERS[recipe.inputRarity];
+  const outputMultiplier = RARITY_MULTIPLIERS[recipe.outputRarity];
+
+  // Calculate base cost from input cards
+  const baseCost = recipe.inputCount * BASE_COST_PER_CARD * inputMultiplier;
+
+  // Apply output rarity multiplier
+  const totalCost = baseCost * outputMultiplier;
+
+  // Handle zero-cost recipes (round to 2 decimal places)
+  return Math.round(totalCost * 100) / 100;
+}

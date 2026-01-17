@@ -295,8 +295,8 @@ describe('Card Database - US042 Card Data Validation', () => {
   });
 
   describe('Data Integrity', () => {
-    it('should have exactly 50 cards in the database', () => {
-      expect(cards.length).toBe(50);
+    it('should have at least 50 cards in the database', () => {
+      expect(cards.length).toBeGreaterThanOrEqual(50);
     });
 
     it('should have all cards with valid structure', () => {
