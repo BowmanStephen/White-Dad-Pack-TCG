@@ -13,8 +13,9 @@
     getPaginatedCards,
     formatCardCount,
   } from '../../lib/collection/utils';
-  import type { CollectionDisplayCard, Rarity, DadType, SortOption } from '../../types';
+  import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard } from '../../types';
   import Card from '../card/Card.svelte';
+  import CardComparison from '../card/CardComparison.svelte';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG } from '../../types';
 
   // State
@@ -37,6 +38,10 @@
   let selectedSort: SortOption = 'rarity_desc';
   let showSortDropdown = false;
   let cardObtainedDates = new Map<string, Date>();
+
+  // Card comparison state
+  let selectedForCompare: PackCard[] = [];
+  let showComparison = false;
 
   // URL query param helpers
   function getQueryParam(param: string): string | null {
@@ -244,6 +249,67 @@
   // Get all dad types as an array for iteration
   const dadTypes: DadType[] = Object.keys(DAD_TYPE_NAMES) as DadType[];
 
+  // ============================================================================
+  // CARD COMPARISON FUNCTIONS
+  // ============================================================================
+
+  /**
+   * Toggle card selection for comparison
+   * @param card - The card to select/deselect
+   */
+  function toggleCardSelection(card: PackCard) {
+    const index = selectedForCompare.findIndex(c => c.id === card.id);
+
+    if (index === -1) {
+      // Card not selected, add it (max 2 cards)
+      if (selectedForCompare.length < 2) {
+        selectedForCompare = [...selectedForCompare, card];
+
+        // If we now have 2 cards, show comparison
+        if (selectedForCompare.length === 2) {
+          showComparison = true;
+        }
+      } else {
+        // Already 2 cards selected, replace first selection
+        selectedForCompare = [selectedForCompare[1], card];
+        showComparison = true;
+      }
+    } else {
+      // Card already selected, deselect it
+      selectedForCompare = selectedForCompare.filter(c => c.id !== card.id);
+      showComparison = false;
+    }
+  }
+
+  /**
+   * Check if a card is currently selected for comparison
+   * @param card - The card to check
+   */
+  function isCardSelected(card: PackCard): boolean {
+    return selectedForCompare.some(c => c.id === card.id);
+  }
+
+  /**
+   * Clear all selected cards
+   */
+  function clearComparison() {
+    selectedForCompare = [];
+    showComparison = false;
+  }
+
+  /**
+   * Get selection badge number (1 or 2) for display
+   * @param card - The card to check
+   */
+  function getSelectionNumber(card: PackCard): number | null {
+    const index = selectedForCompare.findIndex(c => c.id === card.id);
+    return index === -1 ? null : index + 1;
+  }
+
+  // Derive comparison cards from selections
+  const compareCard1 = $derived(selectedForCompare[0] || null);
+  const compareCard2 = $derived(selectedForCompare[1] || null);
+
   // Setup intersection observer for infinite scroll
   onMount(() => {
     initializeFromURL();
@@ -428,7 +494,9 @@
   {#if displayedCards.length > 0}
     <div class="card-grid" class:animate-sort={true}>
       {#each displayedCards as card (card.id)}
-        <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1}>
+        {@const isSelected = isCardSelected(card)}
+        {@const selectionNum = getSelectionNumber(card)}
+        <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected}>
           <Card
             {card}
             size="md"
@@ -442,6 +510,21 @@
               {formatCardCount(card.duplicateCount)}
             </div>
           {/if}
+          <!-- Compare Button (appears on hover) -->
+          <button
+            class="compare-badge"
+            class:selected={isSelected}
+            on:click|stopPropagation={() => toggleCardSelection(card)}
+            aria-label="Select for comparison"
+            title="Select for comparison"
+          >
+            {#if isSelected}
+              <span class="compare-number">{selectionNum}</span>
+              <span class="compare-icon">✓</span>
+            {:else}
+              <span class="compare-icon">⚔️</span>
+            {/if}
+          </button>
         </div>
       {/each}
     </div>
@@ -470,6 +553,16 @@
     {/if}
   {/if}
 </div>
+
+<!-- Card Comparison Modal -->
+<CardComparison
+  card1={compareCard1}
+  card2={compareCard2}
+  isOpen={showComparison}
+  on:close={() => {
+    showComparison = false;
+  }}
+/>
 
 <style>
   .gallery-container {
@@ -1025,5 +1118,87 @@
     padding: 2rem;
     color: #94a3b8;
     font-size: 0.875rem;
+  }
+
+  /* ============================================================================
+     COMPARE BADGE STYLES
+     ============================================================================ */
+
+  .card-wrapper {
+    position: relative;
+  }
+
+  .card-wrapper.selected :global(.card-perspective) {
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.6);
+  }
+
+  .compare-badge {
+    position: absolute;
+    top: -0.5rem;
+    left: -0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: 2px solid white;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  .card-wrapper:hover .compare-badge,
+  .compare-badge.selected {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .compare-badge:hover {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transform: scale(1.1);
+  }
+
+  .compare-badge.selected {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.5);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.7);
+    }
+  }
+
+  .compare-icon {
+    line-height: 1;
+  }
+
+  .compare-number {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: #ef4444;
+    border-radius: 50%;
+    font-size: 0.625rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid white;
   }
 </style>
