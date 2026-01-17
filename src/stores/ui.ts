@@ -1,12 +1,30 @@
 import { atom } from 'nanostores';
 import { isLowEndDevice } from '../lib/utils/performance';
 import { trackEvent } from './analytics';
+import type { CinematicMode, CinematicConfig } from '../types';
 
 // Animation Quality Settings
 export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
 
 const QUALITY_KEY = 'daddeck_animation_quality';
 const SCREEN_SHAKE_KEY = 'daddeck_screen_shake_enabled';
+const CINEMATIC_MODE_KEY = 'daddeck_cinematic_mode';
+
+// Cinematic mode configuration (US083 - Pack Opening - Cinematic Mode)
+const CINEMATIC_CONFIGS: Record<CinematicMode, CinematicConfig> = {
+  normal: {
+    speedMultiplier: 1.0,
+    particleMultiplier: 1.0,
+    zoomEnabled: false,
+    audioEnhanced: false,
+  },
+  cinematic: {
+    speedMultiplier: 0.5,   // 2x slower animations
+    particleMultiplier: 2.0, // 2x more particles
+    zoomEnabled: true,       // Camera zoom on reveal
+    audioEnhanced: true,     // Enhanced dramatic audio
+  },
+};
 
 // Modal open time tracking
 let modalOpenTime: Record<string, number> = {};
@@ -137,6 +155,61 @@ export function setScreenShakeEnabled(enabled: boolean): void {
 export function toggleScreenShake(): void {
   const current = $screenShakeEnabled.get();
   setScreenShakeEnabled(!current);
+}
+
+// ============================================================================
+// CINEMATIC MODE (US083 - Pack Opening - Cinematic Mode)
+// ============================================================================
+
+// Cinematic mode enabled state
+const getInitialCinematicMode = (): CinematicMode => {
+  if (typeof window === 'undefined') return 'normal';
+
+  const saved = localStorage.getItem(CINEMATIC_MODE_KEY);
+  if (saved === 'cinematic') return 'cinematic';
+
+  return 'normal'; // Default to normal mode
+};
+
+export const $cinematicMode = atom<CinematicMode>(getInitialCinematicMode());
+export const cinematicMode = $cinematicMode;
+
+/**
+ * Get the current cinematic configuration
+ */
+export function getCinematicConfig(): CinematicConfig {
+  const mode = $cinematicMode.get();
+  return CINEMATIC_CONFIGS[mode];
+}
+
+/**
+ * Set cinematic mode
+ */
+export function setCinematicMode(mode: CinematicMode): void {
+  $cinematicMode.set(mode);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(CINEMATIC_MODE_KEY, mode);
+  }
+
+  // Track mode change
+  trackEvent({
+    type: 'settings_change',
+    data: {
+      setting: 'cinematicMode',
+      previousValue: $cinematicMode.get() === 'cinematic' ? 'normal' : 'cinematic',
+      newValue: mode,
+    },
+  });
+}
+
+/**
+ * Toggle cinematic mode
+ */
+export function toggleCinematicMode(): void {
+  const current = $cinematicMode.get();
+  setCinematicMode(current === 'cinematic' ? 'normal' : 'cinematic');
 }
 
 // Export stores without $ prefix for imports

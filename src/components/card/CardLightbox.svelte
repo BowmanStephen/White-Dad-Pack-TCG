@@ -111,6 +111,36 @@
       document.body.style.overflow = 'hidden';
     }
   }
+
+  // Helper function for card background
+  function getCardBackground(rarity: string): string {
+    switch (rarity) {
+      case 'common':
+      case 'uncommon':
+        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
+      case 'rare':
+        return 'linear-gradient(to bottom right, #1e3a8a, #1e293b, #172554)';
+      case 'epic':
+        return 'linear-gradient(to bottom right, #581c87, #312e81, #3b0764)';
+      case 'legendary':
+        return 'linear-gradient(to bottom right, #78350f, #7c2d12, #450a0a)';
+      case 'mythic':
+        return 'linear-gradient(to bottom right, #831843, #701a75, #500724)';
+      default:
+        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
+    }
+  }
+
+  function getHoloVariantName(holoType: string): string {
+    const names: Record<string, string> = {
+      none: 'Non-Holo',
+      standard: 'Standard Holo',
+      reverse: 'Reverse Holo',
+      full_art: 'Full Art Holo',
+      prismatic: 'Prismatic Holo',
+    };
+    return names[holoType] || holoType;
+  }
 </script>
 
 {#if isOpen && card}
@@ -711,35 +741,3 @@
     }
   }
 </style>
-
-<script lang="ts">
-  // Helper function for card background
-  function getCardBackground(rarity: string): string {
-    switch (rarity) {
-      case 'common':
-      case 'uncommon':
-        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
-      case 'rare':
-        return 'linear-gradient(to bottom right, #1e3a8a, #1e293b, #172554)';
-      case 'epic':
-        return 'linear-gradient(to bottom right, #581c87, #312e81, #3b0764)';
-      case 'legendary':
-        return 'linear-gradient(to bottom right, #78350f, #7c2d12, #450a0a)';
-      case 'mythic':
-        return 'linear-gradient(to bottom right, #831843, #701a75, #500724)';
-      default:
-        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
-    }
-  }
-
-  function getHoloVariantName(holoType: string): string {
-    const names: Record<string, string> = {
-      none: 'Non-Holo',
-      standard: 'Standard Holo',
-      reverse: 'Reverse Holo',
-      full_art: 'Full Art Holo',
-      prismatic: 'Prismatic Holo',
-    };
-    return names[holoType] || holoType;
-  }
-</script>

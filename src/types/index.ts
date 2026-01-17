@@ -23,6 +23,21 @@ export type DadType =
 // Holographic Variant Types
 export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';
 
+// ============================================================================
+// CINEMATIC MODE TYPES (US083 - Pack Opening - Cinematic Mode)
+// ============================================================================
+
+// Cinematic mode enables slower, more dramatic pack opening animations
+export type CinematicMode = 'normal' | 'cinematic';
+
+// Cinematic mode configuration
+export interface CinematicConfig {
+  speedMultiplier: number;     // Animation speed (0.5 = 2x slower)
+  particleMultiplier: number;   // Particle count multiplier (2 = 2x particles)
+  zoomEnabled: boolean;         // Enable camera zoom on card reveal
+  audioEnhanced: boolean;       // Enhanced dramatic audio
+}
+
 // Card Stats Interface
 export interface CardStats {
   dadJoke: number;      // 0-100: Quality of terrible puns

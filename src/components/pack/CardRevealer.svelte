@@ -6,9 +6,10 @@
   import CardSkeleton from '../loading/CardSkeleton.svelte';
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
-  import { playCardReveal } from '../../stores/audio';
+  import { playCardReveal, playCinematicCardReveal } from '../../stores/audio';
   import ConfettiEffects from '../card/ConfettiEffects.svelte';
   import ScreenShake from '../card/ScreenShake.svelte';
+  import * as uiStore from '../../stores/ui';
 
   export let pack: Pack;
   export let currentIndex: number;
@@ -22,6 +23,14 @@
   $: allRevealed = revealedIndices.size >= pack.cards.length;
   $: rarityConfig = currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common;
 
+  // Cinematic mode configuration
+  $: cinematicConfig = uiStore.getCinematicConfig();
+  $: isCinematic = uiStore.$cinematicMode === 'cinematic';
+
+  // Camera zoom state for cinematic reveals
+  let cameraZoomActive = false;
+  let cardScale = 1;
+
   let autoRevealActive = false;
   let particlesActive = false;
   let confettiActive = false;
@@ -30,6 +39,9 @@
 
   // Debounced reveal using requestAnimationFrame for smoother 60fps
   let rafId: number | null = null;
+
+  // Calculate reveal delay based on cinematic mode
+  $: revealDelay = 300 / cinematicConfig.speedMultiplier;
 
   // Start auto-reveal when component mounts and cards are ready
   onMount(() => {
@@ -59,30 +71,50 @@
       if (!revealedIndices.has(index)) {
         particlesActive = true;
         const cardRarity = pack.cards[index]?.rarity;
-        // Activate confetti for legendary+ cards
+
+        // Activate camera zoom for cinematic mode (except common/uncommon)
+        if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
+          cameraZoomActive = true;
+          // Zoom in dramatically
+          cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
+          // Reset zoom after animation
+          setTimeout(() => {
+            cameraZoomActive = false;
+            cardScale = 1;
+          }, 800 / cinematicConfig.speedMultiplier);
+        }
+
+        // Activate confetti for legendary+ cards (enhanced in cinematic)
         if (cardRarity === 'legendary' || cardRarity === 'mythic') {
           confettiActive = true;
-          // Auto-deactivate confetti after animation (handled internally by component)
-          setTimeout(() => { confettiActive = false; }, 3500);
+          const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
+          setTimeout(() => { confettiActive = false; }, confettiDuration / cinematicConfig.speedMultiplier);
         }
+
         // Activate screen shake for mythic cards only (epic moment!)
         if (cardRarity === 'mythic') {
           screenShakeActive = true;
-          // Auto-deactivate screen shake after animation completes
-          setTimeout(() => { screenShakeActive = false; }, 300);
+          const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
+          setTimeout(() => { screenShakeActive = false; }, shakeDuration);
         }
-        // Play reveal sound based on card rarity
+
+        // Play reveal sound based on card rarity (enhanced in cinematic)
         if (cardRarity) {
-          playCardReveal(cardRarity);
+          if (cinematicConfig.audioEnhanced) {
+            playCinematicCardReveal(cardRarity);
+          } else {
+            playCardReveal(cardRarity);
+          }
         }
+
         dispatch('reveal');
         index++;
 
         // Use requestAnimationFrame for smoother timing (60fps aligned)
         rafId = requestAnimationFrame(() => {
-          // Schedule next reveal after delay
+          // Schedule next reveal after delay (slower in cinematic mode)
           if (index < pack.cards.length) {
-            const timerId = window.setTimeout(revealNext, 300);
+            const timerId = window.setTimeout(revealNext, revealDelay);
             autoRevealTimers.push(timerId);
           } else {
             autoRevealActive = false;
@@ -93,7 +125,7 @@
 
     // Start the sequence with RAF for smooth initial timing
     rafId = requestAnimationFrame(() => {
-      const timerId = window.setTimeout(revealNext, 300);
+      const timerId = window.setTimeout(revealNext, revealDelay);
       autoRevealTimers.push(timerId);
     });
   }
@@ -108,6 +140,9 @@
       cancelAnimationFrame(rafId);
       rafId = null;
     }
+    // Reset camera zoom
+    cameraZoomActive = false;
+    cardScale = 1;
   }
 
   function handleCardClick() {
@@ -117,19 +152,38 @@
     if (!isCurrentRevealed) {
       particlesActive = true;
       const cardRarity = currentCard?.rarity;
-      // Activate confetti for legendary+ cards
+
+      // Activate camera zoom for cinematic mode
+      if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
+        cameraZoomActive = true;
+        cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
+        setTimeout(() => {
+          cameraZoomActive = false;
+          cardScale = 1;
+        }, 800 / cinematicConfig.speedMultiplier);
+      }
+
+      // Activate confetti for legendary+ cards (enhanced in cinematic)
       if (cardRarity === 'legendary' || cardRarity === 'mythic') {
         confettiActive = true;
-        setTimeout(() => { confettiActive = false; }, 3500);
+        const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
+        setTimeout(() => { confettiActive = false; }, confettiDuration / cinematicConfig.speedMultiplier);
       }
+
       // Activate screen shake for mythic cards only (epic moment!)
       if (cardRarity === 'mythic') {
         screenShakeActive = true;
-        setTimeout(() => { screenShakeActive = false; }, 300);
+        const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
+        setTimeout(() => { screenShakeActive = false; }, shakeDuration);
       }
-      // Play reveal sound based on card rarity
+
+      // Play reveal sound based on card rarity (cinematic enhanced)
       if (cardRarity) {
-        playCardReveal(cardRarity);
+        if (cinematicConfig.audioEnhanced) {
+          playCinematicCardReveal(cardRarity);
+        } else {
+          playCardReveal(cardRarity);
+        }
       }
       dispatch('reveal');
     } else if (currentIndex < pack.cards.length - 1) {
@@ -149,20 +203,40 @@
     if (!isCurrentRevealed) {
       particlesActive = true;
       const cardRarity = currentCard?.rarity;
-      // Activate confetti for legendary+ cards
+
+      // Activate camera zoom for cinematic mode
+      if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
+        cameraZoomActive = true;
+        cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
+        setTimeout(() => {
+          cameraZoomActive = false;
+          cardScale = 1;
+        }, 800 / cinematicConfig.speedMultiplier);
+      }
+
+      // Activate confetti for legendary+ cards (enhanced in cinematic)
       if (cardRarity === 'legendary' || cardRarity === 'mythic') {
         confettiActive = true;
-        setTimeout(() => { confettiActive = false; }, 3500);
+        const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
+        setTimeout(() => { confettiActive = false; }, confettiDuration / cinematicConfig.speedMultiplier);
       }
+
       // Activate screen shake for mythic cards only (epic moment!)
       if (cardRarity === 'mythic') {
         screenShakeActive = true;
-        setTimeout(() => { screenShakeActive = false; }, 300);
+        const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
+        setTimeout(() => { screenShakeActive = false; }, shakeDuration);
       }
-      // Play reveal sound based on card rarity
+
+      // Play reveal sound based on card rarity (cinematic enhanced)
       if (cardRarity) {
-        playCardReveal(cardRarity);
+        if (cinematicConfig.audioEnhanced) {
+          playCinematicCardReveal(cardRarity);
+        } else {
+          playCardReveal(cardRarity);
+        }
       }
+
       dispatch('reveal');
     } else {
       dispatch('next');
@@ -230,26 +304,37 @@
     {#if currentCard}
       <!-- Screen shake effect for mythic cards -->
       <ScreenShake active={screenShakeActive} intensity="subtle" duration={300} />
+
+      <!-- Cinematic camera zoom effect (dramatic scale animation) -->
+      {#if cameraZoomActive && isCurrentRevealed}
+        <div
+          class="absolute inset-0 pointer-events-none transition-transform ease-out"
+          class:animate-cinematic-zoom={true}
+          style="transform: scale({cardScale}); transform-origin: center center;"
+        ></div>
+      {/if}
+
       <!-- Card skeleton while loading (before reveal) -->
       {#if !isCurrentRevealed}
         <CardSkeleton size="lg" rarity={currentCard.rarity} />
       {:else}
-        <!-- FadeIn wrapper for smooth reveal -->
-        <FadeIn duration={300}>
-          <!-- Confetti effects for legendary+ cards -->
+        <!-- FadeIn wrapper for smooth reveal (slower in cinematic mode) -->
+        <FadeIn duration={300 / cinematicConfig.speedMultiplier}>
+          <!-- Confetti effects for legendary+ cards (enhanced in cinematic) -->
           <ConfettiEffects rarity={currentCard.rarity} active={confettiActive} />
 
-          <!-- Rarity-specific particle effects on reveal -->
+          <!-- Rarity-specific particle effects on reveal (enhanced in cinematic) -->
           <ParticleEffects
             rarity={currentCard.rarity}
             active={particlesActive}
-            duration={1500}
+            duration={1500 / cinematicConfig.speedMultiplier}
           />
 
           <!-- Legendary/Mythic burst effect -->
           {#if currentCard.rarity === 'legendary' || currentCard.rarity === 'mythic'}
             <div
               class="absolute inset-0 rounded-xl animate-legendary-burst pointer-events-none"
+              class:animate-cinematic-burst={isCinematic}
               style="background: radial-gradient(circle, {rarityConfig.color}66 0%, transparent 70%);"
             ></div>
           {/if}
@@ -382,6 +467,43 @@
     }
     100% {
       transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  /* Cinematic camera zoom animation (US083) */
+  .animate-cinematic-zoom {
+    animation: cinematicZoom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    will-change: transform;
+  }
+
+  @keyframes cinematicZoom {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1.3);
+    }
+  }
+
+  /* Enhanced burst animation for cinematic mode */
+  .animate-cinematic-burst {
+    animation: cinematicBurst 1.2s ease-out forwards;
+  }
+
+  @keyframes cinematicBurst {
+    0% {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(3);
       opacity: 0;
     }
   }

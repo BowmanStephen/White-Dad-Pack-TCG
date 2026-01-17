@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Rarity } from '../../types';
   import { RARITY_CONFIG } from '../../types';
-  import { getParticleMultiplier } from '../../stores/ui';
+  import { getParticleMultiplier, getCinematicConfig } from '../../stores/ui';
 
   interface Props {
     rarity: Rarity;
@@ -14,13 +14,20 @@
   const config = RARITY_CONFIG[rarity];
   const baseParticleCount = config.particleCount;
 
-  // Reactive particle count based on quality settings
-  let particleCount = $state(Math.floor(baseParticleCount * getParticleMultiplier()));
+  // Get both quality and cinematic multipliers for enhanced effects
+  const qualityMultiplier = $derived(getParticleMultiplier());
+  const cinematicConfig = $derived(getCinematicConfig());
+
+  // Combined multiplier: cinematic mode doubles particles on top of quality setting
+  const combinedMultiplier = $derived(qualityMultiplier * cinematicConfig.particleMultiplier);
+
+  // Reactive particle count based on quality AND cinematic settings
+  let particleCount = $state(Math.floor(baseParticleCount * combinedMultiplier));
   let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
 
-  // Regenerate particles when quality changes
+  // Regenerate particles when settings change
   $effect(() => {
-    const multiplier = getParticleMultiplier();
+    const multiplier = getParticleMultiplier() * getCinematicConfig().particleMultiplier;
     particleCount = Math.floor(baseParticleCount * multiplier);
 
     if (particleCount > 0) {

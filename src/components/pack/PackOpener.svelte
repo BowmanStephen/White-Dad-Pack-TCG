@@ -10,6 +10,7 @@
   import FadeIn from '../loading/FadeIn.svelte';
   import ErrorDisplay from '../common/ErrorDisplay.svelte';
   import ErrorMessage from '../common/ErrorMessage.svelte';
+  import CinematicToggle from '../common/CinematicToggle.svelte';
 
   // Reactive state using Svelte 5 runes
   let currentPack = $state<Pack | null>(null);
@@ -161,6 +162,11 @@
 {/if}
 
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
+  <!-- Cinematic mode toggle (US083) -->
+  <div class="fixed top-4 right-4 z-40">
+    <CinematicToggle />
+  </div>
+
   {#if packState === 'idle'}
     <!-- Idle state - waiting to open -->
     <div class="text-center">

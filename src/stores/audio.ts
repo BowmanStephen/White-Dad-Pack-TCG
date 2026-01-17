@@ -45,41 +45,49 @@ let audioContext: AudioContext | null = null;
 /**
  * Rarity jingle configuration
  * Defines duration and volume for each rarity's reveal sound
+ * Enhanced durations for cinematic mode (US083)
  */
 export const RARITY_JINGLE_CONFIG: Record<Rarity, {
   duration: number;      // Duration in seconds
   volume: number;        // Volume multiplier (applied to master)
   description: string;   // Description of the jingle
+  cinematicDuration: number; // Extended duration for cinematic mode
 }> = {
   common: {
     duration: 0.5,
     volume: 0.5,
     description: 'Quick card flip sound',
+    cinematicDuration: 0.75,
   },
   uncommon: {
     duration: 0.8,
     volume: 0.6,
     description: 'Standard reveal with slight flourish',
+    cinematicDuration: 1.2,
   },
   rare: {
     duration: 1.2,
     volume: 0.7,
     description: 'Enhanced reveal sound',
+    cinematicDuration: 2.0,
   },
   epic: {
     duration: 2.0,
     volume: 0.8,
     description: 'Triumphant fanfare (2 seconds)',
+    cinematicDuration: 3.5,
   },
   legendary: {
     duration: 3.0,
     volume: 0.9,
     description: 'Epic orchestral hit (3 seconds)',
+    cinematicDuration: 5.0,
   },
   mythic: {
     duration: 5.0,
     volume: 1.0,
     description: 'Full celebration sequence (5 seconds)',
+    cinematicDuration: 8.0,
   },
 };
 
@@ -272,6 +280,7 @@ export function playSound(
 
 /**
  * Play pack tear sound
+ * Enhanced for cinematic mode (US083)
  */
 export function playPackTear(): void {
   playSound('pack_tear');
@@ -279,9 +288,29 @@ export function playPackTear(): void {
 
 /**
  * Play card reveal sound based on rarity
+ * Enhanced for cinematic mode (US083)
  */
-export function playCardReveal(rarity: Rarity): void {
+export function playCardReveal(rarity: Rarity, cinematicMode: boolean = false): void {
   playSound('card_reveal', { rarity });
+}
+
+/**
+ * Play cinematic card reveal sound (extended duration)
+ * Only used when cinematic mode is enabled (US083)
+ */
+export function playCinematicCardReveal(rarity: Rarity): void {
+  // In cinematic mode, play both the standard reveal AND a layered jingle
+  // This creates a more dramatic, layered audio experience
+  playSound('card_reveal', { rarity });
+
+  // For rare+ cards, add the jingle layer
+  if (['rare', 'epic', 'legendary', 'mythic'].includes(rarity)) {
+    playSound('jingle', {
+      rarity,
+      layerable: true,
+      volume: 0.3, // Lower volume for the layered jingle
+    });
+  }
 }
 
 /**

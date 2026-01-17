@@ -19,17 +19,30 @@
   $: rarityConfig = RARITY_CONFIG[bestRarity];
   $: packDesign = PACK_DESIGN_CONFIG[design];
   $: glowColor = rarityConfig.glowColor;
-  $: particleCount = reducedMotion ? 0 : rarityConfig.particleCount;
 
-  // Animation timing (1.5-2 second total duration)
-  const PHASE_DURATIONS = {
+  // Get cinematic configuration
+  $: cinematicConfig = uiStore.getCinematicConfig();
+  $: isCinematic = uiStore.$cinematicMode === 'cinematic';
+
+  // Calculate particle count with cinematic multiplier
+  $: baseParticleCount = reducedMotion ? 0 : rarityConfig.particleCount;
+  $: particleCount = Math.floor(baseParticleCount * cinematicConfig.particleMultiplier);
+
+  // Animation timing (1.5-2 second total duration in normal mode)
+  // In cinematic mode, animations are 2x slower
+  const BASE_PHASE_DURATIONS = {
     appear: 400,   // Pack appears with scale
     glow: 600,     // Glow intensifies
     tear: 500,     // Tear animation
     burst: 300,    // Final burst and fade
   };
 
-  // Total: 1.8 seconds (within 1.5-2s requirement)
+  $: phaseDurations = {
+    appear: BASE_PHASE_DURATIONS.appear / cinematicConfig.speedMultiplier,
+    glow: BASE_PHASE_DURATIONS.glow / cinematicConfig.speedMultiplier,
+    tear: BASE_PHASE_DURATIONS.tear / cinematicConfig.speedMultiplier,
+    burst: BASE_PHASE_DURATIONS.burst / cinematicConfig.speedMultiplier,
+  };
 
   onMount(() => {
     // Subscribe to reduced motion preference
@@ -53,17 +66,22 @@
   async function runAnimation() {
     // Phase 1: Pack appears (with ease-out)
     phase = 'appear';
-    await delay(PHASE_DURATIONS.appear);
+    await delay(phaseDurations.appear);
 
-    // Phase 2: Pack glows (builds anticipation)
+    // Phase 2: Pack glows (builds anticipation) - longer in cinematic mode
     phase = 'glow';
-    await delay(PHASE_DURATIONS.glow);
+    await delay(phaseDurations.glow);
 
     // Phase 3: Pack tears open (the main event)
     phase = 'tear';
 
-    // Play pack tear sound effect
-    playPackTear();
+    // Play pack tear sound effect (enhanced in cinematic mode)
+    if (cinematicConfig.audioEnhanced) {
+      // Play louder/dramatic tear sound in cinematic mode
+      playPackTear();
+    } else {
+      playPackTear();
+    }
 
     // Initialize particles for burst phase
     if (!reducedMotion) {
@@ -71,11 +89,11 @@
       animateParticles();
     }
 
-    await delay(PHASE_DURATIONS.tear);
+    await delay(phaseDurations.tear);
 
     // Phase 4: Burst and fade
     phase = 'burst';
-    await delay(PHASE_DURATIONS.burst);
+    await delay(phaseDurations.burst);
 
     // Stop particle animation
     if (animationFrameId !== null) {
@@ -102,6 +120,7 @@
   }
 
   // Particle system for tear burst (60fps optimized)
+  // Enhanced particle count in cinematic mode
   function initParticles() {
     particles = [];
     const count = particleCount || 10;
@@ -122,12 +141,13 @@
   function animateParticles() {
     if (phase !== 'burst') return;
 
-    // Update particle positions
+    // Update particle positions - slower in cinematic mode
+    const speedFactor = cinematicConfig.speedMultiplier;
     particles = particles.map(p => ({
       ...p,
-      x: p.x + p.vx * 0.3,
-      y: p.y + p.vy * 0.3,
-      alpha: p.alpha - 0.02,
+      x: p.x + p.vx * 0.3 * speedFactor,
+      y: p.y + p.vy * 0.3 * speedFactor,
+      alpha: p.alpha - 0.02 * speedFactor,
       size: p.size * 0.98,
     })).filter(p => p.alpha > 0);
 
