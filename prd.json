@@ -343,12 +343,13 @@
         "Default text: 'Just pulled [Card Name] in DadDeck! 🎴 #DadDeck'"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "labels": [
         "social",
         "twitter",
         "integration"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US018",
@@ -361,12 +362,13 @@
         "User-friendly notification on success/failure"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "social",
         "discord",
         "integration"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "US019",
@@ -1996,6 +1998,6 @@
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T08:07:15.971Z"
+    "updatedAt": "2026-01-17T08:10:52.486Z"
   }
 }

@@ -743,3 +743,151 @@ export interface DiscordShareResult {
   /** Error message if operation failed */
   error?: string;
 }
+
+/**
+ * Download an image from a URL and save it locally
+ *
+ * Fetches the image from the given URL, creates a blob URL, and triggers
+ * a browser download. Works on both desktop and mobile browsers.
+ *
+ * @param imageUrl - The URL of the image to download
+ * @param filename - Optional custom filename (default: auto-generated with timestamp)
+ * @param onProgress - Optional callback for download progress (0-100)
+ * @returns Promise<DownloadImageResult> - Result indicating success/failure
+ *
+ * @example
+ * ```svelte
+ * <script>
+ *   import { downloadImage } from '@/lib/utils/image-generation';
+ *
+ *   async function handleDownload() {
+ *     const result = await downloadImage(
+ *       '/images/my-card.png',
+ *       undefined,
+ *       (progress) => console.log(`Download ${progress}%`)
+ *     );
+ *     if (result.success) {
+ *       alert('Image saved!');
+ *     }
+ *   }
+ * </script>
+ * ```
+ */
+export async function downloadImage(
+  imageUrl: string,
+  filename?: string,
+  onProgress?: (progress: number) => void
+): Promise<DownloadImageResult> {
+  // Check if we're in a browser environment
+  const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+  if (!isBrowser) {
+    return {
+      success: false,
+      filename: '',
+      error: 'Download only works in browser environment',
+    };
+  }
+
+  try {
+    // Fetch the image with progress tracking
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.statusText} (${response.status})`);
+    }
+
+    // Get content length for progress tracking
+    const contentLength = response.headers.get('content-length');
+    const total = contentLength ? parseInt(contentLength, 10) : 0;
+
+    // Create a reader to track download progress
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('Response body is not readable');
+    }
+
+    // Read the stream and track progress
+    const chunks: BlobPart[] = [];
+    let receivedLength = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      chunks.push(value);
+      receivedLength += value.length;
+
+      // Report progress if callback provided and we know total size
+      if (onProgress && total > 0) {
+        const progress = Math.min(100, Math.round((receivedLength / total) * 100));
+        onProgress(progress);
+      }
+    }
+
+    // Combine chunks into a single blob
+    const blob = new Blob(chunks, { type: 'image/png' });
+    const url = URL.createObjectURL(blob);
+
+    // Generate filename if not provided
+    const finalFilename = filename || generateTimestampedFilename();
+
+    // Trigger download using a temporary anchor element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = finalFilename;
+
+    // For mobile compatibility, append to document and click
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
+
+    return {
+      success: true,
+      filename: finalFilename,
+      size: blob.size,
+    };
+  } catch (error) {
+    console.error('Download failed:', error);
+    return {
+      success: false,
+      filename: filename || '',
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
+
+/**
+ * Generate a timestamped filename for downloaded images
+ *
+ * Creates a filename in the format: 'daddeck-pull-YYYYMMDD-HHMMSS.png'
+ *
+ * @returns A timestamped filename string
+ */
+function generateTimestampedFilename(): string {
+  const now = new Date();
+  const date = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+  const time = now.toTimeString().slice(0, 8).replace(/:/g, ''); // HHMMSS
+  return `daddeck-pull-${date}-${time}.png`;
+}
+
+/**
+ * Result of downloadImage operation
+ */
+export interface DownloadImageResult {
+  /** Whether the download was successful */
+  success: boolean;
+
+  /** The filename used for the download */
+  filename: string;
+
+  /** Size of the downloaded file in bytes (if successful) */
+  size?: number;
+
+  /** Error message if the download failed */
+  error?: string;
+}
