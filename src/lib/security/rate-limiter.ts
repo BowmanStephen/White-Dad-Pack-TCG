@@ -144,7 +144,7 @@ export function checkRateLimit(
     // No rate limiting configured for this action
     return {
       remaining: Infinity,
-      resetAt: new Date(Date.now() + limitConfig?.windowMs || 60000),
+      resetAt: new Date(Date.now() + 60000), // Default 1 minute
       isBlocked: false,
     };
   }
