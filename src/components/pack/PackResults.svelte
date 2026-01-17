@@ -1,34 +1,43 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import type { Pack, PackCard } from '../../types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS } from '../../types';
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
   import { downloadPackImage, sharePackImage, shareToTwitter } from '../../lib/utils/image-generation';
-  import { modalOpen, openModal } from '../../stores/ui';
+  import { openModal } from '../../stores/ui';
   import ShareModal from '../common/ShareModal.svelte';
+  import Card from '../card/Card.svelte';
+  import ConfettiEffects from '../card/ConfettiEffects.svelte';
+  import ParticleEffects from '../card/ParticleEffects.svelte';
+  import ScreenShake from '../card/ScreenShake.svelte';
+  import { collection } from '../../stores/collection';
 
-  export let pack: Pack;
-  export let stats: {
-    totalCards: number;
-    rarityBreakdown: Record<string, number>;
-    holoCount: number;
-    bestCard: PackCard;
-  };
+  interface Props {
+    pack: Pack;
+    stats: {
+      totalCards: number;
+      rarityBreakdown: Record<string, number>;
+      holoCount: number;
+      bestCard: PackCard;
+    };
+  }
+
+  let { pack, stats }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  let copied = false;
+  let copied = $state(false);
   let copyTimeout: ReturnType<typeof setTimeout>;
-  let canNativeShare = false;
-  let inspectCard: PackCard | null = null;
-  let inspectIndex: number = 0;
-  let isGeneratingPackImage = false;
-  let packImageShareSuccess = false;
-  let inspectModalElement: HTMLElement;
+  let canNativeShare = $state(false);
+  let inspectCard = $state<PackCard | null>(null);
+  let inspectIndex = $state(0);
+  let isGeneratingPackImage = $state(false);
+  let packImageShareSuccess = $state(false);
+  let inspectModalElement = $state<HTMLElement>();
   let previouslyFocusedElement: HTMLElement | null = null;
-  let isCardFlipped = false;
-  let flippedCardStates = new Map<string, boolean>();
+  let isCardFlipped = $state(false);
+  let flippedCardStates = $state(new Map<string, boolean>());
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -39,6 +48,20 @@
     uncommon: 2,
     common: 1,
   };
+
+  // Dad Approval Messages for big pulls
+  const DAD_MESSAGES = [
+    "Now that's what I call a power move, champ!",
+    "Legendary! This pull is more satisfying than a perfectly edged lawn.",
+    "Son, you've got the spark. Now let's go check the tire pressure.",
+    "I'm not saying I'm proud, but I'm definitely not disappointed.",
+    "Whoa! That's a rare one. Don't tell your mother I let you stay up this late.",
+    "Incredible. Almost as good as my '92 Varsity touchdown.",
+    "That's it. You're the new Grill Master.",
+    "Mythic?! Call the neighbors, we're having a block party."
+  ];
+
+  const dadMessage = $derived(DAD_MESSAGES[Math.floor((pack.id.length % DAD_MESSAGES.length))]);
 
   // Navigate to previous card in inspection modal
   function goToPreviousCard() {
@@ -60,11 +83,21 @@
     }
   }
 
+  // Sort cards by rarity (descending: mythic → common)
+  const sortedCards = $derived([...pack.cards].sort((a, b) => {
+    const rarityDiff = RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity];
+    if (rarityDiff !== 0) return rarityDiff;
+    // Secondary sort: holo cards first
+    if (a.isHolo && !b.isHolo) return -1;
+    if (!a.isHolo && b.isHolo) return 1;
+    return 0;
+  }));
+
   // Check if previous card is available
-  $: hasPrevious = inspectIndex > 0;
+  const hasPrevious = $derived(inspectIndex > 0);
 
   // Check if next card is available
-  $: hasNext = inspectIndex < sortedCards.length - 1;
+  const hasNext = $derived(inspectIndex < sortedCards.length - 1);
 
   onMount(() => {
     canNativeShare = !!navigator.share;
@@ -111,18 +144,18 @@
     }
   }
 
-  // Sort cards by rarity (descending: mythic → common)
-  $: sortedCards = [...pack.cards].sort((a, b) => {
-    const rarityDiff = RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity];
-    if (rarityDiff !== 0) return rarityDiff;
-    // Secondary sort: holo cards first
-    if (a.isHolo && !b.isHolo) return -1;
-    if (!a.isHolo && b.isHolo) return 1;
-    return 0;
-  });
+  const bestRarityConfig = $derived(RARITY_CONFIG[stats.bestCard.rarity]);
+  const hasLegendaryOrBetter = $derived(stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic');
 
-  $: bestRarityConfig = RARITY_CONFIG[stats.bestCard.rarity];
-  $: hasLegendaryOrBetter = stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic';
+  // Check if a card is new to the collection
+  function isCardNew(cardId: string) {
+    // Note: Since the pack is added to collection BEFORE results, we need to check if it's the ONLY instance
+    // But uniqueCards in store is just a list of IDs.
+    // For MVP, we can assume if it's in the pack, it was either just added or already there.
+    // A better way would be to track "new" status during pack generation.
+    // For now, we'll just check if it's in the unique list.
+    return collection.get().metadata.uniqueCards.includes(cardId);
+  }
 
   function handleOpenAnother() {
     dispatch('openAnother');
@@ -133,14 +166,10 @@
   }
 
   function handleCardInspect(card: PackCard) {
-    // Store the previously focused element
     previouslyFocusedElement = document.activeElement as HTMLElement;
-    // Find the index of this card in sortedCards
     inspectIndex = sortedCards.findIndex(c => c.id === card.id);
     inspectCard = card;
-    // Restore flip state for this card
     isCardFlipped = flippedCardStates.get(card.id) || false;
-    // Focus the modal after it opens
     setTimeout(() => {
       inspectModalElement?.focus();
     }, 50);
@@ -155,7 +184,6 @@
 
   function closeInspect() {
     inspectCard = null;
-    // Return focus to the previously focused element
     if (previouslyFocusedElement) {
       setTimeout(() => {
         previouslyFocusedElement?.focus();
@@ -203,18 +231,14 @@
 
   async function handleSharePackImage() {
     isGeneratingPackImage = true;
-
     try {
-      // Try native share first (Web Share API with files)
       const success = await sharePackImage(pack.cards);
-
       if (success) {
         packImageShareSuccess = true;
         setTimeout(() => {
           packImageShareSuccess = false;
         }, 2000);
       } else {
-        // Fallback to download
         await downloadPackImage(pack.cards);
       }
     } catch (error) {
@@ -223,132 +247,140 @@
       isGeneratingPackImage = false;
     }
   }
-  
-  // Get non-zero rarity counts for display
-  $: rarityCounts = Object.entries(stats.rarityBreakdown)
+
+  const rarityCounts = $derived(Object.entries(stats.rarityBreakdown)
     .filter(([_, count]) => count > 0)
     .map(([rarity, count]) => ({
       rarity,
       count,
       config: RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG],
-    }));
+    })));
 </script>
 
-<div class="w-full max-w-4xl mx-auto pb-20">
+<!-- Celebration Effects -->
+<ScreenShake active={hasLegendaryOrBetter} intensity="moderate" />
+<ConfettiEffects rarity={stats.bestCard.rarity} active={hasLegendaryOrBetter} />
+
+<div class="w-full max-w-4xl mx-auto pb-20 px-4">
   <!-- Header -->
-  <div class="text-center mb-8">
+  <div class="text-center mb-12">
     {#if hasLegendaryOrBetter}
       <div 
-        class="text-6xl mb-4"
-        in:scale={{ duration: 600, delay: 200, easing: elasticOut, start: 0.5 }}
+        class="text-7xl mb-6 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+        in:scale={{ duration: 800, delay: 200, easing: elasticOut, start: 0.5 }}
       >
-        🎉
+        {stats.bestCard.rarity === 'mythic' ? '👑' : '🎉'}
       </div>
-      <h2 
-        class="text-4xl md:text-5xl font-black mb-2 tracking-tight uppercase italic"
-        style="
-          color: {bestRarityConfig.color};
-          text-shadow: 0 0 20px {bestRarityConfig.glowColor};
-        "
-        in:fly={{ y: 20, duration: 600, delay: 300 }}
-      >
-        {stats.bestCard.rarity} PULL!
-      </h2>
+      <div class="relative inline-block">
+        <h2 
+          class="text-5xl md:text-7xl font-black mb-4 tracking-tighter uppercase italic animate-pulse"
+          style="
+            color: {bestRarityConfig.color};
+            text-shadow: 0 0 30px {bestRarityConfig.glowColor}, 0 0 60px {bestRarityConfig.glowColor}44;
+          "
+          in:fly={{ y: 40, duration: 800, delay: 300 }}
+        >
+          {stats.bestCard.rarity} PULL!
+        </h2>
+        <div class="absolute -top-6 -right-6 rotate-12 bg-amber-400 text-black text-xs font-black px-2 py-1 rounded shadow-lg animate-bounce">
+          DAD APPROVED
+        </div>
+      </div>
+      <p class="text-slate-300 text-xl font-medium italic max-w-lg mx-auto mb-2" in:fade={{ duration: 600, delay: 500 }}>
+        "{dadMessage}"
+      </p>
     {:else}
       <h2 
-        class="text-3xl md:text-4xl font-bold mb-2 text-white"
+        class="text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight"
         in:fly={{ y: 20, duration: 600 }}
       >
         Pack Complete!
       </h2>
     {/if}
-    <p class="text-slate-400" in:fade={{ duration: 600, delay: 400 }}>
-      You opened {stats.totalCards} cards
+    <p class="text-slate-400 font-bold uppercase tracking-widest text-sm" in:fade={{ duration: 600, delay: 400 }}>
+      Collection Updated • {stats.totalCards} cards added
     </p>
   </div>
   
   <!-- Best card highlight -->
   <div 
-    class="mb-12 relative group"
-    in:fly={{ y: 30, duration: 800, delay: 500, easing: backOut }}
+    class="mb-16 relative group"
+    in:fly={{ y: 40, duration: 800, delay: 600, easing: backOut }}
   >
-    <!-- Background Glow Effect -->
+    <!-- Background Celebration Glow -->
     <div 
-      class="absolute inset-0 blur-3xl opacity-20 -z-10 transition-opacity group-hover:opacity-30"
+      class="absolute inset-0 blur-[100px] opacity-30 -z-10 transition-all duration-1000 group-hover:opacity-50"
       style="background: {bestRarityConfig.color};"
     ></div>
 
-    <div class="p-8 bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-2xl relative overflow-hidden">
-      <!-- Decorative background elements -->
-      <div class="absolute top-0 right-0 p-4 opacity-5 text-8xl pointer-events-none">
+    <div class="p-1 md:p-10 bg-slate-900/90 backdrop-blur-md rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+      <!-- Animated Shimmer Background for Rare Pulls -->
+      {#if hasLegendaryOrBetter}
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_3s_infinite] pointer-events-none"></div>
+      {/if}
+
+      <div class="absolute top-0 right-0 p-6 opacity-5 text-9xl pointer-events-none grayscale group-hover:grayscale-0 transition-all duration-500">
         {DAD_TYPE_ICONS[stats.bestCard.type]}
       </div>
 
-      <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-6 text-center">Best Pull</h3>
+      <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 text-center opacity-70">Signature Best Pull</h3>
       
-      <div class="flex flex-col md:flex-row items-center justify-center gap-8">
-        <div class="relative">
-          <!-- Card reflection/glow -->
-          <div 
-            class="absolute -inset-4 blur-xl opacity-40 animate-pulse"
-            style="background: {bestRarityConfig.color};"
-          ></div>
+      <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+        <div class="relative card-container">
+          <ParticleEffects rarity={stats.bestCard.rarity} active={true} />
           
-          <div 
-            class="w-32 h-44 md:w-40 md:h-56 rounded-xl flex items-center justify-center text-6xl relative z-10 overflow-hidden"
-            style="
-              background: linear-gradient(135deg, {bestRarityConfig.color}44, {bestRarityConfig.color}11);
-              border: 3px solid {bestRarityConfig.color};
-              box-shadow: 0 0 30px {bestRarityConfig.glowColor};
-            "
-          >
-            <!-- Holo sheen for the highlight if applicable -->
-            {#if stats.bestCard.isHolo}
-              <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
-            {/if}
-            {DAD_TYPE_ICONS[stats.bestCard.type]}
+          <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
+            <Card card={stats.bestCard} size="lg" interactive={true} />
           </div>
+
+          {#if isCardNew(stats.bestCard.id)}
+            <div class="absolute -top-4 -left-4 z-30 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black px-4 py-2 rounded-lg shadow-xl rotate-[-10deg] animate-pulse">
+              NEW!
+            </div>
+          {/if}
         </div>
 
-        <div class="text-center md:text-left z-10">
+        <div class="text-center md:text-left z-10 flex-1 max-w-md">
           <div 
-            class="text-xs font-black px-3 py-1 rounded-full inline-block mb-3 uppercase tracking-wider"
-            style="background: {bestRarityConfig.color}22; color: {bestRarityConfig.color}; border: 1px solid {bestRarityConfig.color}44;"
+            class="text-sm font-black px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-4 uppercase tracking-widest shadow-lg"
+            style="background: {bestRarityConfig.color}; color: white;"
           >
+            <span>★</span>
             {bestRarityConfig.name}
             {#if stats.bestCard.isHolo}
-              <span class="ml-1">✨ HOLO</span>
+              <span class="ml-1 opacity-80">✨ HOLO</span>
             {/if}
           </div>
-          <h4 class="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">{stats.bestCard.name}</h4>
-          <p class="text-slate-400 text-lg mb-6">{stats.bestCard.subtitle}</p>
+          
+          <h4 class="text-4xl md:text-5xl font-black text-white mb-3 tracking-tighter leading-none">{stats.bestCard.name}</h4>
+          <p class="text-slate-300 text-xl mb-8 leading-relaxed font-medium opacity-90">{stats.bestCard.subtitle}</p>
           
           <!-- Share buttons for best pull -->
-          <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-4">
             <button
               on:click={openShareModal}
-              class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95 shadow-lg shadow-purple-500/25"
+              class="flex items-center justify-center gap-3 px-8 py-4 bg-white text-slate-950 font-black rounded-xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl hover:shadow-white/10 uppercase tracking-wider text-sm"
               title="Share your pull"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
                 <circle cx="18" cy="5" r="3"></circle>
                 <circle cx="6" cy="12" r="3"></circle>
                 <circle cx="18" cy="19" r="3"></circle>
                 <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                 <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
               </svg>
-              Share This Pull
+              Share Pull
             </button>
 
             <button
               on:click={copyLink}
-              class="flex items-center gap-2 px-4 py-3 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-all active:scale-95 border border-slate-700"
+              class="flex items-center justify-center gap-2 px-6 py-4 bg-slate-800/50 backdrop-blur text-white font-bold rounded-xl hover:bg-slate-700 transition-all active:scale-95 border border-white/10 uppercase tracking-widest text-xs"
               title="Copy Link"
             >
               {#if copied}
                 <span in:scale={{ duration: 200 }} class="text-green-400">Copied!</span>
               {:else}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
@@ -363,23 +395,28 @@
   
   <!-- All cards grid -->
   <div
-    class="mb-12"
-    in:fade={{ duration: 600, delay: 700 }}
+    class="mb-16"
+    in:fade={{ duration: 600, delay: 800 }}
   >
-    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-6 text-center">Your Pack (Sorted by Rarity)</h3>
-    <div class="grid grid-cols-4 md:grid-cols-7 gap-4">
+    <div class="flex items-center gap-4 mb-8">
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+      <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 text-center whitespace-nowrap">Full Pack Contents</h3>
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+    </div>
+
+    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-4 md:gap-6">
       {#each sortedCards as card, i}
         {@const cardRarity = RARITY_CONFIG[card.rarity]}
         <div
           role="button"
           tabindex="0"
           aria-label="Inspect {card.name}"
-          class="aspect-[2.5/3.5] rounded-xl overflow-hidden cursor-pointer transform transition-all hover:scale-110 hover:z-20 relative group"
+          class="aspect-[2.5/3.5] rounded-xl overflow-hidden cursor-pointer transform transition-all hover:scale-110 hover:-translate-y-2 hover:z-20 relative group"
           style="
-            border: 2px solid {cardRarity.color}66;
-            box-shadow: 0 0 15px {cardRarity.glowColor}22;
+            border: 2px solid {cardRarity.color}44;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
           "
-          in:fly={{ y: 20, duration: 400, delay: 800 + (i * 50) }}
+          in:fly={{ y: 20, duration: 400, delay: 900 + (i * 60) }}
           on:click={() => handleCardInspect(card)}
           on:keydown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -389,23 +426,31 @@
           }}
         >
           <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950 flex flex-col items-center justify-center p-3">
-            <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">{DAD_TYPE_ICONS[card.type]}</span>
-            <span class="text-[10px] font-bold text-slate-300 text-center leading-tight w-full line-clamp-2">{card.name}</span>
+            <span class="text-4xl mb-3 transition-transform duration-500 group-hover:scale-125 group-hover:rotate-6">{DAD_TYPE_ICONS[card.type]}</span>
+            <span class="text-[10px] font-black text-slate-100 text-center leading-tight w-full line-clamp-2 uppercase tracking-tighter">{card.name}</span>
+            
             {#if card.isHolo}
-              <div class="absolute top-1 left-1">
-                <span class="text-[8px] px-1 bg-pink-500/20 text-pink-400 rounded-sm font-black italic">HOLO</span>
+              <div class="absolute top-2 left-2">
+                <span class="text-[8px] px-1.5 py-0.5 bg-pink-500 text-white rounded font-black italic shadow-lg">HOLO</span>
+              </div>
+            {/if}
+
+            {#if isCardNew(card.id)}
+              <div class="absolute top-2 right-2">
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
+                <div class="absolute inset-0 w-2 h-2 bg-blue-500 rounded-full"></div>
               </div>
             {/if}
           </div>
 
-          <!-- Rarity indicator -->
+          <!-- Rarity indicator bar -->
           <div
-            class="absolute bottom-1 right-1 w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]"
-            style="background: {cardRarity.color}; color: {cardRarity.color};"
+            class="absolute bottom-0 left-0 right-0 h-1"
+            style="background: {cardRarity.color};"
           ></div>
 
-          <!-- Hover sheen -->
-          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          <!-- Hover overlay sheen -->
+          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
         </div>
       {/each}
     </div>
@@ -413,19 +458,19 @@
   
   <!-- Rarity breakdown & Stats -->
   <div 
-    class="mb-12 grid grid-cols-1 md:grid-cols-2 gap-4"
-    in:fade={{ duration: 600, delay: 1000 }}
+    class="mb-16 grid grid-cols-1 md:grid-cols-2 gap-6"
+    in:fade={{ duration: 600, delay: 1100 }}
   >
-    <div class="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
-      <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Rarity Distribution</h3>
-      <div class="flex flex-wrap gap-4">
+    <div class="p-8 bg-slate-900/50 rounded-3xl border border-white/5 backdrop-blur-sm">
+      <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-6">Distribution</h3>
+      <div class="flex flex-wrap gap-3">
         {#each rarityCounts as { rarity, count, config }}
-          <div class="flex items-center gap-3 bg-slate-800/50 px-3 py-2 rounded-lg border border-slate-700/50">
+          <div class="flex items-center gap-3 bg-slate-800/40 px-4 py-2.5 rounded-xl border border-white/5 transition-colors hover:bg-slate-800/60">
             <div 
-              class="w-3 h-3 rounded-full shadow-[0_0_8px_currentColor]"
+              class="w-3 h-3 rounded-full shadow-[0_0_10px_currentColor]"
               style="background: {config.color}; color: {config.color};"
             ></div>
-            <span class="text-sm font-bold text-slate-200">
+            <span class="text-sm font-black text-slate-200 uppercase tracking-wider">
               {count}x {config.name}
             </span>
           </div>
@@ -433,44 +478,44 @@
       </div>
     </div>
 
-    <div class="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 flex flex-col justify-center items-center text-center">
+    <div class="p-8 bg-slate-900/50 rounded-3xl border border-white/5 backdrop-blur-sm flex flex-col justify-center items-center text-center">
       {#if stats.holoCount > 0}
-        <div class="text-3xl mb-1">✨</div>
-        <div class="text-xl font-black text-white italic uppercase tracking-tight">
+        <div class="text-5xl mb-3 animate-bounce">✨</div>
+        <div class="text-2xl font-black text-white italic uppercase tracking-tighter">
           {stats.holoCount} Holographic {stats.holoCount === 1 ? 'Pull' : 'Pulls'}!
         </div>
-        <p class="text-slate-500 text-xs mt-1">That's some high-tier dad energy.</p>
+        <p class="text-slate-400 text-sm mt-2 font-medium">That's some high-tier dad energy, champ.</p>
       {:else}
-        <div class="text-3xl mb-1">👔</div>
-        <div class="text-xl font-black text-white italic uppercase tracking-tight">
-          Solid Pulls, champ.
+        <div class="text-5xl mb-3 grayscale">👔</div>
+        <div class="text-2xl font-black text-white italic uppercase tracking-tighter">
+          Solid Effort, Kid.
         </div>
-        <p class="text-slate-500 text-xs mt-1">Consistency is the hallmark of a great dad.</p>
+        <p class="text-slate-400 text-sm mt-2 font-medium">Consistency is the hallmark of a great dad.</p>
       {/if}
     </div>
   </div>
   
   <!-- Action buttons -->
   <div 
-    class="flex flex-col sm:flex-row gap-4 justify-center"
-    in:fly={{ y: 20, duration: 600, delay: 1200 }}
+    class="flex flex-col sm:flex-row gap-6 justify-center"
+    in:fly={{ y: 30, duration: 600, delay: 1300 }}
   >
     <button 
-      class="group relative px-10 py-5 bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 text-white font-black uppercase tracking-wider rounded-xl shadow-[0_10px_30px_-10px_rgba(249,115,22,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(249,115,22,0.6)] active:scale-95 transition-all overflow-hidden"
+      class="group relative px-12 py-6 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all overflow-hidden"
       on:click={handleOpenAnother}
     >
-      <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+      <div class="absolute inset-0 bg-slate-100 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
       <div class="flex items-center justify-center relative z-10">
-        <span class="text-2xl mr-3 group-hover:rotate-12 transition-transform">🎴</span>
+        <span class="text-2xl mr-4 group-hover:rotate-12 transition-transform">📦</span>
         <span>Open Another Pack</span>
       </div>
     </button>
     
     <button
-      class="px-10 py-5 bg-slate-800 text-slate-300 font-bold uppercase tracking-wider rounded-xl hover:bg-slate-700 hover:text-white active:scale-95 transition-all border border-slate-700"
+      class="px-12 py-6 bg-slate-800 text-slate-400 font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-slate-700 hover:text-white active:scale-95 transition-all border border-white/5"
       on:click={handleGoHome}
     >
-      Back to Home
+      Back to Street
     </button>
   </div>
 </div>
@@ -480,9 +525,9 @@
   {@const inspectRarity = RARITY_CONFIG[inspectCard.rarity]}
   <div
     bind:this={inspectModalElement}
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-    in:fade={{ duration: 200 }}
-    out:fade={{ duration: 150 }}
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+    in:fade={{ duration: 300 }}
+    out:fade={{ duration: 200 }}
     on:click={closeInspect}
     on:keydown={handleInspectModalKeydown}
     role="dialog"
@@ -491,200 +536,97 @@
     tabindex="-1"
   >
     <div
-      class="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-      in:scale={{ duration: 300, easing: backOut }}
-      out:scale={{ duration: 150 }}
+      class="relative max-w-5xl w-full max-h-[95vh] overflow-y-auto"
+      in:scale={{ duration: 400, easing: backOut }}
+      out:scale={{ duration: 200 }}
       on:click|stopPropagation
     >
       <!-- Close button -->
       <button
         on:click={closeInspect}
-        class="absolute -top-12 right-0 text-white/70 hover:text-white text-4xl leading-none z-10"
+        class="fixed top-8 right-8 text-white/50 hover:text-white text-5xl font-light transition-colors z-50"
         aria-label="Close card details"
       >
         ×
       </button>
 
-      <!-- Previous/Next navigation -->
-      <div class="absolute top-0 left-0 right-0 -mt-12 flex justify-between px-2 z-10">
+      <!-- Navigation -->
+      <div class="fixed top-1/2 left-4 -translate-y-1/2 hidden md:block z-40">
         <button
           on:click={goToPreviousCard}
           disabled={!hasPrevious}
-          class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800/80 text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-slate-700"
-          aria-label="Previous card"
+          class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
-        <div class="text-white/70 text-sm font-bold self-center">
-          {inspectIndex + 1} / {sortedCards.length}
-        </div>
+      </div>
+
+      <div class="fixed top-1/2 right-4 -translate-y-1/2 hidden md:block z-40">
         <button
           on:click={goToNextCard}
           disabled={!hasNext}
-          class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800/80 text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-slate-700"
-          aria-label="Next card"
+          class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </button>
       </div>
 
-      <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
-        <!-- Large card preview with flip -->
-        <div class="flex-shrink-0">
-          <div
-            class="card-perspective cursor-pointer"
-            on:click={toggleCardFlip}
-            on:keydown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleCardFlip();
-              }
-            }}
-            role="button"
-            tabindex="0"
-            aria-label="Click to flip card, currently showing {isCardFlipped ? 'back' : 'front'}"
-            aria-pressed={isCardFlipped}
-          >
-            <div
-              class="card-3d w-64 h-80 md:w-80 md:h-96 relative"
-              class:card-flipped={isCardFlipped}
-            >
-              <!-- Card Front -->
-              <div class="card-face absolute inset-0 rounded-2xl overflow-hidden shadow-2xl"
-                style="
-                  background: linear-gradient(135deg, {inspectRarity.color}44, {inspectRarity.color}11);
-                  border: 4px solid {inspectRarity.color};
-                  box-shadow: 0 0 60px {inspectRarity.glowColor};
-                "
-              >
-                <!-- Holo sheen -->
-                {#if inspectCard.isHolo}
-                  <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
-                {/if}
-
-                <!-- Card content -->
-                <div class="h-full flex flex-col items-center justify-center p-6">
-                  <div class="text-8xl mb-4">{DAD_TYPE_ICONS[inspectCard.type]}</div>
-                  <div class="text-center px-6">
-                    <div class="text-xs font-black px-3 py-1 rounded-full inline-block mb-2 uppercase tracking-wider"
-                      style="background: {inspectRarity.color}22; color: {inspectRarity.color}; border: 1px solid {inspectRarity.color}44;"
-                    >
-                      {inspectRarity.name}
-                      {#if inspectCard.isHolo}
-                        <span class="ml-1">✨ HOLO</span>
-                      {/if}
-                    </div>
-                    <h3 class="text-2xl md:text-3xl font-black text-white mb-1">{inspectCard.name}</h3>
-                    <p class="text-slate-300 text-sm">{inspectCard.subtitle}</p>
-                  </div>
-                </div>
-
-                <!-- Flip hint -->
-                <div class="absolute bottom-4 left-0 right-0 text-center">
-                  <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 text-white/60 text-xs font-bold backdrop-blur-sm">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
-                      <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3m18 8v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"></path>
-                      <path d="M4 12h16"></path>
-                    </svg>
-                    <span>Tap to flip</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card Back -->
-              <div class="card-face card-back absolute inset-0 rounded-2xl overflow-hidden shadow-2xl"
-                style="border: 4px solid #475569; box-shadow: 0 0 40px rgba(71, 85, 105, 0.4);"
-              >
-                <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
-                  <!-- Back pattern -->
-                  <div class="absolute inset-4 border-2 border-amber-500/20 rounded-xl"></div>
-                  <div class="absolute inset-6 border border-amber-500/10 rounded-lg"></div>
-
-                  <!-- Center logo -->
-                  <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <div class="text-5xl md:text-6xl font-black mb-3 tracking-tight">
-                      <span class="text-amber-400">Dad</span><span class="text-white">Deck</span>
-                    </div>
-                    <div class="text-slate-500 text-sm font-bold tracking-widest mb-4">SERIES 1</div>
-                    <div class="text-6xl md:text-7xl drop-shadow-lg">👔</div>
-                    <div class="mt-6 text-slate-600 text-xs font-bold uppercase tracking-wider">The Ultimate White Dad<br>Trading Card Simulator</div>
-                  </div>
-
-                  <!-- Corner decorations -->
-                  <div class="absolute top-4 left-4 text-amber-500/30 text-2xl">◆</div>
-                  <div class="absolute top-4 right-4 text-amber-500/30 text-2xl">◆</div>
-                  <div class="absolute bottom-4 left-4 text-amber-500/30 text-2xl">◆</div>
-                  <div class="absolute bottom-4 right-4 text-amber-500/30 text-2xl">◆</div>
-
-                  <!-- Flip hint (back) -->
-                  <div class="absolute bottom-4 left-0 right-0 text-center">
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 text-white/60 text-xs font-bold backdrop-blur-sm">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
-                        <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3m18 8v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"></path>
-                        <path d="M4 12h16"></path>
-                      </svg>
-                      <span>Tap to flip</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <div class="flex flex-col lg:flex-row gap-12 items-center lg:items-center px-4 md:px-20 pb-10">
+        <div class="flex-shrink-0 card-container relative">
+          {#if isCardNew(inspectCard.id)}
+            <div class="absolute -top-6 -right-6 z-30 bg-blue-500 text-white font-black px-6 py-2 rounded-xl shadow-2xl rotate-12 scale-110">
+              NEW COLLECTION!
             </div>
-          </div>
+          {/if}
+          <Card card={inspectCard} size="lg" interactive={true} enableShare={true} />
         </div>
 
-        <!-- Card details -->
         <div class="flex-1 w-full text-white">
-          <h2 class="text-3xl font-black mb-4" style="color: {inspectRarity.color};">
+          <div 
+            class="text-xs font-black px-3 py-1 rounded-full inline-block mb-4 uppercase tracking-[0.2em] shadow-lg"
+            style="background: {inspectRarity.color}; color: white;"
+          >
+            {inspectRarity.name} Pull
+          </div>
+          
+          <h2 class="text-5xl md:text-6xl font-black mb-6 tracking-tighter" style="color: white;">
             {inspectCard.name}
           </h2>
 
-          <!-- Flavor text -->
           {#if inspectCard.flavorText}
-            <blockquote class="text-slate-400 italic mb-6 text-lg border-l-4 pl-4" style="border-color: {inspectRarity.color};">
+            <blockquote class="text-slate-300 italic mb-10 text-2xl leading-relaxed opacity-80 border-l-8 pl-8" style="border-color: {inspectRarity.color};">
               "{inspectCard.flavorText}"
             </blockquote>
           {/if}
 
-          <!-- Card stats -->
-          <h3 class="text-sm font-black uppercase tracking-wider text-slate-500 mb-3">Stats</h3>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {#each Object.entries(inspectCard.stats) as [stat, value]}
-              {@const statName = STAT_NAMES[stat as keyof typeof STAT_NAMES]}
-              {@const statIcon = STAT_ICONS[stat as keyof typeof STAT_ICONS]}
-              <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="text-lg">{statIcon}</span>
-                  <span class="text-xs text-slate-400 font-bold uppercase">{statName}</span>
+          <!-- Stats & Info -->
+          <div class="grid grid-cols-2 gap-4 mb-10">
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Identity</h3>
+              <div class="flex items-center gap-3">
+                <span class="text-4xl">{DAD_TYPE_ICONS[inspectCard.type]}</span>
+                <div>
+                  <div class="font-black text-white uppercase text-sm tracking-widest">{inspectCard.type.replace('_', ' ')}</div>
+                  <div class="text-xs text-slate-400">Class Type</div>
                 </div>
-                <div class="text-2xl font-black" style="color: {inspectRarity.color};">{value}</div>
               </div>
-            {/each}
+            </div>
+            
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Serial</h3>
+              <div class="text-2xl font-black text-white">#{inspectCard.cardNumber.toString().padStart(3, '0')}</div>
+              <div class="text-xs text-slate-400 font-bold">Collector Number</div>
+            </div>
           </div>
 
-          <!-- Abilities -->
-          {#if inspectCard.abilities && inspectCard.abilities.length > 0}
-            <h3 class="text-sm font-black uppercase tracking-wider text-slate-500 mb-3">Abilities</h3>
-            <div class="space-y-3 mb-6">
-              {#each inspectCard.abilities as ability}
-                <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-                  <div class="font-bold text-white mb-1" style="color: {inspectRarity.color};">
-                    {ability.name}
-                  </div>
-                  <div class="text-sm text-slate-300">{ability.description}</div>
-                </div>
-              {/each}
-            </div>
-          {/if}
-
-          <!-- Card metadata -->
-          <div class="text-xs text-slate-500 space-y-1">
-            <div>Series {inspectCard.series} · Card #{inspectCard.cardNumber}/{inspectCard.totalInSeries}</div>
-            <div>Artist: {inspectCard.artist}</div>
-            <div>Card ID: {inspectCard.id}</div>
+          <div class="flex flex-wrap gap-4 mt-auto opacity-40">
+            <span class="text-[10px] font-bold uppercase tracking-widest">Artist: {inspectCard.artist}</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest">Series: {inspectCard.series}</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest">Year: 2024</span>
           </div>
         </div>
       </div>
@@ -697,31 +639,16 @@
 
 <style>
   @keyframes shimmer {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(200%) rotate(45deg); }
+    0% { transform: translateX(-100%) skewX(-20deg); }
+    100% { transform: translateX(200%) skewX(-20deg); }
   }
 
-  /* Card flip animation styles */
-  .card-perspective {
-    perspective: 1000px;
+  :global(body) {
+    overflow-x: hidden;
   }
 
-  .card-3d {
-    transform-style: preserve-3d;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-face {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-
-  .card-back {
-    transform: rotateY(180deg);
-  }
-
-  .card-flipped {
-    transform: rotateY(180deg);
+  .card-container {
+    perspective: 1500px;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
   }
 </style>
-
