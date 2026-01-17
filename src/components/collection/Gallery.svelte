@@ -25,6 +25,8 @@
   import CollectionGridSkeleton from '../loading/CollectionGridSkeleton.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG, STAT_NAMES, STAT_ICONS, HOLO_VARIANT_NAMES, HOLO_VARIANT_ICONS } from '../../types';
+  import CardLightbox from '../card/CardLightbox.svelte';
+  import { openLightbox } from '../../stores/lightbox';
 
   // State
   let allCards: CollectionDisplayCard[] = [];
@@ -358,6 +360,33 @@
   // Derive comparison cards from selections
   const compareCard1 = $derived(selectedForCompare[0] || null);
   const compareCard2 = $derived(selectedForCompare[1] || null);
+
+  // ============================================================================
+  // LIGHTBOX FUNCTIONS (US082 - Card Gallery - Lightbox View)
+  // ============================================================================
+
+  /**
+   * Handle card click to open lightbox
+   * @param card - The card to view in lightbox
+   * @param event - The click event (to prevent bubbling)
+   */
+  function handleCardClick(card: PackCard, event: MouseEvent) {
+    event.stopPropagation();
+
+    // Convert displayed cards to PackCard array for lightbox navigation
+    const allDisplayedCards = displayedCards.map(c => ({
+      ...c,
+      isRevealed: true,
+      isHolo: c.isHolo,
+      holoType: c.holoType,
+    }));
+
+    // Find the index of the clicked card
+    const cardIndex = allDisplayedCards.findIndex(c => c.id === card.id);
+
+    // Open lightbox with the card and navigation list
+    openLightbox(card, allDisplayedCards, cardIndex);
+  }
 
   // ============================================================================
   // ADVANCED SEARCH FUNCTIONS (US077 - Card Search - Advanced Filters)
@@ -860,11 +889,11 @@
         {#each displayedCards as card (card.id)}
           {@const isSelected = isCardSelected(card)}
           {@const selectionNum = getSelectionNumber(card)}
-          <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected}>
+          <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected} on:click={(e) => handleCardClick(card, e)} role="button" tabindex="0" aria-label="View {card.name} in lightbox" on:keydown={(e) => e.key === 'Enter' && handleCardClick(card, e)}>
             <Card
               {card}
               size="md"
-              interactive={true}
+              interactive={false}
               isFlipped={false}
               showBack={false}
               enableShare={false}
@@ -874,6 +903,10 @@
                 {formatCardCount(card.duplicateCount)}
               </div>
             {/if}
+            <!-- Zoom Indicator (appears on hover - US082) -->
+            <div class="zoom-badge">
+              <span class="zoom-icon">🔍</span>
+            </div>
             <!-- Compare Button (appears on hover) -->
             <button
               class="compare-badge"
@@ -926,6 +959,9 @@
     showComparison = false;
   }}
 />
+
+<!-- Card Lightbox (US082) -->
+<CardLightbox />
 
 <style>
   .gallery-container {
@@ -1400,6 +1436,19 @@
 
   .card-wrapper {
     position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .card-wrapper:hover {
+    transform: scale(1.05);
+    z-index: 5;
+  }
+
+  .card-wrapper:focus {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+    border-radius: 0.5rem;
   }
 
   .card-wrapper.has-duplicate :global(.card-perspective) {
@@ -1420,6 +1469,36 @@
     z-index: 10;
     min-width: 2rem;
     text-align: center;
+  }
+
+  /* Zoom Badge (US082 - Lightbox indicator) */
+  .zoom-badge {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 15;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+  }
+
+  .card-wrapper:hover .zoom-badge {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .zoom-icon {
+    font-size: 0.875rem;
+    line-height: 1;
   }
 
   /* Card reordering animation */
