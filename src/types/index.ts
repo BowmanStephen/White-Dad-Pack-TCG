@@ -2908,3 +2908,10 @@ export const DADPASS_TIERS: DadPassTier[] = [
 
 // Re-export security types for convenience
 export * from './security';
+
+// ============================================================================
+// ADMIN PANEL TYPES (US096 - Admin Panel - Content Management)
+// ============================================================================
+
+// Re-export admin types for convenience
+export * from './admin';
