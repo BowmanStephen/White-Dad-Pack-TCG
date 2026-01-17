@@ -3,19 +3,81 @@
   import { backOut } from 'svelte/easing';
   import { modalOpen, closeModal } from '@/stores/ui';
   import type { Card } from '@/types';
+  import { onMount, onDestroy } from 'svelte';
 
   export let cards: Card[] = [];
   export let packImageElement: HTMLElement | null = null;
 
   // Local reactive state
   let isOpen = false;
+  let modalElement: HTMLElement;
+  let previouslyFocusedElement: HTMLElement | null = null;
 
   // Subscribe to modalOpen store
   if (typeof window !== 'undefined') {
     modalOpen.subscribe((value) => {
       isOpen = value === 'share';
+      if (isOpen) {
+        // Store the previously focused element
+        previouslyFocusedElement = document.activeElement as HTMLElement;
+        // Focus the modal
+        setTimeout(() => {
+          modalElement?.focus();
+        }, 50);
+      } else if (previouslyFocusedElement) {
+        // Return focus to the previously focused element
+        setTimeout(() => {
+          previouslyFocusedElement?.focus();
+        }, 50);
+      }
     });
   }
+
+  // Focus trap for modal
+  function handleModalKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      handleClose();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusableElements = modalElement?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+  }
+
+  onMount(() => {
+    // Store previously focused element when modal mounts
+    if (isOpen) {
+      previouslyFocusedElement = document.activeElement as HTMLElement;
+    }
+  });
+
+  onDestroy(() => {
+    // Restore focus when modal is destroyed
+    if (previouslyFocusedElement) {
+      previouslyFocusedElement.focus();
+    }
+  });
 
   // Platform icons (using emoji for simplicity, can be replaced with SVG icons)
   const platforms = [
@@ -117,21 +179,16 @@
       handleClose();
     }
   }
-
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      handleClose();
-    }
-  }
 </script>
 
 {#if isOpen}
   <div
+    bind:this={modalElement}
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
     in:fade={{ duration: 200 }}
     out:fade={{ duration: 150 }}
     on:click={handleBackdropClick}
-    on:keydown={handleKeydown}
+    on:keydown={handleModalKeydown}
     role="dialog"
     aria-modal="true"
     aria-labelledby="share-modal-title"

@@ -41,6 +41,13 @@ const {
     <PerformanceMonitor />
   </head>
   <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased">
+    <!-- Skip Navigation Link -->
+    <a
+      href="#main-content"
+      class="skip-link"
+    >
+      Skip to main content
+    </a>
     <slot />
   </body>
 </html>
@@ -49,7 +56,27 @@ const {
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
-  
+
+  /* Skip Navigation Link */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    z-index: 10000;
+    transition: top 0.3s ease;
+  }
+
+  .skip-link:focus {
+    top: 1rem;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;

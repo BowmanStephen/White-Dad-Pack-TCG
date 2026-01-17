@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import type { Pack, PackCard } from '../../types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import { fade, fly, scale } from 'svelte/transition';
@@ -24,6 +24,8 @@
   let inspectCard: PackCard | null = null;
   let isGeneratingPackImage = false;
   let packImageShareSuccess = false;
+  let inspectModalElement: HTMLElement;
+  let previouslyFocusedElement: HTMLElement | null = null;
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -38,6 +40,38 @@
   onMount(() => {
     canNativeShare = !!navigator.share;
   });
+
+  // Focus trap for inspect modal
+  function handleInspectModalKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      closeInspect();
+      return;
+    }
+
+    if (e.key === 'Tab' && inspectModalElement) {
+      const focusableElements = inspectModalElement.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+  }
 
   // Sort cards by rarity (descending: mythic → common)
   $: sortedCards = [...pack.cards].sort((a, b) => {
@@ -61,11 +95,23 @@
   }
 
   function handleCardInspect(card: PackCard) {
+    // Store the previously focused element
+    previouslyFocusedElement = document.activeElement as HTMLElement;
     inspectCard = card;
+    // Focus the modal after it opens
+    setTimeout(() => {
+      inspectModalElement?.focus();
+    }, 50);
   }
 
   function closeInspect() {
     inspectCard = null;
+    // Return focus to the previously focused element
+    if (previouslyFocusedElement) {
+      setTimeout(() => {
+        previouslyFocusedElement?.focus();
+      }, 50);
+    }
   }
 
   function shareOnX() {
@@ -286,7 +332,12 @@
           "
           in:fly={{ y: 20, duration: 400, delay: 800 + (i * 50) }}
           on:click={() => handleCardInspect(card)}
-          on:keydown={(e) => e.key === 'Enter' && handleCardInspect(card)}
+          on:keydown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCardInspect(card);
+            }
+          }}
         >
           <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950 flex flex-col items-center justify-center p-3">
             <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">{DAD_TYPE_ICONS[card.type]}</span>
@@ -379,14 +430,16 @@
 {#if inspectCard}
   {@const inspectRarity = RARITY_CONFIG[inspectCard.rarity]}
   <div
+    bind:this={inspectModalElement}
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
     in:fade={{ duration: 200 }}
     out:fade={{ duration: 150 }}
     on:click={closeInspect}
-    on:keydown={(e) => e.key === 'Escape' && closeInspect()}
+    on:keydown={handleInspectModalKeydown}
     role="dialog"
     aria-modal="true"
     aria-label="Card details for {inspectCard.name}"
+    tabindex="-1"
   >
     <div
       class="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto"

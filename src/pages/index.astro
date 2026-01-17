@@ -11,12 +11,12 @@ import Navigation from '../components/common/Navigation.svelte';
 <BaseLayout>
   <Navigation client:load />
 
-  <main class="pt-16">
+  <main id="main-content" class="pt-16" tabindex="-1">
     <Hero />
     <Features />
     <PackPreview client:load />
     <FeaturedCards />
   </main>
-  
+
   <Footer />
 </BaseLayout>

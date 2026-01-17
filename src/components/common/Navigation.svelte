@@ -40,6 +40,15 @@
     isMenuOpen = false;
   }
 
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && isMenuOpen) {
+      closeMenu();
+      // Return focus to menu toggle button
+      const hamburger = document.querySelector('.hamburger') as HTMLButtonElement;
+      hamburger?.focus();
+    }
+  }
+
   function isActive(href: string): boolean {
     if (href === '/') {
       return currentPath === '/';
@@ -51,6 +60,7 @@
 <header
   class="nav-header"
   class:scrolled={false}
+  on:keydown={handleKeydown}
 >
   <div class="nav-container">
     <!-- Logo -->
