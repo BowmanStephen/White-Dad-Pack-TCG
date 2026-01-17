@@ -34,7 +34,7 @@
       "name": "Thermostat Tyrant",
       "subtitle": "68°F or Death",
       "type": "COUCH_DAD",
-      "rarity": "legendary",
+      "rarity": "epic",
       "artwork": "/cards/thermostat-tyrant.svg",
       "stats": {
         "dadJoke": 90,
@@ -154,7 +154,7 @@
       "name": "Handyman Hank",
       "subtitle": "Duct Tape & WD-40",
       "type": "FIX_IT_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "artwork": "/cards/handyman-hank.svg",
       "stats": {
         "dadJoke": 80,
@@ -187,7 +187,7 @@
       "name": "Bogey Bob",
       "subtitle": "It's Not About The Score",
       "type": "GOLF_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 60,
@@ -216,7 +216,7 @@
       "name": "Cargo Shorts Carl",
       "subtitle": "Pocket Dimension",
       "type": "FASHION_DAD",
-      "rarity": "epic",
+      "rarity": "rare",
       "artwork": "/cards/cargo-shorts-carl.svg",
       "stats": {
         "dadJoke": 90,
@@ -249,7 +249,7 @@
       "name": "Oil Change Oscar",
       "subtitle": "3,000 Miles or Whenever",
       "type": "CAR_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 72,
         "grillSkill": 45,
@@ -307,7 +307,7 @@
       "name": "Skateboard Scott",
       "subtitle": "The Cool Dad (Confirmed)",
       "type": "COOL_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 60,
         "grillSkill": 50,
@@ -340,7 +340,7 @@
       "name": "Soccer Stan",
       "subtitle": " sideline General",
       "type": "COACH_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 65,
@@ -369,7 +369,7 @@
       "name": "Secret Recipe Rick",
       "subtitle": "The Secret Is Butter",
       "type": "CHEF_DAD",
-      "rarity": "epic",
+      "rarity": "rare",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 95,
@@ -402,7 +402,7 @@
       "name": "Costco Craig",
       "subtitle": "Bulk Buy Boss",
       "type": "WAREHOUSE_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 75,
@@ -435,7 +435,7 @@
       "name": "Christmas Clark",
       "subtitle": "Decorate Or Die",
       "type": "HOLIDAY_DAD",
-      "rarity": "epic",
+      "rarity": "rare",
       "stats": {
         "dadJoke": 90,
         "grillSkill": 45,
@@ -505,7 +505,7 @@
       "name": "WiFi Wizard Walter",
       "subtitle": "Have You Tried Turning It Off?",
       "type": "TECH_DAD",
-      "rarity": "uncommon",
+      "rarity": "epic",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 40,
@@ -534,7 +534,7 @@
       "name": "Smoker Steve",
       "subtitle": "Low & Slow Legend",
       "type": "BBQ_DAD",
-      "rarity": "epic",
+      "rarity": "rare",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 100,
@@ -596,7 +596,7 @@
       "name": "Recliner Randy",
       "subtitle": "Horizontal Life Evaluation",
       "type": "COUCH_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 45,
@@ -629,7 +629,7 @@
       "name": "Fertilizer Fred",
       "subtitle": "Grass Growth Guru",
       "type": "LAWN_DAD",
-      "rarity": "common",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 65,
         "grillSkill": 48,
@@ -658,7 +658,7 @@
       "name": "LinkedIn Larry",
       "subtitle": "Humble Brag Master",
       "type": "OFFICE_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 42,
@@ -687,7 +687,7 @@
       "name": "Band Dad Brad",
       "subtitle": "Almost Got Signed",
       "type": "COOL_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 60,
         "grillSkill": 52,
@@ -716,7 +716,7 @@
       "name": "Classic Car Craig",
       "subtitle": "It's A Classic, Not A Clunker",
       "type": "CAR_DAD",
-      "rarity": "legendary",
+      "rarity": "epic",
       "artwork": "/cards/classic-car-craig.svg",
       "stats": {
         "dadJoke": 70,
@@ -807,7 +807,7 @@
       "name": "La-Z-Boy Throne",
       "subtitle": "Seat of Power",
       "type": "ITEM",
-      "rarity": "epic",
+      "rarity": "rare",
       "artwork": "/cards/lazboy-throne.svg",
       "stats": {
         "dadJoke": 0,
@@ -836,7 +836,7 @@
       "name": "Craftsman Toolbox",
       "subtitle": "Inherited From Grandpa",
       "type": "ITEM",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "artwork": "/cards/craftsman-toolbox.svg",
       "stats": {
         "dadJoke": 0,
@@ -865,7 +865,7 @@
       "name": "Cargo Shorts of Holding",
       "subtitle": "Pocket Dimension",
       "type": "ITEM",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "artwork": "/cards/cargo-shorts.svg",
       "stats": {
         "dadJoke": 25,
@@ -894,7 +894,7 @@
       "name": "The Thermostat",
       "subtitle": "Source of Marital Discord",
       "type": "ITEM",
-      "rarity": "mythic",
+      "rarity": "legendary",
       "artwork": "/cards/the-thermostat.svg",
       "stats": {
         "dadJoke": 50,
@@ -985,7 +985,7 @@
       "name": "Country Club Chad",
       "subtitle": "Back Nine Boss",
       "type": "GOLF_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 55,
@@ -1014,7 +1014,7 @@
       "name": "Little League Lou",
       "subtitle": "Dugout Dynamo",
       "type": "COACH_DAD",
-      "rarity": "common",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 60,
@@ -1043,7 +1043,7 @@
       "name": "Riding Mower Rex",
       "subtitle": "Lawn Cavalry",
       "type": "LAWN_DAD",
-      "rarity": "epic",
+      "rarity": "rare",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 50,
@@ -1105,7 +1105,7 @@
       "name": "Oakley Wraparounds",
       "subtitle": "Tactical Eye Protection",
       "type": "ITEM",
-      "rarity": "uncommon",
+      "rarity": "epic",
       "artwork": "/cards/oakley-wraparounds.svg",
       "stats": {
         "dadJoke": 20,
@@ -1163,7 +1163,7 @@
       "name": "Hawaiian Shirt Harry",
       "subtitle": "Casual Friday Every Day",
       "type": "FASHION_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 65,
@@ -1221,7 +1221,7 @@
       "name": "Conference Call Carl",
       "subtitle": "You're On Mute",
       "type": "OFFICE_DAD",
-      "rarity": "common",
+      "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 38,
@@ -1250,7 +1250,7 @@
       "name": "SportsCenter Sam",
       "subtitle": "Highlight Historian",
       "type": "COUCH_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "artwork": "/cards/sportscenter-sam.svg",
       "stats": {
         "dadJoke": 70,
@@ -1279,7 +1279,7 @@
       "name": "IPA Ian",
       "subtitle": "Hop Head Supreme",
       "type": "COOL_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "artwork": "/cards/ipa-ian.svg",
       "stats": {
         "dadJoke": 65,
@@ -1312,7 +1312,7 @@
       "name": "Vintage Vinyl Vince",
       "subtitle": "Analog Audiophile",
       "type": "VINTAGE_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "artwork": "/cards/vinyl-vince.svg",
       "stats": {
         "dadJoke": 70,
@@ -1370,7 +1370,7 @@
       "name": "Fourth of July Frank",
       "subtitle": "Patriotic Pyro",
       "type": "HOLIDAY_DAD",
-      "rarity": "rare",
+      "rarity": "uncommon",
       "artwork": "/cards/fourth-july-frank.svg",
       "stats": {
         "dadJoke": 85,
@@ -1399,7 +1399,7 @@
       "name": "Home Depot Hero",
       "subtitle": "Aisle Navigator",
       "type": "WAREHOUSE_DAD",
-      "rarity": "uncommon",
+      "rarity": "common",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 50,
@@ -1428,7 +1428,7 @@
       "name": "Smart Home Steve",
       "subtitle": "IoT Overlord",
       "type": "TECH_DAD",
-      "rarity": "epic",
+      "rarity": "rare",
       "artwork": "/cards/smart-home-steve.svg",
       "stats": {
         "dadJoke": 75,
