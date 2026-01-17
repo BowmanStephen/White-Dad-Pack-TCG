@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import performance utilities */
+@import './performance.css';
+
 /* ===== CARD STYLES ===== */
 
 /* Card container with 3D perspective */

@@ -131,7 +131,10 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(71, 85, 105, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Performance: Only animate background and box-shadow, not all properties */
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background, box-shadow;
   }
 
   .nav-header.scrolled {
@@ -196,7 +199,9 @@
     font-weight: 500;
     text-decoration: none;
     padding: 0.5rem 0;
-    transition: all 0.2s ease;
+    /* Performance: Only animate color and transform */
+    transition: color 0.2s ease;
+    will-change: color;
   }
 
   .nav-link::after {
@@ -208,7 +213,9 @@
     width: 100%;
     height: 2px;
     background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    /* Performance: Only animate transform */
     transition: transform 0.2s ease;
+    will-change: transform;
   }
 
   .nav-link:hover {
@@ -236,7 +243,9 @@
     border-radius: 0.5rem;
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
-    transition: all 0.2s ease;
+    /* Performance: Only animate transform and box-shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform, box-shadow;
   }
 
   .nav-link.cta:hover {
@@ -273,7 +282,11 @@
     height: 2px;
     background: #f8fafc;
     border-radius: 1px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Performance: Only animate transform, opacity, and background */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s ease;
+    will-change: transform, opacity, background;
     transform-origin: center;
   }
 
@@ -312,13 +325,17 @@
     -webkit-backdrop-filter: blur(20px);
     border-left: 1px solid rgba(71, 85, 105, 0.3);
     transform: translateX(100%);
+    /* Performance: Only animate transform */
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    /* GPU acceleration hint */
+    transform: translateZ(0) translateX(100%);
     z-index: 1001;
     overflow-y: auto;
   }
 
   .mobile-nav.open {
-    transform: translateX(0);
+    transform: translateZ(0) translateX(0);
   }
 
   .mobile-nav-inner {
@@ -339,7 +356,11 @@
     text-decoration: none;
     padding: 1rem;
     border-radius: 0.75rem;
-    transition: all 0.2s ease;
+    /* Performance: Only animate color, background, and transform */
+    transition: color 0.2s ease,
+                background 0.2s ease,
+                transform 0.2s ease;
+    will-change: color, background, transform;
     gap: 1rem;
   }
 
@@ -375,6 +396,7 @@
     border-radius: 50%;
     box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
     animation: pulse 2s ease-in-out infinite;
+    will-change: transform, opacity;
   }
 
   @keyframes pulse {
@@ -396,6 +418,7 @@
     backdrop-filter: blur(4px);
     z-index: 1000;
     animation: fadeIn 0.3s ease;
+    will-change: opacity;
   }
 
   @keyframes fadeIn {

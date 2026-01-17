@@ -344,4 +344,19 @@
   .animate-tear-line {
     will-change: transform, opacity;
   }
+
+  /* GPU acceleration hint for pack container */
+  .relative.w-64.h-96 {
+    transform: translateZ(0);
+  }
+
+  /* Optimize glow effect - use transform instead of scale classes */
+  .glow-pulse {
+    will-change: transform, opacity;
+  }
+
+  /* GPU acceleration for tear line */
+  .animate-tear-line {
+    transform: translateZ(0);
+  }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
   import type { Pack } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import Card from '../card/Card.svelte';
@@ -19,6 +19,10 @@
 
   let autoRevealActive = false;
   let particlesActive = false;
+  let autoRevealTimers: number[] = [];
+
+  // Debounced reveal using requestAnimationFrame for smoother 60fps
+  let rafId: number | null = null;
 
   // Start auto-reveal when component mounts and cards are ready
   onMount(() => {
@@ -29,6 +33,10 @@
 
   onDestroy(() => {
     stopAutoRevealSequence();
+    // Cleanup any pending RAF
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+    }
   });
 
   function startAutoRevealSequence() {
@@ -46,21 +54,36 @@
         dispatch('reveal');
         index++;
 
-        // Continue to next card after delay
-        if (index < pack.cards.length) {
-          setTimeout(revealNext, 300);
-        } else {
-          autoRevealActive = false;
-        }
+        // Use requestAnimationFrame for smoother timing (60fps aligned)
+        rafId = requestAnimationFrame(() => {
+          // Schedule next reveal after delay
+          if (index < pack.cards.length) {
+            const timerId = window.setTimeout(revealNext, 300);
+            autoRevealTimers.push(timerId);
+          } else {
+            autoRevealActive = false;
+          }
+        });
       }
     };
 
-    // Start the sequence
-    setTimeout(revealNext, 300);
+    // Start the sequence with RAF for smooth initial timing
+    rafId = requestAnimationFrame(() => {
+      const timerId = window.setTimeout(revealNext, 300);
+      autoRevealTimers.push(timerId);
+    });
   }
 
   function stopAutoRevealSequence() {
     autoRevealActive = false;
+    // Clear all pending timers
+    autoRevealTimers.forEach(timerId => clearTimeout(timerId));
+    autoRevealTimers = [];
+    // Cancel pending RAF
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
   }
 
   function handleCardClick() {
@@ -261,8 +284,9 @@
 <style>
   .animate-card-reveal {
     animation: cardReveal 0.6s ease-out;
+    will-change: transform;
   }
-  
+
   @keyframes cardReveal {
     0% {
       transform: scale(0.9);
@@ -274,11 +298,12 @@
       transform: scale(1);
     }
   }
-  
+
   .animate-legendary-burst {
     animation: legendaryBurst 0.8s ease-out forwards;
+    will-change: transform, opacity;
   }
-  
+
   @keyframes legendaryBurst {
     0% {
       transform: scale(0.5);
@@ -288,5 +313,15 @@
       transform: scale(2);
       opacity: 0;
     }
+  }
+
+  /* GPU acceleration for card container */
+  .relative.cursor-pointer {
+    transform: translateZ(0);
+  }
+
+  /* Optimize progress bar animation */
+  .transition-all.duration-300 {
+    will-change: width;
   }
 </style>

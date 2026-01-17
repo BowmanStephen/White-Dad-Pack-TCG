@@ -62,6 +62,15 @@
     transform: translate(-50%, -50%);
     animation: particle-burst ease-out forwards;
     will-change: transform, opacity;
+    /* GPU acceleration hint */
+    transform: translateZ(0);
+  }
+
+  /* Reduce box-shadow calculations for mobile performance */
+  @media (max-width: 768px) {
+    .particle {
+      box-shadow: 0 0 2px currentColor;
+    }
   }
 
   @keyframes particle-burst {
