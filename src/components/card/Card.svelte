@@ -55,9 +55,15 @@
     mouseY = (event.clientY - rect.top) / rect.height;
   }
 
+  function handleMouseEnter() {
+    if (!interactive) return;
+    isHovered = true;
+  }
+
   function handleMouseLeave() {
     mouseX = 0.5;
     mouseY = 0.5;
+    isHovered = false;
   }
 
   function animate(time: number) {
@@ -152,6 +158,16 @@
     }
   })();
 
+  // Determine if card should have base glow (rare+ only)
+  $: hasBaseGlow = ['rare', 'epic', 'legendary', 'mythic'].includes(card.rarity);
+
+  // Glow intensity levels for animation
+  $: glowIntensity = rarityConfig.animationIntensity;
+  $: glowColor = rarityConfig.glowColor;
+
+  // Hover state tracking
+  let isHovered = false;
+
   // Share functionality
   let isGeneratingImage = false;
   let shareError: string | null = null;
@@ -200,6 +216,7 @@
   class="card-perspective {sizeClasses[size]}"
   bind:this={cardElement}
   on:mousemove={handleMouseMove}
+  on:mouseenter={handleMouseEnter}
   on:mouseleave={handleMouseLeave}
   role="img"
   aria-label="{card.name} - {rarityConfig.name} {typeName}"
@@ -207,15 +224,19 @@
   <div
     class="card-3d w-full h-full relative"
     class:card-flipped={isFlipped && showBack}
+    class:glow-pulse={hasBaseGlow || isHovered}
+    class:glow-hovered={isHovered}
     style="
       transform: perspective(1000px) rotateX({rotateX}deg) rotateY({rotateY}deg);
       --rarity-color: {rarityConfig.color};
       --rarity-glow: {rarityConfig.glowColor};
+      --glow-intensity: {glowIntensity};
+      --glow-color: {glowColor};
     "
   >
     <!-- Card Front -->
     <div
-      class="card-face absolute inset-0 overflow-hidden"
+      class="card-face absolute inset-0 overflow-hidden {hasBaseGlow || isHovered ? 'card-glow' : ''}"
       style="border: {borderStyle}; box-shadow: {glowStyle};"
     >
       <!-- Card background -->
@@ -460,14 +481,50 @@
     50% { opacity: 0.9; }
   }
 
-  .legendary-glow {
-    animation: glow-pulse 3s ease-in-out infinite;
+  /* Rarity glow effect with pulse animation */
+  .card-glow {
+    animation: rarity-glow-pulse 3s ease-in-out infinite;
     will-change: box-shadow;
+    transform: translateZ(0); /* Force GPU layer */
   }
 
-  @keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 20px var(--rarity-glow), 0 0 40px var(--rarity-glow); }
-    50% { box-shadow: 0 0 30px var(--rarity-glow), 0 0 60px var(--rarity-glow), 0 0 80px var(--rarity-glow); }
+  /* Enhanced glow on hover */
+  .glow-hovered .card-glow {
+    animation: rarity-glow-hover 1.5s ease-in-out infinite;
+  }
+
+  @keyframes rarity-glow-pulse {
+    0%, 100% {
+      box-shadow:
+        0 0 calc(15px * var(--glow-intensity)) var(--glow-color),
+        0 0 calc(30px * var(--glow-intensity)) var(--glow-color)88,
+        0 0 calc(45px * var(--glow-intensity)) var(--glow-color)66,
+        inset 0 0 calc(20px * var(--glow-intensity)) rgba(0,0,0,0.5);
+    }
+    50% {
+      box-shadow:
+        0 0 calc(20px * var(--glow-intensity)) var(--glow-color),
+        0 0 calc(40px * var(--glow-intensity)) var(--glow-color)aa,
+        0 0 calc(60px * var(--glow-intensity)) var(--glow-color)77,
+        inset 0 0 calc(25px * var(--glow-intensity)) rgba(0,0,0,0.5);
+    }
+  }
+
+  @keyframes rarity-glow-hover {
+    0%, 100% {
+      box-shadow:
+        0 0 calc(25px * var(--glow-intensity)) var(--glow-color),
+        0 0 calc(50px * var(--glow-intensity)) var(--glow-color)cc,
+        0 0 calc(75px * var(--glow-intensity)) var(--glow-color)99,
+        inset 0 0 calc(30px * var(--glow-intensity)) rgba(0,0,0,0.4);
+    }
+    50% {
+      box-shadow:
+        0 0 calc(35px * var(--glow-intensity)) var(--glow-color),
+        0 0 calc(70px * var(--glow-intensity)) var(--glow-color)ee,
+        0 0 calc(105px * var(--glow-intensity)) var(--glow-color)bb,
+        inset 0 0 calc(40px * var(--glow-intensity)) rgba(0,0,0,0.4);
+    }
   }
 
   .sparkle {
@@ -491,7 +548,7 @@
   @media (prefers-reduced-motion: reduce) {
     .sparkle,
     .prismatic-holo,
-    .legendary-glow,
+    .card-glow,
     .holo-sheen {
       animation: none !important;
       transition: none !important;
