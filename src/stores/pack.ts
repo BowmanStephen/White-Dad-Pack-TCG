@@ -4,6 +4,10 @@ import { generatePack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
+import {
+  checkAndUnlockAchievements,
+  getAchievementContext,
+} from './achievements';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -293,6 +297,18 @@ function trackPackComplete(pack: Pack, skipped: boolean): void {
       skipped,
     },
   });
+
+  // Check for achievements after pack completion
+  const context = getAchievementContext(pack);
+  const newlyUnlocked = checkAndUnlockAchievements(context);
+
+  // Log newly unlocked achievements (in development)
+  if (import.meta.env.DEV && newlyUnlocked.length > 0) {
+    console.log(
+      `[Achievements] Unlocked ${newlyUnlocked.length} achievement(s):`,
+      newlyUnlocked.map((a) => a.name).join(', ')
+    );
+  }
 
   // Reset pack open start time
   packOpenStartTime = null;
