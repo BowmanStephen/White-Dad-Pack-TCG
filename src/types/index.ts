@@ -716,6 +716,64 @@ export interface StreakBonus {
 }
 
 // ============================================================================
+// ADVANCED SEARCH TYPES (US077 - Card Search - Advanced Filters)
+// ============================================================================
+
+// Stat range filter interface (min-max for each stat)
+export interface StatRangeFilter {
+  min: number;
+  max: number;
+}
+
+// All stat ranges for filtering
+export interface StatRanges {
+  dadJoke?: StatRangeFilter;
+  grillSkill?: StatRangeFilter;
+  fixIt?: StatRangeFilter;
+  napPower?: StatRangeFilter;
+  remoteControl?: StatRangeFilter;
+  thermostat?: StatRangeFilter;
+  sockSandal?: StatRangeFilter;
+  beerSnob?: StatRangeFilter;
+}
+
+// Advanced search filters interface
+export interface AdvancedSearchFilters {
+  searchTerm: string;
+  rarity: Rarity | null;
+  holoVariants: Set<HoloVariant>; // Multiple holo variants (not just "holo only")
+  selectedTypes: Set<DadType>;
+  statRanges: StatRanges;
+}
+
+// Saved search preset interface
+export interface SavedSearchPreset {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  filters: AdvancedSearchFilters;
+}
+
+// Holographic variant display names
+export const HOLO_VARIANT_NAMES: Record<HoloVariant, string> = {
+  none: 'Non-Holo',
+  standard: 'Standard Holo',
+  reverse: 'Reverse Holo',
+  full_art: 'Full Art Holo',
+  prismatic: 'Prismatic Holo',
+};
+
+// Holographic variant icons
+export const HOLO_VARIANT_ICONS: Record<HoloVariant, string> = {
+  none: '📄',
+  standard: '✨',
+  reverse: '🌈',
+  full_art: '🖼️',
+  prismatic: '💎',
+};
+
+// ============================================================================
 // PACK DESIGNS (US068 - Pack Designs - Visual Variety)
 // ============================================================================
 

@@ -12,13 +12,19 @@
     filterCardsByTypes,
     getPaginatedCards,
     formatCardCount,
+    filterCardsByStatRanges,
+    filterCardsByHoloVariants,
+    filterCardsByAdvancedSearch,
+    getDefaultStatRanges,
+    areStatRangesDefault,
   } from '../../lib/collection/utils';
-  import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard } from '../../types';
+  import { SAVED_SEARCH_PRESETS } from '../../lib/collection/presets';
+  import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard, HoloVariant, StatRanges, SavedSearchPreset } from '../../types';
   import Card from '../card/Card.svelte';
   import CardComparison from '../card/CardComparison.svelte';
   import CollectionGridSkeleton from '../loading/CollectionGridSkeleton.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
-  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG } from '../../types';
+  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG, STAT_NAMES, STAT_ICONS, HOLO_VARIANT_NAMES, HOLO_VARIANT_ICONS } from '../../types';
 
   // State
   let allCards: CollectionDisplayCard[] = [];
@@ -36,6 +42,28 @@
   let holoOnly = false;
   let selectedTypes = new Set<DadType>();
   let showTypeFilter = false;
+
+  // ============================================================================
+  // ADVANCED SEARCH STATE (US077 - Card Search - Advanced Filters)
+  // ============================================================================
+
+  // Advanced search toggles
+  let showAdvancedFilters = false;
+  let showStatRanges = false;
+  let showHoloVariants = false;
+  let showSavedSearches = false;
+
+  // Holo variant selection (multi-select)
+  let selectedHoloVariants = new Set<HoloVariant>();
+
+  // Stat range filters
+  let statRanges: StatRanges = {};
+
+  // Saved searches
+  let savedSearches = SAVED_SEARCH_PRESETS;
+
+  // Result count tracking
+  let totalFilteredCount = 0;
 
   // Sort
   let selectedSort: SortOption = 'rarity_desc';
@@ -122,14 +150,26 @@
     // Apply rarity filter
     filtered = filterCardsByRarity(filtered, selectedRarity);
 
-    // Apply holo filter
-    filtered = filterCardsByHolo(filtered, holoOnly);
+    // Apply holo filter (legacy - for backward compatibility)
+    if (holoOnly && selectedHoloVariants.size === 0) {
+      // If legacy holoOnly is set but no new variants, use legacy filter
+      filtered = filterCardsByHolo(filtered, holoOnly);
+    } else if (selectedHoloVariants.size > 0) {
+      // Use new holo variant filter
+      filtered = filterCardsByHoloVariants(filtered, selectedHoloVariants);
+    }
 
     // Apply type filter
     filtered = filterCardsByTypes(filtered, selectedTypes);
 
     // Apply search filter
     filtered = filterCardsBySearch(filtered, searchTerm);
+
+    // Apply stat range filter (US077)
+    filtered = filterCardsByStatRanges(filtered, statRanges);
+
+    // Track total filtered count for result indicator
+    totalFilteredCount = filtered.length;
 
     // Paginate
     const result = getPaginatedCards(filtered, page, pageSize);
@@ -148,11 +188,16 @@
     const uniqueCards = getUniqueCardsWithCounts(currentCollection.packs);
     let filtered = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
 
-    // Apply all filters
+    // Apply all filters (including advanced)
     filtered = filterCardsByRarity(filtered, selectedRarity);
-    filtered = filterCardsByHolo(filtered, holoOnly);
+    if (holoOnly && selectedHoloVariants.size === 0) {
+      filtered = filterCardsByHolo(filtered, holoOnly);
+    } else if (selectedHoloVariants.size > 0) {
+      filtered = filterCardsByHoloVariants(filtered, selectedHoloVariants);
+    }
     filtered = filterCardsByTypes(filtered, selectedTypes);
     filtered = filterCardsBySearch(filtered, searchTerm);
+    filtered = filterCardsByStatRanges(filtered, statRanges);
 
     const result = getPaginatedCards(filtered, page, pageSize);
     displayedCards = [...displayedCards, ...result.cards];
@@ -314,6 +359,137 @@
   const compareCard1 = $derived(selectedForCompare[0] || null);
   const compareCard2 = $derived(selectedForCompare[1] || null);
 
+  // ============================================================================
+  // ADVANCED SEARCH FUNCTIONS (US077 - Card Search - Advanced Filters)
+  // ============================================================================
+
+  /**
+   * Toggle advanced filters panel
+   */
+  function toggleAdvancedFilters() {
+    showAdvancedFilters = !showAdvancedFilters;
+  }
+
+  /**
+   * Toggle stat ranges panel
+   */
+  function toggleStatRanges() {
+    showStatRanges = !showStatRanges;
+  }
+
+  /**
+   * Toggle holo variants panel
+   */
+  function toggleHoloVariants() {
+    showHoloVariants = !showHoloVariants;
+  }
+
+  /**
+   * Toggle saved searches panel
+   */
+  function toggleSavedSearches() {
+    showSavedSearches = !showSavedSearches;
+  }
+
+  /**
+   * Update stat range filter
+   */
+  function updateStatRange(stat: keyof StatRanges, min: number, max: number) {
+    statRanges = {
+      ...statRanges,
+      [stat]: { min, max },
+    };
+    resetPagination();
+  }
+
+  /**
+   * Clear stat range filter
+   */
+  function clearStatRange(stat: keyof StatRanges) {
+    const newRanges = { ...statRanges };
+    delete newRanges[stat];
+    statRanges = newRanges;
+    resetPagination();
+  }
+
+  /**
+   * Toggle holo variant selection
+   */
+  function toggleHoloVariant(variant: HoloVariant) {
+    const newVariants = new Set(selectedHoloVariants);
+    if (newVariants.has(variant)) {
+      newVariants.delete(variant);
+    } else {
+      newVariants.add(variant);
+    }
+    selectedHoloVariants = newVariants;
+    // Update legacy holoOnly for backward compatibility
+    holoOnly = newVariants.size > 0 && newVariants.has('none') === false;
+    resetPagination();
+  }
+
+  /**
+   * Clear all holo variant selections
+   */
+  function clearHoloVariants() {
+    selectedHoloVariants = new Set();
+    holoOnly = false;
+    resetPagination();
+  }
+
+  /**
+   * Apply saved search preset
+   */
+  function applySavedSearch(preset: SavedSearchPreset) {
+    searchTerm = preset.filters.searchTerm;
+    selectedRarity = preset.filters.rarity;
+    selectedTypes = new Set(preset.filters.selectedTypes);
+    selectedHoloVariants = new Set(preset.filters.holoVariants);
+    statRanges = { ...preset.filters.statRanges };
+    holoOnly = selectedHoloVariants.size > 0 && !selectedHoloVariants.has('none');
+    resetPagination();
+    showSavedSearches = false;
+  }
+
+  /**
+   * Clear all filters
+   */
+  function clearAllFilters() {
+    searchTerm = '';
+    selectedRarity = null;
+    holoOnly = false;
+    selectedTypes = new Set();
+    selectedHoloVariants = new Set();
+    statRanges = {};
+    showTypeFilter = false;
+    showStatRanges = false;
+    showHoloVariants = false;
+    resetPagination();
+  }
+
+  /**
+   * Check if any advanced filters are active
+   */
+  function hasActiveAdvancedFilters(): boolean {
+    return (
+      selectedHoloVariants.size > 0 ||
+      Object.keys(statRanges).length > 0 ||
+      selectedTypes.size > 0 ||
+      selectedRarity !== null ||
+      searchTerm.length > 0
+    );
+  }
+
+  /**
+   * Get stat keys for iteration
+   */
+  const statKeys = Object.keys(STAT_NAMES) as Array<keyof typeof STAT_NAMES>;
+
+  /**
+   * Get holo variants for iteration
+   */
+  const holoVariants: HoloVariant[] = Object.keys(HOLO_VARIANT_NAMES) as HoloVariant[];
+
   // Setup intersection observer for infinite scroll
   onMount(() => {
     initializeFromURL();
@@ -445,6 +621,32 @@
     >
       🏷️ Types {selectedTypes.size > 0 ? `(${selectedTypes.size})` : ''}
     </button>
+
+    <!-- Advanced Filters Toggle (US077) -->
+    <button
+      class="advanced-filters-toggle"
+      class:active={showAdvancedFilters}
+      on:click={toggleAdvancedFilters}
+    >
+      🔧 Advanced
+    </button>
+
+    <!-- Clear All Filters Button (US077) -->
+    {#if hasActiveAdvancedFilters()}
+      <button
+        class="clear-all-button"
+        on:click={clearAllFilters}
+      >
+        Clear All
+      </button>
+    {/if}
+
+    <!-- Result Count Indicator (US077) -->
+    {#if totalFilteredCount > 0}
+      <div class="result-count">
+        {totalFilteredCount} {totalFilteredCount === 1 ? 'card' : 'cards'}
+      </div>
+    {/if}
   </div>
 
   <!-- Type Filter Panel (collapsible) -->
@@ -470,6 +672,160 @@
             <span class="type-name">{DAD_TYPE_NAMES[type]}</span>
           </button>
         {/each}
+      </div>
+    </div>
+  {/if}
+
+  <!-- ============================================================================
+       ADVANCED FILTERS PANELS (US077 - Card Search - Advanced Filters)
+       ============================================================================ -->
+
+  <!-- Advanced Filters Panel -->
+  {#if showAdvancedFilters}
+    <div class="advanced-filters-panel">
+      <div class="advanced-filters-header">
+        <h3 class="advanced-filters-title">Advanced Filters</h3>
+        <button class="close-advanced-button" on:click={toggleAdvancedFilters}>
+          ✕
+        </button>
+      </div>
+
+      <div class="advanced-filters-grid">
+        <!-- Saved Searches Presets -->
+        <div class="advanced-filter-section">
+          <button
+            class="advanced-filter-section-toggle"
+            on:click={toggleSavedSearches}
+          >
+            <span class="section-icon">⭐</span>
+            <span class="section-title">Saved Searches</span>
+            <span class="section-arrow" class:rotated={showSavedSearches}>▼</span>
+          </button>
+          {#if showSavedSearches}
+            <div class="saved-searches-grid">
+              {#each savedSearches as preset}
+                <button
+                  class="saved-search-preset"
+                  on:click={() => applySavedSearch(preset)}
+                >
+                  <span class="preset-icon">{preset.icon}</span>
+                  <div class="preset-info">
+                    <span class="preset-name">{preset.name}</span>
+                    <span class="preset-description">{preset.description}</span>
+                  </div>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Holo Variants -->
+        <div class="advanced-filter-section">
+          <button
+            class="advanced-filter-section-toggle"
+            on:click={toggleHoloVariants}
+          >
+            <span class="section-icon">✨</span>
+            <span class="section-title">Holo Variants</span>
+            <span class="section-arrow" class:rotated={showHoloVariants}>▼</span>
+            {#if selectedHoloVariants.size > 0}
+              <span class="section-count">({selectedHoloVariants.size})</span>
+            {/if}
+          </button>
+          {#if showHoloVariants}
+            <div class="holo-variants-grid">
+              {#each holoVariants as variant}
+                {@const isSelected = selectedHoloVariants.has(variant)}
+                <button
+                  class="holo-variant-button"
+                  class:active={isSelected}
+                  on:click={() => toggleHoloVariant(variant)}
+                >
+                  <span class="variant-icon">{HOLO_VARIANT_ICONS[variant]}</span>
+                  <span class="variant-name">{HOLO_VARIANT_NAMES[variant]}</span>
+                </button>
+              {/each}
+              {#if selectedHoloVariants.size > 0}
+                <button
+                  class="clear-holo-button"
+                  on:click={clearHoloVariants}
+                >
+                  Clear All
+                </button>
+              {/if}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Stat Ranges -->
+        <div class="advanced-filter-section">
+          <button
+            class="advanced-filter-section-toggle"
+            on:click={toggleStatRanges}
+          >
+            <span class="section-icon">📊</span>
+            <span class="section-title">Stat Ranges</span>
+            <span class="section-arrow" class:rotated={showStatRanges}>▼</span>
+            {#if Object.keys(statRanges).length > 0}
+              <span class="section-count">({Object.keys(statRanges).length})</span>
+            {/if}
+          </button>
+          {#if showStatRanges}
+            <div class="stat-ranges-grid">
+              {#each statKeys as stat}
+                {@const range = statRanges[stat]}
+                {@const defaultRange = { min: 0, max: 100 }}
+                {@const currentMin = range?.min ?? defaultRange.min}
+                {@const currentMax = range?.max ?? defaultRange.max}
+                {@const isDefault = !range || (range.min === 0 && range.max === 100)}
+                <div class="stat-range-control" class:has-filter={!isDefault}>
+                  <div class="stat-range-header">
+                    <span class="stat-icon">{STAT_ICONS[stat]}</span>
+                    <span class="stat-name">{STAT_NAMES[stat]}</span>
+                    {#if !isDefault}
+                      <button
+                        class="clear-stat-button"
+                        on:click={() => clearStatRange(stat)}
+                        aria-label="Clear {STAT_NAMES[stat]} filter"
+                      >
+                        ✕
+                      </button>
+                    {/if}
+                  </div>
+                  <div class="stat-range-inputs">
+                    <div class="stat-range-input-group">
+                      <label for="{stat}-min" class="stat-range-label">Min</label>
+                      <input
+                        id="{stat}-min"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={currentMin}
+                        on:input={(e) => updateStatRange(stat, parseInt(e.target.value) || 0, currentMax)}
+                        class="stat-range-input"
+                      />
+                    </div>
+                    <div class="stat-range-input-group">
+                      <label for="{stat}-max" class="stat-range-label">Max</label>
+                      <input
+                        id="{stat}-max"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={currentMax}
+                        on:input={(e) => updateStatRange(stat, currentMin, parseInt(e.target.value) || 100)}
+                        class="stat-range-input"
+                      />
+                    </div>
+                  </div>
+                  <div class="stat-range-value">
+                    {currentMin} - {currentMax}
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </div>
     </div>
   {/if}
@@ -1207,5 +1563,419 @@
     align-items: center;
     justify-content: center;
     border: 1px solid white;
+  }
+
+  /* ============================================================================
+     ADVANCED SEARCH STYLES (US077 - Card Search - Advanced Filters)
+     ============================================================================ */
+
+  /* Advanced Filters Toggle Button */
+  .advanced-filters-toggle {
+    padding: 0.5rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .advanced-filters-toggle:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+  }
+
+  .advanced-filters-toggle.active {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(236, 72, 153, 0.2));
+    border-color: #a855f7;
+    color: #a855f7;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+  }
+
+  /* Clear All Button */
+  .clear-all-button {
+    padding: 0.5rem 1rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 0.5rem;
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .clear-all-button:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+  }
+
+  /* Result Count Indicator */
+  .result-count {
+    padding: 0.5rem 1rem;
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    border-radius: 0.5rem;
+    color: #22c55e;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Advanced Filters Panel */
+  .advanced-filters-panel {
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(12px);
+    animation: slideDown 0.3s ease-out;
+    box-shadow: 0 10px 40px rgba(168, 85, 247, 0.1);
+  }
+
+  .advanced-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+  }
+
+  .advanced-filters-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #a855f7;
+    margin: 0;
+  }
+
+  .close-advanced-button {
+    padding: 0.25rem 0.5rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 0.375rem;
+    color: #ef4444;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .close-advanced-button:hover {
+    background: rgba(239, 68, 68, 0.3);
+  }
+
+  .advanced-filters-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Advanced Filter Section */
+  .advanced-filter-section {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .advanced-filter-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .advanced-filter-section-toggle:hover {
+    background: rgba(51, 65, 85, 0.5);
+    color: white;
+  }
+
+  .section-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .section-title {
+    flex: 1;
+  }
+
+  .section-arrow {
+    font-size: 0.6rem;
+    transition: transform 0.2s;
+  }
+
+  .section-arrow.rotated {
+    transform: rotate(180deg);
+  }
+
+  .section-count {
+    padding: 0.125rem 0.5rem;
+    background: rgba(251, 191, 36, 0.2);
+    border-radius: 9999px;
+    color: #fbbf24;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  /* Saved Searches Grid */
+  .saved-searches-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  @media (min-width: 768px) {
+    .saved-searches-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .saved-search-preset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.75rem 0.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    min-height: 80px;
+  }
+
+  .saved-search-preset:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+    border-color: rgba(251, 191, 36, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .preset-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .preset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .preset-name {
+    font-weight: 700;
+  }
+
+  .preset-description {
+    font-size: 0.6rem;
+    opacity: 0.7;
+    line-height: 1.2;
+  }
+
+  /* Holo Variants Grid */
+  .holo-variants-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  @media (min-width: 640px) {
+    .holo-variants-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .holo-variant-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 70px;
+  }
+
+  .holo-variant-button:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+    border-color: rgba(168, 85, 247, 0.5);
+  }
+
+  .holo-variant-button.active {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(168, 85, 247, 0.2));
+    border-color: #ec4899;
+    color: #ec4899;
+    box-shadow: 0 0 12px rgba(236, 72, 153, 0.3);
+  }
+
+  .variant-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .variant-name {
+    font-size: 0.6rem;
+    text-align: center;
+    line-height: 1.1;
+    word-break: break-word;
+  }
+
+  .clear-holo-button {
+    grid-column: 1 / -1;
+    padding: 0.5rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 0.375rem;
+    color: #ef4444;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .clear-holo-button:hover {
+    background: rgba(239, 68, 68, 0.3);
+  }
+
+  /* Stat Ranges Grid */
+  .stat-ranges-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  @media (min-width: 640px) {
+    .stat-ranges-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .stat-ranges-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .stat-range-control {
+    padding: 0.75rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .stat-range-control.has-filter {
+    border-color: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+  }
+
+  .stat-range-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .stat-name {
+    flex: 1;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .clear-stat-button {
+    padding: 0.125rem 0.375rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 9999px;
+    color: #ef4444;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .clear-stat-button:hover {
+    background: rgba(239, 68, 68, 0.3);
+  }
+
+  .stat-range-inputs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-range-input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-range-label {
+    font-size: 0.6rem;
+    color: #94a3b8;
+  }
+
+  .stat-range-input {
+    width: 100%;
+    padding: 0.375rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.375rem;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .stat-range-input:focus {
+    outline: none;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
+
+  .stat-range-input::placeholder {
+    color: #64748b;
+  }
+
+  .stat-range-value {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #22c55e;
   }
 </style>

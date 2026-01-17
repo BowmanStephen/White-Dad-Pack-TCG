@@ -1,4 +1,4 @@
-import type { Pack, Rarity, CollectionDisplayCard, DadType, SortOption } from '../../types';
+import type { Pack, Rarity, CollectionDisplayCard, DadType, SortOption, StatRanges, HoloVariant, AdvancedSearchFilters } from '../../types';
 import { RARITY_ORDER } from '../../types';
 
 /**
@@ -231,4 +231,126 @@ export function sortCardsByOption(
     default:
       return sortCardsByRarityAndName(cards);
   }
+}
+
+// ============================================================================
+// ADVANCED SEARCH FILTERS (US077 - Card Search - Advanced Filters)
+// ============================================================================
+
+/**
+ * Filter cards by stat ranges (e.g., Grill Skill > 80)
+ * @param cards - Cards to filter
+ * @param statRanges - Stat range filters
+ * @returns Filtered cards
+ */
+export function filterCardsByStatRanges(
+  cards: CollectionDisplayCard[],
+  statRanges: StatRanges
+): CollectionDisplayCard[] {
+  // If no stat ranges specified, return all cards
+  if (Object.keys(statRanges).length === 0) {
+    return cards;
+  }
+
+  return cards.filter((card) => {
+    // Check each stat range - ALL must match (AND logic)
+    for (const [stat, range] of Object.entries(statRanges)) {
+      if (!range) continue; // Skip undefined ranges
+
+      const cardStatValue = card.stats[stat as keyof typeof card.stats];
+
+      // Check if card stat is within range (inclusive)
+      if (cardStatValue < range.min || cardStatValue > range.max) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+/**
+ * Filter cards by holo variant(s)
+ * @param cards - Cards to filter
+ * @param holoVariants - Set of holo variants to include
+ * @returns Filtered cards
+ */
+export function filterCardsByHoloVariants(
+  cards: CollectionDisplayCard[],
+  holoVariants: Set<HoloVariant>
+): CollectionDisplayCard[] {
+  if (holoVariants.size === 0) return cards;
+
+  return cards.filter((card) => {
+    // Check if card's holoType matches any of the selected variants
+    return holoVariants.has(card.holoType);
+  });
+}
+
+/**
+ * Apply advanced search filters with AND logic
+ * All filters must match for a card to be included
+ * @param cards - Cards to filter
+ * @param filters - Advanced search filters
+ * @returns Filtered cards
+ */
+export function filterCardsByAdvancedSearch(
+  cards: CollectionDisplayCard[],
+  filters: AdvancedSearchFilters
+): CollectionDisplayCard[] {
+  let filtered = [...cards];
+
+  // Apply search term filter
+  filtered = filterCardsBySearch(filtered, filters.searchTerm);
+
+  // Apply rarity filter
+  filtered = filterCardsByRarity(filtered, filters.rarity);
+
+  // Apply holo variant filter
+  filtered = filterCardsByHoloVariants(filtered, filters.holoVariants);
+
+  // Apply dad type filter
+  filtered = filterCardsByTypes(filtered, filters.selectedTypes);
+
+  // Apply stat range filter
+  filtered = filterCardsByStatRanges(filtered, filters.statRanges);
+
+  return filtered;
+}
+
+/**
+ * Get default stat ranges (0-100 for all stats)
+ * @returns Default stat ranges
+ */
+export function getDefaultStatRanges(): StatRanges {
+  return {
+    dadJoke: { min: 0, max: 100 },
+    grillSkill: { min: 0, max: 100 },
+    fixIt: { min: 0, max: 100 },
+    napPower: { min: 0, max: 100 },
+    remoteControl: { min: 0, max: 100 },
+    thermostat: { min: 0, max: 100 },
+    sockSandal: { min: 0, max: 100 },
+    beerSnob: { min: 0, max: 100 },
+  };
+}
+
+/**
+ * Check if stat ranges are at default values (no filtering)
+ * @param statRanges - Stat ranges to check
+ * @returns True if all ranges are at default (0-100)
+ */
+export function areStatRangesDefault(statRanges: StatRanges): boolean {
+  const defaults = getDefaultStatRanges();
+
+  for (const [stat, range] of Object.entries(statRanges)) {
+    if (!range) return false; // If range is undefined, it's not default
+    const defaultRange = defaults[stat as keyof typeof defaults];
+    if (!defaultRange) return false;
+
+    if (range.min !== defaultRange.min || range.max !== defaultRange.max) {
+      return false;
+    }
+  }
+
+  return true;
 }
