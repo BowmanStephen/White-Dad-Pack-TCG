@@ -628,3 +628,118 @@ export function shareToTwitter(text: string, _imageUrl?: string, url?: string): 
   // Open in new tab/window
   window.open(intentUrl, '_blank', 'noopener,noreferrer,width=550,height=420');
 }
+
+/**
+ * Share a card image to Discord via clipboard or download
+ *
+ * Discord doesn't have a public Web Intent API like Twitter, so this function:
+ * 1. Attempts to copy the image to clipboard (for pasting in Discord)
+ * 2. Falls back to downloading the image if clipboard API unavailable
+ * 3. Provides user instructions for pasting in Discord
+ *
+ * @param imageUrl - The URL of the image to share
+ * @returns Promise<DiscordShareResult> - Result indicating success/failure and method used
+ *
+ * @example
+ * ```svelte
+ * <script>
+ *   import { shareToDiscord } from '@/lib/utils/image-generation';
+ *
+ *   async function handleDiscordShare() {
+ *     const result = await shareToDiscord(cardImageUrl);
+ *     if (result.success) {
+ *       showNotification(result.message);
+ *     } else {
+ *       showNotification(result.error, 'error');
+ *     }
+ *   }
+ * </script>
+ * ```
+ */
+export async function shareToDiscord(imageUrl: string): Promise<DiscordShareResult> {
+  // Check if Clipboard API with image support is available
+  const supportsClipboardImage =
+    typeof navigator !== 'undefined' &&
+    'clipboard' in navigator &&
+    typeof ClipboardItem !== 'undefined';
+
+  if (supportsClipboardImage) {
+    try {
+      // Fetch the image and convert to blob
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+
+      // Copy to clipboard
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob }),
+      ]);
+
+      return {
+        success: true,
+        method: 'clipboard',
+        message: 'Image copied to clipboard! Paste in Discord with Ctrl+V (Windows) or Cmd+V (Mac)',
+      };
+    } catch (error) {
+      console.error('Clipboard copy failed:', error);
+
+      // Fall through to download fallback
+    }
+  }
+
+  // Fallback: Download the image for manual upload
+  try {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    // Generate filename from URL
+    const filename = imageUrl.split('/').pop()?.replace(/\?.*$/, '') || 'daddeck-card.png';
+
+    // Trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+
+    // Clean up
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    return {
+      success: true,
+      method: 'download',
+      message: 'Image downloaded! Upload it to Discord and share with your friends.',
+    };
+  } catch (error) {
+    console.error('Download fallback failed:', error);
+    return {
+      success: false,
+      method: 'none',
+      error: 'Failed to share to Discord. Please try again or right-click the image to save it manually.',
+    };
+  }
+}
+
+/**
+ * Result of Discord share operation
+ */
+export interface DiscordShareResult {
+  /** Whether the share operation was successful */
+  success: boolean;
+
+  /** The method used: 'clipboard', 'download', or 'none' (if failed) */
+  method: 'clipboard' | 'download' | 'none';
+
+  /** Success message to show the user */
+  message?: string;
+
+  /** Error message if operation failed */
+  error?: string;
+}
