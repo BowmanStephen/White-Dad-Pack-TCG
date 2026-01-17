@@ -2,6 +2,7 @@
   import type { Rarity } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import { getParticleMultiplier, getCinematicConfig } from '../../stores/ui';
+  import { onDestroy } from 'svelte';
 
   interface Props {
     rarity: Rarity;
@@ -25,6 +26,9 @@
   let particleCount = $state(Math.floor(baseParticleCount * combinedMultiplier));
   let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
 
+  // Track cleanup function for effect
+  let cleanupEffect: (() => void) | null = null;
+
   // Regenerate particles when settings change
   $effect(() => {
     const multiplier = getParticleMultiplier() * getCinematicConfig().particleMultiplier;
@@ -44,6 +48,18 @@
     } else {
       particles = [];
     }
+
+    // Return cleanup function to stop effect tracking after unmount
+    return () => {
+      particles = [];
+      particleCount = 0;
+    };
+  });
+
+  // Ensure cleanup on component destroy
+  onDestroy(() => {
+    particles = [];
+    particleCount = 0;
   });
 </script>
 

@@ -259,7 +259,9 @@
     if (activeParticles.size > 0) {
       animationId = requestAnimationFrame(animate);
     } else {
+      // All particles done - clean up completely
       isRunning = false;
+      animationId = null;
     }
   }
 
