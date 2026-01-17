@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { PackCard } from '../../types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES } from '../../types';
+  import type { PackCard, SeasonId } from '../../types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES, SEASON_PACK_CONFIG } from '../../types';
   import CardStats from './CardStats.svelte';
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
@@ -114,6 +114,23 @@
   }
 
   $: rarityStars = getRarityStars(card.rarity);
+
+  // US086 - Season System: Get season color
+  function getSeasonColor(seasonId: SeasonId): string {
+    const seasonColors: Record<SeasonId, string> = {
+      1: '#1e40af', // Base Set Blue
+      2: '#dc2626', // Summer BBQ Red
+      3: '#d97706', // Fall Foliage Orange
+      4: '#0284c7', // Winter Blue
+      5: '#16a34a', // Spring Green
+      6: '#9333ea', // Season 6 Purple
+      7: '#ec4899', // Season 7 Pink
+      8: '#f59e0b', // Season 8 Amber
+      9: '#10b981', // Season 9 Emerald
+      10: '#6366f1', // Season 10 Indigo
+    };
+    return seasonColors[seasonId] || '#9ca3af';
+  }
 
   $: cardBackground = (() => {
     switch(card.rarity) {
@@ -405,6 +422,10 @@
       <div class="absolute bottom-0 left-0 right-0 z-20 px-3 py-2 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
         <div class="flex justify-between items-center text-[10px] text-slate-400">
           <span>#{card.cardNumber.toString().padStart(3, '0')}/{card.totalInSeries}</span>
+          <!-- Season Indicator (US086) -->
+          {#if card.seasonId}
+            <span class="season-badge" style="color: {getSeasonColor(card.seasonId)};">S{card.seasonId}</span>
+          {/if}
           <span>SERIES {card.series}</span>
           <span>{card.artist}</span>
         </div>
@@ -625,5 +646,11 @@
   .ability-indicator {
     position: relative;
     display: inline-block;
+  }
+
+  /* Season Badge Styles (US086) */
+  .season-badge {
+    font-weight: 600;
+    text-shadow: 0 0 4px currentColor;
   }
 </style>
