@@ -51,7 +51,8 @@
   }
 
   function skipToResults() {
-    import('../../stores/pack').then(({ skipToResults }) => {
+    import('../../stores/pack').then(({ skipToResults, stopAutoReveal }) => {
+      stopAutoReveal();
       skipToResults();
       loadFromStores();
     });
@@ -92,6 +93,11 @@
   // Handle keyboard navigation
   function handleKeydown(event: KeyboardEvent) {
     if (packState === 'cards_ready' || packState === 'revealing') {
+      // Cancel auto-reveal on any keyboard interaction
+      import('../../stores/pack').then(({ stopAutoReveal }) => {
+        stopAutoReveal();
+      });
+
       switch (event.key) {
         case 'ArrowRight':
         case ' ':

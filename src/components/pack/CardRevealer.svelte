@@ -1,23 +1,74 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import type { Pack } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import Card from '../card/Card.svelte';
-  
+  import ParticleEffects from '../card/ParticleEffects.svelte';
+
   export let pack: Pack;
   export let currentIndex: number;
   export let revealedIndices: Set<number>;
-  
+
   const dispatch = createEventDispatcher();
-  
+
   $: currentCard = pack.cards[currentIndex];
   $: isCurrentRevealed = revealedIndices.has(currentIndex);
   $: progress = `${currentIndex + 1}/${pack.cards.length}`;
   $: allRevealed = revealedIndices.size >= pack.cards.length;
   $: rarityConfig = currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common;
-  
-  function handleCardClick() {
+
+  let autoRevealActive = false;
+  let particlesActive = false;
+
+  // Start auto-reveal when component mounts and cards are ready
+  onMount(() => {
     if (!isCurrentRevealed) {
+      startAutoRevealSequence();
+    }
+  });
+
+  onDestroy(() => {
+    stopAutoRevealSequence();
+  });
+
+  function startAutoRevealSequence() {
+    autoRevealActive = true;
+    let index = currentIndex;
+
+    const revealNext = () => {
+      if (!autoRevealActive || index >= pack.cards.length) {
+        autoRevealActive = false;
+        return;
+      }
+
+      if (!revealedIndices.has(index)) {
+        particlesActive = true;
+        dispatch('reveal');
+        index++;
+
+        // Continue to next card after delay
+        if (index < pack.cards.length) {
+          setTimeout(revealNext, 300);
+        } else {
+          autoRevealActive = false;
+        }
+      }
+    };
+
+    // Start the sequence
+    setTimeout(revealNext, 300);
+  }
+
+  function stopAutoRevealSequence() {
+    autoRevealActive = false;
+  }
+
+  function handleCardClick() {
+    // Cancel auto-reveal on user interaction
+    stopAutoRevealSequence();
+
+    if (!isCurrentRevealed) {
+      particlesActive = true;
       dispatch('reveal');
     } else if (currentIndex < pack.cards.length - 1) {
       dispatch('next');
@@ -25,38 +76,45 @@
       dispatch('results');
     }
   }
-  
+
   function handlePrev() {
+    stopAutoRevealSequence();
     dispatch('prev');
   }
-  
+
   function handleNext() {
+    stopAutoRevealSequence();
     if (!isCurrentRevealed) {
+      particlesActive = true;
       dispatch('reveal');
     } else {
       dispatch('next');
     }
   }
-  
+
   function handleSkip() {
+    stopAutoRevealSequence();
     dispatch('skip');
   }
-  
+
   // Touch handling for swipe
   let touchStartX = 0;
   let touchStartY = 0;
-  
+
   function handleTouchStart(event: TouchEvent) {
     touchStartX = event.touches[0].clientX;
     touchStartY = event.touches[0].clientY;
   }
-  
+
   function handleTouchEnd(event: TouchEvent) {
+    // Cancel auto-reveal on touch interaction
+    stopAutoRevealSequence();
+
     const touchEndX = event.changedTouches[0].clientX;
     const touchEndY = event.changedTouches[0].clientY;
     const deltaX = touchEndX - touchStartX;
     const deltaY = touchEndY - touchStartY;
-    
+
     // Only handle horizontal swipes
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
       if (deltaX > 0) {
@@ -85,7 +143,7 @@
   </div>
   
   <!-- Card display -->
-  <div 
+  <div
     class="relative cursor-pointer"
     on:click={handleCardClick}
     on:keydown={(e) => e.key === ' ' && handleCardClick()}
@@ -93,16 +151,23 @@
     tabindex="0"
   >
     {#if currentCard}
-      <!-- Rarity burst effect on reveal -->
+      <!-- Rarity-specific particle effects on reveal -->
+      <ParticleEffects
+        rarity={currentCard.rarity}
+        active={isCurrentRevealed && particlesActive}
+        duration={1500}
+      />
+
+      <!-- Legendary/Mythic burst effect -->
       {#if isCurrentRevealed && (currentCard.rarity === 'legendary' || currentCard.rarity === 'mythic')}
-        <div 
+        <div
           class="absolute inset-0 rounded-xl animate-legendary-burst pointer-events-none"
           style="background: radial-gradient(circle, {rarityConfig.color}66 0%, transparent 70%);"
         ></div>
       {/if}
-      
+
       <div class:animate-card-reveal={isCurrentRevealed}>
-        <Card 
+        <Card
           card={currentCard}
           isFlipped={!isCurrentRevealed}
           size="lg"

@@ -1,5 +1,5 @@
 import { atom, computed } from 'nanostores';
-import type { Pack, PackCard, PackState } from '../types';
+import type { Pack, PackState } from '../types';
 import { generatePack, getPackStats } from '../lib/pack/generator';
 
 // Current pack being opened
@@ -156,4 +156,52 @@ export function resetPack(): void {
 // Show results screen
 export function showResults(): void {
   packState.set('results');
+}
+
+// Auto-reveal sequence state
+let autoRevealTimer: ReturnType<typeof setInterval> | null = null;
+let autoRevealIndex = 0;
+
+/**
+ * Start auto-reveal sequence with staggered timing
+ * Cards reveal one-by-one with 0.3s delay between each
+ * Can be cancelled by user interaction
+ */
+export function startAutoReveal(): void {
+  const pack = currentPack.get();
+  if (!pack || pack.cards.length === 0) return;
+
+  // Cancel any existing auto-reveal
+  stopAutoReveal();
+
+  autoRevealIndex = 0;
+  const delay = 300; // 0.3s between cards
+
+  autoRevealTimer = setInterval(() => {
+    const activePack = currentPack.get();
+    if (!activePack || autoRevealIndex >= activePack.cards.length) {
+      stopAutoReveal();
+      packState.set('results');
+      return;
+    }
+
+    // Reveal current card
+    revealCard(autoRevealIndex);
+
+    // Move to next card
+    autoRevealIndex++;
+    currentCardIndex.set(autoRevealIndex);
+  }, delay);
+}
+
+/**
+ * Stop the auto-reveal sequence
+ * Called when user interacts (clicks, taps, presses key)
+ */
+export function stopAutoReveal(): void {
+  if (autoRevealTimer) {
+    clearInterval(autoRevealTimer);
+    autoRevealTimer = null;
+  }
+  autoRevealIndex = 0;
 }
