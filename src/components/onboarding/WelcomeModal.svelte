@@ -14,6 +14,7 @@ Features:
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fade, fly } from 'svelte/transition';
   import { persistentAtom } from '@nanostores/persistent';
 
   // Track whether welcome modal has been shown

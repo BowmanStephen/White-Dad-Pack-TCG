@@ -1,6 +1,6 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState } from '../types';
-import { generateSeasonPack, getPackStats } from '../lib/pack/generator';
+import { generatePack, generateSeasonPack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
@@ -126,8 +126,15 @@ export async function openNewPack(): Promise<void> {
         // Get current pack type (standard or premium)
         let pack: Pack;
 
-        // Generate standard pack for current season
-        pack = generateSeasonPack(DEFAULT_SEASON_CONFIG.currentSeason);
+        // Select a season with weighted distribution:
+        // - Season 3: 50% (newest content)
+        // - Season 2: 35% (mid-tier)
+        // - Season 1: 15% (legacy)
+        const roll = Math.random();
+        const seasonId: 1 | 2 | 3 = roll < 0.15 ? 1 : roll < 0.5 ? 2 : 3;
+
+        // Generate pack from selected season
+        pack = generateSeasonPack(seasonId);
 
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;

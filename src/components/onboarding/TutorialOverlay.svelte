@@ -6,6 +6,7 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
 -->
 <script lang="ts">
   import { onMount, onDestroy, tick } from 'svelte';
+  import { fade } from 'svelte/transition';
   import {
     tutorialState,
     currentStep,
@@ -13,6 +14,7 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
     nextStep,
     prevStep,
     skipTutorial,
+    completeTutorial,
   } from '@/stores/tutorial';
 
   // Track highlighted element
@@ -236,9 +238,15 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
               </button>
             {/if}
 
-            <!-- Next button -->
+            <!-- Next/Finish button -->
             <button
-              on:click={nextStep}
+              on:click={() => {
+                if ($tutorialState.currentStepIndex === $tutorialState.steps.length - 1) {
+                  completeTutorial();
+                } else {
+                  nextStep();
+                }
+              }}
               class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all font-medium shadow-lg hover:shadow-xl"
               type="button"
             >
