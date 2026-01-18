@@ -92,6 +92,12 @@
 
   // Handle keyboard navigation
   function handleKeydown(event: KeyboardEvent) {
+    // Prevent default behavior for navigation keys to avoid scrolling
+    const navigationKeys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', ' ', 'Enter', 'Escape'];
+    if (navigationKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+
     if (packState === 'cards_ready' || packState === 'revealing') {
       // Cancel auto-reveal on any keyboard interaction
       stopAutoReveal();
@@ -99,6 +105,7 @@
       switch (event.key) {
         case 'ArrowRight':
         case ' ':
+        case 'Enter':
           if (!currentPack?.cards[currentCardIndex]?.isRevealed) {
             revealCurrentCardHandler();
           } else {
