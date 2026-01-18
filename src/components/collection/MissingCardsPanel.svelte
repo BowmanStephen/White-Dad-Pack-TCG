@@ -241,12 +241,12 @@
                     <div class="card-thumbnail">
                       <img
                         src={card.artwork}
-                        alt={card.name}
+                        alt="{card.name}, {card.rarity} rarity {card.type}. {card.subtitle}"
                         loading="lazy"
                         class="thumbnail-image"
                       />
                       <div class="card-overlay">
-                        <span class="view-icon">👁️</span>
+                        <span class="view-icon" aria-hidden="true">👁️</span>
                       </div>
                     </div>
                     <div class="card-info">
@@ -289,12 +289,12 @@
                     <div class="card-thumbnail">
                       <img
                         src={card.artwork}
-                        alt={card.name}
+                        alt="{card.name}, {card.rarity} rarity {card.type}. {card.subtitle}"
                         loading="lazy"
                         class="thumbnail-image"
                       />
                       <div class="card-overlay">
-                        <span class="view-icon">👁️</span>
+                        <span class="view-icon" aria-hidden="true">👁️</span>
                       </div>
                     </div>
                     <div class="card-info">

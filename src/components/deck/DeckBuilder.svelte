@@ -212,7 +212,7 @@
     <div class="error-banner">
       <span class="error-icon">⚠️</span>
       <span>{errorMessage}</span>
-      <button on:click={() => errorMessage = ''} class="error-close">×</button>
+      <button on:click={() => errorMessage = ''} class="error-close" aria-label="Dismiss error message">×</button>
     </div>
   {/if}
 
@@ -515,7 +515,7 @@
           <div class="modal-content" on:click|stopPropagation>
             <div class="modal-header">
               <h2 class="modal-title">{$t('deck.addCards')}</h2>
-              <button on:click={() => showAddModal = false} class="btn-icon">×</button>
+              <button on:click={() => showAddModal = false} class="btn-icon" aria-label="Close add deck modal">×</button>
             </div>
 
             <div class="modal-body">

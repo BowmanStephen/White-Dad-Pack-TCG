@@ -91,7 +91,8 @@ Automatically listens for storage events and shows notifications.
     class:warning={type === 'warning'}
     class:error={type === 'error'}
     role="alert"
-    aria-live="polite"
+    aria-live={type === 'error' ? 'assertive' : 'polite'}
+    aria-atomic="true"
   >
     <div class="warning-content">
       <div class="warning-icon">

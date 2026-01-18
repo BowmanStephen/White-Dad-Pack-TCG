@@ -836,6 +836,7 @@
           on:click={goToPreviousCard}
           disabled={!hasPrevious}
           class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
+          aria-label="Previous card"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
             <polyline points="15 18 9 12 15 6"></polyline>
@@ -848,6 +849,7 @@
           on:click={goToNextCard}
           disabled={!hasNext}
           class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
+          aria-label="Next card"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
             <polyline points="9 18 15 12 9 6"></polyline>

@@ -626,6 +626,7 @@
       <button
         class="clear-all-button"
         onclick={clearAllFilters}
+        aria-label="Clear all filters"
       >
         Clear All
       </button>
@@ -645,7 +646,7 @@
       <div class="type-filter-header">
         <h3 class="type-filter-title">Filter by Dad Type</h3>
         {#if selectedTypes.size > 0}
-          <button class="clear-types-button" onclick={clearTypeFilters}>
+          <button class="clear-types-button" onclick={clearTypeFilters} aria-label="Clear all type filters">
             Clear All
           </button>
         {/if}

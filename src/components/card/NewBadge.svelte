@@ -32,6 +32,8 @@
     class="new-badge"
     class:animate={animate}
     role="status"
+    aria-live="assertive"
+    aria-atomic="true"
     aria-label="New card discovery"
   >
     <svg class="sparkle-icon" viewBox="0 0 24 24" fill="currentColor">
