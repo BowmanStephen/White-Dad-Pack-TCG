@@ -275,6 +275,14 @@
       }
     }
   }
+
+  function handleCardNavigatorClick(cardIndex: number) {
+    // Cancel auto-reveal when user clicks a card navigator dot
+    stopAutoRevealSequence();
+
+    // Dispatch event to navigate to the specific card
+    dispatch('goToCard', { cardIndex });
+  }
 </script>
 
 <div 
@@ -426,7 +434,7 @@
           background: {isRevealed ? cardRarity.color : '#475569'};
           box-shadow: {isCurrent ? `0 0 10px ${isRevealed ? cardRarity.color : '#475569'}` : 'none'};
         "
-        on:click={() => dispatch('next') /* TODO: implement goToCard */}
+        on:click={() => handleCardNavigatorClick(i)}
         aria-label="Card {i + 1}"
       >
         <span class="w-3 h-3 rounded-full block" style="
