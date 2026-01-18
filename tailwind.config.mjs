@@ -111,8 +111,9 @@ export default {
         'gradient-end': '#f97316',   // Orange-500
       },
       fontFamily: {
-        'display': ['system-ui', 'sans-serif'],
-        'card': ['Georgia', 'serif'],
+        'display': ['Clash Display', 'Space Grotesk', 'system-ui', 'sans-serif'],
+        'card': ['Crimson Text', 'Merriweather', 'Georgia', 'serif'],
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'pack-glow': 'packGlow 2s ease-in-out infinite',

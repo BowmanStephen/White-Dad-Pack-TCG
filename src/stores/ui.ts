@@ -31,16 +31,41 @@ const CINEMATIC_CONFIGS: Record<CinematicMode, CinematicConfig> = {
 // Modal open time tracking
 let modalOpenTime: Record<string, number> = {};
 
-// Initialize quality from localStorage or auto-detect
-const getInitialQuality = (): AnimationQuality => {
-  if (typeof window === 'undefined') return 'auto';
+/**
+ * Get value from localStorage, with optional validation
+ */
+function getStoredValue<T>(
+  key: string,
+  defaultValue: T,
+  validator?: (value: string) => value is T
+): T {
+  if (typeof window === 'undefined') return defaultValue;
 
-  const saved = localStorage.getItem(QUALITY_KEY);
-  if (saved && ['auto', 'high', 'medium', 'low'].includes(saved)) {
-    return saved as AnimationQuality;
+  const saved = localStorage.getItem(key);
+  if (saved === null) return defaultValue;
+
+  if (validator) {
+    return validator(saved) ? (saved as T) : defaultValue;
   }
 
-  return 'auto'; // Default to auto-detect
+  return saved as T;
+}
+
+/**
+ * Get boolean from localStorage with default fallback
+ */
+function getStoredBoolean(key: string, defaultValue: boolean): boolean {
+  const saved = getStoredValue(key, null);
+  return saved === null ? defaultValue : saved === 'true';
+}
+
+// Initialize quality from localStorage or auto-detect
+const getInitialQuality = (): AnimationQuality => {
+  return getStoredValue<AnimationQuality>(
+    QUALITY_KEY,
+    'auto',
+    (value): value is AnimationQuality => ['auto', 'high', 'medium', 'low'].includes(value)
+  );
 };
 
 export const $animationQuality = atom<AnimationQuality>(getInitialQuality());
@@ -125,18 +150,7 @@ export const $modalOpen = atom<string | null>(null);
 export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' | 'warning' | 'achievement' }>>([]);
 
 // Screen shake enabled state
-const getInitialScreenShake = (): boolean => {
-  if (typeof window === 'undefined') return true;
-
-  const saved = localStorage.getItem(SCREEN_SHAKE_KEY);
-  if (saved !== null) {
-    return saved === 'true';
-  }
-
-  return true; // Default to enabled
-};
-
-export const $screenShakeEnabled = atom<boolean>(getInitialScreenShake());
+export const $screenShakeEnabled = atom<boolean>(getStoredBoolean(SCREEN_SHAKE_KEY, true));
 export const screenShakeEnabled = $screenShakeEnabled;
 
 /**
@@ -165,12 +179,11 @@ export function toggleScreenShake(): void {
 
 // Cinematic mode enabled state
 const getInitialCinematicMode = (): CinematicMode => {
-  if (typeof window === 'undefined') return 'normal';
-
-  const saved = localStorage.getItem(CINEMATIC_MODE_KEY);
-  if (saved === 'cinematic') return 'cinematic';
-
-  return 'normal'; // Default to normal mode
+  return getStoredValue<CinematicMode>(
+    CINEMATIC_MODE_KEY,
+    'normal',
+    (value): value is CinematicMode => value === 'cinematic' || value === 'normal'
+  );
 };
 
 export const $cinematicMode = atom<CinematicMode>(getInitialCinematicMode());
@@ -189,33 +202,11 @@ export function getCinematicConfig(): CinematicConfig {
 // ============================================================================
 
 // Skip animations enabled state
-const getInitialSkipAnimations = (): boolean => {
-  if (typeof window === 'undefined') return false;
-
-  const saved = localStorage.getItem(SKIP_ANIMATIONS_KEY);
-  if (saved !== null) {
-    return saved === 'true';
-  }
-
-  return false; // Default to false (show animations)
-};
-
-export const $skipAnimations = atom<boolean>(getInitialSkipAnimations());
+export const $skipAnimations = atom<boolean>(getStoredBoolean(SKIP_ANIMATIONS_KEY, false));
 export const skipAnimations = $skipAnimations;
 
 // Fast forward (2x speed) enabled state
-const getInitialFastForward = (): boolean => {
-  if (typeof window === 'undefined') return false;
-
-  const saved = localStorage.getItem(FAST_FORWARD_KEY);
-  if (saved !== null) {
-    return saved === 'true';
-  }
-
-  return false; // Default to false (normal speed)
-};
-
-export const $fastForward = atom<boolean>(getInitialFastForward());
+export const $fastForward = atom<boolean>(getStoredBoolean(FAST_FORWARD_KEY, false));
 export const fastForward = $fastForward;
 
 /**

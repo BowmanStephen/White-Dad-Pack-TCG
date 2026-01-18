@@ -6,7 +6,7 @@ Automatically listens for storage events and shows notifications.
 -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { getQuotaInfo, getQuotaStatus } from '@/stores/collection';
+  import { getStorageQuotaInfo, getQuotaSummary } from '@/lib/storage/quota-manager';
 
   // Props (Svelte 5 runes mode)
   interface Props {
@@ -61,7 +61,7 @@ Automatically listens for storage events and shows notifications.
   // Manually check quota
   async function checkQuota() {
     try {
-      quotaInfo = await getQuotaInfo();
+      quotaInfo = await getStorageQuotaInfo();
     } catch (error) {
       console.error('[StorageQuotaWarning] Failed to get quota info:', error);
     }

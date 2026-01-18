@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { muted, toggleMute } from '../../stores/audio';
+  import { currentStreak, canClaimToday } from '../../stores/daily-rewards';
+  import { openDailyRewardsModal } from '../../stores/daily-rewards-modal';
   import ThemeToggle from './ThemeToggle.svelte';
   import MotionToggle from './MotionToggle.svelte';
 
@@ -12,6 +14,8 @@
   }
 
   let isMuted = $state(false);
+  let dailyStreak = $state(0);
+  let canClaim = $state(false);
 
   // Subscribe to muted state
   $effect(() => {
@@ -19,6 +23,20 @@
       isMuted = value;
     });
     return unsubscribe;
+  });
+
+  // Subscribe to daily rewards state
+  $effect(() => {
+    const unsubscribeStreak = currentStreak.subscribe((value) => {
+      dailyStreak = value;
+    });
+    const unsubscribeClaim = canClaimToday.subscribe((value) => {
+      canClaim = value;
+    });
+    return () => {
+      unsubscribeStreak();
+      unsubscribeClaim();
+    };
   });
 
   const links: NavLink[] = [
@@ -99,6 +117,22 @@
           {link.label}
         </a>
       {/each}
+
+      <!-- Daily Rewards Button -->
+      <button
+        class="daily-rewards-button {canClaim ? 'claim-available' : ''}"
+        on:click={openDailyRewardsModal}
+        aria-label="Daily rewards"
+        type="button"
+      >
+        <span class="daily-icon">🎁</span>
+        {#if dailyStreak > 0}
+          <span class="daily-streak">{dailyStreak}</span>
+        {/if}
+        {#if canClaim}
+          <span class="daily-pulse"></span>
+        {/if}
+      </button>
 
       <!-- Mute button -->
       <button
@@ -269,35 +303,44 @@
 
   /* Logo */
   .nav-logo {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.05em;
     text-decoration: none;
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Clash Display', system-ui, sans-serif;
+    position: relative;
   }
 
   .nav-logo:hover {
-    transform: scale(1.02);
+    transform: scale(1.05) translateY(-1px);
+    filter: drop-shadow(0 8px 16px rgba(251, 191, 36, 0.25));
   }
 
   .nav-logo:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
   }
 
   .logo-dad {
     color: #fbbf24;
-    text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+    text-shadow: 
+      0 0 20px rgba(251, 191, 36, 0.4),
+      0 0 40px rgba(251, 191, 36, 0.1);
+    letter-spacing: -0.08em;
   }
 
   .logo-deck {
     color: #f8fafc;
+    letter-spacing: -0.03em;
   }
 
   .logo-tm {
-    font-size: 0.5rem;
+    font-size: 0.4rem;
     color: #fbbf24;
     vertical-align: super;
-    margin-left: 0.125rem;
+    margin-left: 0.25rem;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
   }
 
   /* Desktop Navigation */
@@ -310,35 +353,39 @@
   .nav-link {
     position: relative;
     color: #94a3b8;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
     text-decoration: none;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     /* Performance: Only animate color and transform */
-    transition: color 0.2s ease;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: color;
+    letter-spacing: 0.3px;
   }
 
   .nav-link::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     left: 50%;
     transform: translateX(-50%) scaleX(0);
     width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    height: 3px;
+    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+    border-radius: 1.5px;
     /* Performance: Only animate transform */
-    transition: transform 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     will-change: transform;
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
   }
 
   .nav-link:hover {
-    color: #f8fafc;
+    color: #fcd34d;
   }
 
   .nav-link:hover::after {
     transform: translateX(-50%) scaleX(1);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
   }
 
   .nav-link.active {
@@ -348,7 +395,7 @@
   .nav-link.active::after {
     transform: translateX(-50%) scaleX(1);
     background: #fbbf24;
-    box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.6);
   }
 
   .nav-link.cta {
@@ -399,6 +446,82 @@
 
   .mute-button:active {
     transform: scale(0.95);
+  }
+
+  /* Daily Rewards Button */
+  .daily-rewards-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .daily-rewards-button:hover {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  .daily-rewards-button:active {
+    transform: scale(0.95);
+  }
+
+  .daily-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .daily-streak {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .daily-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    border: 2px solid #fbbf24;
+    animation: daily-pulse 2s ease-in-out infinite;
+  }
+
+  .daily-rewards-button.claim-available {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.4);
+  }
+
+  @keyframes daily-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0;
+      transform: scale(1.1);
+    }
   }
 
   /* Settings Button */

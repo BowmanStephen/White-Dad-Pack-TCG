@@ -92,9 +92,7 @@ let saveTimeout: number | null = null;
 
 // Save to IndexedDB (debounced) - PACK-045: With quota warning handling
 function saveToStorage() {
-  if (saveTimeout) {
-    clearTimeout(saveTimeout);
-  }
+  if (saveTimeout) clearTimeout(saveTimeout);
 
   saveTimeout = window.setTimeout(async () => {
     try {
@@ -102,19 +100,17 @@ function saveToStorage() {
       const result = await saveToIndexedDB(current);
 
       if (!result.success) {
-        console.error('[Collection] Failed to save to IndexedDB:', result.error);
-        // PACK-045: Show error notification to user
-        showStorageError(result.error || 'Failed to save collection');
+        console.error('[Collection] Failed to save:', result.error);
+        dispatchStorageEvent('error', result.error || 'Failed to save collection');
       } else if (result.quotaWarning) {
-        // PACK-045: Show quota warning to user
         console.warn('[Collection] Quota warning:', result.quotaWarning);
-        showStorageWarning(result.quotaWarning);
+        dispatchStorageEvent('warning', result.quotaWarning);
       }
     } catch (error) {
-      console.error('[Collection] Error saving collection:', error);
-      showStorageError('An unexpected error occurred while saving');
+      console.error('[Collection] Error saving:', error);
+      dispatchStorageEvent('error', 'An unexpected error occurred while saving');
     }
-  }, 500); // Debounce saves to 500ms
+  }, 500);
 }
 
 // Subscribe to store changes and persist to IndexedDB (only in browser)
@@ -125,65 +121,15 @@ if (typeof window !== 'undefined') {
 }
 
 // ============================================================================
-// STORAGE UTILITIES (PACK-045: Enhanced with quota management)
+// STORAGE EVENT DISPATCHING
 // ============================================================================
 
-// Check if storage is available
-export async function checkStorageAvailable(): Promise<boolean> {
-  return await isStorageAvailable();
-}
-
-// Get current storage usage
-export async function getStorageUsageInfo() {
-  return await getStorageUsage();
-}
-
-// PACK-045: Get detailed quota information
-export async function getQuotaInfo() {
-  const { getStorageQuotaInfo } = await import('@/lib/storage/quota-manager');
-  return await getStorageQuotaInfo();
-}
-
-// PACK-045: Get human-readable quota summary
-export async function getQuotaStatus(): Promise<string> {
-  const { getQuotaSummary } = await import('@/lib/storage/quota-manager');
-  return await getQuotaSummary();
-}
-
-// PACK-045: Manually trigger quota management
-export async function manageStorageQuota() {
-  const { autoManageQuota } = await import('@/lib/storage/quota-manager');
-  const current = collection.get();
-  const result = await autoManageQuota(current);
-
-  if (result.success && result.updatedCollection) {
-    collection.set(result.updatedCollection);
-    return { success: true, actions: result.actions };
-  }
-
-  return { success: false, actions: result.actions };
-}
-
-// PACK-045: Show storage warning to user
-function showStorageWarning(message: string) {
-  // Dispatch custom event for UI components to listen to
-  if (typeof window !== 'undefined') {
-    const event = new CustomEvent('daddeck:storage-warning', {
-      detail: { message, type: 'warning' }
-    });
-    window.dispatchEvent(event);
-  }
-}
-
-// PACK-045: Show storage error to user
-function showStorageError(message: string) {
-  // Dispatch custom event for UI components to listen to
-  if (typeof window !== 'undefined') {
-    const event = new CustomEvent('daddeck:storage-error', {
-      detail: { message, type: 'error' }
-    });
-    window.dispatchEvent(event);
-  }
+// Dispatch storage warning/error events for UI components (PACK-045)
+export function dispatchStorageEvent(type: 'warning' | 'error', message: string): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent(`daddeck:storage-${type}`, { detail: { message, type } })
+  );
 }
 
 // ============================================================================

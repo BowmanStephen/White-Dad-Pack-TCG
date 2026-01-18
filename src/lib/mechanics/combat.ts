@@ -5,36 +5,10 @@ import { SeededRandom } from '../utils/seeded-random';
 
 /**
  * DadDeck™ Combat Mechanics
- * Where dad stereotypes battle for suburban dominance
- *
- * ## STAT NORMALIZATION (PACK-007)
- *
- * **Problem:** Without normalization, larger decks (5 cards) would always beat
- * smaller decks (3 cards) because they have higher TOTAL stats, even if their
- * average stats per card are lower.
- *
- * **Solution:** All stats are normalized by card count before battles.
- *
- * **Normalization Formula:**
- * ```
- * normalizedStat = statTotal / totalCards
- * normalizedPower = average(all normalizedStats)
- * ```
- *
- * **Example:**
- * - 3-card deck: Each card has 70 stats → normalized power = 70
- * - 5-card deck: Each card has 50 stats → normalized power = 50
- * - Result: 3-card deck wins despite lower TOTAL stats (210 vs 250)
- *
- * **Benefits:**
- * - ✅ Fair gameplay regardless of deck size
- * - ✅ Quality over quantity (better stats win, not more cards)
- * - ✅ Strategic deck building (optimize per-card stats)
- *
- * **Implementation:**
- * - `DeckStats.averageStats` already contains normalized stats (divided by card count)
- * - `calculateBattleResult()` uses these normalized stats for fair battles
- * - Type advantages and synergies apply AFTER normalization
+ * 
+ * Stats are normalized by card count: normalizedPower = average(all stats).
+ * This ensures fair gameplay regardless of deck size (quality over quantity).
+ * Type advantages and synergies apply after normalization.
  */
 
 // Damage types for abilities
@@ -58,76 +32,38 @@ export interface StatusEffect {
 
 /**
  * Calculate stat modifier from status effect (PACK-011)
- *
- * Status effects modify stats by percentage:
- * - grilled: -20% defense (grillSkill, fixIt)
- * - lectured: -20% attack (dadJoke, grillSkill, fixIt, napPower, remoteControl, thermostat, sockSandal, beerSnob)
- * - drunk: -30% accuracy (all stats, reduces hit chance)
- * - wired: +30% speed (increases action frequency or priority)
- *
- * @param effect - The status effect to calculate modifier for
- * @param baseStat - The base stat value before modification
- * @returns Modified stat value
- *
- * @example
- * const modified = calculateStatusEffectModifier(
- *   { type: 'grilled', duration: 2, stacks: 1 },
- *   80 // base defense stat
- * );
- * // Returns 64 (80 - 20%)
+ * Modifiers apply per stack (max 2): 2nd stack is 50% as potent.
+ * - grilled/lectured: -20% per stack
+ * - wired: +30% per stack  
+ * - drunk/legacy: no stat modifier (applied elsewhere)
  */
 export function calculateStatusEffectModifier(
   effect: StatusEffect,
   baseStat: number
 ): number {
-  const stackMultiplier = 1 + (effect.stacks - 1) * 0.5; // 2nd stack is 50% as potent
+  const stackMultiplier = 1 + (effect.stacks - 1) * 0.5;
 
   switch (effect.type) {
     case 'grilled':
-      // -20% defense per stack (to grillSkill and fixIt)
-      return baseStat * (1 - 0.2 * stackMultiplier);
-
     case 'lectured':
-      // -20% attack per stack (to all offensive stats)
       return baseStat * (1 - 0.2 * stackMultiplier);
-
-    case 'drunk':
-      // -30% accuracy (reduces hit chance, not raw stat)
-      return baseStat; // Stat unchanged, applied to hit chance calculation
 
     case 'wired':
-      // +30% speed (action frequency or priority)
       return baseStat * (1 + 0.3 * stackMultiplier);
 
-    // Legacy status effects (preserve existing behavior)
+    // No stat modifier for these effects
+    case 'drunk':
     case 'awkward':
-      return baseStat;
     case 'bored':
-      return baseStat;
     case 'inspired':
-      return baseStat;
-
     default:
       return baseStat;
   }
 }
 
 /**
- * Apply all status effects to card stats (PACK-011)
- *
- * Processes active status effects and returns modified stats.
- * Effects stack additively up to max 2 stacks.
- *
- * @param card - The card to apply effects to
- * @param effects - Array of active status effects
- * @returns Modified card stats with all effects applied
- *
- * @example
- * const effects = [
- *   { type: 'grilled', duration: 2, stacks: 1 },
- *   { type: 'lectured', duration: 1, stacks: 2 }
- * ];
- * const modifiedStats = applyStatusEffectsToCard(card, effects);
+ * Apply status effects to card stats (PACK-011)
+ * Groups effects by type, stacks up to max 2, clamps values to 0-100.
  */
 export function applyStatusEffectsToCard(
   card: Card,
@@ -149,7 +85,6 @@ export function applyStatusEffectsToCard(
     const stacks = Math.min(2, effectsOfType.length);
     const effect: StatusEffect = { type, duration: 0, stacks };
 
-    // Apply to all stats
     for (const statKey in modifiedStats) {
       const key = statKey as keyof CardStats;
       modifiedStats[key] = calculateStatusEffectModifier(
@@ -171,20 +106,7 @@ export function applyStatusEffectsToCard(
 }
 
 /**
- * Reduce duration of all status effects by 1 turn (PACK-011)
- *
- * Called at end of each turn. Removes effects when duration reaches 0.
- *
- * @param effects - Array of active status effects
- * @returns Array of effects with reduced duration (expired effects removed)
- *
- * @example
- * const effects = [
- *   { type: 'grilled', duration: 2, stacks: 1 },
- *   { type: 'lectured', duration: 1, stacks: 1 }
- * ];
- * const nextTurn = tickStatusEffects(effects);
- * // grilled: duration 1, lectured: removed
+ * Reduce status effect duration by 1 turn, removing expired effects (PACK-011)
  */
 export function tickStatusEffects(effects: StatusEffect[]): StatusEffect[] {
   return effects
@@ -196,18 +118,7 @@ export function tickStatusEffects(effects: StatusEffect[]): StatusEffect[] {
 }
 
 /**
- * Add status effect to card (PACK-011)
- *
- * Handles stacking logic (max 2 stacks). Refreshes duration if already present.
- *
- * @param currentEffects - Array of current active effects
- * @param newEffect - New effect to add
- * @returns Updated array of effects
- *
- * @example
- * const effects = [{ type: 'grilled', duration: 2, stacks: 1 }];
- * const updated = addStatusEffect(effects, { type: 'grilled', duration: 2, stacks: 1 });
- * // Returns: [{ type: 'grilled', duration: 2, stacks: 2 }]
+ * Add or stack a status effect (max 2 stacks, refreshes duration if already present)
  */
 export function addStatusEffect(
   currentEffects: StatusEffect[],
@@ -216,15 +127,11 @@ export function addStatusEffect(
   const existing = currentEffects.find(e => e.type === newEffect.type);
 
   if (existing) {
-    // Stack or refresh
-    if (existing.stacks < 2) {
-      existing.stacks++;
-    }
-    existing.duration = newEffect.duration; // Refresh duration
+    if (existing.stacks < 2) existing.stacks++;
+    existing.duration = newEffect.duration;
     return [...currentEffects];
   }
 
-  // Add new effect
   return [...currentEffects, newEffect];
 }
 

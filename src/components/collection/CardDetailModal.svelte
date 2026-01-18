@@ -4,6 +4,7 @@
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
   import { collection } from '../../stores/collection';
   import { isDetailModalOpen, detailModalCard, closeDetailModal } from '../../stores/card-detail-modal';
+  import { currentDeck, createNewDeck, addCard, isDeckLimitReached, decks } from '../../stores/deck';
   import CardStats from '../card/CardStats.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
@@ -11,6 +12,13 @@
   // Subscribe to store
   let isOpen = $derived($isDetailModalOpen);
   let card = $derived($detailModalCard);
+
+  // Deck state
+  let activeDeck = $derived($currentDeck);
+  let allDecks = $derived($decks);
+  let deckLimitReached = $derived($isDeckLimitReached);
+  let showDeckSelector = $state(false);
+  let deckActionMessage = $state<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Derived state
   let ownedCount = $state(0);
@@ -65,10 +73,89 @@
     }
   }
 
-  // Add to deck (placeholder for now - TODO: Integrate with deck system)
+  // Add to deck - integrates with deck store
   function handleAddToDeck() {
-    // TODO: Open deck builder with this card pre-selected
-    alert('Deck builder integration coming soon! (TODO)');
+    if (!card) return;
+
+    // If there's an active deck being edited, add directly
+    if (activeDeck) {
+      try {
+        addCard(card, 1);
+        showDeckMessage('success', `Added ${card.name} to "${activeDeck.name}"`);
+      } catch (error) {
+        showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
+      }
+      return;
+    }
+
+    // If no active deck, show deck selector
+    if (allDecks.length === 0) {
+      // No decks exist - create a new one
+      createNewDeck('New Deck');
+      try {
+        addCard(card, 1);
+        showDeckMessage('success', `Created new deck and added ${card.name}`);
+      } catch (error) {
+        showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
+      }
+      return;
+    }
+
+    // Show deck selector dropdown
+    showDeckSelector = true;
+  }
+
+  // Select a deck and add the card
+  function selectDeckAndAdd(deckId: string) {
+    if (!card) return;
+
+    const deck = allDecks.find(d => d.id === deckId);
+    if (!deck) return;
+
+    // Load the deck for editing
+    currentDeck.set(deck);
+
+    try {
+      addCard(card, 1);
+      showDeckMessage('success', `Added ${card.name} to "${deck.name}"`);
+    } catch (error) {
+      showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
+    }
+
+    showDeckSelector = false;
+  }
+
+  // Create new deck and add card
+  function createDeckAndAdd() {
+    if (!card) return;
+
+    if (deckLimitReached) {
+      showDeckMessage('error', 'Maximum of 10 decks reached. Delete a deck first.');
+      return;
+    }
+
+    createNewDeck('New Deck');
+    try {
+      addCard(card, 1);
+      showDeckMessage('success', `Created new deck and added ${card.name}`);
+    } catch (error) {
+      showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
+    }
+
+    showDeckSelector = false;
+  }
+
+  // Show deck action message with auto-dismiss
+  function showDeckMessage(type: 'success' | 'error', text: string) {
+    deckActionMessage = { type, text };
+    setTimeout(() => {
+      deckActionMessage = null;
+    }, 3000);
+  }
+
+  // Close deck selector when clicking outside
+  function closeDeckSelector() {
+    showDeckSelector = false;
   }
 
   // Setup listeners
@@ -307,14 +394,52 @@
           <!-- Actions -->
           <div class="actions-section">
             {#if ownedCount > 0}
-              <button
-                class="action-button action-button-primary"
-                on:click={handleAddToDeck}
-                style="--button-color: {RARITY_CONFIG[card.rarity].color};"
-              >
-                <span aria-hidden="true">🃏</span>
-                Add to Deck
-              </button>
+              <div class="deck-action-container">
+                <button
+                  class="action-button action-button-primary"
+                  on:click={handleAddToDeck}
+                  style="--button-color: {RARITY_CONFIG[card.rarity].color};"
+                >
+                  <span aria-hidden="true">🃏</span>
+                  {activeDeck ? `Add to "${activeDeck.name}"` : 'Add to Deck'}
+                </button>
+
+                <!-- Deck Selector Dropdown -->
+                {#if showDeckSelector}
+                  <div class="deck-selector-dropdown">
+                    <div class="deck-selector-header">
+                      <span>Select a deck</span>
+                      <button class="deck-selector-close" on:click={closeDeckSelector}>✕</button>
+                    </div>
+                    <div class="deck-selector-list">
+                      {#each allDecks as deck}
+                        <button
+                          class="deck-selector-item"
+                          on:click={() => selectDeckAndAdd(deck.id)}
+                        >
+                          <span class="deck-name">{deck.name}</span>
+                          <span class="deck-card-count">{deck.cards.length} cards</span>
+                        </button>
+                      {/each}
+                      {#if !deckLimitReached}
+                        <button
+                          class="deck-selector-item deck-selector-new"
+                          on:click={createDeckAndAdd}
+                        >
+                          <span>+ Create New Deck</span>
+                        </button>
+                      {/if}
+                    </div>
+                  </div>
+                {/if}
+
+                <!-- Feedback Message -->
+                {#if deckActionMessage}
+                  <div class="deck-action-message deck-action-message-{deckActionMessage.type}">
+                    {deckActionMessage.text}
+                  </div>
+                {/if}
+              </div>
             {/if}
           </div>
 
@@ -726,6 +851,144 @@
   .action-button-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px var(--button-color)55;
+  }
+
+  /* Deck Action Container */
+  .deck-action-container {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Deck Selector Dropdown */
+  .deck-selector-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    animation: slideDown 0.15s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .deck-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .deck-selector-close {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+  }
+
+  .deck-selector-close:hover {
+    color: #ef4444;
+  }
+
+  .deck-selector-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .deck-selector-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: left;
+  }
+
+  .deck-selector-item:hover {
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  .deck-selector-item:last-child {
+    border-bottom: none;
+  }
+
+  .deck-selector-new {
+    color: #22c55e;
+    font-weight: 600;
+  }
+
+  .deck-selector-new:hover {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .deck-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .deck-card-count {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* Deck Action Message */
+  .deck-action-message {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-align: center;
+    animation: fadeInOut 3s ease-in-out;
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-4px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-4px); }
+  }
+
+  .deck-action-message-success {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #22c55e;
+  }
+
+  .deck-action-message-error {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
   }
 
   /* Pack History Section */

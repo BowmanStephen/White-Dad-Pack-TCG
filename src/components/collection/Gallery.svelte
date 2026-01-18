@@ -29,12 +29,13 @@
   import RarityBadge from '../card/RarityBadge.svelte';
   import { openDetailModal, isDetailModalOpen, detailModalCard } from '../../stores/card-detail-modal';
   import { calculateVisibleRange, getTotalHeight, getEstimatedCardHeight } from '../../lib/utils/virtual-scroll';
+  import { getQueryParam, getQueryParamArray, setQueryParam, setQueryParamArray } from '../../lib/utils/url-params';
   import CollectionSort from './CollectionSort.svelte';
 
   // State
   let allCards: CollectionDisplayCard[] = [];
   let displayedCards: CollectionDisplayCard[] = [];
-  let isInitialLoading = true; // Track initial load for skeleton
+  let isInitialLoading = true;
 
   // Virtual scroll state
   let scrollTop = $state(0);
@@ -54,11 +55,7 @@
   let selectedTypes = new Set<DadType>();
   let showTypeFilter = false;
 
-  // ============================================================================
-  // ADVANCED SEARCH STATE (US077 - Card Search - Advanced Filters)
-  // ============================================================================
-
-  // Advanced search toggles
+  // Advanced search state (US077 - Card Search)
   let showAdvancedFilters = false;
   let showStatRanges = false;
   let showHoloVariants = false;
@@ -87,42 +84,6 @@
   // Card comparison state
   let selectedForCompare: PackCard[] = [];
   let showComparison = false;
-
-  // URL query param helpers
-  function getQueryParam(param: string): string | null {
-    if (typeof window === 'undefined') return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get(param);
-  }
-
-  function getQueryParamArray(param: string): string[] {
-    if (typeof window === 'undefined') return [];
-    const params = new URLSearchParams(window.location.search);
-    const value = params.get(param);
-    return value ? value.split(',').map(v => v.trim()) : [];
-  }
-
-  function setQueryParam(param: string, value: string | null) {
-    if (typeof window === 'undefined') return;
-    const url = new URL(window.location.href);
-    if (value === null) {
-      url.searchParams.delete(param);
-    } else {
-      url.searchParams.set(param, value);
-    }
-    window.history.replaceState({}, '', url.toString());
-  }
-
-  function setQueryParamArray(param: string, values: string[]) {
-    if (typeof window === 'undefined') return;
-    const url = new URL(window.location.href);
-    if (values.length === 0) {
-      url.searchParams.delete(param);
-    } else {
-      url.searchParams.set(param, values.join(','));
-    }
-    window.history.replaceState({}, '', url.toString());
-  }
 
   function initializeFromURL() {
     const rarityParam = getQueryParam('rarity');

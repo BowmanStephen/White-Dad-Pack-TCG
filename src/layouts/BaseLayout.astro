@@ -15,6 +15,8 @@ import BottomNav from '../components/nav/BottomNav.svelte';
 import ToastContainer from '../components/common/ToastContainer.svelte';
 import StorageQuotaWarning from '../components/storage/StorageQuotaWarning.svelte';
 import AchievementPopup from '../components/achievements/AchievementPopup.svelte';
+import DailyRewardsBanner from '../components/daily/DailyRewardsBanner.svelte';
+import DailyRewardsModal from '../components/daily/DailyRewardsModal.svelte';
 
 interface Props {
   title?: string;
@@ -184,6 +186,10 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- PACK-081: Achievement Popup Notification System -->
     <AchievementPopup client:load />
+
+    <!-- PACK-082: Daily Rewards System -->
+    <DailyRewardsBanner client:load />
+    <DailyRewardsModal client:load />
 
     <!-- Bottom Navigation (Mobile Only) -->
     <BottomNav client:load />

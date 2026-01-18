@@ -8,7 +8,8 @@ Provides UI for:
 - Clearing all data
 -->
 <script lang="ts">
-  import { getQuotaInfo, getQuotaStatus, manageStorageQuota, clearUserCollection } from '@/stores/collection';
+  import { clearUserCollection } from '@/stores/collection';
+  import { getStorageQuotaInfo, getQuotaSummary, autoManageQuota } from '@/lib/storage/quota-manager';
 
   // State
   let quotaInfo = $state<{
@@ -35,8 +36,8 @@ Provides UI for:
   // Load quota information
   async function loadQuotaInfo() {
     try {
-      quotaInfo = await getQuotaInfo();
-      quotaStatus = await getQuotaStatus();
+      quotaInfo = await getStorageQuotaInfo();
+      quotaStatus = await getQuotaSummary();
     } catch (error) {
       console.error('[StorageManagement] Failed to load quota info:', error);
       quotaStatus = 'Failed to load storage information';
@@ -52,12 +53,11 @@ Provides UI for:
     actionType = 'info';
 
     try {
-      const result = await manageStorageQuota();
-
+      const result = await autoManageQuota(getQuotaStatus);
       if (result.success) {
         actionMessage = `✓ ${result.actions.join(', ')}`;
         actionType = 'success';
-        await loadQuotaInfo(); // Refresh display
+        await loadQuotaInfo();
       } else {
         actionMessage = `✗ No optimization needed: ${result.actions.join(', ')}`;
         actionType = 'error';
