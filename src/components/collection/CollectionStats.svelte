@@ -10,6 +10,12 @@
     formatPercentage,
     formatLuckPercentage,
   } from '../../lib/utils/formatters';
+  import {
+    getUniqueCardsWithCounts,
+    calculateCollectionValue,
+    formatCollectionValue,
+    getValueBreakdownByRarity,
+  } from '../../lib/collection/utils';
 
   // Create a combined config object for dad types
   const DAD_TYPE_CONFIG: Record<DadType, { name: string; emoji: string; color: string }> = Object.keys(DAD_TYPE_NAMES).reduce((acc, type) => {
@@ -122,6 +128,39 @@
 
   // Reactive top dad types
   let topDadTypes = $derived(getTopDadTypes(5));
+
+  // ============================================================================
+  // COLLECTION VALUE CALCULATION (PACK-023)
+  // ============================================================================
+
+  // Get unique cards with duplicate counts
+  function getCardsWithValue(): Array<{ card: CollectionDisplayCard; value: number }> {
+    const current = collection.get();
+    const uniqueCards = getUniqueCardsWithCounts(current.packs);
+
+    return uniqueCards.map(card => ({
+      card,
+      value: calculateCardValue(card),
+    }));
+  }
+
+  // Calculate total collection value
+  let totalCollectionValue = $derived(
+    (() => {
+      const current = collection.get();
+      const uniqueCards = getUniqueCardsWithCounts(current.packs);
+      return calculateCollectionValue(uniqueCards);
+    })()
+  );
+
+  // Get value breakdown by rarity
+  let valueBreakdown = $derived(
+    (() => {
+      const current = collection.get();
+      const uniqueCards = getUniqueCardsWithCounts(current.packs);
+      return getValueBreakdownByRarity(uniqueCards);
+    })()
+  );
 
   // Calculate expected rarity percentages based on pack configuration
   function calculateExpectedRates(): Record<Rarity, number> {
@@ -357,6 +396,15 @@
         <span class="stat-label">Holo Pulls</span>
       </div>
     </div>
+
+    <!-- Collection Value (PACK-023) -->
+    <div class="stat-card value-card">
+      <div class="stat-icon">💎</div>
+      <div class="stat-info">
+        <span class="stat-value">{formatCollectionValue(totalCollectionValue)}</span>
+        <span class="stat-label">Collection Value</span>
+      </div>
+    </div>
   </div>
 
   <!-- Luck Meter -->
@@ -529,6 +577,21 @@
   .stat-card.completion {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .stat-card.value-card {
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.05);
+  }
+
+  .stat-card.value-card:hover {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.5);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+  }
+
+  .stat-card.value-card .stat-value {
+    font-size: 1.1rem;
   }
 
   .stat-icon {

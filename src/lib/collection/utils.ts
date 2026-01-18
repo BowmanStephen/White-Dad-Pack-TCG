@@ -440,3 +440,118 @@ export function getPriorityColor(priority: string): string {
 
   return priorityColors[priority] || '#9ca3af';
 }
+
+// ============================================================================
+// COLLECTION VALUE CALCULATOR (PACK-023 - Collection Value)
+// ============================================================================
+
+/**
+ * Base point values for each rarity tier
+ */
+const RARITY_POINT_VALUES: Record<Rarity, number> = {
+  common: 1,
+  uncommon: 5,
+  rare: 25,
+  epic: 100,
+  legendary: 500,
+  mythic: 5000,
+};
+
+/**
+ * Holographic bonus multiplier (50% increase)
+ */
+const HOLO_BONUS_MULTIPLIER = 1.5;
+
+/**
+ * Upgrade bonus per level (10% increase per level)
+ * Note: Currently upgrade levels are not tracked in PackCard,
+ * so this will be 0 for all cards until upgrade system is integrated.
+ */
+const UPGRADE_BONUS_PER_LEVEL = 0.1;
+
+/**
+ * Calculate the value of a single card based on rarity, holo status, and upgrade level
+ * @param card - Card to calculate value for
+ * @param upgradeLevel - Current upgrade level (default: 0)
+ * @returns Card value in points
+ */
+export function calculateCardValue(
+  card: CollectionDisplayCard,
+  upgradeLevel: number = 0
+): number {
+  // Start with base rarity value
+  let value = RARITY_POINT_VALUES[card.rarity];
+
+  // Apply holographic bonus (+50%)
+  if (card.isHolo) {
+    value = value * HOLO_BONUS_MULTIPLIER;
+  }
+
+  // Apply upgrade bonus (+10% per level)
+  if (upgradeLevel > 0) {
+    const upgradeBonus = 1 + (upgradeLevel * UPGRADE_BONUS_PER_LEVEL);
+    value = value * upgradeBonus;
+  }
+
+  return Math.round(value);
+}
+
+/**
+ * Calculate total collection value from all cards
+ * @param cards - All cards in collection (with duplicate counts)
+ * @param cardUpgrades - Optional map of card IDs to upgrade levels
+ * @returns Total collection value in points
+ */
+export function calculateCollectionValue(
+  cards: CollectionDisplayCard[],
+  cardUpgrades?: Map<string, number>
+): number {
+  let totalValue = 0;
+
+  for (const card of cards) {
+    const upgradeLevel = cardUpgrades?.get(card.id) || 0;
+    const cardValue = calculateCardValue(card, upgradeLevel);
+
+    // Multiply by duplicate count (e.g., 3 copies = 3x value)
+    totalValue += cardValue * card.duplicateCount;
+  }
+
+  return totalValue;
+}
+
+/**
+ * Format collection value for display with thousands separators
+ * @param value - Collection value in points
+ * @returns Formatted string (e.g., "12,450 points")
+ */
+export function formatCollectionValue(value: number): string {
+  return `${value.toLocaleString('en-US')} points`;
+}
+
+/**
+ * Get rarity breakdown of collection value
+ * @param cards - All cards in collection
+ * @param cardUpgrades - Optional map of card IDs to upgrade levels
+ * @returns Object with value breakdown by rarity
+ */
+export function getValueBreakdownByRarity(
+  cards: CollectionDisplayCard[],
+  cardUpgrades?: Map<string, number>
+): Record<Rarity, number> {
+  const breakdown: Record<Rarity, number> = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+  };
+
+  for (const card of cards) {
+    const upgradeLevel = cardUpgrades?.get(card.id) || 0;
+    const cardValue = calculateCardValue(card, upgradeLevel);
+    breakdown[card.rarity] += cardValue * card.duplicateCount;
+  }
+
+  return breakdown;
+}

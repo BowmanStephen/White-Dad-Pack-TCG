@@ -12,7 +12,8 @@ export type LeaderboardCategory =
   | 'packsOpened'
   | 'uniqueCards'
   | 'mythicCards'
-  | 'totalCards';
+  | 'totalCards'
+  | 'collectionValue'; // PACK-023: Collection Value leaderboard
 
 /**
  * Leaderboard scope - global or friends-only
@@ -41,6 +42,8 @@ export interface PlayerStats {
   mythicCards: number;
   /** Total cards in collection (including duplicates) */
   totalCards: number;
+  /** Collection value in points (PACK-023) */
+  collectionValue?: number;
   /** Last active timestamp */
   lastActive: Date;
   /** When the player joined */

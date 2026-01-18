@@ -47,11 +47,26 @@ function generatePseudonym(): string {
  * Generate random player stats
  */
 function generatePlayerStats(): PlayerStats {
+  const totalPacksOpened = Math.floor(Math.random() * 5000) + 100;
+  const uniqueCards = Math.floor(Math.random() * 200) + 50;
+  const mythicCards = Math.floor(Math.random() * 20);
+  const totalCards = Math.floor(Math.random() * 3000) + 200;
+
+  // Calculate collection value based on stats (PACK-023)
+  // Approximate value: 1 point per common, 5 per uncommon, etc.
+  // This is a simplified calculation for simulated players
+  const collectionValue = Math.floor(
+    totalCards * 2 + // Base value from total cards
+    uniqueCards * 10 + // Bonus for unique cards
+    mythicCards * 5000 // Mythic cards are worth 5000 points each
+  );
+
   return {
-    totalPacksOpened: Math.floor(Math.random() * 5000) + 100,
-    uniqueCards: Math.floor(Math.random() * 200) + 50,
-    mythicCards: Math.floor(Math.random() * 20),
-    totalCards: Math.floor(Math.random() * 3000) + 200,
+    totalPacksOpened,
+    uniqueCards,
+    mythicCards,
+    totalCards,
+    collectionValue,
     lastActive: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
     joinedAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
   };
@@ -88,6 +103,7 @@ function filterStatsByTimePeriod(
       uniqueCards: 0,
       mythicCards: 0,
       totalCards: 0,
+      collectionValue: 0,
     };
   }
 
@@ -125,6 +141,8 @@ function getStatValue(stats: PlayerStats, category: LeaderboardCategory): number
       return stats.mythicCards;
     case 'totalCards':
       return stats.totalCards;
+    case 'collectionValue':
+      return stats.collectionValue ?? 0;
   }
 }
 
