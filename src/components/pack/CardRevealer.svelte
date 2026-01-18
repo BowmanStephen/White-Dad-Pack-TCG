@@ -12,6 +12,7 @@
   import NewBadge from '../card/NewBadge.svelte';
   import * as uiStore from '../../stores/ui';
   import { markCardAsDiscovered, discoveryProgressText } from '../../stores/discovered';
+  import { fastForward } from '../../stores/ui';
 
   export let pack: Pack;
   export let currentIndex: number;
@@ -55,6 +56,7 @@
   let rafId: number | null = null;
 
   // PACK-026: Calculate reveal delay based on rarity (longer for rarer cards)
+  // PACK-028: Apply fast-forward multiplier (2x speed when enabled)
   $: baseDelay = 300;
   $: rarityDelay = currentCard ? {
     common: 300,
@@ -64,7 +66,8 @@
     legendary: 1000,
     mythic: 1500,
   }[currentCard.rarity] || 300 : 300;
-  $: revealDelay = rarityDelay / cinematicConfig.speedMultiplier;
+  $: fastForwardMultiplier = $fastForward ? 2 : 1;
+  $: revealDelay = rarityDelay / (cinematicConfig.speedMultiplier * fastForwardMultiplier);
 
   // PACK-026: Animation class based on rarity
   $: revealAnimationClass = currentCard ? {
@@ -536,14 +539,35 @@
     </button>
   </div>
 
-  <!-- Skip button with swipe hint -->
-  <div class="flex flex-col items-center gap-2">
+  <!-- PACK-028: Animation control buttons -->
+  <div class="flex flex-col items-center gap-3">
+    <!-- Fast-forward toggle button -->
+    <button
+      class="flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg transition-colors {$fastForward ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-400'} hover:bg-amber-500/30"
+      on:click={() => {
+        $fastForward = !$fastForward;
+      }}
+      aria-label={$fastForward ? 'Disable fast forward' : 'Enable fast forward'}
+      aria-pressed={$fastForward}
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+      <span class="text-sm font-semibold">2x Speed</span>
+      {#if $fastForward}
+        <span class="text-xs bg-amber-500 text-black px-2 py-0.5 rounded font-bold">ON</span>
+      {/if}
+    </button>
+
+    <!-- Skip to results button -->
     <button
       class="min-h-[44px] px-4 py-2 text-slate-500 hover:text-slate-300 text-sm transition-colors"
       on:click={handleSkip}
     >
       Skip to results
     </button>
+
+    <!-- Swipe hint -->
     <div class="text-slate-600 text-xs flex items-center gap-1">
       <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />

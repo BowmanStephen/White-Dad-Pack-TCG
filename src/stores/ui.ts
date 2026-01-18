@@ -9,6 +9,8 @@ export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
 const QUALITY_KEY = 'daddeck_animation_quality';
 const SCREEN_SHAKE_KEY = 'daddeck_screen_shake_enabled';
 const CINEMATIC_MODE_KEY = 'daddeck_cinematic_mode';
+const SKIP_ANIMATIONS_KEY = 'daddeck_skip_animations';
+const FAST_FORWARD_KEY = 'daddeck_fast_forward';
 
 // Cinematic mode configuration (US083 - Pack Opening - Cinematic Mode)
 const CINEMATIC_CONFIGS: Record<CinematicMode, CinematicConfig> = {
@@ -180,6 +182,100 @@ export const cinematicMode = $cinematicMode;
 export function getCinematicConfig(): CinematicConfig {
   const mode = $cinematicMode.get();
   return CINEMATIC_CONFIGS[mode];
+}
+
+// ============================================================================
+// PACK ANIMATION SETTINGS (PACK-028 - Skip/Fast-Forward)
+// ============================================================================
+
+// Skip animations enabled state
+const getInitialSkipAnimations = (): boolean => {
+  if (typeof window === 'undefined') return false;
+
+  const saved = localStorage.getItem(SKIP_ANIMATIONS_KEY);
+  if (saved !== null) {
+    return saved === 'true';
+  }
+
+  return false; // Default to false (show animations)
+};
+
+export const $skipAnimations = atom<boolean>(getInitialSkipAnimations());
+export const skipAnimations = $skipAnimations;
+
+// Fast forward (2x speed) enabled state
+const getInitialFastForward = (): boolean => {
+  if (typeof window === 'undefined') return false;
+
+  const saved = localStorage.getItem(FAST_FORWARD_KEY);
+  if (saved !== null) {
+    return saved === 'true';
+  }
+
+  return false; // Default to false (normal speed)
+};
+
+export const $fastForward = atom<boolean>(getInitialFastForward());
+export const fastForward = $fastForward;
+
+/**
+ * Set skip animations preference
+ */
+export function setSkipAnimations(enabled: boolean): void {
+  $skipAnimations.set(enabled);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SKIP_ANIMATIONS_KEY, String(enabled));
+  }
+
+  // Track setting change
+  trackEvent({
+    type: 'settings_change',
+    data: {
+      setting: 'skipAnimations',
+      previousValue: !$skipAnimations.get(),
+      newValue: enabled,
+    },
+  });
+}
+
+/**
+ * Toggle skip animations preference
+ */
+export function toggleSkipAnimations(): void {
+  const current = $skipAnimations.get();
+  setSkipAnimations(!current);
+}
+
+/**
+ * Set fast forward preference
+ */
+export function setFastForward(enabled: boolean): void {
+  $fastForward.set(enabled);
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(FAST_FORWARD_KEY, String(enabled));
+  }
+
+  // Track setting change
+  trackEvent({
+    type: 'settings_change',
+    data: {
+      setting: 'fastForward',
+      previousValue: !$fastForward.get(),
+      newValue: enabled,
+    },
+  });
+}
+
+/**
+ * Toggle fast forward preference
+ */
+export function toggleFastForward(): void {
+  const current = $fastForward.get();
+  setFastForward(!current);
 }
 
 /**

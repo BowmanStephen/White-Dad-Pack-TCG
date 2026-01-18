@@ -8,6 +8,7 @@ import { haptics } from '../lib/utils/haptics';
 import { wishlist } from './wishlist';
 import { findPulledWishlistedCards } from '../lib/collection/utils';
 import { selectRandomTearAnimation } from '../types';
+import { skipAnimations as skipAnimationsStore } from './ui';
 
 // Current pack type selection (for UI state)
 export const selectedPackType = atom<PackType>('standard');
@@ -220,9 +221,17 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
 
 // Complete pack animation and show cards
 export function completePackAnimation(): void {
-  packState.set('cards_ready');
-  // Haptic feedback on pack open
-  haptics.packOpen();
+  // PACK-028: Check if animations should be skipped
+  const skipAnimations = skipAnimationsStore.get();
+
+  if (skipAnimations) {
+    // Skip to results immediately
+    skipToResults();
+  } else {
+    packState.set('cards_ready');
+    // Haptic feedback on pack open
+    haptics.packOpen();
+  }
 }
 
 // Reveal a specific card

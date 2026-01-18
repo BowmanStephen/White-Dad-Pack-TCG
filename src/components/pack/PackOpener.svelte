@@ -30,6 +30,8 @@
   import ErrorDisplay from '../common/ErrorDisplay.svelte';
   import ErrorMessage from '../common/ErrorMessage.svelte';
   import CinematicToggle from '../common/CinematicToggle.svelte';
+  import AnimationControls from './AnimationControls.svelte';
+  import { skipAnimations } from '../../stores/ui';
 
 
   // Reactive state using Svelte 5 runes
@@ -178,8 +180,13 @@
 {/if}
 
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
-  <!-- Cinematic mode toggle (US083) -->
+  <!-- PACK-028: Animation controls (skip/fast-forward) - top right -->
   <div class="fixed top-4 right-4 z-40">
+    <AnimationControls />
+  </div>
+
+  <!-- Cinematic mode toggle (US083) - below animation controls -->
+  <div class="fixed top-44 right-4 z-40">
     <CinematicToggle />
   </div>
 
