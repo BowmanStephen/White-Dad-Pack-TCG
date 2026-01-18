@@ -229,21 +229,35 @@
     }
   });
 
+  // PACK-033: Border thickness scales with rarity (2px common → 8px mythic)
+  let borderThickness = $derived(() => {
+    const thicknessMap: Record<string, string> = {
+      common: '2px',
+      uncommon: '3px',
+      rare: '4px',
+      epic: '5px',
+      legendary: '6px',
+      mythic: '8px',
+    };
+    return thicknessMap[card.rarity] || '2px';
+  });
+
   let borderStyle = $derived(() => {
     switch(card.rarity) {
       case 'common':
+        return `${borderThickness} solid #9ca3af`;
       case 'uncommon':
-        return '4px solid #9ca3af';
+        return `${borderThickness} solid #60a5fa`;
       case 'rare':
-        return '4px solid #fbbf24';
+        return `${borderThickness} solid #fbbf24`;
       case 'epic':
-        return '4px solid #a855f7';
+        return `${borderThickness} solid #a855f7`;
       case 'legendary':
-        return '4px solid #f97316';
+        return `${borderThickness} solid #f97316`;
       case 'mythic':
-        return '4px solid #ec4899';
+        return `${borderThickness} solid #ec4899`;
       default:
-        return '4px solid #9ca3af';
+        return `${borderThickness} solid #9ca3af`;
     }
   });
 
