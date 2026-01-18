@@ -10,7 +10,7 @@
  * - Includes deck metadata and card list with counts
  */
 
-import type { Deck, DeckExport, Card } from '@/types';
+import type { Deck, Card } from '@/types';
 import { getAllCards } from '@/lib/cards/database';
 
 // ============================================================================
@@ -279,7 +279,6 @@ export function importDeckFromCode(code: string): DeckImportResult {
             totalInSeries: 1,
             artist: 'Unknown',
             holoVariant: 'none',
-            isHolo: false,
           },
           count: cardEntry.count,
         });
