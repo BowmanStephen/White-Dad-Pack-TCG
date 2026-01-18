@@ -204,7 +204,7 @@ export function createNetworkError(
 
 /**
  * Log error details to console for debugging
- * Logs include: error ID, category, timestamp, and original error
+ * Logs include: error ID, category, timestamp, user agent, URL, and original error
  */
 export function logError(error: AppError, originalError?: Error | unknown): void {
   if (error.logged) return; // Already logged
@@ -220,6 +220,13 @@ export function logError(error: AppError, originalError?: Error | unknown): void
   console.log(`%cError ID:`, labelStyle, error.id);
   console.log(`%cCategory:`, labelStyle, error.category);
   console.log(`%cTime:`, labelStyle, new Date(error.timestamp).toISOString());
+
+  // Add user agent and URL for debugging
+  if (typeof window !== 'undefined') {
+    console.log(`%cURL:`, labelStyle, window.location.href);
+    console.log(`%cUser Agent:`, labelStyle, navigator.userAgent);
+  }
+
   console.log(`%cMessage:`, labelStyle, error.message);
 
   if (originalError) {
@@ -231,7 +238,36 @@ export function logError(error: AppError, originalError?: Error | unknown): void
 
   console.groupEnd();
 
+  // Log to Sentry if available
+  logToSentry(error, originalError);
+
   error.logged = true;
+}
+
+/**
+ * Log error to Sentry with context
+ */
+function logToSentry(error: AppError, originalError?: Error | unknown): void {
+  // Sentry will be imported dynamically to avoid SSR issues
+  import('@/lib/sentry').then(({ captureException }) => {
+    const context = {
+      errorId: error.id,
+      category: error.category,
+      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'unknown',
+      timestamp: new Date(error.timestamp).toISOString(),
+    };
+
+    if (originalError instanceof Error) {
+      captureException(originalError, context);
+    } else {
+      // Create error from message for non-Error objects
+      captureException(new Error(error.message), context);
+    }
+  }).catch(err => {
+    // Silently fail if Sentry is not available
+    console.debug('Sentry logging failed:', err);
+  });
 }
 
 /**

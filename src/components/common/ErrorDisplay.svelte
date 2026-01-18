@@ -1,13 +1,18 @@
 <script lang="ts">
   import type { AppError } from '../../lib/utils/errors';
   import FadeIn from '../loading/FadeIn.svelte';
+  import ErrorReportModal from '../error/ErrorReportModal.svelte';
 
   interface Props {
     error: AppError;
     onDismiss?: () => void;
+    originalError?: Error | unknown;
+    showReportButton?: boolean;
   }
 
-  let { error, onDismiss }: Props = $props();
+  let { error, onDismiss, originalError, showReportButton = true }: Props = $props();
+
+  let showReportModal = $state(false);
 
   // Execute recovery action
   function handleRecovery(action: () => void) {
@@ -44,6 +49,16 @@
                 {recovery.label}
               </button>
             {/each}
+
+            <!-- Report Error Button -->
+            {#if showReportButton}
+              <button
+                class="error-button report-button"
+                onclick={() => showReportModal = true}
+              >
+                📝 Report Issue
+              </button>
+            {/if}
           </div>
         {/if}
 
@@ -60,6 +75,15 @@
       </div>
     </div>
   </FadeIn>
+
+  <!-- Error Report Modal -->
+  {#if showReportModal}
+    <ErrorReportModal
+      {error}
+      {originalError}
+      onClose={() => showReportModal = false}
+    />
+  {/if}
 </div>
 
 <style>
@@ -156,6 +180,17 @@
   .error-button:not(.primary):hover {
     background: rgba(75, 85, 99, 0.7);
     border-color: rgba(156, 163, 175, 0.5);
+  }
+
+  .error-button.report-button {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .error-button.report-button:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(96, 165, 250, 0.5);
   }
 
   .error-dismiss {

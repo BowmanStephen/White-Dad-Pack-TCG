@@ -1,0 +1,351 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ErrorDisplay from '@/components/common/ErrorDisplay.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
+import { createAppError, createStorageError, createNetworkError, createGenerationError, logError, categorizeError } from '@/lib/utils/errors';
+import { triggerTestError } from '@/lib/sentry';
+
+const title = 'Error Logging Test - DadDeck TCG';
+const description = 'Test error logging and Sentry integration';
+---
+
+<BaseLayout title="Error Logging Test" description="Test error logging and Sentry integration">
+  <main class="error-test-page">
+    <div class="container">
+      <h1>🔧 Error Logging Test Page</h1>
+
+      <section class="test-section">
+        <h2>Test Scenarios</h2>
+
+        <div class="test-grid">
+          <!-- Test 1: Console Error -->
+          <div class="test-card">
+            <h3>1. Console Error</h3>
+            <p>Logs error to console with error ID and details</p>
+            <button onclick={() => {
+              try {
+                throw new Error('Test console error');
+              } catch (e) {
+                const category = categorizeError(e);
+                const appError = createAppError(category, e, [
+                  { label: 'OK', action: () => {} }
+                ]);
+                logError(appError, e);
+                alert('Check console for error log');
+              }
+            }}>Trigger Console Error</button>
+          </div>
+
+          <!-- Test 2: Sentry Error -->
+          <div class="test-card">
+            <h3>2. Sentry Error</h3>
+            <p>Sends error to Sentry (if configured)</p>
+            <button onclick={() => {
+              triggerTestError();
+              alert('Test error sent to Sentry (check console)');
+            }}>Send to Sentry</button>
+          </div>
+
+          <!-- Test 3: Error Display -->
+          <div class="test-card">
+            <h3>3. Error Display UI</h3>
+            <p>Shows full error UI with report button</p>
+            <div id="error-display-container"></div>
+            <button onclick={() => {
+              try {
+                throw new Error('Test error display');
+              } catch (e) {
+                const category = categorizeError(e);
+                const appError = createAppError(category, e, [
+                  { label: 'Try Again', action: () => alert('Retry clicked'), primary: true },
+                  { label: 'Go Home', action: () => window.location.href = '/' }
+                ]);
+                // Render error display
+                const container = document.getElementById('error-display-container');
+                // Note: This would normally use Svelte rendering
+                alert(`Error created: ${appError.id}\nCheck console for full details`);
+                logError(appError, e);
+              }
+            }}>Show Error Display</button>
+          </div>
+
+          <!-- Test 4: Storage Error -->
+          <div class="test-card">
+            <h3>4. Storage Error</h3>
+            <p>Simulates LocalStorage quota exceeded</p>
+            <button onclick={() => {
+              const error = new Error('QuotaExceededError: Storage limit exceeded');
+              const appError = createStorageError(error, () => alert('Retry storage'));
+              logError(appError, error);
+              alert('Storage error logged (check console)');
+            }}>Trigger Storage Error</button>
+          </div>
+
+          <!-- Test 5: Network Error -->
+          <div class="test-card">
+            <h3>5. Network Error</h3>
+            <p>Simulates network failure</p>
+            <button onclick={() => {
+              const error = new Error('Failed to fetch: Network error');
+              const appError = createNetworkError(error, () => alert('Retry network'));
+              logError(appError, error);
+              alert('Network error logged (check console)');
+            }}>Trigger Network Error</button>
+          </div>
+
+          <!-- Test 6: Generation Error -->
+          <div class="test-card">
+            <h3>6. Pack Generation Error</h3>
+            <p>Simulates pack generation failure</p>
+            <button onclick={() => {
+              const error = new Error('Pack generation failed: Invalid card data');
+              const appError = createGenerationError(error, () => alert('Retry generation'));
+              logError(appError, error);
+              alert('Generation error logged (check console)');
+            }}>Trigger Generation Error</button>
+          </div>
+
+          <!-- Test 7: Error Boundary -->
+          <div class="test-card">
+            <h3>7. Error Boundary</h3>
+            <p>Tests error boundary component</p>
+            <button onclick={() => {
+              // Trigger error in component
+              const btn = event.target as HTMLButtonElement;
+              btn.disabled = true;
+              setTimeout(() => {
+                throw new Error('Test error boundary error');
+              }, 100);
+            }}>Test Error Boundary</button>
+          </div>
+
+          <!-- Test 8: User Agent Logging -->
+          <div class="test-card">
+            <h3>8. User Agent Logging</h3>
+            <p>Logs error with user agent and URL</p>
+            <button onclick={() => {
+              try {
+                throw new Error('Test user agent logging');
+              } catch (e) {
+                const category = categorizeError(e);
+                const appError = createAppError(category, e, [
+                  { label: 'OK', action: () => {} }
+                ]);
+                logError(appError, e);
+                console.log('User Agent:', navigator.userAgent);
+                console.log('URL:', window.location.href);
+                alert('Error logged with user agent (check console)');
+              }
+            }}>Log User Agent</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="test-section">
+        <h2>Error Information</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <h3>✅ What's Implemented</h3>
+            <ul>
+              <li>✓ Console logging with error ID</li>
+              <li>✓ Sentry integration (when configured)</li>
+              <li>✓ User agent and URL tracking</li>
+              <li>✓ Stack trace logging</li>
+              <li>✓ Error categorization</li>
+              <li>✓ Error report modal UI</li>
+              <li>✓ Error boundary component</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h3>🔧 Configuration</h3>
+            <ul>
+              <li><strong>Sentry DSN:</strong> {import.meta.env.PUBLIC_SENTRY_DSN || 'Not configured'}</li>
+              <li><strong>Environment:</strong> {import.meta.env.MODE}</li>
+              <li><strong>User Agent:</strong> <span id="user-agent-display">Loading...</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="test-section">
+        <h2>Live Error Display Test</h2>
+        <ErrorBoundary component="ErrorTestPage">
+          <ErrorDisplay
+            error={createAppError('unknown', 'This is a test error to demonstrate the error display UI.', [
+              { label: 'Retry', action: () => alert('Retry clicked'), primary: true },
+              { label: 'Go Home', action: () => window.location.href = '/' },
+              { label: 'Cancel', action: () => {} }
+            ])}
+            originalError={new Error('Test original error object')}
+          />
+        </ErrorBoundary>
+      </section>
+    </div>
+  </main>
+
+  <script define:vars={{ userAgent: navigator.userAgent }}>
+    // Display user agent on client side
+    const userAgentDisplay = document.getElementById('user-agent-display');
+    if (userAgentDisplay) {
+      userAgentDisplay.textContent = userAgent || 'Unknown';
+    }
+  </script>
+</BaseLayout>
+
+<style>
+    .error-test-page {
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+    }
+
+    .test-section {
+      margin-bottom: 3rem;
+    }
+
+    .test-section h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .test-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .test-card:hover {
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+
+    .test-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #60a5fa;
+      margin-bottom: 0.5rem;
+    }
+
+    .test-card p {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .test-card button {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: none;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .test-card button:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .test-card button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .info-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .info-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 1rem;
+    }
+
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .info-card li {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .info-card li:last-child {
+      border-bottom: none;
+    }
+
+    .info-card strong {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    #error-display-container {
+      margin-top: 1rem;
+      min-height: 200px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .test-grid,
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

@@ -144,7 +144,7 @@
 
 {#if hasError && error}
   <div class="error-boundary-wrapper">
-    <ErrorDisplay {error} />
+    <ErrorDisplay {error} {originalError} />
     {#if showDetails && import.meta.env.DEV}
       <details class="error-details">
         <summary>Developer Details</summary>
