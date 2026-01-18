@@ -5,6 +5,8 @@ import OfflineIndicator from '../components/common/OfflineIndicator.svelte';
 import CardLightbox from '../components/card/CardLightbox.svelte';
 import NotificationInitializer from '../components/notifications/NotificationInitializer.svelte';
 import MusicInitializer from '../components/audio/MusicInitializer.svelte';
+import KeyboardInitializer from '../components/keyboard/KeyboardInitializer.svelte';
+import ShortcutsModal from '../components/keyboard/ShortcutsModal.svelte';
 import BottomNav from '../components/nav/BottomNav.svelte';
 import { initI18n } from '../i18n';
 
@@ -124,6 +126,10 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- Background Music System -->
     <MusicInitializer client:load />
+
+    <!-- Keyboard Shortcuts System -->
+    <KeyboardInitializer client:load />
+    <ShortcutsModal client:load />
 
     <!-- Bottom Navigation (Mobile Only) -->
     <BottomNav client:load />

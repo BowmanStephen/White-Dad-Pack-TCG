@@ -28,7 +28,11 @@
     "upgrade": "Mejoras",
     "crafting": "Elaboración",
     "trade": "Intercambio",
+    "battle": "Batalla",
     "leaderboard": "Clasificaciones"
+  },
+  "battle": {
+    "title": "Batalla"
   },
   "pack": {
     "title": "DadDeck - El Simulador Definitivo de Cartas Coleccionables de Papás Blancos",
@@ -266,6 +270,19 @@
     "previousCard": "Carta anterior",
     "closeModal": "Cerrar modal",
     "packResults": "Resultados de apertura de sobre"
+  },
+  "keyboard": {
+    "title": "Atajos de Teclado",
+    "description": "Navega la aplicación más rápido con atajos de teclado",
+    "showShortcuts": "Mostrar atajos de teclado",
+    "closeModal": "Cerrar modal",
+    "openPack": "Abrir sobre",
+    "goToCollection": "Ir a colección",
+    "goToDeckBuilder": "Ir al constructor de mazos",
+    "categories": {
+      "navigation": "Navegación",
+      "actions": "Acciones"
+    }
   },
   "daily": {
     "title": "Recompensas Diarias",

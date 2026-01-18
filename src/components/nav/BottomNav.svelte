@@ -5,23 +5,27 @@
     href: string;
     label: string;
     icon: string;
+    shortcut?: string;
   }
 
   const navItems: NavItem[] = [
     {
       href: '/',
       label: 'Home',
-      icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'
+      icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
+      shortcut: 'O',
     },
     {
       href: '/collection',
       label: 'Collection',
-      icon: 'M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10'
+      icon: 'M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10',
+      shortcut: 'C',
     },
     {
       href: '/deck-builder',
       label: 'Deck',
-      icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z'
+      icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z',
+      shortcut: 'D',
     },
     {
       href: '/achievements',
@@ -82,6 +86,11 @@
         />
       </svg>
       <span class="nav-label">{item.label}</span>
+      {#if item.shortcut}
+        <kbd class="nav-shortcut" aria-label="Keyboard shortcut: {item.shortcut}">
+          {item.shortcut}
+        </kbd>
+      {/if}
     </a>
   {/each}
 </nav>
@@ -137,6 +146,32 @@
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.025em;
+  }
+
+  .nav-shortcut {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    background: rgba(251, 191, 36, 0.9);
+    color: #0f172a;
+    font-family: 'Courier New', monospace;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: 0.25rem;
+    line-height: 1;
+  }
+
+  /* Show shortcuts on desktop */
+  @media (min-width: 769px) {
+    .nav-shortcut {
+      display: inline-flex;
+    }
   }
 
   /* Active State */

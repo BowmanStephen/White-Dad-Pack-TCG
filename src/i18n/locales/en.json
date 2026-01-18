@@ -28,7 +28,11 @@
     "upgrade": "Upgrades",
     "crafting": "Crafting",
     "trade": "Trading",
+    "battle": "Battle",
     "leaderboard": "Leaderboards"
+  },
+  "battle": {
+    "title": "Battle"
   },
   "pack": {
     "title": "DadDeck - The Ultimate White Dad Trading Card Simulator",
@@ -310,6 +314,19 @@
     "previousCard": "Previous card",
     "closeModal": "Close modal",
     "packResults": "Pack opening results"
+  },
+  "keyboard": {
+    "title": "Keyboard Shortcuts",
+    "description": "Navigate the app faster with keyboard shortcuts",
+    "showShortcuts": "Show keyboard shortcuts",
+    "closeModal": "Close modal",
+    "openPack": "Open pack",
+    "goToCollection": "Go to collection",
+    "goToDeckBuilder": "Go to deck builder",
+    "categories": {
+      "navigation": "Navigation",
+      "actions": "Actions"
+    }
   },
   "daily": {
     "title": "Daily Rewards",
