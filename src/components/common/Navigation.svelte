@@ -43,6 +43,7 @@
     { href: '/', label: 'Home' },
     { href: '/pack', label: 'Open Pack', isCta: true },
     { href: '/collection', label: 'My Collection', isTutorialTarget: true },
+    { href: '/trade', label: 'Trading' },
     { href: '/battle', label: 'Battle' },
   ];
 
