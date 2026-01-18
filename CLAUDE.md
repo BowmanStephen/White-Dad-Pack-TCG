@@ -575,13 +575,35 @@ loops in UI/state machines.
 - **Legendary** (orange) - Full art, intense effects
 - **Mythic** (pink) - Prismatic holo, maximum particles
 
-### Dad Types (16 categories)
+### Dad Types & Special Card Types
+
+**Core DICKTATOR DADS (archetypes):**
 ```
 BBQ_DAD | FIX_IT_DAD | GOLF_DAD | COUCH_DAD | LAWN_DAD
 CAR_DAD | OFFICE_DAD | COOL_DAD | COACH_DAD | CHEF_DAD
 HOLIDAY_DAD | WAREHOUSE_DAD | VINTAGE_DAD | FASHION_DAD
-TECH_DAD | ITEM (equipment/items)
+TECH_DAD
 ```
+
+**Extended Archetypes & Variants:**
+```
+SUBURBAN_SPY | GAMER_GIZZARDS | PREPPER_PENIS
+BBQ_BRAWLER | SUBURBAN_SOCIALITE | NEIGHBORHOOD_NOSY
+SON_SPAWNS | DAUGHTER_DINGBATS | UNCLE_UPROARS
+SUBURBAN_SIDEKICKS
+```
+
+**Special Card Types (inspired by classic TCG mechanics):**
+```
+ITEM      - Equipment and accessories (standard gear)
+EVENT     - Shitshow Scenarios (one-time use cards, MTG-style)
+TERRAIN   - Suburban Shitfields (permanent battlefield modifiers, Pokémon Stadium-style)
+EVOLUTION - Midlife Crisis Mutations (upgrade base dads, Pokémon Evolution-style)
+CURSE     - Dad Damnations (negative effects on opponents, MTG Curses-style)
+TRAP      - Suburban Suckerpunches (face-down triggered effects, Yu-Gi-Oh! Trap-style)
+```
+
+See `DadDecK_Card_Types.md` for detailed examples and mechanics of all card types.
 
 ### Card Stats (8 attributes)
 Each card has 0-100 in:

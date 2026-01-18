@@ -97,11 +97,11 @@ paths:
             enum: [common, uncommon, rare, epic, legendary, mythic]
         - name: type
           in: query
-          description: Filter by dad type
+          description: Filter by dad type or special card type
           required: false
           schema:
             type: string
-            enum: [BBQ_DAD, FIX_IT_DAD, GOLF_DAD, COUCH_DAD, LAWN_DAD, CAR_DAD, OFFICE_DAD, COOL_DAD, COACH_DAD, CHEF_DAD, HOLIDAY_DAD, WAREHOUSE_DAD, VINTAGE_DAD, FASHION_DAD, TECH_DAD, ITEM]
+            enum: [BBQ_DAD, FIX_IT_DAD, GOLF_DAD, COUCH_DAD, LAWN_DAD, CAR_DAD, OFFICE_DAD, COOL_DAD, COACH_DAD, CHEF_DAD, HOLIDAY_DAD, WAREHOUSE_DAD, VINTAGE_DAD, FASHION_DAD, TECH_DAD, SUBURBAN_SPY, GAMER_GIZZARDS, PREPPER_PENIS, BBQ_BRAWLER, SUBURBAN_SOCIALITE, NEIGHBORHOOD_NOSY, SON_SPAWNS, DAUGHTER_DINGBATS, UNCLE_UPROARS, SUBURBAN_SIDEKICKS, ITEM, EVENT, TERRAIN, EVOLUTION, CURSE, TRAP]
         - name: series
           in: query
           description: Filter by series number
@@ -658,7 +658,8 @@ components:
           example: The Flame Keeper
         type:
           type: string
-          enum: [BBQ_DAD, FIX_IT_DAD, GOLF_DAD, COUCH_DAD, LAWN_DAD, CAR_DAD, OFFICE_DAD, COOL_DAD, COACH_DAD, CHEF_DAD, HOLIDAY_DAD, WAREHOUSE_DAD, VINTAGE_DAD, FASHION_DAD, TECH_DAD, ITEM]
+          description: Dad type archetype or special card type (EVENT, TERRAIN, EVOLUTION, CURSE, TRAP, ITEM)
+          enum: [BBQ_DAD, FIX_IT_DAD, GOLF_DAD, COUCH_DAD, LAWN_DAD, CAR_DAD, OFFICE_DAD, COOL_DAD, COACH_DAD, CHEF_DAD, HOLIDAY_DAD, WAREHOUSE_DAD, VINTAGE_DAD, FASHION_DAD, TECH_DAD, SUBURBAN_SPY, GAMER_GIZZARDS, PREPPER_PENIS, BBQ_BRAWLER, SUBURBAN_SOCIALITE, NEIGHBORHOOD_NOSY, SON_SPAWNS, DAUGHTER_DINGBATS, UNCLE_UPROARS, SUBURBAN_SIDEKICKS, ITEM, EVENT, TERRAIN, EVOLUTION, CURSE, TRAP]
         rarity:
           type: string
           enum: [common, uncommon, rare, epic, legendary, mythic]

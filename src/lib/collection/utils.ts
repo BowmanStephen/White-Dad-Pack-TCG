@@ -65,7 +65,7 @@ export function filterCardsByRarity(cards: CollectionDisplayCard[], rarity: Rari
 }
 
 /**
- * Filter cards by search term (name or type)
+ * Filter cards by search term (name, flavor text, or type)
  */
 export function filterCardsBySearch(cards: CollectionDisplayCard[], searchTerm: string): CollectionDisplayCard[] {
   if (!searchTerm.trim()) return cards;
@@ -75,6 +75,7 @@ export function filterCardsBySearch(cards: CollectionDisplayCard[], searchTerm: 
     return (
       card.name.toLowerCase().includes(term) ||
       card.subtitle.toLowerCase().includes(term) ||
+      card.flavorText.toLowerCase().includes(term) ||
       card.type.toLowerCase().includes(term)
     );
   });

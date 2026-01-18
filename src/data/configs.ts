@@ -126,6 +126,11 @@ export const DAD_TYPE_NAMES: Record<DadType, string> = {
   UNCLE_UPROARS: 'Uncle Uproars',
   SUBURBAN_SIDEKICKS: 'Suburban Sidekicks',
   ITEM: 'Item',
+  EVENT: 'Event (Shitshow Scenarios)',
+  TERRAIN: 'Terrain (Suburban Shitfields)',
+  EVOLUTION: 'Evolution (Midlife Crisis Mutations)',
+  CURSE: 'Curse (Dad Damnations)',
+  TRAP: 'Trap (Suburban Suckerpunches)',
 };
 
 // Dad Type Icons (emoji)
@@ -156,6 +161,11 @@ export const DAD_TYPE_ICONS: Record<DadType, string> = {
   UNCLE_UPROARS: '👨‍🦱',
   SUBURBAN_SIDEKICKS: '🚶',
   ITEM: '🎁',
+  EVENT: '💥',
+  TERRAIN: '🗺️',
+  EVOLUTION: '🔄',
+  CURSE: '👿',
+  TRAP: '⚠️',
 };
 
 // Stat Display Names

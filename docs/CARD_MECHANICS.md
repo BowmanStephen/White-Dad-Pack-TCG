@@ -1261,9 +1261,11 @@ Abilities automatically map to stats based on keywords:
 
 ---
 
-## 16. Dad Types & Synergies
+## 16. Dad Types & Special Card Types
 
-### 16.1 All 16 Dad Types
+### 16.1 DICKTATOR DADS (Archetypes)
+
+Core dad archetypes representing different suburban stereotypes:
 
 | Type | Icon | Specialty | Flavor |
 |------|------|-----------|--------|
@@ -1282,9 +1284,63 @@ Abilities automatically map to stats based on keywords:
 | VINTAGE_DAD | 🔧 | Experience | "Back in my day" |
 | FASHION_DAD | 👟 | Style | "New balance enthusiast" |
 | TECH_DAD | 💻 | Innovation | "Have you tried turning it off?" |
-| ITEM | 🎁 | Equipment | Tools and accessories |
 
-### 16.2 Type Color Palette
+### 16.2 Extended Archetypes & Variants
+
+Additional archetypes and family variants:
+
+| Type | Icon | Description |
+|------|------|-------------|
+| SUBURBAN_SPY | 🕵️ | Paranoid neighbors spying on cul-de-sacs |
+| GAMER_GIZZARDS | 🎮 | Basement-dwelling gaming enthusiasts |
+| PREPPER_PENIS | 🛡️ | Doomsday preppers with bunkers |
+| BBQ_BRAWLER | 🍖 | Weekend warrior tailgate specialists |
+| SUBURBAN_SOCIALITE | 🥂 | Country club elite |
+| NEIGHBORHOOD_NOSY | 👂 | Meddling gossip neighbors |
+| SON_SPAWNS | 👦 | Rebellious teenage sons |
+| DAUGHTER_DINGBATS | 👧 | Drama queen daughters |
+| UNCLE_UPROARS | 👨‍🦱 | Weird family relatives |
+| SUBURBAN_SIDEKICKS | 🚶 | Various neighborhood characters |
+
+### 16.3 Special Card Types
+
+Inspired by classic TCG mechanics, these special card types add strategic depth:
+
+| Type | Icon | Category Name | Description | Inspiration |
+|------|------|---------------|-------------|-------------|
+| ITEM | 🎁 | Equipment | Tools and accessories that boost dads | Standard equipment |
+| EVENT | 💥 | Shitshow Scenarios | One-time-use chaotic suburban events | MTG Instants/Sorceries |
+| TERRAIN | 🗺️ | Suburban Shitfields | Permanent battlefield environment modifiers | Pokémon Stadium/MTG Lands |
+| EVOLUTION | 🔄 | Midlife Crisis Mutations | Upgrade base dads to enhanced versions | Pokémon Evolution |
+| CURSE | 👿 | Dad Damnations | Negative effects applied to opponents | MTG Curses/Enchantments |
+| TRAP | ⚠️ | Suburban Suckerpunches | Face-down cards triggered by opponent actions | Yu-Gi-Oh! Trap Cards |
+
+**EVENT Cards (Shitshow Scenarios):**
+- One-time-use cards with immediate effects
+- Examples: "BBQ Blowout Bonanza", "HOA Hatefuck Hell", "Black Friday Ball-Buster"
+- Effects: Boost specific dad types, deal damage, steal cards, etc.
+
+**TERRAIN Cards (Suburban Shitfields):**
+- Permanent battlefield modifiers until replaced
+- Examples: "Backyard BBQ Battleground", "Cul-de-Sac Cum-Zone", "Office Park Orgasm Oasis"
+- Effects: Boost specific types, penalize opponents, alter game rules
+
+**EVOLUTION Cards (Midlife Crisis Mutations):**
+- Upgrade existing dad cards with enhanced stats and abilities
+- Examples: "Grill God Gary" (evolves from "Grill Master Gary"), "Recliner Rage Randy"
+- Effects: Add stat bonuses, grant new abilities, visual transformations
+
+**CURSE Cards (Dad Damnations):**
+- Negative effects that persist on opponents
+- Examples: "Chemtrail Cock-Block", "5G Shrink-Dick Signal", "HOA Hell-Harassment"
+- Effects: Reduce stats, disable abilities, prevent actions for multiple turns
+
+**TRAP Cards (Suburban Suckerpunches):**
+- Face-down cards activated by opponent actions
+- Examples: "Garage Sale Gangbang", "Dad Bod Butt-Bomb", "Thermostat Throb-Trap"
+- Effects: Steal resources, reflect damage, negate boosts, surprise attacks
+
+### 16.4 Type Color Palette
 
 ```typescript
 const DAD_TYPE_COLORS = {
@@ -1307,7 +1363,7 @@ const DAD_TYPE_COLORS = {
 };
 ```
 
-### 16.3 Synergy Bonuses
+### 16.5 Synergy Bonuses
 
 When building decks, certain type combinations provide bonuses:
 
@@ -1327,7 +1383,7 @@ When building decks, certain type combinations provide bonuses:
 - +15% Dad Joke
 - "Style Points" bonus damage
 
-### 16.4 Type Distribution in Card Pool
+### 16.6 Type Distribution in Card Pool
 
 Target distribution for balanced collection:
 

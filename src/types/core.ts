@@ -2,6 +2,8 @@
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 // Dad Type Categories
+// Includes DICKTATOR DADS (archetypes), family variants, side characters,
+// special card types (ITEM, EVENT, TERRAIN, EVOLUTION, CURSE, TRAP)
 export type DadType =
   | 'BBQ_DAD'
   | 'FIX_IT_DAD'
@@ -18,7 +20,22 @@ export type DadType =
   | 'VINTAGE_DAD'
   | 'FASHION_DAD'
   | 'TECH_DAD'
-  | 'ITEM';
+  | 'SUBURBAN_SPY'
+  | 'GAMER_GIZZARDS'
+  | 'PREPPER_PENIS'
+  | 'BBQ_BRAWLER'
+  | 'SUBURBAN_SOCIALITE'
+  | 'NEIGHBORHOOD_NOSY'
+  | 'SON_SPAWNS'
+  | 'DAUGHTER_DINGBATS'
+  | 'UNCLE_UPROARS'
+  | 'SUBURBAN_SIDEKICKS'
+  | 'ITEM'
+  | 'EVENT'      // SHITSHOW SCENARIOS - One-time use cards (inspired by MTG Instants/Sorceries)
+  | 'TERRAIN'    // SUBURBAN SHITFIELDS - Permanent battlefield modifiers (inspired by Pokémon Stadium/MTG Lands)
+  | 'EVOLUTION'  // MIDLIFE CRISIS MUTATIONS - Upgrades base dads (inspired by Pokémon Evolution)
+  | 'CURSE'      // DAD DAMNATIONS - Negative effects on opponents (inspired by MTG Curses/Enchantments)
+  | 'TRAP';      // SUBURBAN SUCKERPUNCHES - Face-down triggered effects (inspired by Yu-Gi-Oh! Traps)
 
 // Holographic Variant Types
 export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';
