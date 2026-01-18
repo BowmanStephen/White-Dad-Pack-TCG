@@ -3,6 +3,7 @@
   import { STAT_ICONS, STAT_NAMES } from '../../types';
   import { hasCardStats } from '../../lib/card-types';
   import StatTooltip from './StatTooltip.svelte';
+  import RadarChart from './RadarChart.svelte';
   import { formatCardStat } from '../../lib/utils/formatters';
 
   export let stats: CardStatsType;
@@ -10,6 +11,7 @@
   export let compact: boolean = false;
   export let cardRarity: Rarity = 'rare'; // Default to rare if not provided
   export let cardType: string = ''; // NEW: Card type for conditional stat display
+  export let showRadarChart: boolean = true; // Show radar chart by default
 
   $: statEntries = Object.entries(stats)
     .map(([key, value]) => ({
@@ -52,7 +54,14 @@
 </script>
 
 {#if hasCardStats(cardType || 'DAD_ARCHETYPE')}
-  <div class="space-y-1.5 stats-grid">
+  {#if showRadarChart && !compact}
+    <!-- Radar Chart View -->
+    <div class="radar-chart-wrapper">
+      <RadarChart {stats} rarity={cardRarity} size={180} />
+    </div>
+  {/if}
+
+  <div class="space-y-1.5 stats-grid" class:mt-4={showRadarChart && !compact}>
     {#each statEntries as stat, i}
       <div
         class="flex items-center gap-1.5 stat-row cursor-help"
@@ -188,4 +197,17 @@
       gap: 0.375rem;
     }
   }
+
+  /* Radar Chart Styling */
+  .radar-chart-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.5rem;
+  }
+
 </style>
