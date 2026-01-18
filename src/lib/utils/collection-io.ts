@@ -180,12 +180,12 @@ function validatePack(pack: unknown, errors: string[], warnings: string[]): bool
     return false;
   }
 
-  if (p.cards.length === 0) {
+  const packCards = p.cards as unknown[];
+  if (packCards.length === 0) {
     errors.push('Pack must contain at least one card');
   }
 
   // Validate each card
-  const packCards = p.cards as unknown[];
   packCards.forEach((card, index) => {
     if (!validateCard(card, errors, warnings)) {
       errors.push(`Pack card at index ${index} is invalid`);
