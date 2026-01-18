@@ -134,3 +134,98 @@ export function getSummerCards(): Card[] {
 export function getHolidayCards(): Card[] {
   return seasonalCards.filter((card) => card.id.startsWith('holiday_'));
 }
+
+/**
+ * PACK-005: Get card distribution by dad type
+ * Returns a map of dad type -> card count
+ */
+export function getTypeDistribution(): Record<string, number> {
+  const distribution: Record<string, number> = {};
+
+  for (const card of cards) {
+    distribution[card.type] = (distribution[card.type] || 0) + 1;
+  }
+
+  return distribution;
+}
+
+/**
+ * PACK-005: Verify type distribution meets acceptance criteria
+ * Returns detailed report of type distribution analysis
+ */
+export function verifyTypeDistribution(): {
+  valid: boolean;
+  report: TypeDistributionReport;
+} {
+  const distribution = getTypeDistribution();
+  const entries = Object.entries(distribution).sort((a, b) => b[1] - a[1]);
+
+  const totalCards = cards.length;
+  const uniqueTypes = entries.length;
+  const averageCardsPerType = totalCards / uniqueTypes;
+
+  const minCards = 5;
+  const targetAverage = 6.5;
+
+  // Find types below minimum
+  const belowMinimum = entries.filter(([_, count]) => count < minCards);
+
+  // Find outliers (more than ±2 from target average)
+  const aboveTarget = entries.filter(([_, count]) => count > targetAverage + 2);
+  const belowTarget = entries.filter(([_, count]) => count < targetAverage - 2);
+
+  // Check for core dad types (16 expected types)
+  const coreDadTypes: string[] = [
+    'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD', 'LAWN_DAD',
+    'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD', 'COACH_DAD', 'CHEF_DAD',
+    'HOLIDAY_DAD', 'WAREHOUSE_DAD', 'VINTAGE_DAD', 'FASHION_DAD',
+    'TECH_DAD'
+  ];
+  const missingCoreTypes = coreDadTypes.filter(type => !distribution[type]);
+
+  // All checks must pass
+  const allChecksPass =
+    belowMinimum.length === 0 &&
+    (aboveTarget.length + belowTarget.length) < uniqueTypes / 2 &&
+    missingCoreTypes.length === 0;
+
+  return {
+    valid: allChecksPass,
+    report: {
+      totalCards,
+      uniqueTypes,
+      averageCardsPerType: Math.round(averageCardsPerType * 10) / 10,
+      distribution,
+      sortedEntries: entries,
+      belowMinimum,
+      aboveTarget,
+      belowTarget,
+      missingCoreTypes,
+      checks: {
+        minimumCardsPerType: belowMinimum.length === 0,
+        balancedDistribution: (aboveTarget.length + belowTarget.length) < uniqueTypes / 2,
+        allCoreTypesPresent: missingCoreTypes.length === 0,
+      },
+    },
+  };
+}
+
+/**
+ * PACK-005: Type distribution report interface
+ */
+export interface TypeDistributionReport {
+  totalCards: number;
+  uniqueTypes: number;
+  averageCardsPerType: number;
+  distribution: Record<string, number>;
+  sortedEntries: [string, number][];
+  belowMinimum: [string, number][];
+  aboveTarget: [string, number][];
+  belowTarget: [string, number][];
+  missingCoreTypes: string[];
+  checks: {
+    minimumCardsPerType: boolean;
+    balancedDistribution: boolean;
+    allCoreTypesPresent: boolean;
+  };
+}
