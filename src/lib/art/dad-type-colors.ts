@@ -239,7 +239,13 @@ export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
 
 /**
  * Get the color palette for a dad type
+ * Returns default slate palette if type not found
  */
 export function getDadTypeColors(type: DadType): DadTypePalette {
-  return DAD_TYPE_COLORS[type];
+  return DAD_TYPE_COLORS[type as DadType] || {
+    primary: '#64748b',
+    secondary: '#94a3b8',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)',
+  };
 }

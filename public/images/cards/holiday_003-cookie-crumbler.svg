@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-holiday_003" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-holiday_003">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.1776108171325177)" />
+  <g opacity="0.3"><circle cx="128.6" cy="37.3" r="25.6" fill="none" stroke="#94a3b8" stroke-width="2.4" opacity="0.29" />
+    <rect x="315.2" y="481.1" width="48.4" height="48.4" fill="none" stroke="#fbbf24" stroke-width="2.9" opacity="0.27" />
+    <rect x="77.3" y="57.4" width="58.9" height="58.9" fill="none" stroke="#64748b" stroke-width="2.7" opacity="0.28" />
+    <rect x="365.0" y="43.0" width="42.0" height="42.0" fill="none" stroke="#94a3b8" stroke-width="2.9" opacity="0.14" />
+    <rect x="60.5" y="254.3" width="51.1" height="51.1" fill="none" stroke="#94a3b8" stroke-width="1.9" opacity="0.16" />
+    <rect x="208.6" y="337.5" width="44.5" height="44.5" fill="none" stroke="#64748b" stroke-width="1.4" opacity="0.13" />
+    <circle cx="157.2" cy="53.2" r="39.9" fill="none" stroke="#fbbf24" stroke-width="1.6" opacity="0.16" />
+    <rect x="276.8" y="219.7" width="22.8" height="22.8" fill="none" stroke="#fbbf24" stroke-width="1.1" opacity="0.24" />
+    <rect x="326.2" y="349.1" width="44.5" height="44.5" fill="none" stroke="#fbbf24" stroke-width="3.0" opacity="0.13" /></g>
+  <polygon points="229.5,168.5 270.3,250.0 188.8,250.0" fill="#fbbf24" opacity="0.20" />
+    <rect x="1.1" y="248.5" width="59.5" height="59.5" fill="#fbbf24" opacity="0.22" />
+    <polygon points="216.1,356.8 236.6,377.3 216.1,397.8 195.6,377.3" fill="#fbbf24" opacity="0.32" />
+    <polygon points="62.0,329.5 111.0,427.5 13.0,427.5" fill="#fbbf24" opacity="0.37" />
+    <rect x="150.0" y="279.1" width="52.3" height="52.3" fill="#94a3b8" opacity="0.38" />
+    <circle cx="55.2" cy="437.5" r="38.1" fill="#94a3b8" opacity="0.27" />
+    <circle cx="371.1" cy="138.0" r="15.9" fill="#fbbf24" opacity="0.19" />
+    <circle cx="231.5" cy="66.1" r="33.8" fill="#64748b" opacity="0.11" />
+    <rect x="32.4" y="357.7" width="53.0" height="53.0" fill="#94a3b8" opacity="0.26" />
+    <polygon points="382.1,64.9 412.5,125.7 351.7,125.7" fill="#94a3b8" opacity="0.39" />
+    <circle cx="302.2" cy="48.9" r="24.9" fill="#fbbf24" opacity="0.31" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-15" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-15)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Cookie Crumbler</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Cookie Crumbler</text>
+  
+  <!-- Rarity border -->
+  <rect x="4" y="4" width="392" height="542"
+        fill="none" stroke="#eab308" stroke-width="8" rx="8" ry="8" />
+</svg>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-042" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#6366f1;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-042">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.640079656150192)" />
+  <g opacity="0.3"><line x1="18.7" y1="0" x2="18.7" y2="550" stroke="#8b5cf6" stroke-width="3.4" opacity="0.25" />
+    <line x1="266.6" y1="0" x2="266.6" y2="550" stroke="#8b5cf6" stroke-width="3.4" opacity="0.10" />
+    <line x1="0" y1="204.6" x2="400" y2="204.6" stroke="#8b5cf6" stroke-width="1.6" opacity="0.30" />
+    <line x1="0" y1="119.7" x2="400" y2="119.7" stroke="#8b5cf6" stroke-width="1.7" opacity="0.13" />
+    <line x1="369.1" y1="0" x2="369.1" y2="550" stroke="#6366f1" stroke-width="2.2" opacity="0.13" />
+    <line x1="0" y1="56.4" x2="400" y2="56.4" stroke="#6366f1" stroke-width="3.3" opacity="0.29" />
+    <line x1="341.2" y1="0" x2="341.2" y2="550" stroke="#8b5cf6" stroke-width="1.6" opacity="0.36" />
+    <line x1="0" y1="376.3" x2="400" y2="376.3" stroke="#6366f1" stroke-width="3.5" opacity="0.21" />
+    <line x1="323.3" y1="0" x2="323.3" y2="550" stroke="#8b5cf6" stroke-width="1.5" opacity="0.38" />
+    <line x1="0" y1="360.8" x2="400" y2="360.8" stroke="#8b5cf6" stroke-width="3.2" opacity="0.23" /></g>
+  <rect x="109.9" y="267.3" width="64.3" height="64.3" fill="#8b5cf6" opacity="0.11" />
+    <circle cx="61.0" cy="174.8" r="24.1" fill="#6366f1" opacity="0.30" />
+    <polygon points="306.5,-37.0 355.7,61.4 257.3,61.4" fill="#8b5cf6" opacity="0.30" />
+    <polygon points="95.8,106.4 145.3,155.9 95.8,205.4 46.4,155.9" fill="#3b82f6" opacity="0.39" />
+    <circle cx="231.9" cy="342.6" r="13.2" fill="#8b5cf6" opacity="0.24" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-16" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-16)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">SportsCenter Sam</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">SportsCenter Sam</text>
+  
+  <!-- Rarity border -->
+  <rect x="2" y="2" width="396" height="546"
+        fill="none" stroke="#9ca3af" stroke-width="4" rx="8" ry="8" />
+</svg>

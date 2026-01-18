@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-061" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-061">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.06827155803330243)" />
+  <g opacity="0.3"><rect x="292.3" y="489.2" width="50.9" height="50.9" fill="none" stroke="#ffffff" stroke-width="2.4" opacity="0.29" />
+    <rect x="243.0" y="86.1" width="44.0" height="44.0" fill="none" stroke="#fbbf24" stroke-width="1.9" opacity="0.15" />
+    <rect x="55.2" y="317.4" width="74.8" height="74.8" fill="none" stroke="#ef4444" stroke-width="1.1" opacity="0.15" />
+    <rect x="366.9" y="287.4" width="54.1" height="54.1" fill="none" stroke="#ef4444" stroke-width="2.1" opacity="0.26" />
+    <rect x="269.1" y="23.8" width="37.2" height="37.2" fill="none" stroke="#ffffff" stroke-width="2.4" opacity="0.13" />
+    <circle cx="175.3" cy="531.3" r="11.6" fill="none" stroke="#ef4444" stroke-width="1.3" opacity="0.27" />
+    <circle cx="151.6" cy="54.8" r="27.9" fill="none" stroke="#ef4444" stroke-width="2.8" opacity="0.10" />
+    <circle cx="188.0" cy="160.0" r="28.6" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.27" />
+    <circle cx="110.6" cy="132.4" r="33.9" fill="none" stroke="#ffffff" stroke-width="2.3" opacity="0.26" /></g>
+  <rect x="193.3" y="463.0" width="84.7" height="84.7" fill="#ef4444" opacity="0.22" />
+    <circle cx="356.9" cy="542.5" r="27.8" fill="#ffffff" opacity="0.19" />
+    <circle cx="257.9" cy="15.5" r="22.9" fill="#ef4444" opacity="0.11" />
+    <polygon points="118.8,190.2 129.9,201.3 118.8,212.4 107.8,201.3" fill="#ef4444" opacity="0.20" />
+    <polygon points="391.0,273.1 438.0,320.1 391.0,367.0 344.1,320.1" fill="#fbbf24" opacity="0.13" />
+    <rect x="157.2" y="167.2" width="93.0" height="93.0" fill="#ffffff" opacity="0.23" />
+    <polygon points="289.0,180.8 323.2,215.1 289.0,249.4 254.7,215.1" fill="#fbbf24" opacity="0.17" />
+    <polygon points="262.7,156.1 296.7,190.1 262.7,224.1 228.7,190.1" fill="#ef4444" opacity="0.37" />
+    <circle cx="42.1" cy="21.2" r="37.1" fill="#ffffff" opacity="0.32" />
+    <rect x="228.8" y="15.3" width="57.9" height="57.9" fill="#fbbf24" opacity="0.30" />
+    <rect x="259.4" y="157.7" width="20.6" height="20.6" fill="#ef4444" opacity="0.32" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-13" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-13)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Marinade Mark</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Marinade Mark</text>
+  
+  <!-- Rarity border -->
+  <rect x="4" y="4" width="392" height="542"
+        fill="none" stroke="#eab308" stroke-width="8" rx="8" ry="8" />
+</svg>

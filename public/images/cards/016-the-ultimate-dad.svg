@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-016" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#f97316;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-016">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.5223533732350916)" />
+  <g opacity="0.3"><line x1="0" y1="326.3" x2="400" y2="326.3" stroke="#ef4444" stroke-width="1.3" opacity="0.37" />
+    <line x1="145.2" y1="0" x2="145.2" y2="550" stroke="#ef4444" stroke-width="2.0" opacity="0.23" />
+    <line x1="0" y1="70.5" x2="400" y2="70.5" stroke="#ef4444" stroke-width="1.0" opacity="0.27" />
+    <line x1="65.3" y1="0" x2="65.3" y2="550" stroke="#fbbf24" stroke-width="4.0" opacity="0.28" />
+    <line x1="0" y1="222.9" x2="400" y2="222.9" stroke="#fbbf24" stroke-width="1.2" opacity="0.29" />
+    <line x1="139.5" y1="0" x2="139.5" y2="550" stroke="#ef4444" stroke-width="2.0" opacity="0.18" />
+    <line x1="359.1" y1="0" x2="359.1" y2="550" stroke="#fbbf24" stroke-width="2.9" opacity="0.30" />
+    <line x1="3.7" y1="0" x2="3.7" y2="550" stroke="#fbbf24" stroke-width="2.1" opacity="0.35" />
+    <line x1="137.9" y1="0" x2="137.9" y2="550" stroke="#f97316" stroke-width="2.0" opacity="0.29" />
+    <line x1="263.7" y1="0" x2="263.7" y2="550" stroke="#f97316" stroke-width="3.4" opacity="0.26" />
+    <line x1="115.5" y1="0" x2="115.5" y2="550" stroke="#f97316" stroke-width="1.3" opacity="0.23" />
+    <line x1="0" y1="473.6" x2="400" y2="473.6" stroke="#f97316" stroke-width="2.1" opacity="0.30" />
+    <line x1="0" y1="217.7" x2="400" y2="217.7" stroke="#f97316" stroke-width="3.5" opacity="0.10" />
+    <line x1="365.0" y1="0" x2="365.0" y2="550" stroke="#ef4444" stroke-width="3.8" opacity="0.25" />
+    <line x1="2.5" y1="0" x2="2.5" y2="550" stroke="#f97316" stroke-width="1.8" opacity="0.34" />
+    <line x1="0" y1="498.7" x2="400" y2="498.7" stroke="#fbbf24" stroke-width="2.4" opacity="0.38" />
+    <line x1="179.4" y1="0" x2="179.4" y2="550" stroke="#ef4444" stroke-width="3.4" opacity="0.38" />
+    <line x1="0" y1="304.3" x2="400" y2="304.3" stroke="#fbbf24" stroke-width="2.1" opacity="0.17" />
+    <line x1="338.9" y1="0" x2="338.9" y2="550" stroke="#fbbf24" stroke-width="2.9" opacity="0.20" />
+    <line x1="336.6" y1="0" x2="336.6" y2="550" stroke="#f97316" stroke-width="3.2" opacity="0.21" />
+    <line x1="0" y1="461.6" x2="400" y2="461.6" stroke="#f97316" stroke-width="3.7" opacity="0.30" />
+    <line x1="120.2" y1="0" x2="120.2" y2="550" stroke="#fbbf24" stroke-width="2.2" opacity="0.20" />
+    <line x1="0" y1="250.9" x2="400" y2="250.9" stroke="#ef4444" stroke-width="3.4" opacity="0.39" />
+    <line x1="4.1" y1="0" x2="4.1" y2="550" stroke="#fbbf24" stroke-width="1.6" opacity="0.17" />
+    <line x1="0" y1="470.3" x2="400" y2="470.3" stroke="#ef4444" stroke-width="1.3" opacity="0.12" />
+    <line x1="0" y1="127.8" x2="400" y2="127.8" stroke="#f97316" stroke-width="1.9" opacity="0.38" />
+    <line x1="0" y1="547.2" x2="400" y2="547.2" stroke="#ef4444" stroke-width="1.2" opacity="0.36" />
+    <line x1="0" y1="515.5" x2="400" y2="515.5" stroke="#fbbf24" stroke-width="3.0" opacity="0.30" />
+    <line x1="400.0" y1="0" x2="400.0" y2="550" stroke="#f97316" stroke-width="2.4" opacity="0.23" />
+    <line x1="0" y1="411.1" x2="400" y2="411.1" stroke="#ef4444" stroke-width="1.2" opacity="0.28" />
+    <line x1="0" y1="280.9" x2="400" y2="280.9" stroke="#fbbf24" stroke-width="2.6" opacity="0.20" />
+    <line x1="0" y1="467.7" x2="400" y2="467.7" stroke="#f97316" stroke-width="4.0" opacity="0.27" />
+    <line x1="390.2" y1="0" x2="390.2" y2="550" stroke="#ef4444" stroke-width="1.2" opacity="0.16" />
+    <line x1="218.1" y1="0" x2="218.1" y2="550" stroke="#fbbf24" stroke-width="2.7" opacity="0.40" />
+    <line x1="240.7" y1="0" x2="240.7" y2="550" stroke="#f97316" stroke-width="2.8" opacity="0.35" /></g>
+  <circle cx="6.8" cy="256.5" r="31.2" fill="#ef4444" opacity="0.33" />
+    <circle cx="78.4" cy="54.1" r="35.9" fill="#fbbf24" opacity="0.15" />
+    <polygon points="85.0,230.8 99.5,245.3 85.0,259.7 70.5,245.3" fill="#f97316" opacity="0.19" />
+    <circle cx="84.3" cy="178.9" r="12.0" fill="#f97316" opacity="0.14" />
+    <polygon points="227.2,438.6 267.1,478.5 227.2,518.5 187.2,478.5" fill="#fbbf24" opacity="0.15" />
+    <polygon points="126.3,151.8 151.9,177.4 126.3,203.0 100.7,177.4" fill="#ef4444" opacity="0.38" />
+    <polygon points="226.0,314.5 271.6,405.9 180.3,405.9" fill="#ef4444" opacity="0.27" />
+    <polygon points="349.8,59.4 378.0,87.6 349.8,115.9 321.5,87.6" fill="#f97316" opacity="0.35" />
+    <polygon points="370.9,150.2 413.3,234.9 328.6,234.9" fill="#fbbf24" opacity="0.34" />
+    <rect x="-19.6" y="359.2" width="56.1" height="56.1" fill="#fbbf24" opacity="0.36" />
+    <rect x="285.7" y="-10.0" width="53.8" height="53.8" fill="#f97316" opacity="0.37" />
+    <circle cx="143.1" cy="230.7" r="49.4" fill="#f97316" opacity="0.37" />
+    <rect x="83.1" y="281.2" width="96.2" height="96.2" fill="#fbbf24" opacity="0.37" />
+    <circle cx="246.4" cy="286.8" r="48.4" fill="#fbbf24" opacity="0.35" />
+    <rect x="-5.1" y="341.2" width="62.1" height="62.1" fill="#f97316" opacity="0.28" />
+    <rect x="-29.4" y="5.3" width="83.2" height="83.2" fill="#fbbf24" opacity="0.25" />
+    <circle cx="301.8" cy="525.4" r="37.9" fill="#fbbf24" opacity="0.37" />
+    <circle cx="43.9" cy="176.9" r="43.2" fill="#ef4444" opacity="0.17" />
+    <polygon points="341.4,-4.9 383.7,79.8 299.0,79.8" fill="#f97316" opacity="0.23" />
+    <polygon points="130.4,56.1 148.2,73.9 130.4,91.7 112.6,73.9" fill="#ef4444" opacity="0.11" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-16" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-16)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">The Ultimate Dad</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">The Ultimate Dad</text>
+  
+  <!-- Rarity border -->
+  <rect x="8" y="8" width="384" height="534"
+        fill="none" stroke="#ec4899" stroke-width="16" rx="8" ry="8" />
+</svg>

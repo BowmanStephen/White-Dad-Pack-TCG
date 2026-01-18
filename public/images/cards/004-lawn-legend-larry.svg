@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-004" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#16a34a;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-004">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.6991454616654664)" />
+  <g opacity="0.3"><circle cx="236.5" cy="311.1" r="23.6" fill="none" stroke="#22c55e" stroke-width="1.5" opacity="0.16" />
+    <rect x="304.8" y="300.9" width="44.2" height="44.2" fill="none" stroke="#16a34a" stroke-width="2.6" opacity="0.18" />
+    <circle cx="101.9" cy="319.7" r="20.4" fill="none" stroke="#22c55e" stroke-width="1.7" opacity="0.25" />
+    <circle cx="165.8" cy="468.7" r="17.9" fill="none" stroke="#84cc16" stroke-width="1.0" opacity="0.25" />
+    <rect x="251.8" y="96.3" width="47.7" height="47.7" fill="none" stroke="#22c55e" stroke-width="2.1" opacity="0.23" />
+    <circle cx="72.2" cy="273.1" r="18.5" fill="none" stroke="#16a34a" stroke-width="2.7" opacity="0.19" />
+    <rect x="253.0" y="94.6" width="69.3" height="69.3" fill="none" stroke="#84cc16" stroke-width="1.2" opacity="0.15" /></g>
+  <polygon points="17.3,221.0 50.8,254.5 17.3,287.9 -16.1,254.5" fill="#16a34a" opacity="0.33" />
+    <rect x="338.1" y="509.8" width="39.4" height="39.4" fill="#84cc16" opacity="0.38" />
+    <polygon points="283.6,281.6 317.6,349.6 249.5,349.6" fill="#16a34a" opacity="0.14" />
+    <polygon points="171.7,137.8 218.9,232.1 124.6,232.1" fill="#22c55e" opacity="0.17" />
+    <polygon points="101.5,406.1 122.6,427.3 101.5,448.4 80.3,427.3" fill="#22c55e" opacity="0.23" />
+    <rect x="78.6" y="246.5" width="63.2" height="63.2" fill="#16a34a" opacity="0.25" />
+    <polygon points="299.7,168.4 321.0,189.7 299.7,210.9 278.5,189.7" fill="#84cc16" opacity="0.24" />
+    <polygon points="196.7,289.1 220.2,336.2 173.1,336.2" fill="#22c55e" opacity="0.30" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-17" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#22c55e;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-17)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Lawn Legend Larry</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Lawn Legend Larry</text>
+  
+  <!-- Rarity border -->
+  <rect x="3" y="3" width="394" height="544"
+        fill="none" stroke="#3b82f6" stroke-width="6" rx="8" ry="8" />
+</svg>

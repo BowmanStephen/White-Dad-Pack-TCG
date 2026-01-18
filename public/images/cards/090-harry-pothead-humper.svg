@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-090" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#ec4899;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-090">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.5526039164979011)" />
+  <g opacity="0.3"><line x1="0" y1="417.2" x2="400" y2="417.2" stroke="#8b5cf6" stroke-width="3.8" opacity="0.27" />
+    <line x1="242.7" y1="0" x2="242.7" y2="550" stroke="#f97316" stroke-width="1.8" opacity="0.11" />
+    <line x1="198.8" y1="0" x2="198.8" y2="550" stroke="#ec4899" stroke-width="1.6" opacity="0.12" />
+    <line x1="58.6" y1="0" x2="58.6" y2="550" stroke="#8b5cf6" stroke-width="3.6" opacity="0.24" />
+    <line x1="0" y1="249.2" x2="400" y2="249.2" stroke="#ec4899" stroke-width="3.7" opacity="0.11" />
+    <line x1="0" y1="346.1" x2="400" y2="346.1" stroke="#f97316" stroke-width="3.6" opacity="0.15" />
+    <line x1="175.3" y1="0" x2="175.3" y2="550" stroke="#ec4899" stroke-width="2.3" opacity="0.30" />
+    <line x1="82.6" y1="0" x2="82.6" y2="550" stroke="#8b5cf6" stroke-width="3.9" opacity="0.23" />
+    <line x1="2.3" y1="0" x2="2.3" y2="550" stroke="#8b5cf6" stroke-width="3.0" opacity="0.28" />
+    <line x1="392.5" y1="0" x2="392.5" y2="550" stroke="#f97316" stroke-width="3.5" opacity="0.28" />
+    <line x1="348.1" y1="0" x2="348.1" y2="550" stroke="#8b5cf6" stroke-width="3.7" opacity="0.35" />
+    <line x1="0" y1="76.0" x2="400" y2="76.0" stroke="#f97316" stroke-width="2.3" opacity="0.16" />
+    <line x1="121.2" y1="0" x2="121.2" y2="550" stroke="#ec4899" stroke-width="3.3" opacity="0.25" />
+    <line x1="6.4" y1="0" x2="6.4" y2="550" stroke="#ec4899" stroke-width="1.6" opacity="0.25" />
+    <line x1="0" y1="287.6" x2="400" y2="287.6" stroke="#8b5cf6" stroke-width="3.3" opacity="0.38" />
+    <line x1="0" y1="144.8" x2="400" y2="144.8" stroke="#8b5cf6" stroke-width="3.5" opacity="0.32" />
+    <line x1="0" y1="337.4" x2="400" y2="337.4" stroke="#8b5cf6" stroke-width="2.6" opacity="0.29" />
+    <line x1="229.1" y1="0" x2="229.1" y2="550" stroke="#8b5cf6" stroke-width="1.8" opacity="0.39" />
+    <line x1="0" y1="236.7" x2="400" y2="236.7" stroke="#f97316" stroke-width="2.6" opacity="0.26" />
+    <line x1="215.0" y1="0" x2="215.0" y2="550" stroke="#ec4899" stroke-width="3.0" opacity="0.30" /></g>
+  <circle cx="267.9" cy="457.9" r="11.0" fill="#8b5cf6" opacity="0.40" />
+    <circle cx="17.2" cy="158.5" r="11.4" fill="#f97316" opacity="0.13" />
+    <polygon points="376.8,190.9 414.0,265.1 339.7,265.1" fill="#8b5cf6" opacity="0.38" />
+    <polygon points="57.9,263.0 69.9,287.2 45.8,287.2" fill="#8b5cf6" opacity="0.37" />
+    <polygon points="5.0,261.0 25.8,302.6 -15.8,302.6" fill="#f97316" opacity="0.14" />
+    <polygon points="109.1,313.6 126.7,348.7 91.5,348.7" fill="#8b5cf6" opacity="0.37" />
+    <polygon points="219.6,486.7 263.9,575.2 175.4,575.2" fill="#8b5cf6" opacity="0.37" />
+    <rect x="-6.8" y="95.0" width="80.6" height="80.6" fill="#8b5cf6" opacity="0.35" />
+    <circle cx="280.1" cy="96.1" r="35.5" fill="#f97316" opacity="0.35" />
+    <circle cx="120.3" cy="43.1" r="47.0" fill="#8b5cf6" opacity="0.23" />
+    <polygon points="72.9,-3.3 119.2,42.9 72.9,89.2 26.7,42.9" fill="#ec4899" opacity="0.37" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-20" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-20)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Harry Pothead Humper</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Harry Pothead Humper</text>
+  
+  <!-- Rarity border -->
+  <rect x="4" y="4" width="392" height="542"
+        fill="none" stroke="#eab308" stroke-width="8" rx="8" ry="8" />
+</svg>
