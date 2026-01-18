@@ -258,10 +258,26 @@
   // Touch handling for swipe
   let touchStartX = 0;
   let touchStartY = 0;
+  let touchStartTime = 0;
+  let isSwipe = false;
+  let isTap = false;
 
   function handleTouchStart(event: TouchEvent) {
     touchStartX = event.touches[0].clientX;
     touchStartY = event.touches[0].clientY;
+    touchStartTime = Date.now();
+    isSwipe = false;
+    isTap = false;
+  }
+
+  function handleTouchMove(event: TouchEvent) {
+    // Detect if user is swiping (moved more than 10px in any direction)
+    const deltaX = Math.abs(event.touches[0].clientX - touchStartX);
+    const deltaY = Math.abs(event.touches[0].clientY - touchStartY);
+
+    if (deltaX > 10 || deltaY > 10) {
+      isSwipe = true;
+    }
   }
 
   function handleTouchEnd(event: TouchEvent) {
@@ -272,13 +288,31 @@
     const touchEndY = event.changedTouches[0].clientY;
     const deltaX = touchEndX - touchStartX;
     const deltaY = touchEndY - touchStartY;
+    const deltaTime = Date.now() - touchStartTime;
 
-    // Only handle horizontal swipes
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-      if (deltaX > 0) {
-        handlePrev();
-      } else {
-        handleNext();
+    // Detect tap (short duration, minimal movement)
+    if (deltaTime < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+      isTap = true;
+      handleCardClick();
+      return;
+    }
+
+    // Handle swipes (movement > 50px)
+    const minSwipeDistance = 50;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Horizontal swipe - navigate cards
+      if (Math.abs(deltaX) > minSwipeDistance) {
+        if (deltaX > 0) {
+          handlePrev();
+        } else {
+          handleNext();
+        }
+      }
+    } else {
+      // Vertical swipe - swipe up to skip all reveals
+      if (deltaY < -minSwipeDistance) {
+        handleSkip();
       }
     }
   }
@@ -300,6 +334,7 @@
 <div
   class="flex flex-col items-center gap-6 w-full max-w-lg"
   on:touchstart={handleTouchStart}
+  on:touchmove={handleTouchMove}
   on:touchend={handleTouchEnd}
 >
   <!-- Progress indicator -->
@@ -425,14 +460,22 @@
     </button>
   </div>
 
-  <!-- Skip button -->
-  <button
-    class="min-h-[44px] px-4 py-2 text-slate-500 hover:text-slate-300 text-sm transition-colors"
-    on:click={handleSkip}
-  >
-    Skip to results
-  </button>
-  
+  <!-- Skip button with swipe hint -->
+  <div class="flex flex-col items-center gap-2">
+    <button
+      class="min-h-[44px] px-4 py-2 text-slate-500 hover:text-slate-300 text-sm transition-colors"
+      on:click={handleSkip}
+    >
+      Skip to results
+    </button>
+    <div class="text-slate-600 text-xs flex items-center gap-1">
+      <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+      </svg>
+      Swipe up to skip
+    </div>
+  </div>
+
   <!-- Card dots indicator -->
   <div class="flex gap-2">
     {#each pack.cards as card, i}
