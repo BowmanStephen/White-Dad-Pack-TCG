@@ -4,7 +4,7 @@
   import { RARITY_CONFIG, DAD_TYPE_ICONS } from '../../types';
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
-  import { downloadPackImage, sharePackImage, shareToTwitter } from '../../lib/utils/image-generation';
+  import { downloadPackImage, sharePackImage, shareToTwitter, generateCardImage, downloadCardImage, shareCardImage } from '../../lib/utils/image-generation';
   import { openModal } from '../../stores/ui';
   import ShareModal from '../common/ShareModal.svelte';
   import Card from '../card/Card.svelte';
@@ -38,6 +38,10 @@
   let previouslyFocusedElement: HTMLElement | null = null;
   let isCardFlipped = $state(false);
   let flippedCardStates = $state(new Map<string, boolean>());
+  let bestCardElement = $state<HTMLElement>();
+  let isGeneratingBestCardImage = $state(false);
+  let bestCardImageSuccess = $state(false);
+  let bestCardCopiedToClipboard = $state(false);
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -248,6 +252,91 @@
     }
   }
 
+  async function handleShareBestCard() {
+    if (!bestCardElement) {
+      console.error('Best card element not found');
+      return;
+    }
+
+    isGeneratingBestCardImage = true;
+    bestCardImageSuccess = false;
+    bestCardCopiedToClipboard = false;
+
+    try {
+      const success = await shareCardImage(stats.bestCard, bestCardElement, {
+        shareTitle: 'DadDeck™ - Best Pull',
+        shareText: `I just pulled a ${bestRarityConfig.name} ${stats.bestCard.isHolo ? 'Holographic ' : ''}${stats.bestCard.name}! 🎴✨\n\nOpen your free pack at:`,
+        imageGeneration: { scale: 2 }
+      });
+
+      if (success) {
+        bestCardImageSuccess = true;
+        setTimeout(() => {
+          bestCardImageSuccess = false;
+        }, 3000);
+      } else {
+        // Fallback to download if share API not available
+        await handleDownloadBestCard();
+      }
+    } catch (error) {
+      console.error('Failed to share best card:', error);
+    } finally {
+      isGeneratingBestCardImage = false;
+    }
+  }
+
+  async function handleDownloadBestCard() {
+    if (!bestCardElement) {
+      console.error('Best card element not found');
+      return;
+    }
+
+    isGeneratingBestCardImage = true;
+
+    try {
+      await downloadCardImage(stats.bestCard, bestCardElement, { scale: 2 });
+    } catch (error) {
+      console.error('Failed to download best card image:', error);
+    } finally {
+      isGeneratingBestCardImage = false;
+    }
+  }
+
+  async function handleCopyBestCardImage() {
+    if (!bestCardElement) {
+      console.error('Best card element not found');
+      return;
+    }
+
+    isGeneratingBestCardImage = true;
+    bestCardCopiedToClipboard = false;
+
+    try {
+      const blob = await generateCardImage(stats.bestCard, bestCardElement, { scale: 2 });
+
+      // Check if Clipboard API with image support is available
+      if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob }),
+        ]);
+        bestCardCopiedToClipboard = true;
+        setTimeout(() => {
+          bestCardCopiedToClipboard = false;
+        }, 3000);
+      } else {
+        // Fallback to download if clipboard not available
+        console.warn('Clipboard image not supported, downloading instead');
+        await handleDownloadBestCard();
+      }
+    } catch (error) {
+      console.error('Failed to copy best card image to clipboard:', error);
+      // Fallback to download
+      await handleDownloadBestCard();
+    } finally {
+      isGeneratingBestCardImage = false;
+    }
+  }
+
   const rarityCounts = $derived(Object.entries(stats.rarityBreakdown)
     .filter(([_, count]) => count > 0)
     .map(([rarity, count]) => ({
@@ -326,9 +415,9 @@
       <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 text-center opacity-70">Signature Best Pull</h3>
       
       <div class="flex flex-col md:flex-row items-center justify-center gap-12">
-        <div class="relative card-container">
+        <div class="relative card-container" bind:this={bestCardElement}>
           <ParticleEffects rarity={stats.bestCard.rarity} active={true} />
-          
+
           <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
             <Card card={stats.bestCard} size="lg" interactive={true} />
           </div>
@@ -341,7 +430,7 @@
         </div>
 
         <div class="text-center md:text-left z-10 flex-1 max-w-md">
-          <div 
+          <div
             class="text-sm font-black px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-4 uppercase tracking-widest shadow-lg"
             style="background: {bestRarityConfig.color}; color: white;"
           >
@@ -351,41 +440,92 @@
               <span class="ml-1 opacity-80">✨ HOLO</span>
             {/if}
           </div>
-          
+
           <h4 class="text-4xl md:text-5xl font-black text-white mb-3 tracking-tighter leading-none">{stats.bestCard.name}</h4>
           <p class="text-slate-300 text-xl mb-8 leading-relaxed font-medium opacity-90">{stats.bestCard.subtitle}</p>
-          
-          <!-- Share buttons for best pull -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-4">
+
+          <!-- Share buttons for best card -->
+          <div class="flex flex-col items-stretch gap-3 mb-4">
+            <!-- Primary: Share Best Card -->
             <button
-              on:click={openShareModal}
-              class="flex items-center justify-center gap-3 px-8 py-4 bg-white text-slate-950 font-black rounded-xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl hover:shadow-white/10 uppercase tracking-wider text-sm"
-              title="Share your pull"
+              on:click={handleShareBestCard}
+              disabled={isGeneratingBestCardImage}
+              class="flex items-center justify-center gap-3 px-6 py-3.5 bg-white text-slate-950 font-black rounded-xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl hover:shadow-white/10 uppercase tracking-wider text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Share your best card"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                <circle cx="18" cy="5" r="3"></circle>
-                <circle cx="6" cy="12" r="3"></circle>
-                <circle cx="18" cy="19" r="3"></circle>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-              </svg>
-              Share Pull
+              {#if isGeneratingBestCardImage}
+                <svg class="animate-spin h-5 w-5 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Generating...</span>
+              {:else if bestCardImageSuccess}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-green-600">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="text-green-600">Shared!</span>
+              {:else}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Share Best Card
+              {/if}
             </button>
 
-            <button
-              on:click={copyLink}
-              class="flex items-center justify-center gap-2 px-6 py-4 bg-slate-800/50 backdrop-blur text-white font-bold rounded-xl hover:bg-slate-700 transition-all active:scale-95 border border-white/10 uppercase tracking-widest text-xs"
-              title="Copy Link"
-            >
-              {#if copied}
-                <span in:scale={{ duration: 200 }} class="text-green-400">Copied!</span>
-              {:else}
+            <!-- Secondary actions: Download and Copy -->
+            <div class="flex gap-3">
+              <button
+                on:click={handleDownloadBestCard}
+                disabled={isGeneratingBestCardImage}
+                class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-800/50 backdrop-blur text-white font-bold rounded-xl hover:bg-slate-700 transition-all active:scale-95 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Download card image"
+              >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                Copy Link
-              {/if}
+                <span>Download</span>
+              </button>
+
+              <button
+                on:click={handleCopyBestCardImage}
+                disabled={isGeneratingBestCardImage}
+                class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-800/50 backdrop-blur text-white font-bold rounded-xl hover:bg-slate-700 transition-all active:scale-95 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Copy card image to clipboard"
+              >
+                {#if bestCardCopiedToClipboard}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-green-400">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span class="text-green-400">Copied!</span>
+                {:else}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Copy Image</span>
+                {/if}
+              </button>
+            </div>
+          </div>
+
+          <!-- Share full pack link -->
+          <div class="mt-4 pt-4 border-t border-white/10">
+            <button
+              on:click={openShareModal}
+              class="text-xs text-slate-500 hover:text-slate-300 font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              Share full pack instead
             </button>
           </div>
         </div>
