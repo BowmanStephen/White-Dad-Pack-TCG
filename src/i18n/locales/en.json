@@ -310,5 +310,44 @@
     "previousCard": "Previous card",
     "closeModal": "Close modal",
     "packResults": "Pack opening results"
+  },
+  "daily": {
+    "title": "Daily Rewards",
+    "calendar": {
+      "title": "Daily Rewards Calendar",
+      "dayStreak": "day streak",
+      "streakBonus": "{multiplier}x streak bonus",
+      "claimed": "Claimed",
+      "available": "Available",
+      "missed": "Missed",
+      "upcoming": "Coming Soon",
+      "footerText": "Login daily to claim rewards and build your streak!"
+    },
+    "claim": {
+      "title": "Claim Your Daily Reward",
+      "button": "Claim Reward",
+      "claimed": "Reward Claimed!",
+      "nextReward": "Next reward available in {time}",
+      "comeBackTomorrow": "Come back tomorrow for more rewards!",
+      "streakBonus": "Streak Bonus: {multiplier}x"
+    },
+    "streak": {
+      "title": "Login Streak",
+      "current": "Current Streak",
+      "longest": "Longest Streak",
+      "days": "{count} days",
+      "bonus": "Streak Bonus Active",
+      "bonusDescription": "Maintain your streak to earn bonus rewards!"
+    },
+    "rewards": {
+      "pack": "Standard Pack",
+      "premiumPack": "Premium Pack",
+      "megaPack": "Mega Pack",
+      "cards": "{count} Cards",
+      "rareCard": "Rare Card",
+      "epicCard": "Epic Card",
+      "legendaryCard": "Legendary Card",
+      "currency": "{amount} Coins"
+    }
   }
 }

@@ -266,5 +266,44 @@
     "previousCard": "Carta anterior",
     "closeModal": "Cerrar modal",
     "packResults": "Resultados de apertura de sobre"
+  },
+  "daily": {
+    "title": "Recompensas Diarias",
+    "calendar": {
+      "title": "Calendario de Recompensas Diarias",
+      "dayStreak": "racha de días",
+      "streakBonus": "bonificación de racha {multiplier}x",
+      "claimed": "Reclamado",
+      "available": "Disponible",
+      "missed": "Perdido",
+      "upcoming": "Próximamente",
+      "footerText": "¡Inicia sesión diariamente para reclamar recompensas y construir tu racha!"
+    },
+    "claim": {
+      "title": "Reclama Tu Recompensa Diaria",
+      "button": "Reclamar Recompensa",
+      "claimed": "¡Recompensa Reclamada!",
+      "nextReward": "Próxima recompensa disponible en {time}",
+      "comeBackTomorrow": "¡Vuelve mañana para más recompensas!",
+      "streakBonus": "Bonificación de Racha: {multiplier}x"
+    },
+    "streak": {
+      "title": "Racha de Inicio de Sesión",
+      "current": "Racha Actual",
+      "longest": "Racha Más Larga",
+      "days": "{count} días",
+      "bonus": "Bonificación de Racha Activa",
+      "bonusDescription": "¡Mantén tu racha para ganar recompensas bonificadas!"
+    },
+    "rewards": {
+      "pack": "Sobre Estándar",
+      "premiumPack": "Sobre Premium",
+      "megaPack": "Sobre Mega",
+      "cards": "{count} Cartas",
+      "rareCard": "Carta Rara",
+      "epicCard": "Carta Épica",
+      "legendaryCard": "Carta Legendaria",
+      "currency": "{amount} Monedas"
+    }
   }
 }
