@@ -1722,6 +1722,267 @@ export const DEFAULT_VOTING_CONFIG: VotingConfig = {
 };
 
 // ============================================================================
+// PITY SYSTEM TYPES (Bad Luck Protection)
+// ============================================================================
+
+/**
+ * Pity system provides "bad luck protection" - guarantees rare+ pulls after
+ * a certain number of packs without pulling them. Prevents player frustration.
+ *
+ * Thresholds:
+ * - Soft pity (rare+): 15 packs → increased rare+ chance starts
+ * - Hard pity (rare+): 30 packs → guaranteed rare+ pull
+ * - Soft pity (epic+): 40 packs → increased epic+ chance starts
+ * - Hard pity (epic+): 60 packs → guaranteed epic+ pull
+ * - Soft pity (legendary+): 80 packs → increased legendary+ chance starts
+ * - Hard pity (legendary+): 100 packs → guaranteed legendary+ pull
+ */
+
+// Pity counter for tracking packs since last pull of each rarity
+export interface PityCounter {
+  packsSinceRare: number;        // Packs since last rare+ pull
+  packsSinceEpic: number;        // Packs since last epic+ pull
+  packsSinceLegendary: number;   // Packs since last legendary+ pull
+  packsSinceMythic: number;      // Packs since last mythic pull
+  lastUpdated: Date;             // Last update timestamp
+}
+
+// Pity thresholds configuration
+export interface PityThresholds {
+  rare: {
+    softPity: number;            // Soft pity threshold (15)
+    hardPity: number;            // Hard pity threshold (30)
+    softPityMultiplier: number;  // Chance multiplier at soft pity (1.5x)
+  };
+  epic: {
+    softPity: number;            // Soft pity threshold (40)
+    hardPity: number;            // Hard pity threshold (60)
+    softPityMultiplier: number;  // Chance multiplier at soft pity (2x)
+  };
+  legendary: {
+    softPity: number;            // Soft pity threshold (80)
+    hardPity: number;            // Hard pity threshold (100)
+    softPityMultiplier: number;  // Chance multiplier at soft pity (3x)
+  };
+  mythic: {
+    softPity: number;            // Soft pity threshold (150)
+    hardPity: number;            // Hard pity threshold (200)
+    softPityMultiplier: number;  // Chance multiplier at soft pity (5x)
+  };
+}
+
+// Default pity thresholds
+export const DEFAULT_PITY_THRESHOLDS: PityThresholds = {
+  rare: {
+    softPity: 15,
+    hardPity: 30,
+    softPityMultiplier: 1.5,
+  },
+  epic: {
+    softPity: 40,
+    hardPity: 60,
+    softPityMultiplier: 2.0,
+  },
+  legendary: {
+    softPity: 80,
+    hardPity: 100,
+    softPityMultiplier: 3.0,
+  },
+  mythic: {
+    softPity: 150,
+    hardPity: 200,
+    softPityMultiplier: 5.0,
+  },
+};
+
+// Pity state for UI display
+export interface PityState {
+  counters: PityCounter;
+  thresholds: PityThresholds;
+  // Progress percentages (0-100) for UI display
+  rareProgress: number;
+  epicProgress: number;
+  legendaryProgress: number;
+  mythicProgress: number;
+  // Whether soft pity is active
+  rareSoftPityActive: boolean;
+  epicSoftPityActive: boolean;
+  legendarySoftPityActive: boolean;
+  mythicSoftPityActive: boolean;
+  // Whether hard pity is guaranteed next pack
+  rareGuaranteed: boolean;
+  epicGuaranteed: boolean;
+  legendaryGuaranteed: boolean;
+  mythicGuaranteed: boolean;
+}
+
+// ============================================================================
+// COLLECTION COMPLETION TYPES (Set Completion & Milestones)
+// ============================================================================
+
+/**
+ * Collection completion tracks progress toward collecting all cards.
+ * Awards badges and bonus packs at milestones (25%, 50%, 75%, 100%).
+ *
+ * Completion is tracked per rarity tier and overall.
+ */
+
+// Completion milestone configuration
+export interface CompletionMilestone {
+  percentage: number;            // Completion percentage (25, 50, 75, 100)
+  reward: CompletionReward;      // Reward for reaching milestone
+  achieved: boolean;             // Whether milestone is achieved
+  achievedAt?: Date;             // When milestone was achieved
+}
+
+// Completion reward types
+export interface CompletionReward {
+  type: 'badge' | 'packs' | 'title' | 'card_back';
+  value: number | string;        // Pack count, badge ID, title ID, etc.
+  description: string;           // Reward description
+  icon: string;                  // Reward icon
+}
+
+// Rarity completion tracking
+export interface RarityCompletion {
+  rarity: Rarity;
+  totalCards: number;            // Total cards of this rarity in database
+  ownedCards: number;            // Number owned by player
+  percentage: number;            // Completion percentage (0-100)
+  missingCardIds: string[];      // IDs of missing cards
+  milestones: CompletionMilestone[];
+}
+
+// Type completion tracking (by dad type)
+export interface TypeCompletion {
+  type: DadType;
+  totalCards: number;            // Total cards of this type
+  ownedCards: number;            // Number owned by player
+  percentage: number;            // Completion percentage (0-100)
+  missingCardIds: string[];      // IDs of missing cards
+}
+
+// Overall collection completion
+export interface CollectionCompletion {
+  // Overall stats
+  totalCardsInGame: number;      // Total unique cards in database
+  totalCardsOwned: number;       // Total unique cards owned
+  overallPercentage: number;     // Overall completion percentage (0-100)
+  overallMilestones: CompletionMilestone[];
+
+  // Per-rarity completion
+  rarityCompletion: Record<Rarity, RarityCompletion>;
+
+  // Per-type completion
+  typeCompletion: Record<DadType, TypeCompletion>;
+
+  // Completion achievements unlocked
+  achievementsUnlocked: string[];
+
+  // Badges awarded
+  badgesAwarded: string[];
+
+  // Last updated
+  lastUpdated: Date;
+}
+
+// Completion configuration
+export interface CompletionConfig {
+  milestonePercentages: number[];  // [25, 50, 75, 100]
+  enableRarityMilestones: boolean;
+  enableTypeMilestones: boolean;
+  autoClaimRewards: boolean;
+}
+
+// Default completion configuration
+export const DEFAULT_COMPLETION_CONFIG: CompletionConfig = {
+  milestonePercentages: [25, 50, 75, 100],
+  enableRarityMilestones: true,
+  enableTypeMilestones: true,
+  autoClaimRewards: true,
+};
+
+// Predefined completion milestones with rewards
+export const COMPLETION_MILESTONES: Record<number, CompletionReward> = {
+  25: {
+    type: 'badge',
+    value: 'collector_quarter',
+    description: 'Quarter Complete Badge + 3 Bonus Packs',
+    icon: '🎖️',
+  },
+  50: {
+    type: 'badge',
+    value: 'collector_half',
+    description: 'Halfway There Badge + 5 Bonus Packs',
+    icon: '🏅',
+  },
+  75: {
+    type: 'badge',
+    value: 'collector_three_quarters',
+    description: 'Almost There Badge + 10 Bonus Packs',
+    icon: '🥇',
+  },
+  100: {
+    type: 'badge',
+    value: 'collector_complete',
+    description: 'Master Collector Badge + 20 Bonus Packs + Exclusive Title',
+    icon: '👑',
+  },
+};
+
+// Rarity-specific completion milestones
+export const RARITY_COMPLETION_MILESTONES: Record<Rarity, Record<number, CompletionReward>> = {
+  common: {
+    100: {
+      type: 'badge',
+      value: 'common_master',
+      description: 'Common Master Badge',
+      icon: '⚪',
+    },
+  },
+  uncommon: {
+    100: {
+      type: 'badge',
+      value: 'uncommon_master',
+      description: 'Uncommon Master Badge',
+      icon: '🔵',
+    },
+  },
+  rare: {
+    100: {
+      type: 'badge',
+      value: 'rare_master',
+      description: 'Rare Master Badge + 3 Bonus Packs',
+      icon: '🟡',
+    },
+  },
+  epic: {
+    100: {
+      type: 'badge',
+      value: 'epic_master',
+      description: 'Epic Master Badge + 5 Bonus Packs',
+      icon: '🟣',
+    },
+  },
+  legendary: {
+    100: {
+      type: 'badge',
+      value: 'legendary_master',
+      description: 'Legendary Master Badge + 10 Bonus Packs',
+      icon: '🟠',
+    },
+  },
+  mythic: {
+    100: {
+      type: 'badge',
+      value: 'mythic_master',
+      description: 'Mythic Master Badge + Exclusive Title + 20 Bonus Packs',
+      icon: '💎',
+    },
+  },
+};
+
+// ============================================================================
 // PACK DESIGNS (US068 - Pack Designs - Visual Variety)
 // ============================================================================
 

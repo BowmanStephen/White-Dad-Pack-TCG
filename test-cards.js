@@ -1,5 +1,5 @@
 // Quick test to check if cards are loading
-import { getAllCards, getCardsByRarity, getCardCount } from './src/lib/cards/database.ts';
+import { getAllCards, getCardsByRarity } from './src/lib/cards/database.ts';
 
 console.log('=== Card Database Test ===');
 const allCards = getAllCards();

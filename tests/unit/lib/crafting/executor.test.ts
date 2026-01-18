@@ -12,9 +12,18 @@ import {
   validateCardRarities,
   validatePlayerCurrency,
   validateCardCount,
+  validateRecipeSelection,
+  calculateInventoryChanges,
+  hasCardsForRecipe,
+  getCardsByRarity,
+  sortCardsByRarity,
+  getSuccessRateText,
+  getFailureReturnText,
+  rollCraftingSuccess,
 } from '@/lib/crafting/executor';
 import { CRAFTING_RECIPES } from '@/types';
 import { getAllCards } from '@/lib/cards/database';
+import type { PackCard } from '@/types';
 
 describe('calculateCraftingCost', () => {
   it('should calculate base cost correctly', () => {
@@ -596,3 +605,439 @@ describe('validateCraftingAttempt - HP-004 (Comprehensive Validation)', () => {
   });
 });
 
+describe('validateRecipeSelection - Legacy Validation', () => {
+  const commonToUncommon = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+
+  it('should validate card count and rarities for valid selection', () => {
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'common' as const },
+    ];
+
+    const result = validateRecipeSelection(commonToUncommon, cards);
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+
+  it('should fail when card count is incorrect', () => {
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+    ];
+
+    const result = validateRecipeSelection(commonToUncommon, cards);
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('CARD_COUNT_MISMATCH');
+  });
+
+  it('should fail when rarities do not match', () => {
+    const cards = [
+      { id: 'card1', rarity: 'common' as const },
+      { id: 'card2', rarity: 'common' as const },
+      { id: 'card3', rarity: 'common' as const },
+      { id: 'card4', rarity: 'common' as const },
+      { id: 'card5', rarity: 'uncommon' as const }, // Wrong rarity
+    ];
+
+    const result = validateRecipeSelection(commonToUncommon, cards);
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('INVALID_RARITY');
+  });
+});
+
+describe('calculateInventoryChanges', () => {
+  it('should calculate changes for successful craft', () => {
+    const inputCards: PackCard[] = [
+      { id: 'card1', rarity: 'common', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card2', rarity: 'common', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+    ];
+
+    const resultCard: PackCard = {
+      id: 'result1',
+      rarity: 'uncommon',
+      isRevealed: false,
+      isHolo: true,
+      holoType: 'standard'
+    } as PackCard;
+
+    const changes = calculateInventoryChanges(true, inputCards, resultCard, undefined);
+
+    expect(changes.removed).toEqual(['card1', 'card2']);
+    expect(changes.added).toHaveLength(1);
+    expect(changes.added[0].id).toBe('result1');
+  });
+
+  it('should calculate changes for failed craft with returned cards', () => {
+    const inputCards: PackCard[] = [
+      { id: 'card1', rarity: 'rare', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card2', rarity: 'rare', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card3', rarity: 'rare', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+    ];
+
+    const returnedCards: PackCard[] = [inputCards[0], inputCards[1]];
+
+    const changes = calculateInventoryChanges(false, inputCards, undefined, returnedCards);
+
+    expect(changes.removed).toEqual(['card1', 'card2', 'card3']);
+    expect(changes.added).toHaveLength(2);
+    expect(changes.added[0].id).toBe('card1');
+    expect(changes.added[1].id).toBe('card2');
+  });
+
+  it('should handle empty inventory edge case', () => {
+    const changes = calculateInventoryChanges(true, [], undefined, undefined);
+
+    expect(changes.removed).toEqual([]);
+    expect(changes.added).toEqual([]);
+  });
+});
+
+describe('hasCardsForRecipe', () => {
+  it('should return true when inventory has sufficient cards', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const inventory = new Map([
+      ['card1', 3],
+      ['card2', 2],
+    ]);
+
+    const result = hasCardsForRecipe(recipe, inventory);
+    expect(result).toBe(true);
+  });
+
+  it('should return false when inventory has insufficient cards', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const inventory = new Map([
+      ['card1', 2],
+    ]);
+
+    const result = hasCardsForRecipe(recipe, inventory);
+    expect(result).toBe(false);
+  });
+
+  it('should handle empty inventory edge case', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const inventory = new Map();
+
+    const result = hasCardsForRecipe(recipe, inventory);
+    expect(result).toBe(false);
+  });
+
+  it('should return true when inventory has exact required count', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    const inventory = new Map([
+      ['card1', 5],
+    ]);
+
+    const result = hasCardsForRecipe(recipe, inventory);
+    expect(result).toBe(true);
+  });
+});
+
+describe('getCardsByRarity', () => {
+  it('should filter cards by rarity correctly', () => {
+    const allCards = getAllCards();
+    const commonCards = getCardsByRarity(allCards, 'common');
+
+    expect(commonCards.length).toBeGreaterThan(0);
+    expect(commonCards.every(card => card.rarity === 'common')).toBe(true);
+  });
+
+  it('should return empty array when no cards of rarity exist', () => {
+    const cards: PackCard[] = [
+      { id: 'card1', rarity: 'common', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card2', rarity: 'uncommon', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+    ];
+
+    const rareCards = getCardsByRarity(cards, 'rare');
+    expect(rareCards).toEqual([]);
+  });
+
+  it('should handle empty input array', () => {
+    const result = getCardsByRarity([], 'common');
+    expect(result).toEqual([]);
+  });
+
+  it('should find all rarities in database', () => {
+    const allCards = getAllCards();
+    const rarities: Array<'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic'> =
+      ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+
+    rarities.forEach(rarity => {
+      const cards = getCardsByRarity(allCards, rarity);
+      expect(cards.length).toBeGreaterThan(0);
+      expect(cards.every(card => card.rarity === rarity)).toBe(true);
+    });
+  });
+});
+
+describe('sortCardsByRarity', () => {
+  it('should sort cards by rarity in descending order', () => {
+    const cards: PackCard[] = [
+      { id: 'card1', rarity: 'common', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card2', rarity: 'mythic', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card3', rarity: 'rare', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+    ];
+
+    const sorted = sortCardsByRarity(cards);
+
+    expect(sorted[0].rarity).toBe('mythic');
+    expect(sorted[1].rarity).toBe('rare');
+    expect(sorted[2].rarity).toBe('common');
+  });
+
+  it('should not mutate original array', () => {
+    const cards: PackCard[] = [
+      { id: 'card1', rarity: 'common', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+      { id: 'card2', rarity: 'rare', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+    ];
+
+    const originalOrder = [cards[0].rarity, cards[1].rarity];
+    sortCardsByRarity(cards);
+
+    expect(cards[0].rarity).toBe(originalOrder[0]);
+    expect(cards[1].rarity).toBe(originalOrder[1]);
+  });
+
+  it('should handle empty array', () => {
+    const sorted = sortCardsByRarity([]);
+    expect(sorted).toEqual([]);
+  });
+
+  it('should handle single element array', () => {
+    const cards: PackCard[] = [
+      { id: 'card1', rarity: 'common', isRevealed: false, isHolo: false, holoType: 'none' } as PackCard,
+    ];
+
+    const sorted = sortCardsByRarity(cards);
+    expect(sorted).toHaveLength(1);
+    expect(sorted[0].id).toBe('card1');
+  });
+});
+
+describe('getSuccessRateText', () => {
+  it('should return correct text for 100% success rate', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    expect(recipe.successRate).toBe(1.0);
+
+    const text = getSuccessRateText(recipe);
+    expect(text).toBe('100% success rate');
+  });
+
+  it('should return correct text for 50% success rate', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'rare_to_epic')!;
+    expect(recipe.successRate).toBe(0.5);
+
+    const text = getSuccessRateText(recipe);
+    expect(text).toBe('50% success rate');
+  });
+
+  it('should round decimal success rates correctly', () => {
+    const recipe = {
+      id: 'test',
+      name: 'Test',
+      description: 'Test',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 0.666, // 66.6%
+    };
+
+    const text = getSuccessRateText(recipe);
+    expect(text).toBe('67% success rate');
+  });
+});
+
+describe('getFailureReturnText', () => {
+  it('should return text for recipes with fail return rate', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'rare_to_epic')!;
+    expect(recipe.failReturnRate).toBe(0.6);
+
+    const text = getFailureReturnText(recipe);
+    expect(text).toBe('On failure: 3 of 5 cards returned (60%)');
+  });
+
+  it('should return default text for recipes without fail return rate', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+    expect(recipe.failReturnRate).toBeUndefined();
+
+    const text = getFailureReturnText(recipe);
+    expect(text).toBe('All cards consumed on failure');
+  });
+
+  it('should handle zero return rate correctly', () => {
+    const recipe = {
+      id: 'test',
+      name: 'Test',
+      description: 'Test',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 0.5,
+      failReturnRate: 0,
+    };
+
+    const text = getFailureReturnText(recipe);
+    // Zero return rate is treated as "all cards consumed" (falsy check)
+    expect(text).toBe('All cards consumed on failure');
+  });
+});
+
+describe('rollCraftingSuccess', () => {
+  it('should return true when roll is below success rate', () => {
+    const recipe = {
+      id: 'test',
+      name: 'Test',
+      description: 'Test',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 0.5, // 50% success rate
+    };
+
+    // Mock Math.random to return 0.3 (30% < 50% = success)
+    const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.3);
+
+    const result = rollCraftingSuccess(recipe);
+    expect(result).toBe(true);
+
+    mockRandom.mockRestore();
+  });
+
+  it('should return false when roll is above success rate', () => {
+    const recipe = {
+      id: 'test',
+      name: 'Test',
+      description: 'Test',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 0.5, // 50% success rate
+    };
+
+    // Mock Math.random to return 0.7 (70% > 50% = failure)
+    const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.7);
+
+    const result = rollCraftingSuccess(recipe);
+    expect(result).toBe(false);
+
+    mockRandom.mockRestore();
+  });
+
+  it('should handle zero success rate edge case', () => {
+    const recipe = {
+      id: 'test',
+      name: 'Test',
+      description: 'Test',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 0, // 0% success rate
+    };
+
+    // Mock Math.random to return 0 (minimum possible value)
+    const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    const result = rollCraftingSuccess(recipe);
+    expect(result).toBe(false); // 0 is not < 0
+
+    mockRandom.mockRestore();
+  });
+
+  it('should handle 100% success rate edge case', () => {
+    const recipe = {
+      id: 'test',
+      name: 'Test',
+      description: 'Test',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 1.0, // 100% success rate
+    };
+
+    // Mock Math.random to return 0.99 (maximum value is < 1.0)
+    const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+
+    const result = rollCraftingSuccess(recipe);
+    expect(result).toBe(true); // 0.99 < 1.0
+
+    mockRandom.mockRestore();
+  });
+});
+
+describe('Edge Cases - Empty Inventory, Max Cost, Zero Success Rate', () => {
+  it('should handle empty inventory edge case', () => {
+    const inventory = new Map();
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+
+    const result = hasCardsForRecipe(recipe, inventory);
+    expect(result).toBe(false);
+  });
+
+  it('should handle max cost recipe (legendary to mythic)', () => {
+    const legendaryToMythic = CRAFTING_RECIPES.find(r => r.id === 'legendary_to_mythic')!;
+    const cost = calculateCraftingCost(legendaryToMythic);
+
+    // Legendary to mythic should be the most expensive recipe
+    expect(cost).toBe(2500);
+
+    // Player with slightly less cannot afford
+    expect(canAffordCraft(legendaryToMythic, 2499)).toBe(false);
+
+    // Player with exact amount can afford
+    expect(canAffordCraft(legendaryToMythic, 2500)).toBe(true);
+  });
+
+  it('should handle zero success rate edge case', () => {
+    const recipe = {
+      id: 'test_zero_success',
+      name: 'Zero Success Test',
+      description: 'Test zero success rate',
+      inputRarity: 'common' as const,
+      inputCount: 5,
+      outputRarity: 'uncommon' as const,
+      outputCount: 1,
+      successRate: 0, // 0% success rate - guaranteed failure
+    };
+
+    // Mock Math.random to return 0 (minimum possible value)
+    const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    const result = rollCraftingSuccess(recipe);
+    expect(result).toBe(false); // Even with 0 roll, 0 is not < 0
+
+    mockRandom.mockRestore();
+  });
+
+  it('should handle empty card selection edge case', () => {
+    const recipe = CRAFTING_RECIPES.find(r => r.id === 'common_to_uncommon')!;
+
+    const result = validateCardRarities(recipe, []);
+    expect(result.valid).toBe(false);
+    expect(result.errorType).toBe('EMPTY_SELECTION');
+  });
+
+  it('should handle zero cost edge case', () => {
+    const zeroCostRecipe = {
+      id: 'zero_cost',
+      name: 'Zero Cost',
+      description: 'Zero cost recipe',
+      inputRarity: 'common' as const,
+      inputCount: 0,
+      outputRarity: 'common' as const,
+      outputCount: 1,
+      successRate: 1.0,
+    };
+
+    const cost = calculateCraftingCost(zeroCostRecipe);
+    expect(cost).toBe(0);
+  });
+});

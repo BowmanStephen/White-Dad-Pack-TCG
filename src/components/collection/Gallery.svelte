@@ -10,7 +10,6 @@
     filterCardsByRarity,
     filterCardsByHolo,
     filterCardsByTypes,
-    getPaginatedCards,
     formatCardCount,
     filterCardsByStatRanges,
     filterCardsByHoloVariants,
@@ -27,15 +26,22 @@
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG, STAT_NAMES, STAT_ICONS, HOLO_VARIANT_NAMES, HOLO_VARIANT_ICONS } from '../../types';
   import CardLightbox from '../card/CardLightbox.svelte';
   import { openLightbox } from '../../stores/lightbox';
+  import { calculateVisibleRange, getTotalHeight, getEstimatedCardHeight } from '../../lib/utils/virtual-scroll';
 
   // State
   let allCards: CollectionDisplayCard[] = [];
   let displayedCards: CollectionDisplayCard[] = [];
-  let page = 0;
-  const pageSize = 24; // Load 24 cards at a time
-  let hasMore = false;
-  let isLoading = false;
   let isInitialLoading = true; // Track initial load for skeleton
+
+  // Virtual scroll state
+  let scrollTop = $state(0);
+  let virtualState = $state({
+    startIndex: 0,
+    endIndex: 0,
+    offsetY: 0,
+    visibleItems: [] as number[],
+  });
+  let scrollContainer: HTMLDivElement;
 
   // Filters
   let searchTerm = '';
@@ -131,10 +137,6 @@
     }
   }
 
-  // Intersection observer for infinite scroll
-  let loadMoreTrigger: HTMLDivElement;
-  let observer: IntersectionObserver | null = null;
-
   // Load cards from collection
   function loadCards() {
     const currentCollection = collection.get();
@@ -142,6 +144,7 @@
     cardObtainedDates = getCardObtainedDates(currentCollection.packs);
     allCards = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
     applyFilters();
+    updateVirtualScroll();
     isInitialLoading = false;
   }
 
@@ -173,47 +176,30 @@
     // Track total filtered count for result indicator
     totalFilteredCount = filtered.length;
 
-    // Paginate
-    const result = getPaginatedCards(filtered, page, pageSize);
-    displayedCards = result.cards;
-    hasMore = result.hasMore;
+    // Set all filtered cards as displayed (virtual scroll will handle rendering)
+    displayedCards = filtered;
   }
 
-  // Load more cards (infinite scroll)
-  function loadMore() {
-    if (isLoading || !hasMore) return;
+  // Update virtual scroll state based on container dimensions
+  function updateVirtualScroll() {
+    if (!scrollContainer) return;
 
-    isLoading = true;
-    page++;
+    const cardHeight = getEstimatedCardHeight();
+    const containerHeight = scrollContainer.clientHeight;
 
-    const currentCollection = collection.get();
-    const uniqueCards = getUniqueCardsWithCounts(currentCollection.packs);
-    let filtered = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
-
-    // Apply all filters (including advanced)
-    filtered = filterCardsByRarity(filtered, selectedRarity);
-    if (holoOnly && selectedHoloVariants.size === 0) {
-      filtered = filterCardsByHolo(filtered, holoOnly);
-    } else if (selectedHoloVariants.size > 0) {
-      filtered = filterCardsByHoloVariants(filtered, selectedHoloVariants);
-    }
-    filtered = filterCardsByTypes(filtered, selectedTypes);
-    filtered = filterCardsBySearch(filtered, searchTerm);
-    filtered = filterCardsByStatRanges(filtered, statRanges);
-
-    const result = getPaginatedCards(filtered, page, pageSize);
-    displayedCards = [...displayedCards, ...result.cards];
-    hasMore = result.hasMore;
-
-    isLoading = false;
+    virtualState = calculateVisibleRange(scrollTop, {
+      itemCount: displayedCards.length,
+      itemHeight: cardHeight,
+      containerHeight: containerHeight,
+      bufferItems: 5,
+    });
   }
 
-  // Reset pagination when filters change
+  // Reset filters and scroll to top
   function resetPagination() {
-    page = 0;
-    displayedCards = [];
-    hasMore = false;
+    scrollTop = 0;
     applyFilters();
+    updateVirtualScroll();
   }
 
   // Handle search input with debounce
@@ -519,37 +505,27 @@
    */
   const holoVariants: HoloVariant[] = Object.keys(HOLO_VARIANT_NAMES) as HoloVariant[];
 
-  // Setup intersection observer for infinite scroll
+  // Setup virtual scroll
   onMount(() => {
     initializeFromURL();
     loadCards();
 
-    if (typeof IntersectionObserver !== 'undefined') {
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasMore && !isLoading) {
-            loadMore();
-          }
-        },
-        { rootMargin: '200px' }
-      );
-
-      if (loadMoreTrigger) {
-        observer.observe(loadMoreTrigger);
-      }
-    }
-
     // Add click outside listener for dropdowns
     document.addEventListener('click', handleClickOutside);
 
+    // Update virtual scroll on resize
+    const handleResize = () => {
+      updateVirtualScroll();
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      if (observer) {
-        observer.disconnect();
-      }
       if (debounceTimeout) {
         clearTimeout(debounceTimeout);
       }
       document.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('resize', handleResize);
     };
   });
 
@@ -570,14 +546,14 @@
         type="text"
         placeholder="Search cards..."
         value={searchTerm}
-        on:input={handleSearch}
+        oninput={handleSearch}
         class="search-input"
       />
       <span class="search-icon">🔍</span>
       {#if searchTerm}
         <button
           class="search-clear"
-          on:click={clearSearch}
+          onclick={clearSearch}
           aria-label="Clear search"
           type="button"
         >✕</button>
@@ -589,7 +565,7 @@
       <button
         class="filter-button"
         class:active={selectedRarity === null}
-        on:click={() => handleRarityFilter(null)}
+        onclick={() => handleRarityFilter(null)}
       >
         All
       </button>
@@ -598,7 +574,7 @@
           class="filter-button"
           class:active={selectedRarity === rarity}
           style="--rarity-color: {RARITY_CONFIG[rarity as Rarity].color}"
-          on:click={() => handleRarityFilter(rarity as Rarity)}
+          onclick={() => handleRarityFilter(rarity as Rarity)}
         >
           {RARITY_CONFIG[rarity as Rarity].name}
         </button>
@@ -609,7 +585,7 @@
     <button
       class="holo-filter-button"
       class:active={holoOnly}
-      on:click={toggleHoloFilter}
+      onclick={toggleHoloFilter}
     >
       ✨ Holo Only
     </button>
@@ -619,7 +595,7 @@
       <button
         class="sort-button"
         class:active={showSortDropdown}
-        on:click={toggleSortDropdown}
+        onclick={toggleSortDropdown}
       >
         <span class="sort-icon">📶</span>
         <span class="sort-label">{SORT_OPTION_CONFIG[selectedSort].name}</span>
@@ -632,7 +608,7 @@
             <button
               class="sort-option"
               class:selected={selectedSort === option}
-              on:click={() => handleSortChange(option)}
+              onclick={() => handleSortChange(option)}
             >
               <span class="sort-option-name">{config.name}</span>
               <span class="sort-option-desc">{config.description}</span>
@@ -646,7 +622,7 @@
     <button
       class="type-filter-toggle"
       class:active={showTypeFilter}
-      on:click={toggleTypeFilter}
+      onclick={toggleTypeFilter}
     >
       🏷️ Types {selectedTypes.size > 0 ? `(${selectedTypes.size})` : ''}
     </button>
@@ -655,7 +631,7 @@
     <button
       class="advanced-filters-toggle"
       class:active={showAdvancedFilters}
-      on:click={toggleAdvancedFilters}
+      onclick={toggleAdvancedFilters}
     >
       🔧 Advanced
     </button>
@@ -664,7 +640,7 @@
     {#if hasActiveAdvancedFilters()}
       <button
         class="clear-all-button"
-        on:click={clearAllFilters}
+        onclick={clearAllFilters}
       >
         Clear All
       </button>
@@ -684,7 +660,7 @@
       <div class="type-filter-header">
         <h3 class="type-filter-title">Filter by Dad Type</h3>
         {#if selectedTypes.size > 0}
-          <button class="clear-types-button" on:click={clearTypeFilters}>
+          <button class="clear-types-button" onclick={clearTypeFilters}>
             Clear All
           </button>
         {/if}
@@ -695,7 +671,7 @@
           <button
             class="type-button"
             class:active={isSelected}
-            on:click={() => toggleTypeSelection(type)}
+            onclick={() => toggleTypeSelection(type)}
           >
             <span class="type-icon">{DAD_TYPE_ICONS[type]}</span>
             <span class="type-name">{DAD_TYPE_NAMES[type]}</span>
@@ -714,7 +690,7 @@
     <div class="advanced-filters-panel">
       <div class="advanced-filters-header">
         <h3 class="advanced-filters-title">Advanced Filters</h3>
-        <button class="close-advanced-button" on:click={toggleAdvancedFilters}>
+        <button class="close-advanced-button" onclick={toggleAdvancedFilters}>
           ✕
         </button>
       </div>
@@ -724,7 +700,7 @@
         <div class="advanced-filter-section">
           <button
             class="advanced-filter-section-toggle"
-            on:click={toggleSavedSearches}
+            onclick={toggleSavedSearches}
           >
             <span class="section-icon">⭐</span>
             <span class="section-title">Saved Searches</span>
@@ -735,7 +711,7 @@
               {#each savedSearches as preset}
                 <button
                   class="saved-search-preset"
-                  on:click={() => applySavedSearch(preset)}
+                  onclick={() => applySavedSearch(preset)}
                 >
                   <span class="preset-icon">{preset.icon}</span>
                   <div class="preset-info">
@@ -752,7 +728,7 @@
         <div class="advanced-filter-section">
           <button
             class="advanced-filter-section-toggle"
-            on:click={toggleHoloVariants}
+            onclick={toggleHoloVariants}
           >
             <span class="section-icon">✨</span>
             <span class="section-title">Holo Variants</span>
@@ -768,7 +744,7 @@
                 <button
                   class="holo-variant-button"
                   class:active={isSelected}
-                  on:click={() => toggleHoloVariant(variant)}
+                  onclick={() => toggleHoloVariant(variant)}
                 >
                   <span class="variant-icon">{HOLO_VARIANT_ICONS[variant]}</span>
                   <span class="variant-name">{HOLO_VARIANT_NAMES[variant]}</span>
@@ -777,7 +753,7 @@
               {#if selectedHoloVariants.size > 0}
                 <button
                   class="clear-holo-button"
-                  on:click={clearHoloVariants}
+                  onclick={clearHoloVariants}
                 >
                   Clear All
                 </button>
@@ -790,7 +766,7 @@
         <div class="advanced-filter-section">
           <button
             class="advanced-filter-section-toggle"
-            on:click={toggleStatRanges}
+            onclick={toggleStatRanges}
           >
             <span class="section-icon">📊</span>
             <span class="section-title">Stat Ranges</span>
@@ -814,7 +790,7 @@
                     {#if !isDefault}
                       <button
                         class="clear-stat-button"
-                        on:click={() => clearStatRange(stat)}
+                        onclick={() => clearStatRange(stat)}
                         aria-label="Clear {STAT_NAMES[stat]} filter"
                       >
                         ✕
@@ -830,7 +806,7 @@
                         min="0"
                         max="100"
                         value={currentMin}
-                        on:input={(e) => updateStatRange(stat, parseInt((e.target as HTMLInputElement).value) || 0, currentMax)}
+                        oninput={(e) => updateStatRange(stat, parseInt((e.target as HTMLInputElement).value) || 0, currentMax)}
                         class="stat-range-input"
                       />
                     </div>
@@ -842,7 +818,7 @@
                         min="0"
                         max="100"
                         value={currentMax}
-                        on:input={(e) => updateStatRange(stat, currentMin, parseInt((e.target as HTMLInputElement).value) || 100)}
+                        oninput={(e) => updateStatRange(stat, currentMin, parseInt((e.target as HTMLInputElement).value) || 100)}
                         class="stat-range-input"
                       />
                     </div>
@@ -885,66 +861,82 @@
     <CollectionGridSkeleton count={12} />
   {:else if displayedCards.length > 0}
     <FadeIn duration={300}>
-      <div class="card-grid" class:animate-sort={true}>
-        {#each displayedCards as card (card.id)}
-          {@const isSelected = isCardSelected(card)}
-          {@const selectionNum = getSelectionNumber(card)}
-          <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected} on:click={(e) => handleCardClick(card, e)} role="button" tabindex="0" aria-label="View {card.name} in lightbox" on:keydown={(e) => e.key === 'Enter' && handleCardClick(card, e)}>
-            <Card
-              {card}
-              size="md"
-              interactive={false}
-              isFlipped={false}
-              showBack={false}
-              enableShare={false}
-            />
-            {#if card.duplicateCount > 1}
-              <div class="duplicate-badge">
-                {formatCardCount(card.duplicateCount)}
+      <!-- Virtual Scroll Container -->
+      <div
+        bind:this={scrollContainer}
+        class="scroll-container"
+        onscroll={(e) => {
+          const target = e.currentTarget;
+          scrollTop = target.scrollTop;
+          updateVirtualScroll();
+        }}
+        role="region"
+        aria-label="Card collection grid"
+      >
+        <!-- Spacer to create total height -->
+        <div
+          class="scroll-spacer"
+          style="height: {getTotalHeight({
+            itemCount: displayedCards.length,
+            itemHeight: getEstimatedCardHeight(),
+            containerHeight: scrollContainer?.clientHeight || 600,
+          })}px;"
+        ></div>
+
+        <!-- Virtual viewport with offset -->
+        <div class="virtual-viewport" style="transform: translateY({virtualState.offsetY}px);">
+          <div class="card-grid" class:animate-sort={true}>
+            {#each virtualState.visibleItems as index (index)}
+              {@const card = displayedCards[index]}
+              {@const isSelected = isCardSelected(card)}
+              {@const selectionNum = getSelectionNumber(card)}
+              <div class="card-wrapper" class:has-duplicate={card.duplicateCount > 1} class:selected={isSelected} onclick={(e) => handleCardClick(card, e)} role="button" tabindex="0" aria-label="View {card.name} in lightbox" onkeydown={(e) => e.key === 'Enter' && handleCardClick(card, e)}>
+                <Card
+                  {card}
+                  size="md"
+                  interactive={false}
+                  isFlipped={false}
+                  showBack={false}
+                  enableShare={false}
+                />
+                {#if card.duplicateCount > 1}
+                  <div class="duplicate-badge">
+                    {formatCardCount(card.duplicateCount)}
+                  </div>
+                {/if}
+                <!-- Zoom Indicator (appears on hover - US082) -->
+                <div class="zoom-badge">
+                  <span class="zoom-icon">🔍</span>
+                </div>
+                <!-- Compare Button (appears on hover) -->
+                <button
+                  class="compare-badge"
+                  class:selected={isSelected}
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    toggleCardSelection(card);
+                  }}
+                  aria-label="Select for comparison"
+                  title="Select for comparison"
+                >
+                  {#if isSelected}
+                    <span class="compare-number">{selectionNum}</span>
+                    <span class="compare-icon">✓</span>
+                  {:else}
+                    <span class="compare-icon">⚔️</span>
+                  {/if}
+                </button>
               </div>
-            {/if}
-            <!-- Zoom Indicator (appears on hover - US082) -->
-            <div class="zoom-badge">
-              <span class="zoom-icon">🔍</span>
-            </div>
-            <!-- Compare Button (appears on hover) -->
-            <button
-              class="compare-badge"
-              class:selected={isSelected}
-              on:click|stopPropagation={() => toggleCardSelection(card)}
-              aria-label="Select for comparison"
-              title="Select for comparison"
-            >
-              {#if isSelected}
-                <span class="compare-number">{selectionNum}</span>
-                <span class="compare-icon">✓</span>
-              {:else}
-                <span class="compare-icon">⚔️</span>
-              {/if}
-            </button>
+            {/each}
           </div>
-        {/each}
+        </div>
       </div>
     </FadeIn>
 
-    <!-- Loading Trigger (for infinite scroll) -->
-    {#if hasMore}
-      <div
-        bind:this={loadMoreTrigger}
-        class="load-more-trigger"
-        role="status"
-        aria-live="polite"
-      >
-        {#if isLoading}
-          <!-- Show skeleton grid when loading more -->
-          <CollectionGridSkeleton count={6} />
-        {:else}
-          <span class="load-more-hint">Scroll down to load more</span>
-        {/if}
-      </div>
-    {:else if displayedCards.length > 0}
+    <!-- End message for virtual scroll -->
+    {#if displayedCards.length > 0}
       <div class="end-message">
-        <p>🎉 You've reached the end of your collection!</p>
+        <p>🎉 Showing {virtualState.visibleItems.length} of {displayedCards.length} cards</p>
       </div>
     {/if}
   {/if}
@@ -1410,12 +1402,36 @@
     box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
   }
 
+  /* Virtual Scroll Container */
+  .scroll-container {
+    position: relative;
+    overflow-y: auto;
+    max-height: calc(100vh - 400px); /* Leave room for filters */
+    overflow-x: hidden;
+  }
+
+  .scroll-spacer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .virtual-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    will-change: transform;
+  }
+
   /* Card Grid */
   .card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    margin-bottom: 2rem;
+    padding: 1rem;
   }
 
   /* Tablet: 4 columns */
@@ -1423,6 +1439,11 @@
     .card-grid {
       grid-template-columns: repeat(4, 1fr);
       gap: 1.5rem;
+      padding: 1.5rem;
+    }
+
+    .scroll-container {
+      max-height: calc(100vh - 350px);
     }
   }
 
@@ -1431,6 +1452,11 @@
     .card-grid {
       grid-template-columns: repeat(6, 1fr);
       gap: 2rem;
+      padding: 2rem;
+    }
+
+    .scroll-container {
+      max-height: calc(100vh - 300px);
     }
   }
 
@@ -1517,49 +1543,15 @@
     }
   }
 
-  /* Load More Trigger */
-  .load-more-trigger {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    min-height: 100px;
-  }
-
-  .loading-spinner {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: #94a3b8;
-  }
-
-  .spinner {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 3px solid rgba(251, 191, 36, 0.2);
-    border-top-color: #fbbf24;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .load-more-hint {
-    color: #64748b;
-    font-size: 0.875rem;
-  }
-
   .end-message {
     display: flex;
     justify-content: center;
-    padding: 2rem;
+    padding: 1rem;
     color: #94a3b8;
     font-size: 0.875rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 0.5rem;
+    margin-top: 1rem;
   }
 
   /* ============================================================================

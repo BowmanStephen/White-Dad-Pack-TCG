@@ -11,6 +11,12 @@ import {
   generateOpponentTeam,
   executeBattleTurn,
   simulateBattle,
+  calculateRewards,
+  getTierFromRankPoints,
+  calculateRank,
+  calculateWinRate,
+  validateBattleDeck,
+  getBattleSummary,
 } from '../../../../src/lib/battle/executor';
 import {
   calculateCardPower,
@@ -270,9 +276,10 @@ describe('Battle System - US090', () => {
         'dadJoke'
       );
 
-      // Base: 80 - (50 * 0.5) = 55, then ±20% RNG
+      // Base: 80 - (50 * 0.5) = 55, then ±20% RNG, can crit (2x)
+      // Min: 55 * 0.8 = 44, Max: 55 * 1.2 * 2 (crit) = 132
       expect(damage).toBeGreaterThan(30);
-      expect(damage).toBeLessThan(100);
+      expect(damage).toBeLessThan(150);
     });
 
     it('should apply minimum damage floor', () => {
@@ -414,6 +421,192 @@ describe('Battle System - US090', () => {
       const opponent = generateOpponentTeam(playerCards, allCards);
 
       expect(opponent.cards).toHaveLength(3);
+    });
+  });
+
+  describe('Battle Simulation', () => {
+    it('should simulate a complete battle', () => {
+      const playerCards = [
+        createMockCard('1', 'rare', 'BBQ_DAD', { dadJoke: 70 }),
+        createMockCard('2', 'rare', 'FIX_IT_DAD', { dadJoke: 70 }),
+        createMockCard('3', 'rare', 'GOLF_DAD', { dadJoke: 70 }),
+      ];
+
+      const opponentCards = [
+        createMockCard('4', 'common', 'COUCH_DAD', { dadJoke: 50 }),
+        createMockCard('5', 'common', 'LAWN_DAD', { dadJoke: 50 }),
+        createMockCard('6', 'common', 'CAR_DAD', { dadJoke: 50 }),
+      ];
+
+      const playerTeam = createBattleTeam(playerCards, 'Player Team', true);
+      const opponentTeam = createBattleTeam(opponentCards, 'Opponent Team', false);
+
+      const result = simulateBattle(playerTeam, opponentTeam);
+
+      expect(result.winner).toBeDefined();
+      expect(result.turns).toBeGreaterThan(0);
+      expect(result.turns).toBeLessThanOrEqual(10);
+      expect(result.battleLog).not.toHaveLength(0);
+      expect(result.duration).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should produce winner and loser info', () => {
+      const playerCards = [
+        createMockCard('1', 'mythic', 'BBQ_DAD', { dadJoke: 100 }),
+        createMockCard('2', 'mythic', 'FIX_IT_DAD', { dadJoke: 100 }),
+        createMockCard('3', 'mythic', 'GOLF_DAD', { dadJoke: 100 }),
+      ];
+
+      const opponentCards = [
+        createMockCard('4', 'common', 'COUCH_DAD', { dadJoke: 10 }),
+        createMockCard('5', 'common', 'LAWN_DAD', { dadJoke: 10 }),
+        createMockCard('6', 'common', 'CAR_DAD', { dadJoke: 10 }),
+      ];
+
+      const playerTeam = createBattleTeam(playerCards, 'Player Team', true);
+      const opponentTeam = createBattleTeam(opponentCards, 'Opponent Team', false);
+
+      const result = simulateBattle(playerTeam, opponentTeam);
+
+      // Mythic cards should crush common cards
+      expect(result.winner).toBe('player');
+      expect(result.playerTeam.cards.filter(c => c.isAlive).length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Ranked Battle System', () => {
+    it('should calculate rewards for ranked victory', () => {
+      const rewards = calculateRewards('player', true, 'bronze');
+
+      expect(rewards.xp).toBeGreaterThan(0);
+      expect(rewards.rankPoints).toBeGreaterThan(0);
+      expect(rewards.xp).toBe(50); // Base XP for bronze
+      expect(rewards.rankPoints).toBe(25); // Base rank points for bronze
+    });
+
+    it('should calculate rewards for ranked defeat', () => {
+      const rewards = calculateRewards('opponent', true, 'silver');
+
+      expect(rewards.xp).toBe(10); // Consolation XP
+      expect(rewards.rankPoints).toBeLessThan(0);
+    });
+
+    it('should calculate rewards for draw', () => {
+      const rewards = calculateRewards('draw', true, 'gold');
+
+      expect(rewards.xp).toBe(25);
+      expect(rewards.rankPoints).toBe(0);
+    });
+
+    it('should give zero rank points for casual battles', () => {
+      const rewards = calculateRewards('player', false, 'bronze');
+
+      expect(rewards.xp).toBe(10); // Base casual XP
+      expect(rewards.rankPoints).toBe(0);
+    });
+
+    it('should scale rewards by tier', () => {
+      const bronzeRewards = calculateRewards('player', true, 'bronze');
+      const goldRewards = calculateRewards('player', true, 'gold');
+      const championRewards = calculateRewards('player', true, 'champion');
+
+      expect(championRewards.xp).toBeGreaterThan(goldRewards.xp);
+      expect(goldRewards.xp).toBeGreaterThan(bronzeRewards.xp);
+
+      expect(championRewards.rankPoints).toBeGreaterThan(goldRewards.rankPoints);
+      expect(goldRewards.rankPoints).toBeGreaterThan(bronzeRewards.rankPoints);
+    });
+  });
+
+  describe('Tier and Rank Calculation', () => {
+    it('should return correct tier for rank points', () => {
+      expect(getTierFromRankPoints(0)).toBe('bronze');
+      expect(getTierFromRankPoints(500)).toBe('bronze');
+      expect(getTierFromRankPoints(1000)).toBe('silver');
+      expect(getTierFromRankPoints(2000)).toBe('gold');
+      expect(getTierFromRankPoints(3000)).toBe('platinum');
+      expect(getTierFromRankPoints(4000)).toBe('diamond');
+      expect(getTierFromRankPoints(5000)).toBe('champion');
+    });
+
+    it('should calculate rank within tier', () => {
+      const rank = calculateRank(1050, 'silver');
+      expect(rank).toBeGreaterThanOrEqual(501);
+      expect(rank).toBeLessThanOrEqual(1000);
+    });
+
+    it('should calculate win rate correctly', () => {
+      expect(calculateWinRate(10, 0)).toBe(100);
+      expect(calculateWinRate(5, 5)).toBe(50);
+      expect(calculateWinRate(0, 10)).toBe(0);
+      expect(calculateWinRate(7, 3)).toBe(70);
+    });
+
+    it('should handle zero games for win rate', () => {
+      expect(calculateWinRate(0, 0)).toBe(0);
+    });
+  });
+
+  describe('Battle Deck Validation', () => {
+    it('should validate correct deck', () => {
+      const cards = [
+        createMockCard('1', 'rare', 'BBQ_DAD'),
+        createMockCard('2', 'rare', 'FIX_IT_DAD'),
+        createMockCard('3', 'rare', 'GOLF_DAD'),
+      ];
+
+      const validation = validateBattleDeck(cards);
+
+      expect(validation.valid).toBe(true);
+      expect(validation.error).toBeUndefined();
+    });
+
+    it('should reject deck with wrong number of cards', () => {
+      const cards = [
+        createMockCard('1', 'rare', 'BBQ_DAD'),
+        createMockCard('2', 'rare', 'FIX_IT_DAD'),
+      ];
+
+      const validation = validateBattleDeck(cards);
+
+      expect(validation.valid).toBe(false);
+      expect(validation.error).toContain('exactly 3 cards');
+    });
+
+    it('should reject deck with duplicate cards', () => {
+      const card = createMockCard('1', 'rare', 'BBQ_DAD');
+      const cards = [card, card, createMockCard('2', 'rare', 'FIX_IT_DAD')];
+
+      const validation = validateBattleDeck(cards);
+
+      expect(validation.valid).toBe(false);
+      expect(validation.error).toContain('duplicate');
+    });
+  });
+
+  describe('Battle Summary', () => {
+    it('should generate victory summary', () => {
+      const playerCards = [
+        createMockCard('1', 'mythic', 'BBQ_DAD', { dadJoke: 100 }),
+        createMockCard('2', 'rare', 'FIX_IT_DAD', { dadJoke: 70 }),
+        createMockCard('3', 'uncommon', 'GOLF_DAD', { dadJoke: 60 }),
+      ];
+
+      const opponentCards = [
+        createMockCard('4', 'common', 'COUCH_DAD', { dadJoke: 20 }),
+        createMockCard('5', 'common', 'LAWN_DAD', { dadJoke: 20 }),
+        createMockCard('6', 'common', 'CAR_DAD', { dadJoke: 20 }),
+      ];
+
+      const playerTeam = createBattleTeam(playerCards, 'Player Team', true);
+      const opponentTeam = createBattleTeam(opponentCards, 'Opponent Team', false);
+
+      const result = simulateBattle(playerTeam, opponentTeam);
+      const summary = getBattleSummary(result);
+
+      expect(summary).toContain('VICTORY');
+      expect(summary).toContain('turns');
+      expect(summary).toContain('/3 alive');
     });
   });
 });

@@ -292,6 +292,10 @@ export const CRAFTING_RECIPES: CraftingRecipe[] = [
 
 ### Security Architecture
 
+**Ralph Loop cross-reference:** In Ralph Loop terms, `validatePackBeforeOpen()` is a
+"Stop Hook" (bouncer) that blocks state transitions until validation passes. See
+`docs/RALPH_LOOP_ARCHITECTURE.md`.
+
 **Anti-Cheat System** (`src/lib/security/pack-validator.ts`):
 ```typescript
 export async function validatePackBeforeOpen(pack: Pack): Promise<ValidationResult> {
@@ -365,6 +369,26 @@ rollupOptions: {
 - Tree shaking eliminates unused code
 
 ---
+
+## 🤖 Agentic Iteration Patterns (Ralph Loop Architecture)
+
+DadDeck already uses several "agentic loop" ideas (even though the game itself is not
+LLM-driven). This section is a shared vocabulary for designing reliable, user-trust-building
+loops in UI/state machines.
+
+**Deep dive doc:** `docs/RALPH_LOOP_ARCHITECTURE.md`
+
+### How to map Ralph Loop concepts onto DadDeck
+
+- **State machine loops:** `PackState` and batch flows already model loop phases
+  (generate → animate → reveal → results). The Ralph Loop frame helps us be explicit
+  about "phase" and "exit conditions".
+- **Stop hooks / backpressure:** `validatePackBeforeOpen()` is a practical "stop hook"
+  gate. It’s the bouncer that prevents invalid output from advancing the state machine.
+- **HOTL dashboards:** For batch operations, prefer a "Mission Control" UI (objective,
+  progress, validation lights) over raw logs.
+- **Make retries visible:** If we add retry loops (e.g., autonomous pack generation),
+  show attempts/why (trust via transparency).
 
 ## 📁 Project Structure
 
@@ -600,6 +624,10 @@ Each card has 0-100 in:
 'revealing'      → Individual cards revealing
 'results'        → All cards revealed, showing results
 ```
+
+**Ralph Loop cross-reference:** Treat generation + validation like a loop with a "stop hook"
+gate (validation) before advancing to reveal. This is the same trust pattern described in
+`docs/RALPH_LOOP_ARCHITECTURE.md` (backpressure + visible acceptance criteria).
 
 ### Rarity Slot System
 Each pack has guaranteed slots:
@@ -1699,6 +1727,8 @@ export function reportWebVitals(metric) {
 5. **`PRD.md`** - Full product requirements (90KB document!)
 
 ### Quick Reference Files
+- **`docs/CARD_MECHANICS.md`** - Complete card collecting & pack opening mechanics (NEW)
+- **`docs/RALPH_LOOP_ARCHITECTURE.md`** - Agentic loop UX patterns (stop hooks, HOTL)
 - **`tailwind.config.mjs`** - Custom design tokens
 - **`astro.config.mjs`** - Integrations & build config (code splitting, terser)
 - **`vitest.config.ts`** - Test configuration with path aliases
@@ -1768,7 +1798,8 @@ bun astro check          # Type check Astro components
 - ✅ **Social Sharing** - Card pull sharing for social media
 - ✅ **Collection Persistence** - LocalStorage-based collection management
 - ✅ **Mobile Responsive** - 65% mobile, 35% desktop optimized
-- ✅ **Batch Opening** - Open multiple packs at once
+- ✅ **Batch Opening** - Open multiple packs at once (see HOTL dashboard patterns in
+  `docs/RALPH_LOOP_ARCHITECTURE.md`)
 - ✅ **Generative Card Art** - Procedural artwork for cards without images
 
 ### Advanced Features ✅
