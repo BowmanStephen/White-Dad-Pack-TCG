@@ -53,6 +53,7 @@
       favoriteCardId: null,
       badges: calculateBadges(stats.totalPacks, achievements.get()),
       stats: {
+        // Map CollectionStats.totalPacks → PlayerStats.totalPacksOpened
         totalPacksOpened: stats.totalPacks,
         totalCards: stats.totalCards,
         uniqueCards: stats.uniqueCards,
