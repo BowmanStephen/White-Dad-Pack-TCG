@@ -310,3 +310,12 @@ export const HOLO_VARIANT_ICONS: Record<HoloVariant, string> = {
   full_art: '🖼️',
   prismatic: '💎',
 };
+
+// ============================================================================
+// DECK BUILDING CONSTANTS
+// ============================================================================
+
+export const MIN_DECK_SIZE = 20; // Minimum cards in a deck
+export const MAX_DECK_SIZE = 60; // Maximum cards in a deck
+export const MAX_DECK_SLOTS = 10; // Maximum number of saved decks
+export const MAX_CARD_COUNT = 3; // Maximum copies of a single card in a deck

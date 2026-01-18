@@ -3786,3 +3786,7 @@ export const WISHLIST_PRIORITY_ORDER: Record<WishlistPriority, number> = {
   medium: 2,
   low: 1,
 };
+
+// Re-export deck building constants
+export { MIN_DECK_SIZE, MAX_DECK_SIZE, MAX_DECK_SLOTS, MAX_CARD_COUNT } from './constants';
+

@@ -3,9 +3,13 @@ import { resolve } from 'path';
 
 export default defineConfig({
   test: {
-    environment: 'node',
+    environment: 'jsdom',
     include: ['tests/**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
+    setupFiles: ['./tests/setup.ts'],
+    ssr: {
+      noExternal: ['svelte'],
+    },
   },
   resolve: {
     alias: {
