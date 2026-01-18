@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CraftingStation from '@/components/crafting/CraftingStation.svelte';
+
+// SEO
+const title = 'Crafting - DadDeck™ TCG';
+const description = 'Combine cards to create new, more powerful cards. Discover new recipes through experimentation!';
+const imageURL = new URL('/og-image.png', Astro.site).href;
+const siteURL = Astro.site?.href || 'https://daddeck.com';
+
+const metaTags = [
+  { name: 'description', content: description },
+  { property: 'og:title', content: title },
+  { property: 'og:description', content: description },
+  { property: 'og:image', content: imageURL },
+  { property: 'og:url', content: `${siteURL}crafting` },
+  { property: 'og:type', content: 'website' },
+  { name: 'twitter:card', content: 'summary_large_image' },
+  { name: 'twitter:title', content: title },
+  { name: 'twitter:description', content: description },
+  { name: 'twitter:image', content: imageURL },
+];
+---
+
+<BaseLayout title={title} metaTags={metaTags}>
+  <main class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800">
+    <div class="container mx-auto px-4 py-8">
+      <CraftingStation client:only="svelte" />
+    </div>
+  </main>
+</BaseLayout>
