@@ -22,8 +22,17 @@
   // Combined multiplier: cinematic mode doubles particles on top of quality setting
   const combinedMultiplier = $derived(qualityMultiplier * cinematicConfig.particleMultiplier);
 
+  // Mobile performance cap - prevent frame drops on mid-tier devices
+  // Mythic cards can hit 160 particles with max settings, which drops frames
+  const MAX_PARTICLES_MOBILE = 120;
+
   // Reactive particle count based on quality AND cinematic settings
-  let particleCount = $state(Math.floor(baseParticleCount * combinedMultiplier));
+  let particleCount = $state(
+    Math.min(
+      Math.floor(baseParticleCount * combinedMultiplier),
+      MAX_PARTICLES_MOBILE
+    )
+  );
   let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
 
   // Track cleanup function for effect
@@ -32,7 +41,10 @@
   // Regenerate particles when settings change
   $effect(() => {
     const multiplier = getParticleMultiplier() * getCinematicConfig().particleMultiplier;
-    particleCount = Math.floor(baseParticleCount * multiplier);
+    particleCount = Math.min(
+      Math.floor(baseParticleCount * multiplier),
+      MAX_PARTICLES_MOBILE
+    );
 
     if (particleCount > 0) {
       particles = Array.from({ length: particleCount }, (_, i) => ({

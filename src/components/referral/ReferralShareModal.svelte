@@ -4,6 +4,7 @@
   import type { ReferralCode, ReferralLink } from '@/types';
   import { trackEvent } from '@/stores/analytics';
   import { onDestroy } from 'svelte';
+  import { notifySuccess, notifyError } from '@/stores/notifications';
 
   export let referralCode: ReferralCode;
   export let referralLink: ReferralLink;
@@ -109,11 +110,11 @@
         },
       });
 
-      alert('Referral message copied! Paste it in Discord to share with friends.');
+      notifySuccess('Referral message copied! Paste it in Discord to share with friends.');
       onClose();
     } catch (error) {
-      console.error('Failed to copy:', error);
-      alert('Failed to copy referral message. Please try again.');
+      console.error('Failed to copy referral message:', error);
+      notifyError('Failed to copy referral message. Please try again.');
     }
   }
 
@@ -129,11 +130,11 @@
         },
       });
 
-      alert('Referral link copied to clipboard!');
+      notifySuccess('Referral link copied to clipboard!');
       onClose();
     } catch (error) {
-      console.error('Failed to copy:', error);
-      alert('Failed to copy referral link. Please try again.');
+      console.error('Failed to copy referral link:', error);
+      notifyError('Failed to copy referral link. Please try again.');
     }
   }
 
@@ -234,9 +235,14 @@
                 },
               });
 
+              notifySuccess('Thanks for sharing!');
               onClose();
             } catch (error) {
-              console.error('Native share failed:', error);
+              // User cancelled the share dialog - this is expected behavior, not an error
+              if ((error as Error).name !== 'AbortError') {
+                console.error('Native share failed:', error);
+                notifyError('Failed to open share dialog. Please try again.');
+              }
             }
           }}
           class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"

@@ -40,11 +40,11 @@ export const SEASON_2: Season = {
   name: 'Summer BBQ Dads',
   subtitle: 'Grill Season is Here',
   description: 'The temperature is rising and so is the grill mastery. 30 new cards dedicated to the art of outdoor cooking, summer parties, and dad fashion in 90-degree heat.',
-  status: 'upcoming',
+  status: 'active',
   startDate: new Date('2025-06-01'),
-  endDate: new Date('2025-08-31'),
+  endDate: new Date('2026-12-31'),
   totalCards: 30,
-  cardIds: [], // Will be populated when Season 2 cards are created
+  cardIds: Array.from({ length: 30 }, (_, i) => String(i + 53).padStart(3, '0')),
   packDesign: 'summer_bbq',
   theme: {
     name: 'Summer Heat',

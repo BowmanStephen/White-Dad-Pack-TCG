@@ -1,10 +1,11 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState, PackType } from '../types';
-import { generatePack, getPackStats } from '../lib/pack/generator';
+import { generatePack, generateSeasonPack, getPackStats } from '../lib/pack/generator';
 import { generatePremiumPack } from '../lib/pack/premium-generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
+import { DEFAULT_SEASON_CONFIG } from '../types';
 import {
   checkAndUnlockAchievements,
   getAchievementContext,
@@ -138,22 +139,11 @@ export async function openNewPack(): Promise<void> {
         let pack: Pack;
 
         if (packType === 'premium') {
-          // Check if user has premium packs available
-          if (!hasPremiumPacks()) {
-            throw new Error('No premium packs available. Please purchase a premium pack first.');
-          }
-
-          // Use a premium pack from inventory
-          const used = usePremiumPack('premium_single');
-          if (!used) {
-            throw new Error('Failed to use premium pack from inventory.');
-          }
-
-          // Generate premium pack with boosted rates
-          pack = generatePremiumPack('premium_single');
+          // Premium packs are disabled in MVP, fallback to standard
+          pack = generateSeasonPack(DEFAULT_SEASON_CONFIG.currentSeason);
         } else {
-          // Generate standard pack
-          pack = generatePack();
+          // Generate standard pack for current season
+          pack = generateSeasonPack(DEFAULT_SEASON_CONFIG.currentSeason);
         }
 
         // Calculate pack generation time for UX delay

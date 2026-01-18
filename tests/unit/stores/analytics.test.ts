@@ -23,7 +23,7 @@ import {
 } from '../../../src/stores/analytics';
 import type { AnyAnalyticsEvent, AnalyticsSession } from '../../../src/types';
 
-// Mock localStorage for Node.js environment
+// Setup localStorage mock before tests
 const mockLocalStorage = {
   store: new Map<string, string>(),
   getItem(key: string): string | null {
@@ -57,6 +57,9 @@ Object.defineProperty(global, 'document', {
   },
   writable: true,
 });
+
+// Mock global localStorage for direct access
+(global as any).localStorage = mockLocalStorage;
 
 describe('Analytics Store', () => {
   beforeEach(() => {

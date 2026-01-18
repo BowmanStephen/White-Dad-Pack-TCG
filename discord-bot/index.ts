@@ -16,16 +16,15 @@
  * - DISCORD_GUILD_ID: (Optional) Guild ID for instant command updates in dev
  */
 
-import { Client, GatewayIntentBits, REST, Routes, Collection } from 'discord.js';
+import { Client, GatewayIntentBits, REST, Routes } from 'discord.js';
 import * as dotenv from 'dotenv';
 import { commands } from './commands/index.js';
-import type { DiscordCommand } from './types/index.js';
 
 // Load environment variables
 dotenv.config({ path: './discord-bot/.env' });
 
-const TOKEN = process.env.DISCORD_TOKEN;
-const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const TOKEN = process.env.DISCORD_TOKEN!;
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 const GUILD_ID = process.env.DISCORD_GUILD_ID;
 
 if (!TOKEN) {

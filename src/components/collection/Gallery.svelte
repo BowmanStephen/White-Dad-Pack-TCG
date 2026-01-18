@@ -368,9 +368,9 @@
   /**
    * Handle card click to open lightbox
    * @param card - The card to view in lightbox
-   * @param event - The click event (to prevent bubbling)
+   * @param event - The interaction event (to prevent bubbling)
    */
-  function handleCardClick(card: PackCard, event: MouseEvent) {
+  function handleCardClick(card: PackCard, event: MouseEvent | KeyboardEvent) {
     event.stopPropagation();
 
     // Convert displayed cards to PackCard array for lightbox navigation
@@ -830,7 +830,7 @@
                         min="0"
                         max="100"
                         value={currentMin}
-                        on:input={(e) => updateStatRange(stat, parseInt(e.target.value) || 0, currentMax)}
+                        on:input={(e) => updateStatRange(stat, parseInt((e.target as HTMLInputElement).value) || 0, currentMax)}
                         class="stat-range-input"
                       />
                     </div>
@@ -842,7 +842,7 @@
                         min="0"
                         max="100"
                         value={currentMax}
-                        on:input={(e) => updateStatRange(stat, currentMin, parseInt(e.target.value) || 100)}
+                        on:input={(e) => updateStatRange(stat, currentMin, parseInt((e.target as HTMLInputElement).value) || 100)}
                         class="stat-range-input"
                       />
                     </div>

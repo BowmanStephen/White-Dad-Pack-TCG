@@ -1289,7 +1289,7 @@ export interface SeasonConfig {
 
 // Default season configuration
 export const DEFAULT_SEASON_CONFIG: SeasonConfig = {
-  currentSeason: 1,
+  currentSeason: 2,
   autoArchive: true,
   launchEventDuration: 7,
 };
@@ -2085,7 +2085,7 @@ export interface FriendActivityDetails {
   packId?: string;
   cardCount?: number;
 
-  // For rare_pull, epic_pull, legendary_pull, mythic_pull
+  // For rare_pull, epic_pull, legendary_pull, mythic_pull, level_up
   cardName?: string;
   cardRarity?: Rarity;
   isHolo?: boolean;
@@ -2102,8 +2102,7 @@ export interface FriendActivityDetails {
   recipeName?: string;
   success?: boolean;
 
-  // For level_up
-  cardName?: string;
+  // For level_up specific
   newLevel?: number;
 }
 

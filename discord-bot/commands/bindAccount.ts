@@ -5,8 +5,8 @@
  * for cross-platform collection tracking.
  */
 
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, StringSelectMenuBuilder, ActionRowBuilder, ComponentType } from 'discord.js';
-import { getUser, createUser, saveUser, setPremiumStatus } from '../utils/database.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { getUser, createUser, saveUser } from '../utils/database.js';
 
 export const data = new SlashCommandBuilder()
   .setName('bindaccount')

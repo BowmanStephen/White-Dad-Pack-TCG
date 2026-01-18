@@ -1637,6 +1637,877 @@
       "artist": "DadArt Studios",
       "seasonId": 1,
       "holoVariant": "prismatic"
+    },
+    {
+      "id": "053",
+      "name": "Smoke Master Sam",
+      "subtitle": "The Low and Slow Prophet",
+      "type": "BBQ_DAD",
+      "rarity": "legendary",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 100,
+        "fixIt": 40,
+        "napPower": 90,
+        "remoteControl": 30,
+        "thermostat": 50,
+        "sockSandal": 60,
+        "beerSnob": 95
+      },
+      "flavorText": "If you're lookin', you ain't cookin'. This brisket has been going for 18 hours. Don't touch the lid.",
+      "abilities": [
+        {
+          "name": "Bark Whisperer",
+          "description": "Achieves perfect crust consistency every time. Neighbors weep with joy."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 53,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2,
+      "holoVariant": "full_art"
+    },
+    {
+      "id": "054",
+      "name": "Pool Side Paul",
+      "subtitle": "Guardian of the Deep End",
+      "type": "COOL_DAD",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 45,
+        "fixIt": 35,
+        "napPower": 70,
+        "remoteControl": 20,
+        "thermostat": 100,
+        "sockSandal": 10,
+        "beerSnob": 75
+      },
+      "flavorText": "NO RUNNING! I just balanced the pH levels. One cannonball and you're banned for an hour.",
+      "abilities": [
+        {
+          "name": "Chemical Balance",
+          "description": "Can detect 1.5ppm chlorine by scent alone."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 54,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "055",
+      "name": "Mosquito Magnet Mike",
+      "subtitle": "Sacrificing Blood for the Yard",
+      "type": "LAWN_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 50,
+        "fixIt": 20,
+        "napPower": 30,
+        "remoteControl": 40,
+        "thermostat": 40,
+        "sockSandal": 80,
+        "beerSnob": 30
+      },
+      "flavorText": "They just love my Type-O blood. I've been bitten through my denim. It's fine. Keep eating.",
+      "abilities": [
+        {
+          "name": "Human Shield",
+          "description": "Attracts all local insects, sparing other dads in the radius."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 55,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "056",
+      "name": "Sunburn Stan",
+      "subtitle": "Lobster-Tinted Leisure",
+      "type": "COOL_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 60,
+        "fixIt": 25,
+        "napPower": 50,
+        "remoteControl": 45,
+        "thermostat": 30,
+        "sockSandal": 40,
+        "beerSnob": 55
+      },
+      "flavorText": "It'll turn into a tan tomorrow. I don't need 'SPF 50'—that's just fancy lotion.",
+      "abilities": [
+        {
+          "name": "Solar Absorption",
+          "description": "Gains +10 Grill Skill when skin matches the medium-rare steak."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 56,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "057",
+      "name": "Flip Flop Floyd",
+      "subtitle": "The Rhythmic Slap of Summer",
+      "type": "FASHION_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 35,
+        "fixIt": 10,
+        "napPower": 60,
+        "remoteControl": 50,
+        "thermostat": 20,
+        "sockSandal": 100,
+        "beerSnob": 40
+      },
+      "flavorText": "Slap. Slap. Slap. The sound of a man who hasn't worn real shoes since May.",
+      "abilities": [
+        {
+          "name": "Beach Stealth",
+          "description": "Can be heard from 3 houses away. Stealth is impossible."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 57,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "058",
+      "name": "Cooler King Kevin",
+      "subtitle": "The Ice Must Flow",
+      "type": "ITEM",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 40,
+        "grillSkill": 20,
+        "fixIt": 15,
+        "napPower": 30,
+        "remoteControl": 10,
+        "thermostat": 95,
+        "sockSandal": 0,
+        "beerSnob": 80
+      },
+      "flavorText": "Pre-chilled with dry ice for 24 hours. This cooler costs more than my first car.",
+      "abilities": [
+        {
+          "name": "Arctic Retention",
+          "description": "Keep drinks cold for 10 days. Or until Kevin opens it to show off the ice."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 58,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "059",
+      "name": "Back Deck Barry",
+      "subtitle": "Outdoor Napping Specialist",
+      "type": "COUCH_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 45,
+        "napPower": 100,
+        "remoteControl": 30,
+        "thermostat": 60,
+        "sockSandal": 70,
+        "beerSnob": 50
+      },
+      "flavorText": "I'm not sleeping, I'm just resting my eyes. And listening to the birds. And snoring rhythmically.",
+      "abilities": [
+        {
+          "name": "Horizontal Authority",
+          "description": "Commands the entire deck from a lying position."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 59,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "060",
+      "name": "Tongs-Clicking Tim",
+      "subtitle": "Checking the Calibration",
+      "type": "BBQ_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 70,
+        "fixIt": 30,
+        "napPower": 20,
+        "remoteControl": 25,
+        "thermostat": 40,
+        "sockSandal": 55,
+        "beerSnob": 45
+      },
+      "flavorText": "*Click click* Yep, they still work. *Click click* Just checking. Gotta be sure.",
+      "abilities": [
+        {
+          "name": "Calibration Click",
+          "description": "Must click tongs twice before any interaction. Increases focus."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 60,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "061",
+      "name": "Marinade Mark",
+      "subtitle": "24 Hours of Flavor Prep",
+      "type": "CHEF_DAD",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 90,
+        "fixIt": 20,
+        "napPower": 40,
+        "remoteControl": 35,
+        "thermostat": 45,
+        "sockSandal": 30,
+        "beerSnob": 85
+      },
+      "flavorText": "It's a secret blend of 14 spices and a very specific vinegar I found in Vermont.",
+      "abilities": [
+        {
+          "name": "Deep Soak",
+          "description": "Flavor penetrates to the molecular level. Your tongue isn't ready."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 61,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "062",
+      "name": "Charcoal Charlie",
+      "subtitle": "Analog Heat Enthusiast",
+      "type": "BBQ_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 85,
+        "fixIt": 55,
+        "napPower": 30,
+        "remoteControl": 20,
+        "thermostat": 30,
+        "sockSandal": 65,
+        "beerSnob": 70
+      },
+      "flavorText": "Gas is for quitters. If I don't smell like a forest fire, did I even cook?",
+      "abilities": [
+        {
+          "name": "Chimney Mastery",
+          "description": "Can light coals in a hurricane with one match and a newspaper."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 62,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "063",
+      "name": "Cornhole Chris",
+      "subtitle": "The Beanbag Sniper",
+      "type": "COOL_DAD",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 50,
+        "fixIt": 30,
+        "napPower": 40,
+        "remoteControl": 20,
+        "thermostat": 40,
+        "sockSandal": 60,
+        "beerSnob": 75
+      },
+      "flavorText": "Four bagger. All air mail. I've been practicing in the garage since February.",
+      "abilities": [
+        {
+          "name": "The Slide",
+          "description": "Bags always find the hole, regardless of friction levels."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 63,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "064",
+      "name": "Ladder Ball Larry",
+      "subtitle": "Tangled in Plastic",
+      "type": "COOL_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 45,
+        "fixIt": 65,
+        "napPower": 35,
+        "remoteControl": 25,
+        "thermostat": 35,
+        "sockSandal": 55,
+        "beerSnob": 60
+      },
+      "flavorText": "It's all in the wrist. If you wrap it on the top bar, it's worth three. I don't make the rules, I just enforce them.",
+      "abilities": [
+        {
+          "name": "Ensnare",
+          "description": "Bolas wrap around anything. Especially the neighbor's dog."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 64,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "065",
+      "name": "Badminton Brad",
+      "subtitle": "Intense Backyard Athletics",
+      "type": "COACH_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 40,
+        "fixIt": 35,
+        "napPower": 30,
+        "remoteControl": 45,
+        "thermostat": 50,
+        "sockSandal": 80,
+        "beerSnob": 40
+      },
+      "flavorText": "Smashed it! That's a point! Why is everyone looking at me like that? It's a competitive sport!",
+      "abilities": [
+        {
+          "name": "Shuttlecock Smash",
+          "description": "Deploys unnecessary athletic intensity in a low-stakes environment."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 65,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "066",
+      "name": "Water Balloon Walter",
+      "subtitle": "Tactical Hydration Deployment",
+      "type": "COACH_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 45,
+        "fixIt": 40,
+        "napPower": 25,
+        "remoteControl": 30,
+        "thermostat": 35,
+        "sockSandal": 70,
+        "beerSnob": 35
+      },
+      "flavorText": "Target locked. Ready the launchers. This is going to be a cold summer for the kids.",
+      "abilities": [
+        {
+          "name": "Rapid Refill",
+          "description": "Can fill 100 balloons in 60 seconds. The lawn is now a swamp."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 66,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "067",
+      "name": "Slip n Slide Sid",
+      "subtitle": "Defying Friction",
+      "type": "COOL_DAD",
+      "rarity": "epic",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 50,
+        "fixIt": 30,
+        "napPower": 20,
+        "remoteControl": 25,
+        "thermostat": 40,
+        "sockSandal": 50,
+        "beerSnob": 65
+      },
+      "flavorText": "Watch this! The chiropractor is already on speed dial. BANZAI!",
+      "abilities": [
+        {
+          "name": "Hydroplaning",
+          "description": "Slides twice as far as physics should allow. Ignores grass stains."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 67,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "068",
+      "name": "Citronella Cy",
+      "subtitle": "The Waxy Shield",
+      "type": "ITEM",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 30,
+        "grillSkill": 10,
+        "fixIt": 5,
+        "napPower": 40,
+        "remoteControl": 0,
+        "thermostat": 10,
+        "sockSandal": 0,
+        "beerSnob": 20
+      },
+      "flavorText": "Smells like lemon and broken dreams. But at least the mosquitoes are only mildly annoyed.",
+      "abilities": [
+        {
+          "name": "Lemon Scent",
+          "description": "Creates a 5-foot radius of questionable protection."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 68,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "069",
+      "name": "Tiki Torch Tom",
+      "subtitle": "Backyard Illumination Expert",
+      "type": "LAWN_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 60,
+        "fixIt": 50,
+        "napPower": 35,
+        "remoteControl": 20,
+        "thermostat": 30,
+        "sockSandal": 45,
+        "beerSnob": 55
+      },
+      "flavorText": "It's all about the ambiance. And the open flame near a wooden fence. Living on the edge.",
+      "abilities": [
+        {
+          "name": "Island Vibe",
+          "description": "Transforms any midwestern backyard into a poorly lit tropical paradise."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 69,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "070",
+      "name": "Light Beer Bill",
+      "subtitle": "Hydration is Mostly Water",
+      "type": "BBQ_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 65,
+        "fixIt": 20,
+        "napPower": 70,
+        "remoteControl": 60,
+        "thermostat": 40,
+        "sockSandal": 75,
+        "beerSnob": 5
+      },
+      "flavorText": "It's basically water. I can drink these all day. And I will. Watch me.",
+      "abilities": [
+        {
+          "name": "Infinite Cooler",
+          "description": "Can consume 24 cans without losing the ability to talk about the weather."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 70,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "071",
+      "name": "Zucchini Zeus",
+      "subtitle": "The Garden Over-Producer",
+      "type": "LAWN_DAD",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 70,
+        "fixIt": 45,
+        "napPower": 50,
+        "remoteControl": 30,
+        "thermostat": 40,
+        "sockSandal": 65,
+        "beerSnob": 60
+      },
+      "flavorText": "Take one. Please. Take five. I have 400 more. My family is tired of zucchini bread. My neighbors are hiding.",
+      "abilities": [
+        {
+          "name": "Bumper Crop",
+          "description": "Generates 50x more vegetables than any human could possibly consume."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 71,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "072",
+      "name": "Burger Builder Bob",
+      "subtitle": "Architect of the Bun",
+      "type": "CHEF_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 85,
+        "fixIt": 60,
+        "napPower": 30,
+        "remoteControl": 25,
+        "thermostat": 40,
+        "sockSandal": 45,
+        "beerSnob": 70
+      },
+      "flavorText": "The structural integrity of the lettuce is key. One slip and the whole system collapses. It's engineering, really.",
+      "abilities": [
+        {
+          "name": "Structural Topping",
+          "description": "Burgers never fall apart. Defies the laws of condiments."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 72,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "073",
+      "name": "Hot Dog Harry",
+      "subtitle": "Tube Meat Traditionalist",
+      "type": "CHEF_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 95,
+        "grillSkill": 75,
+        "fixIt": 20,
+        "napPower": 40,
+        "remoteControl": 20,
+        "thermostat": 40,
+        "sockSandal": 80,
+        "beerSnob": 25
+      },
+      "flavorText": "Ketchup on a hot dog? Not in this house. Mustard or GTFO. That's the law.",
+      "abilities": [
+        {
+          "name": "Relish Rush",
+          "description": "Consumption speed increases by 300% when mustard is present."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 73,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "074",
+      "name": "Condiment Craig",
+      "subtitle": "The Mustard Militia",
+      "type": "ITEM",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 35,
+        "grillSkill": 15,
+        "fixIt": 10,
+        "napPower": 0,
+        "remoteControl": 10,
+        "thermostat": 0,
+        "sockSandal": 0,
+        "beerSnob": 40
+      },
+      "flavorText": "I have 47 types of hot sauce and a mustard from a village in France that doesn't exist anymore.",
+      "abilities": [
+        {
+          "name": "Sauce Flex",
+          "description": "Increases flavor of any nearby food by 200%. Also increases heartburn."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 74,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "075",
+      "name": "Ice Run Ian",
+      "subtitle": "The Essential Supply Driver",
+      "type": "CAR_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 55,
+        "napPower": 20,
+        "remoteControl": 10,
+        "thermostat": 20,
+        "sockSandal": 50,
+        "beerSnob": 60
+      },
+      "flavorText": "We're out of ice. I'll be back in 10 minutes. *Comes back 40 minutes later with ice and a new tool he didn't need.*",
+      "abilities": [
+        {
+          "name": "Convenience Orbit",
+          "description": "Can find a gas station with good ice in any zip code."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 75,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "076",
+      "name": "Shade Seeker Steve",
+      "subtitle": "Chasing the Shadow",
+      "type": "COUCH_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 35,
+        "fixIt": 45,
+        "napPower": 85,
+        "remoteControl": 50,
+        "thermostat": 90,
+        "sockSandal": 60,
+        "beerSnob": 55
+      },
+      "flavorText": "Move the chair three feet to the left. The sun is chasing me. I'm not moving, the universe is.",
+      "abilities": [
+        {
+          "name": "Shadow Calculation",
+          "description": "Predicts sun movement with 99.9% accuracy. Finds the coldest spot in the yard."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 76,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "077",
+      "name": "Sprinkler Spencer",
+      "subtitle": "Yard Irrigation Veteran",
+      "type": "LAWN_DAD",
+      "rarity": "common",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 45,
+        "fixIt": 70,
+        "napPower": 30,
+        "remoteControl": 40,
+        "thermostat": 50,
+        "sockSandal": 85,
+        "beerSnob": 40
+      },
+      "flavorText": "I've got the timing down. 5am for the front, 6am for the back. Don't walk on the sidewalk. You've been warned.",
+      "abilities": [
+        {
+          "name": "Arc Adjustment",
+          "description": "Sets the perfect 180-degree spray. Sidewalk stays bone dry."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 77,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "078",
+      "name": "Lawn Chair Leon",
+      "subtitle": "Webbed Throne Holder",
+      "type": "ITEM",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 50,
+        "grillSkill": 30,
+        "fixIt": 20,
+        "napPower": 95,
+        "remoteControl": 10,
+        "thermostat": 40,
+        "sockSandal": 90,
+        "beerSnob": 50
+      },
+      "flavorText": "This aluminum frame has supported me through three decades of parades and soccer games. It stays.",
+      "abilities": [
+        {
+          "name": "Webbed Comfort",
+          "description": "Leaves a permanent grid pattern on the user's back. Sign of a true summer."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 78,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "079",
+      "name": "Patriotic Pete",
+      "subtitle": "The Flag-Waver",
+      "type": "HOLIDAY_DAD",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 90,
+        "fixIt": 50,
+        "napPower": 40,
+        "remoteControl": 60,
+        "thermostat": 30,
+        "sockSandal": 100,
+        "beerSnob": 50
+      },
+      "flavorText": "Stars and stripes! And burgers! And liberty! Why are you crying? It's just a parade!",
+      "abilities": [
+        {
+          "name": "Eagle Screech",
+          "description": "Increases morale of all nearby dads by 1776%."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 79,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "080",
+      "name": "Bug Zapper Ben",
+      "subtitle": "The Electric Blue Judge",
+      "type": "TECH_DAD",
+      "rarity": "uncommon",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 40,
+        "fixIt": 80,
+        "napPower": 30,
+        "remoteControl": 50,
+        "thermostat": 40,
+        "sockSandal": 60,
+        "beerSnob": 45
+      },
+      "flavorText": "*Zap* Got one. *Zap zap* That was a big one. The sound of victory.",
+      "abilities": [
+        {
+          "name": "Shock Value",
+          "description": "The blue glow provides a hypnotic and deadly ambiance."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 80,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "081",
+      "name": "Fire Pit Fred",
+      "subtitle": "Storytelling in the Smoke",
+      "type": "VINTAGE_DAD",
+      "rarity": "rare",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 80,
+        "fixIt": 60,
+        "napPower": 50,
+        "remoteControl": 20,
+        "thermostat": 40,
+        "sockSandal": 70,
+        "beerSnob": 80
+      },
+      "flavorText": "The smoke follows beauty, that's what my dad used to say. *Coughs violently while sitting in the smoke.*",
+      "abilities": [
+        {
+          "name": "Ember Mastery",
+          "description": "Can keep a fire going for 14 hours with three logs and a dream."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 81,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "082",
+      "name": "Inflatable Island Ivan",
+      "subtitle": "Captain of the Vinyl Raft",
+      "type": "ITEM",
+      "rarity": "epic",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 40,
+        "fixIt": 20,
+        "napPower": 100,
+        "remoteControl": 30,
+        "thermostat": 50,
+        "sockSandal": 20,
+        "beerSnob": 70
+      },
+      "flavorText": "This float has 6 cup holders and a built-in cooler. I am the king of this 12-foot pool.",
+      "abilities": [
+        {
+          "name": "Drift Away",
+          "description": "Slowly moves away from all responsibilities. Unstoppable."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 82,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 2
     }
   ]
 }

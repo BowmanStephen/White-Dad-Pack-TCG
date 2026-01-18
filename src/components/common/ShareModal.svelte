@@ -3,6 +3,7 @@
   import { backOut } from 'svelte/easing';
   import { modalOpen, closeModal } from '@/stores/ui';
   import { trackEvent } from '@/stores/analytics';
+  import { notifySuccess, notifyError, notifyInfo } from '@/stores/notifications';
   import type { Card } from '@/types';
   import { onMount, onDestroy } from 'svelte';
 
@@ -167,15 +168,18 @@
         },
       });
 
-      alert('Instructions copied! Paste them in Discord, then right-click the image to copy it.');
+      notifyInfo('Instructions copied! Paste them in Discord, then right-click the image to copy it.');
     } catch (error) {
-      console.error('Failed to copy:', error);
-      alert('Right-click the preview image → Copy Image → Paste in Discord!');
+      console.error('Failed to copy Discord instructions:', error);
+      notifyInfo('Right-click the preview image → Copy Image → Paste in Discord!');
     }
   }
 
   async function downloadPackImage() {
-    if (!packImageElement) return;
+    if (!packImageElement) {
+      notifyError('No pack image to download.');
+      return;
+    }
 
     try {
       const html2canvas = await import('html2canvas').catch((err) => {
@@ -212,9 +216,11 @@
           cardCount: cards.length,
         },
       });
+
+      notifySuccess('Pack image downloaded!');
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Failed to download image. Please try again.');
+      notifyError('Failed to download image. Please try again.');
     }
   }
 
@@ -340,9 +346,17 @@
                       cardCount: cards.length,
                     },
                   });
+
+                  notifySuccess('Thanks for sharing!');
                 } catch (error) {
-                  console.error('Native share failed:', error);
+                  // User cancelled the share dialog - this is expected behavior, not an error
+                  if ((error as Error).name !== 'AbortError') {
+                    console.error('Native share failed:', error);
+                    notifyError('Failed to open share dialog. Please try again.');
+                  }
                 }
+              } else {
+                notifyError('No pack image available to share.');
               }
             }}
             class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
