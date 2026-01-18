@@ -3,8 +3,12 @@ import type { Collection, CollectionMetadata, CollectionState, CollectionStats, 
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
-import { createDateEncoder } from '../lib/utils/encoders';
 import { createStorageError, logError } from '@/lib/utils/errors';
+import {
+  createMigrationEncoder,
+  exportCollection as migrateExportCollection,
+  importCollection as migrateImportCollection,
+} from '@/lib/utils/migrations';
 
 // Initialize empty rarity counts
 function initializeRarityCounts(): Record<Rarity, number> {
@@ -18,34 +22,9 @@ function initializeRarityCounts(): Record<Rarity, number> {
   };
 }
 
-// Custom encoder for Collection type (handles Date serialization)
-const baseCollectionEncoder = createDateEncoder<Collection>({
-  dateFields: ['metadata.created', 'metadata.lastOpenedAt', 'packs.openedAt'],
-});
-
-const collectionEncoder = {
-  encode(data: Collection): string {
-    return baseCollectionEncoder.encode(data);
-  },
-  decode(str: string): Collection {
-    const data = safeJsonParse<Collection>(str);
-    if (!data) {
-      return {
-        packs: [],
-        metadata: {
-          totalPacksOpened: 0,
-          lastOpenedAt: null,
-          uniqueCards: [],
-          rarePulls: 0,
-          holoPulls: 0,
-          created: new Date(),
-          rarityCounts: initializeRarityCounts(),
-        },
-      };
-    }
-    return baseCollectionEncoder.decode(JSON.stringify(data));
-  },
-};
+// Migration-safe encoder for Collection type
+// Handles schema migrations and Date serialization automatically
+const collectionEncoder = createMigrationEncoder();
 
 // Check if LocalStorage is available and has space
 export function checkStorageAvailable(): boolean {
@@ -295,35 +274,21 @@ export function getRecentPacks(count: number): Pack[] {
 // Export collection data as JSON
 export function exportCollection(): string {
   const current = collection.get();
-  return JSON.stringify(current, null, 2);
+  return migrateExportCollection(current);
 }
 
-// Import collection data from JSON
+// Import collection data from JSON (with migration support)
 export function importCollection(
   jsonData: string
 ): { success: boolean; error?: string; imported?: number } {
-  const data = safeJsonParse<Collection>(jsonData);
+  const result = migrateImportCollection(jsonData);
 
-  if (!data) {
-    return { success: false, error: 'Failed to parse collection JSON' };
+  if (!result.success || !result.collection) {
+    return { success: false, error: result.error || 'Failed to import collection' };
   }
 
-  // Validate basic structure
-  if (!data.packs || !Array.isArray(data.packs)) {
-    return { success: false, error: 'Invalid collection data: missing packs array' };
-  }
-
-  if (!data.metadata || typeof data.metadata !== 'object') {
-    return { success: false, error: 'Invalid collection data: missing metadata' };
-  }
-
-  // Recalculate rarity counts if missing (migration for old collections) (US107)
-  if (!data.metadata.rarityCounts) {
-    data.metadata.rarityCounts = computeRarityCounts(data.packs);
-  }
-
-  collection.set(data);
-  return { success: true, imported: data.packs.length };
+  collection.set(result.collection);
+  return { success: true, imported: result.collection.packs.length };
 }
 
 // Track collection view event
