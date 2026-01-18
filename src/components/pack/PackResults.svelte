@@ -5,6 +5,7 @@
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
   import { downloadPackImage, sharePackImage, shareToTwitter, generateCardImage, downloadCardImage, shareCardImage } from '../../lib/utils/image-generation';
+  import { calculatePackQuality } from '../../lib/utils/pack-quality';
   import { openModal } from '../../stores/ui';
   import ShareModal from '../common/ShareModal.svelte';
   import Card from '../card/Card.svelte';
@@ -366,6 +367,9 @@
       count,
       config: RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG],
     })));
+
+  // PACK-029: Calculate pack quality
+  const packQuality = $derived(calculatePackQuality(pack.cards));
 </script>
 
 <!-- Celebration Effects -->
@@ -412,7 +416,63 @@
       Collection Updated • {stats.totalCards} cards added
     </p>
   </div>
-  
+
+  <!-- PACK-029: Pack Quality Meter -->
+  <div
+    class="mb-12 p-8 bg-slate-900/50 rounded-3xl border border-white/5 backdrop-blur-sm"
+    in:fly={{ y: 30, duration: 600, delay: 500 }}
+  >
+    <div class="flex items-center justify-between gap-6 mb-6">
+      <div class="flex-1">
+        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3">Pack Quality</h3>
+        <div class="flex items-baseline gap-3">
+          <div class="text-4xl md:text-5xl font-black tracking-tighter" style="color: {packQuality.grade.color};">
+            {packQuality.score}
+          </div>
+          <div class="text-slate-500 text-xl">/ {packQuality.maxPossibleScore}</div>
+        </div>
+        <p class="text-slate-400 text-sm mt-2 font-medium">
+          {packQuality.grade.description}
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div
+          class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center border-4 relative"
+          style="
+            background: linear-gradient(135deg, {packQuality.grade.color}22, {packQuality.grade.color}44);
+            border-color: {packQuality.grade.color};
+            box-shadow: 0 0 30px {packQuality.grade.color}44;
+          "
+        >
+          <div class="text-center">
+            <div class="text-4xl md:text-5xl font-black" style="color: {packQuality.grade.color};">
+              {packQuality.grade.grade}
+            </div>
+            <div class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1">
+              {packQuality.grade.label}
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-xs font-bold uppercase tracking-widest" style="color: {packQuality.grade.color};">
+          {packQuality.percentage}%
+        </div>
+      </div>
+    </div>
+
+    <!-- Quality Score Breakdown -->
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div class="bg-white/5 rounded-xl p-4 border border-white/5">
+        <div class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Base Score</div>
+        <div class="text-white font-bold text-lg">{packQuality.baseScore} pts</div>
+      </div>
+      <div class="bg-white/5 rounded-xl p-4 border border-white/5">
+        <div class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Holo Bonus</div>
+        <div class="text-white font-bold text-lg">+{packQuality.holoBonus} pts</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Best card highlight -->
   <div 
     class="mb-16 relative group"
