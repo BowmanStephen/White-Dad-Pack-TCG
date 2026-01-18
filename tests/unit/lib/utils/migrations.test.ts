@@ -307,7 +307,7 @@ describe('Collection Migration System', () => {
       const result = migrateCollection(JSON.stringify(oldCollection));
 
       expect(result.success).toBe(true);
-      expect(result.collection?.packs[0].cards[0].seasonId).toBe('season-1');
+      expect(result.collection?.packs[0].cards[0].seasonId).toBe(1);
     });
   });
 

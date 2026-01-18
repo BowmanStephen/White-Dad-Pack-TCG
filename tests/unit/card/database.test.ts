@@ -148,6 +148,11 @@ describe('Card Database - US042 Card Data Validation', () => {
       'UNCLE_UPROARS',
       'SUBURBAN_SIDEKICKS',
       'ITEM',
+      'EVENT',
+      'TERRAIN',
+      'EVOLUTION',
+      'CURSE',
+      'TRAP',
     ];
 
     it('should have all types valid (25 dad types or ITEM)', () => {
@@ -184,6 +189,11 @@ describe('Card Database - US042 Card Data Validation', () => {
         UNCLE_UPROARS: 0,
         SUBURBAN_SIDEKICKS: 0,
         ITEM: 0,
+        EVENT: 0,
+        TERRAIN: 0,
+        EVOLUTION: 0,
+        CURSE: 0,
+        TRAP: 0,
       };
 
       for (const card of cards) {
@@ -314,6 +324,15 @@ describe('Card Database - US042 Card Data Validation', () => {
         expect(card.cardNumber).toBeGreaterThan(0);
         expect(card.totalInSeries).toBeGreaterThan(0);
         expect(card.cardNumber).toBeLessThanOrEqual(card.totalInSeries);
+      }
+    });
+
+    it('should have seasonId as a valid number when present', () => {
+      for (const card of cards) {
+        if (card.seasonId !== undefined) {
+          expect(typeof card.seasonId).toBe('number');
+          expect(card.seasonId).toBeGreaterThan(0);
+        }
       }
     });
 

@@ -2071,11 +2071,2113 @@
         "api",
         "docs"
       ]
+    },
+    {
+      "id": "US101",
+      "title": "Card Database Validation - 105 Cards",
+      "description": "As a developer, I want all 105 cards validated, so the database is error-free.",
+      "acceptanceCriteria": [
+        "All 105 cards have unique IDs (001-105)",
+        "All cards have valid type from 16 dad types",
+        "All cards have valid rarity (common through mythic)",
+        "All stats are 0-100 range",
+        "All required fields present (name, subtitle, type, rarity, stats, flavorText, series, cardNumber, totalInSeries)",
+        "No duplicate card IDs",
+        "Season ID is 1 for all cards",
+        "Artwork paths follow /cards/[name].svg pattern",
+        "Unit test added: validate105Cards()",
+        "Test runs with: bun test -t 'validate105Cards'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "database",
+        "validation",
+        "testing"
+      ]
+    },
+    {
+      "id": "US102",
+      "title": "Card Type Distribution Verification",
+      "description": "As a developer, I want all 16 dad types represented, so players have variety.",
+      "acceptanceCriteria": [
+        "Count cards per dad type",
+        "Minimum 5 cards per dad type",
+        "Balanced distribution (6-7 cards per type average for 105 cards)",
+        "Report generated showing counts for each type",
+        "Unit test: verifyTypeDistribution()",
+        "Test logs type distribution to console"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "database",
+        "validation",
+        "balance"
+      ]
+    },
+    {
+      "id": "US103",
+      "title": "Card Rarity Distribution Update",
+      "description": "As a developer, I want rarity distribution updated for 105 cards, so pack odds remain balanced.",
+      "acceptanceCriteria": [
+        "Update generator.ts for 105-card pool",
+        "Common: ~42 cards (40%)",
+        "Uncommon: ~31 cards (30%)",
+        "Rare: ~21 cards (20%)",
+        "Epic: ~8 cards (7.5%)",
+        "Legendary: ~3 cards (2.5%)",
+        "Mythic: 1 card (1%)",
+        "Unit test: verify105CardRarityDistribution()",
+        "Pack generation still follows slot rules"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "database",
+        "pack-generator",
+        "balance"
+      ]
+    },
+    {
+      "id": "US104",
+      "title": "Battle System - Stat Normalization",
+      "description": "As a player, I want battles to consider card count advantage, so larger decks don't auto-win.",
+      "acceptanceCriteria": [
+        "Normalize stats: divide by card count (3-card deck: stats/3, 5-card: stats/5)",
+        "Prevents 5-card deck from always beating 3-card",
+        "Update calculateBattleResult() in combat.ts",
+        "Add unit tests for normalized vs non-normalized",
+        "Documentation update explaining normalization",
+        "Battle UI shows normalized scores"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "battles",
+        "balance",
+        "mechanics"
+      ]
+    },
+    {
+      "id": "US105",
+      "title": "Battle System - Type Advantage Matrix",
+      "description": "As a player, I want type advantages (like Pokémon), so deck building has strategy.",
+      "acceptanceCriteria": [
+        "Create 16x16 type advantage matrix",
+        "Example: BBQ_DAD +20% vs GOLF_DAD (heat melts golf game)",
+        "Example: FIX_IT_DAD +20% vs TECH_DAD (analog beats digital)",
+        "Example: GOLF_DAD +20% vs COACH_DAD (golf vs sports coach rivalry)",
+        "Each type has 2 advantages, 2 disadvantages",
+        "Store matrix in src/lib/mechanics/type-advantages.ts",
+        "Unit tests for advantage calculations",
+        "Battle UI shows type advantage indicator"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "battles",
+        "mechanics",
+        "strategy"
+      ]
+    },
+    {
+      "id": "US106",
+      "title": "Battle System - Synergy Bonuses",
+      "description": "As a player, I want synergy bonuses for themed decks, so specialization is rewarded.",
+      "acceptanceCriteria": [
+        "Detect deck themes: 'All BBQ_DAD', 'All COUCH_DAD', etc.",
+        "5+ cards of same type = 15% synergy bonus",
+        "3+ cards of same type = 5% synergy bonus",
+        "Mixed types: no bonus (balanced decks)",
+        "Calculate in combat.ts: calculateSynergyBonus()",
+        "Battle UI shows 'BBQ_BROS SYNERGY +15%'",
+        "Unit test: verifySynergyCalculations()"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "battles",
+        "mechanics",
+        "strategy"
+      ]
+    },
+    {
+      "id": "US107",
+      "title": "Battle System - RNG Variance",
+      "description": "As a player, I want some RNG in battles, so outcomes aren't 100% predictable.",
+      "acceptanceCriteria": [
+        "Add ±10% random variance to final damage",
+        "Seeded RNG for replayability (same seed = same result)",
+        "Critical hit chance: 5% for 1.5x damage",
+        "Glancing blow chance: 10% for 0.5x damage",
+        "Update combat.ts calculateBattleResult()",
+        "Unit tests for RNG variance ranges",
+        "Battle log shows 'CRITICAL HIT!' or 'Glancing blow...'"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "battles",
+        "mechanics",
+        "rng"
+      ]
+    },
+    {
+      "id": "US108",
+      "title": "Battle System - Status Effects",
+      "description": "As a player, I want status effects in battles, so combat has more depth.",
+      "acceptanceCriteria": [
+        "4 status effects: GRILLED (defense -20%), LECTURED (attack -20%), DRUNK (accuracy -30%), WIRED (speed +30%)",
+        "BBQ_DAD cards apply GRILLED on hit",
+        "COUCH_DAD cards apply LECTURED",
+        "HOLIDAY_DAD cards apply DRUNK",
+        "COFFEE/TECH_DAD cards apply WIRED",
+        "Status lasts 2 turns",
+        "Stackable: max 2 stacks",
+        "Update combat.ts status effect logic",
+        "Battle UI shows status icons on cards",
+        "Unit tests for status effect calculations"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "battles",
+        "mechanics",
+        "depth"
+      ]
+    },
+    {
+      "id": "US109",
+      "title": "Battle UI - Animation Polish",
+      "description": "As a player, I want battle animations, so combat feels exciting.",
+      "acceptanceCriteria": [
+        "Attack animation: cards lunge forward",
+        "Hit animation: screen shake + damage number popup",
+        "Critical hit: larger screen shake + 'CRITICAL!' text",
+        "Status effect applied: particle effect + icon",
+        "Victory: confetti + 'VICTORY!' banner",
+        "Defeat: greyed out + 'DEFEAT' banner",
+        "All animations 60fps on mid-tier mobile",
+        "Skip button to fast-forward",
+        "Replay button to watch again"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "battles",
+        "ui",
+        "animation"
+      ]
+    },
+    {
+      "id": "US110",
+      "title": "Battle UI - Battle Log",
+      "description": "As a player, I want a battle log, so I can understand what happened.",
+      "acceptanceCriteria": [
+        "Scrollable battle log panel",
+        "Entries: 'Grill Master Gary attacks for 125 damage! (CRITICAL!)'",
+        "Entries: 'Thermostat Tyrant applies LECTURED!'",
+        "Entries: 'BBQ_BROS SYNERGY +15% activated!'",
+        "Colored text: green for good, red for bad, yellow for crit",
+        "Timestamp on each entry",
+        "Export battle log as text file",
+        "Copy battle log to clipboard button"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "battles",
+        "ui",
+        "features"
+      ]
+    },
+    {
+      "id": "US111",
+      "title": "Deck Builder - Type Suggestions",
+      "description": "As a deck builder, I want type synergy suggestions, so I can build better decks.",
+      "acceptanceCriteria": [
+        "Analyze current deck: detect dominant type",
+        "Suggest cards: 'Add 2 more BBQ_DAD for 15% synergy bonus'",
+        "Show missing type cards in collection",
+        "Highlight synergistic cards when dragging to deck",
+        "Deck stats panel shows 'Synergy Potential: 85%'",
+        "Update DeckBuilder.svelte suggestions panel"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "deck-builder",
+        "ui",
+        "ux"
+      ]
+    },
+    {
+      "id": "US112",
+      "title": "Deck Builder - Stat Optimization",
+      "description": "As a deck builder, I want stat optimization tips, so I can maximize win rate.",
+      "acceptanceCriteria": [
+        "Analyze deck stats: find weakest stat",
+        "Suggest: 'Your deck has low Fix-It (45). Add Fix-It Dads.'",
+        "Show stat distribution radar chart",
+        "Highlight stat imbalances (e.g., 100 Grill Skill, 20 Fix-It)",
+        "Recommend cards to balance stats",
+        "Update DeckStats.svelte with optimization panel"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "deck-builder",
+        "ui",
+        "analytics"
+      ]
+    },
+    {
+      "id": "US113",
+      "title": "Deck Builder - Import/Export",
+      "description": "As a player, I want to share deck lists, so I can try community builds.",
+      "acceptanceCriteria": [
+        "Export deck as JSON or text format",
+        "Import deck from text/JSON",
+        "Validation: checks if user owns all cards",
+        "Share deck URL (encoded in query param)",
+        "Community deck templates (pre-built)",
+        "Update deck/index.ts with import/export functions",
+        "Unit tests for import/export validation"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "deck-builder",
+        "features",
+        "social"
+      ]
+    },
+    {
+      "id": "US114",
+      "title": "Collection - Card Rarity Badges",
+      "description": "As a collector, I want rarity badges in gallery, so I can quickly scan for valuable cards.",
+      "acceptanceCriteria": [
+        "Rarity badge overlay on card thumbnail",
+        "Badge color from RARITY_CONFIG",
+        "Badge shows: 'RARE', 'EPIC', etc.",
+        "Holo cards have sparkly badge",
+        "Badge positioning: top-right corner",
+        "Update Gallery.svelte with badge component"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "ux"
+      ]
+    },
+    {
+      "id": "US115",
+      "title": "Collection - Card Count Badges",
+      "description": "As a collector, I want duplicate count badges, so I know how many copies I own.",
+      "acceptanceCriteria": [
+        "Badge shows: 'x3', 'x5', etc.",
+        "Badge positioned: bottom-right corner",
+        "Red background for visibility",
+        "Update when new packs opened",
+        "Click to see all duplicates (expand)",
+        "Update Gallery.svelte with count badges"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "ux"
+      ]
+    },
+    {
+      "id": "US116",
+      "title": "Collection - Missing Cards Tracker",
+      "description": "As a collector, I want to see which cards I'm missing, so I know what to hunt for.",
+      "acceptanceCriteria": [
+        "Show '105/105' or '87/105 collected'",
+        "Missing cards panel: shows all unowned cards",
+        "Group by rarity or type",
+        "Progress bar: 82.8% complete",
+        "Click missing card to see details (from database)",
+        "Update CollectionManager.svelte with missing tracker"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "features"
+      ]
+    },
+    {
+      "id": "US117",
+      "title": "Collection - Wishlist",
+      "description": "As a collector, I want to wishlist cards, so I can track goals.",
+      "acceptanceCriteria": [
+        "Star button on card detail: add to wishlist",
+        "Wishlist panel in collection page",
+        "Shows: card name, rarity, why you want it",
+        "Sort by priority (you set)",
+        "Notification when you pull wishlisted card",
+        "Wishlist persisted to LocalStorage",
+        "Update collection/utils.ts with wishlist functions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "features",
+        "ux"
+      ]
+    },
+    {
+      "id": "US118",
+      "title": "Collection - Advanced Search",
+      "description": "As a collector, I want advanced search filters, so I can find specific cards.",
+      "acceptanceCriteria": [
+        "Filter: stat range (Grill Skill > 80)",
+        "Filter: has abilities vs no abilities",
+        "Filter: holo variant only",
+        "Combine filters with AND/OR logic",
+        "Save search presets (quick filters)",
+        "Search results update in real-time",
+        "Result count: 'Matching: 23 cards'",
+        "Update Gallery.svelte with advanced filters"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "search",
+        "features"
+      ]
+    },
+    {
+      "id": "US119",
+      "title": "Collection - Card Detail Modal",
+      "description": "As a collector, I want detailed card info in modal, so I can learn about cards.",
+      "acceptanceCriteria": [
+        "Click card in gallery → opens modal",
+        "Shows: full-size artwork, all stats, abilities, flavor text",
+        "Rarity badge, type badge, card number",
+        "Owned count: 'You own: 3 copies'",
+        "Pack history: 'Pulled in packs: #12, #45'",
+        "Upgrade level indicator (if upgraded)",
+        "Add to deck button (if enough copies)",
+        "Close button + ESC key + backdrop click"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "ui",
+        "modal"
+      ]
+    },
+    {
+      "id": "US120",
+      "title": "Collection - Collection Value",
+      "description": "As a collector, I want to see my collection's value, so I feel progress.",
+      "acceptanceCriteria": [
+        "Calculate collection value: based on rarity + holo + upgrades",
+        "Common = 1 point, Uncommon = 5, Rare = 25, Epic = 100, Legendary = 500, Mythic = 5000",
+        "Holo bonus: +50%",
+        "Upgrade bonus: +10% per upgrade level",
+        "Show: 'Collection Value: 12,450 points'",
+        "Leaderboard ranking by value",
+        "Update collection/utils.ts with value calculator"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "gamification",
+        "stats"
+      ]
+    },
+    {
+      "id": "US121",
+      "title": "Pack Opening - 105-Card Pool Integration",
+      "description": "As a player, I want packs from 105-card pool, so variety is doubled.",
+      "acceptanceCriteria": [
+        "Update generator.ts to use all 105 cards",
+        "No duplicate cards in single pack (when possible)",
+        "Rarity distribution updated for 105 cards (US103)",
+        "Unit test: generate 1000 packs, verify variety",
+        "Test: each card appears at least once in 1000 packs",
+        "Pack generation still <500ms"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "generator",
+        "database"
+      ]
+    },
+    {
+      "id": "US122",
+      "title": "Pack Opening - New Card Reveal Effects",
+      "description": "As a player, I want unique reveal effects for new card types, so discoveries feel special.",
+      "acceptanceCriteria": [
+        "First-time pull: 'NEW!' badge animation",
+        "Confetti burst on first-time card",
+        "Sound effect: 'ding!' for new discovery",
+        "Track discovered cards in LocalStorage",
+        "Progress: 'Discovered: 87/105 cards'",
+        "Only trigger once per unique card",
+        "Update CardRevealer.svelte with first-time effects"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "vfx",
+        "gamification"
+      ]
+    },
+    {
+      "id": "US123",
+      "title": "Pack Opening - Rarity-Specific Animations",
+      "description": "As a player, I want rarity-based reveal animations, so rare cards feel epic.",
+      "acceptanceCriteria": [
+        "Common: simple flip (0.3s)",
+        "Uncommon: flip + blue glow (0.4s)",
+        "Rare: flip + gold particles + glow (0.6s)",
+        "Epic: flip + purple particles + screen shake (0.8s)",
+        "Legendary: flip + orange particles + screen shake + delay (1.0s)",
+        "Mythic: flip + rainbow particles + screen shake + delay + fanfare (1.5s)",
+        "Update CardRevealer.svelte with rarity animations"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "animation",
+        "vfx"
+      ]
+    },
+    {
+      "id": "US124",
+      "title": "Pack Opening - Pack Tear Variations",
+      "description": "As a player, I want different pack tear animations, so opening stays fresh.",
+      "acceptanceCriteria": [
+        "3 tear animations: standard, slow, explosive",
+        "Randomly selected on pack open",
+        "Standard: normal tear (1.5s)",
+        "Slow: dramatic slow-mo tear (2.5s)",
+        "Explosive: burst open with particles (1.0s)",
+        "All lead to same card reveal",
+        "Update PackAnimation.svelte with variations"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "animation",
+        "variety"
+      ]
+    },
+    {
+      "id": "US125",
+      "title": "Pack Opening - Skip/Fast-Forward",
+      "description": "As a player, I want to skip animations, so I can open packs quickly.",
+      "acceptanceCriteria": [
+        "SKIP button: reveal all cards instantly",
+        "Fast-forward button: 2x animation speed",
+        "Settings: 'Always skip pack animations' toggle",
+        "Remember preference in LocalStorage",
+        "Update PackOpener.svelte with skip/fast-forward"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "ux",
+        "settings"
+      ]
+    },
+    {
+      "id": "US126",
+      "title": "Pack Opening - Pull Quality Meter",
+      "description": "As a player, I want a pull quality rating, so I know how good my pack was.",
+      "acceptanceCriteria": [
+        "Calculate pack score: rarity points + holo bonus",
+        "Mythic = 1000, Legendary = 500, Epic = 100, Rare = 25, Uncommon = 5, Common = 1",
+        "Holo bonus: +50%",
+        "Show: 'Pack Quality: 850/1000 (EPIC!)'",
+        "Grade: S (1000+), A (500-999), B (100-499), C (25-99), D (6-24), F (0-5)",
+        "PackResults.svelte shows quality meter"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "features",
+        "gamification"
+      ]
+    },
+    {
+      "id": "US127",
+      "title": "Pack Opening - Streak Counter",
+      "description": "As a player, I want to see my pack opening streak, so I track lucky runs.",
+      "acceptanceCriteria": [
+        "Track consecutive pack opens with rare+ cards",
+        "Show: 'Rare+ Streak: 5 packs'",
+        "Reset when common-only pack opened",
+        "Best streak persisted to LocalStorage",
+        "Show: 'Best Streak: 12 packs'",
+        "PackResults.svelte displays streak counter"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "gamification",
+        "stats"
+      ]
+    },
+    {
+      "id": "US128",
+      "title": "Card Artwork - SVG Generation for 105 Cards",
+      "description": "As a developer, I want SVG artwork for all 105 cards, so UI is complete.",
+      "acceptanceCriteria": [
+        "Generate SVG placeholders for all 105 cards",
+        "Filenames: /cards/[card-name].svg",
+        "Colors match dad type (BBQ_DAD = red/orange, etc.)",
+        "Unique pattern per card ID (seeded random)",
+        "Card name overlaid on artwork",
+        "Border indicates rarity",
+        "Generative art system in src/lib/art/generative-art.ts",
+        "Unit test: verifyAllCardsHaveArtwork()"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "artwork",
+        "generative",
+        "database"
+      ]
+    },
+    {
+      "id": "US129",
+      "title": "Card Artwork - Type-Based Color Themes",
+      "description": "As a player, I want distinct color themes per dad type, so I can identify cards at a glance.",
+      "acceptanceCriteria": [
+        "16 color themes for 16 dad types",
+        "BBQ_DAD: red/orange gradient",
+        "FIX_IT_DAD: green/olive gradient",
+        "GOLF_DAD: teal/cyan gradient",
+        "COUCH_DAD: blue/grey gradient",
+        "LAWN_DAD: bright green gradient",
+        "CAR_DAD: silver/metallic gradient",
+        "OFFICE_DAD: brown/beige gradient",
+        "COOL_DAD: purple/pink gradient",
+        "COACH_DAD: orange/yellow gradient",
+        "CHEF_DAD: white/red gradient",
+        "HOLIDAY_DAD: red/green gradient",
+        "WAREHOUSE_DAD: yellow/black gradient",
+        "VINTAGE_DAD: sepia/brown gradient",
+        "FASHION_DAD: magenta/cyan gradient",
+        "TECH_DAD: blue/neon gradient",
+        "SUBURBAN_SPY: black/dark grey gradient",
+        "Update dad-type-colors.ts with all themes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "artwork",
+        "design",
+        "ux"
+      ]
+    },
+    {
+      "id": "US130",
+      "title": "Card Artwork - Rarity Visual Indicators",
+      "description": "As a player, I want rarity to be visually obvious, so I can spot valuable cards instantly.",
+      "acceptanceCriteria": [
+        "Common: simple grey border",
+        "Uncommon: blue border + subtle glow",
+        "Rare: gold border + sparkle effect",
+        "Epic: purple border + particle effects",
+        "Legendary: orange border + intense glow + particles",
+        "Mythic: rainbow border + prismatic effect",
+        "Border thickness scales with rarity",
+        "Update Card.svelte with rarity borders"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "artwork",
+        "ui",
+        "design"
+      ]
+    },
+    {
+      "id": "US131",
+      "title": "Card Artwork - Holo Overlay Effects",
+      "description": "As a player, I want holo cards to look premium, so they feel special.",
+      "acceptanceCriteria": [
+        "Standard holo: subtle rainbow sheen",
+        "Reverse holo: background rainbow, card flat",
+        "Full art holo: entire card rainbow gradient",
+        "Prismatic: intense rainbow + sparkles",
+        "CSS-based performance (60fps)",
+        "Disabled in low-end mode (settings)",
+        "Update Card.svelte holo effects"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "artwork",
+        "vfx",
+        "premium"
+      ]
+    },
+    {
+      "id": "US132",
+      "title": "Card Artwork - Card Back Design",
+      "description": "As a player, I want a cool card back, so cards feel authentic.",
+      "acceptanceCriteria": [
+        "DadDeck™ logo prominently displayed",
+        "Subtle pattern background (grid/diagonal lines)",
+        "Border matches rarity color",
+        "Holo overlay on holo cards",
+        "SVG format for crisp scaling",
+        "Update CardBack.svelte with new design",
+        "Design in /public/images/card-back.svg"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "artwork",
+        "design",
+        "branding"
+      ]
+    },
+    {
+      "id": "US133",
+      "title": "Card Artwork - Card Flip Animation",
+      "description": "As a player, I want smooth card flip, so inspecting cards feels tactile.",
+      "acceptanceCriteria": [
+        "3D flip animation: rotateY 180deg",
+        "Front shows card artwork, back shows card back",
+        "Click to flip in modal/inspection",
+        "0.3s ease-out timing",
+        "Preserves flip state while browsing",
+        "Update Card.svelte with flip logic"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "artwork",
+        "animation",
+        "interaction"
+      ]
+    },
+    {
+      "id": "US134",
+      "title": "Card Stats Visualization - Radar Chart",
+      "description": "As a player, I want radar chart for stats, so I can compare cards visually.",
+      "acceptanceCriteria": [
+        "8-sided radar chart (octagon)",
+        "Axes: 8 stats (Dad Joke, Grill Skill, Fix-It, etc.)",
+        "Value from center (0) to edge (100)",
+        "Color-coded: green for high, red for low",
+        "Interactive: hover axis to see stat name",
+        "Canvas or SVG rendering",
+        "Update CardStats.svelte with radar chart"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "cards",
+        "ui",
+        "visualization"
+      ]
+    },
+    {
+      "id": "US135",
+      "title": "Card Stats Visualization - Stat Bars",
+      "description": "As a player, I want stat bars with colors, so strengths are obvious.",
+      "acceptanceCriteria": [
+        "8 horizontal bars, one per stat",
+        "Bar length proportional to stat value (0-100%)",
+        "Color gradient: red (0-50), yellow (50-80), green (80-100)",
+        "Stat label + value displayed",
+        "High stats (80+) have glow effect",
+        "Animate in on card reveal",
+        "Update CardStats.svelte with colored bars"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "cards",
+        "ui",
+        "visualization"
+      ]
+    },
+    {
+      "id": "US136",
+      "title": "Card Abilities - Tooltip System",
+      "description": "As a player, I want ability tooltips, so I understand complex effects.",
+      "acceptanceCriteria": [
+        "Hover over ability → tooltip appears",
+        "Tooltip shows: ability name, description, examples",
+        "0.5s delay to avoid popups",
+        "Positioned intelligently (no off-screen)",
+        "Mobile: tap and hold to show tooltip",
+        "Rich text: bold keywords, color-coded effects",
+        "Update Card.svelte with tooltip component"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "cards",
+        "ui",
+        "ux"
+      ]
+    },
+    {
+      "id": "US137",
+      "title": "Card Abilities - Keyword System",
+      "description": "As a developer, I want ability keywords, so abilities are standardized.",
+      "acceptanceCriteria": [
+        "Define keywords: BURN, LECTURE, FIX, NAP, etc.",
+        "Each keyword has standardized effect",
+        "Abilities reference keywords: 'Apply BURN (20 damage per turn)'",
+        "Tooltips explain keywords on hover",
+        "Update card database with keyword tags",
+        "Create keywords.ts in src/lib/mechanics/",
+        "Unit tests for keyword effects"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "cards",
+        "mechanics",
+        "standardization"
+      ]
+    },
+    {
+      "id": "US138",
+      "title": "Technical - Performance Optimization",
+      "description": "As a developer, I want the app optimized, so it runs smoothly on mobile.",
+      "acceptanceCriteria": [
+        "Profile with Lighthouse: target 90+ performance",
+        "Lazy load non-critical components",
+        "Code split by route",
+        "Optimize images (WebP, lazy loading)",
+        "Debounce expensive operations",
+        "Use object pooling for particles",
+        "Update astro.config.mjs with optimizations",
+        "Test on iPhone 12 (mid-tier mobile)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "technical",
+        "performance",
+        "optimization"
+      ]
+    },
+    {
+      "id": "US139",
+      "title": "Technical - Bundle Size Optimization",
+      "description": "As a developer, I want bundle size <500KB gzipped, so load times are fast.",
+      "acceptanceCriteria": [
+        "Run: bun run build",
+        "Analyze bundle with: bunx vite-bundle-visualizer",
+        "Code split: vendor-html2canvas, vendor-svelte, vendor-nanostores",
+        "Tree shake unused code",
+        "Minimize with Terser",
+        "Target: <500KB gzipped",
+        "Update astro.config.mjs bundle config"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "technical",
+        "performance",
+        "bundle"
+      ]
+    },
+    {
+      "id": "US140",
+      "title": "Technical - Animation Performance",
+      "description": "As a developer, I want 60fps animations, so the app feels smooth.",
+      "acceptanceCriteria": [
+        "Profile with Chrome DevTools Performance",
+        "Use CSS transforms (GPU accelerated)",
+        "Avoid layout thrashing",
+        "RequestAnimationFrame for JS animations",
+        "Object pooling for particles",
+        "Will-change CSS property for animated elements",
+        "Test on mid-tier mobile: maintain 60fps"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "technical",
+        "performance",
+        "animation"
+      ]
+    },
+    {
+      "id": "US141",
+      "title": "Technical - Memory Leak Audit",
+      "description": "As a developer, I want memory leaks fixed, so the app doesn't crash.",
+      "acceptanceCriteria": [
+        "Audit all Svelte components for subscriptions",
+        "Ensure cleanup in onDestroy()",
+        "Check for event listeners not removed",
+        "Check for timers not cleared",
+        "Use Chrome DevTools Memory profiler",
+        "Fix: CraftingStation.svelte variable shadowing",
+        "Test: open 100 packs, check memory usage"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "technical",
+        "performance",
+        "memory"
+      ]
+    },
+    {
+      "id": "US142",
+      "title": "Technical - LocalStorage Quota Management",
+      "description": "As a developer, I want LocalStorage quota managed, so saves don't fail.",
+      "acceptanceCriteria": [
+        "Check quota before save: JSON.stringify(localStorage).length",
+        "Warn at 90% capacity",
+        "Compress old pack data (remove timestamps, etc.)",
+        "Archive packs older than 30 days",
+        "Graceful degradation: show error if full",
+        "Update collection store with quota management"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "technical",
+        "storage",
+        "robustness"
+      ]
+    },
+    {
+      "id": "US143",
+      "title": "Technical - Error Boundary Coverage",
+      "description": "As a developer, I want error boundaries on all components, so crashes don't break the app.",
+      "acceptanceCriteria": [
+        "Wrap all major components in ErrorBoundary",
+        "ErrorBoundary.svelte shows fallback UI",
+        "Log errors to console + Sentry",
+        "Friendly error messages to users",
+        "Retry button where applicable",
+        "Test: trigger errors, verify boundaries catch"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "technical",
+        "error-handling",
+        "robustness"
+      ]
+    },
+    {
+      "id": "US144",
+      "title": "Testing - Unit Tests for 105 Cards",
+      "description": "As a developer, I want unit tests for all 105 cards, so data errors are caught.",
+      "acceptanceCriteria": [
+        "Test: validateAll105Cards()",
+        "Test: verifyUniqueIDs()",
+        "Test: verifyValidTypes()",
+        "Test: verifyValidRarities()",
+        "Test: verifyStatsInRange()",
+        "Test: verifyRequiredFields()",
+        "All tests in tests/card/database.test.ts",
+        "Run with: bun test -t 'database'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "testing",
+        "database",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US145",
+      "title": "Testing - Pack Generation Tests (105 Cards)",
+      "description": "As a developer, I want pack generation tested with 105 cards, so variety is verified.",
+      "acceptanceCriteria": [
+        "Test: generate 1000 packs, verify all 105 cards appear",
+        "Test: verify rarity distribution for 105-card pool",
+        "Test: verify no duplicates in single pack (when possible)",
+        "Test: verify holo chance ~1 in 6",
+        "Test: verify pack generation <500ms",
+        "All tests in tests/pack/generator.test.ts",
+        "Run with: bun test -t 'generator'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "testing",
+        "pack",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US146",
+      "title": "Testing - Battle System Tests",
+      "description": "As a developer, I want battle system tested, so mechanics are verified.",
+      "acceptanceCriteria": [
+        "Test: verifyStatNormalization()",
+        "Test: verifyTypeAdvantageMatrix()",
+        "Test: verifySynergyBonusCalculation()",
+        "Test: verifyStatusEffectApplication()",
+        "Test: verifyRNGVarianceBounds()",
+        "Test: verifyCriticalHitChance()",
+        "All tests in tests/battle/combat.test.ts",
+        "Run with: bun test -t 'battle'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "testing",
+        "battle",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US147",
+      "title": "Testing - Collection Store Tests",
+      "description": "As a developer, I want collection store tested, so state management is verified.",
+      "acceptanceCriteria": [
+        "Test: verifySavePackToCollection()",
+        "Test: verifyCollectionStatsCalculation()",
+        "Test: verifyFilterByRarity()",
+        "Test: verifyFilterByType()",
+        "Test: verifySearchByCardName()",
+        "Test: verifyExportImportCollection()",
+        "All tests in tests/stores/collection.test.ts",
+        "Run with: bun test -t 'collection'"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "testing",
+        "stores",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US148",
+      "title": "Testing - Crafting System Tests",
+      "description": "As a developer, I want crafting system tested, so recipes are verified.",
+      "acceptanceCriteria": [
+        "Test: verifyCraftingRecipes()",
+        "Test: verifyCraftingSuccessRate()",
+        "Test: verifyCraftingFailureReturn()",
+        "Test: verifyCraftingMutex()",
+        "Test: verifyMaterialDeduction()",
+        "All tests in tests/crafting/executor.test.ts",
+        "Run with: bun test -t 'crafting'"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "testing",
+        "crafting",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US149",
+      "title": "Testing - UI Component Tests",
+      "description": "As a developer, I want UI component tests, so rendering is verified.",
+      "acceptanceCriteria": [
+        "Test: Card.svelte renders with props",
+        "Test: CardStats.svelte displays correct values",
+        "Test: Gallery.svelte filters correctly",
+        "Test: DeckBuilder.svelte validates decks",
+        "Use Vitest + Testing Library",
+        "All tests in tests/components/",
+        "Run with: bun test -t 'components'"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "testing",
+        "ui",
+        "vitest"
+      ]
+    },
+    {
+      "id": "US150",
+      "title": "Testing - Integration Tests",
+      "description": "As a developer, I want integration tests, so flows work end-to-end.",
+      "acceptanceCriteria": [
+        "Test: full pack opening flow (generate → animate → reveal → results)",
+        "Test: add card to collection flow",
+        "Test: create deck flow",
+        "Test: battle flow (deck selection → battle → result)",
+        "Test: export/import collection flow",
+        "Use Playwright for E2E",
+        "All tests in tests/integration/",
+        "Run with: bun test -t 'integration'"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "testing",
+        "e2e",
+        "integration"
+      ]
+    },
+    {
+      "id": "US151",
+      "title": "Accessibility - Keyboard Navigation",
+      "description": "As a keyboard user, I want full keyboard navigation, so I can use the app without a mouse.",
+      "acceptanceCriteria": [
+        "Tab order follows visual flow",
+        "All interactive elements keyboard accessible",
+        "Focus indicators visible (outline)",
+        "Enter/Space activates buttons",
+        "Escape closes modals",
+        "Arrow keys navigate card grids",
+        "Skip navigation link",
+        "Test: navigate entire app with keyboard only"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "keyboard"
+      ]
+    },
+    {
+      "id": "US152",
+      "title": "Accessibility - Screen Reader Support",
+      "description": "As a screen reader user, I want descriptive ARIA labels, so I can understand the interface.",
+      "acceptanceCriteria": [
+        "All images have alt text",
+        "Buttons have aria-label if icon-only",
+        "Regions marked with landmark roles (main, nav, etc.)",
+        "Live regions for dynamic content",
+        "Error messages announced",
+        "Card stats announced as list",
+        "Test with NVDA/JAWS screen readers"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "screen-reader"
+      ]
+    },
+    {
+      "id": "US153",
+      "title": "Accessibility - Color Contrast",
+      "description": "As a visually impaired user, I want sufficient color contrast, so text is readable.",
+      "acceptanceCriteria": [
+        "All text meets WCAG AA (4.5:1 for normal, 3:1 for large)",
+        "Test with Chrome DevTools Lighthouse",
+        "Rarity colors maintain contrast",
+        "Stat bars have contrast against background",
+        "Error messages in high-contrast colors",
+        "Fix any contrast failures"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "contrast"
+      ]
+    },
+    {
+      "id": "US154",
+      "title": "Accessibility - Reduced Motion",
+      "description": "As a motion-sensitive user, I want reduced motion option, so animations don't cause discomfort.",
+      "acceptanceCriteria": [
+        "Respect prefers-reduced-motion media query",
+        "Settings toggle: 'Reduce Motion'",
+        "When enabled: disable particle effects, screen shake",
+        "Simplify animations to fades only",
+        "Instant card reveals (no flip)",
+        "Persist preference to LocalStorage"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "motion"
+      ]
+    },
+    {
+      "id": "US155",
+      "title": "Mobile Responsive - Touch Targets",
+      "description": "As a mobile user, I want large touch targets, so the app is easy to use.",
+      "acceptanceCriteria": [
+        "Buttons min 44x44px (iOS guideline)",
+        "Links min 44x44px",
+        "Adequate spacing between interactive elements",
+        "No hover-only interactions",
+        "Pinch zoom not broken",
+        "Test on iPhone and Android"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "responsive",
+        "ux"
+      ]
+    },
+    {
+      "id": "US156",
+      "title": "Mobile Responsive - Grid Layouts",
+      "description": "As a mobile user, I want responsive grids, so content fits my screen.",
+      "acceptanceCriteria": [
+        "Mobile: 2 columns for card grids",
+        "Tablet: 3-4 columns",
+        "Desktop: 5-6 columns",
+        "Cards scale proportionally",
+        "No horizontal scroll on mobile",
+        "Test on iPhone SE (small), iPhone 12 (mid), iPad (tablet)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "responsive",
+        "layout"
+      ]
+    },
+    {
+      "id": "US157",
+      "title": "Mobile Responsive - Navigation",
+      "description": "As a mobile user, I want mobile-friendly navigation, so I can access all features.",
+      "acceptanceCriteria": [
+        "Hamburger menu on mobile",
+        "Full-screen nav drawer",
+        "Swipe to close nav",
+        "Bottom navigation bar for key features",
+        "Sticky header on scroll",
+        "Test on mobile devices"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "responsive",
+        "navigation"
+      ]
+    },
+    {
+      "id": "US158",
+      "title": "SEO - Meta Tags for All Pages",
+      "description": "As a developer, I want proper meta tags, so Google indexes the site.",
+      "acceptanceCriteria": [
+        "Dynamic title per route",
+        "Dynamic description per route",
+        "Open Graph tags for social sharing",
+        "Twitter Card tags",
+        "Canonical URLs",
+        "Update src/lib/seo.ts",
+        "Test with Facebook/Twitter debuggers"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "seo",
+        "meta",
+        "marketing"
+      ]
+    },
+    {
+      "id": "US159",
+      "title": "SEO - Sitemap Generation",
+      "description": "As a developer, I want a sitemap.xml, so search engines discover pages.",
+      "acceptanceCriteria": [
+        "Generate sitemap.xml on build",
+        "Include all routes: /, /pack, /collection, /deck-builder, /leaderboard",
+        "Include lastmod dates",
+        "Script: scripts/generate-sitemap.mjs",
+        "Run in pre-build hook",
+        "Verify sitemap at /sitemap.xml"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "seo",
+        "sitemap",
+        "automation"
+      ]
+    },
+    {
+      "id": "US160",
+      "title": "SEO - Lighthouse Scores",
+      "description": "As a developer, I want 90+ Lighthouse scores, so SEO is optimized.",
+      "acceptanceCriteria": [
+        "Run Lighthouse audit",
+        "Performance: 90+",
+        "Accessibility: 95+",
+        "Best Practices: 90+",
+        "SEO: 95+",
+        "Fix any failures",
+        "Test on mobile and desktop"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "seo",
+        "performance",
+        "quality"
+      ]
+    },
+    {
+      "id": "US161",
+      "title": "Documentation - JSDoc for Core Logic",
+      "description": "As a developer, I want JSDoc on core functions, so code is self-documenting.",
+      "acceptanceCriteria": [
+        "Add JSDoc to all functions in src/lib/pack/generator.ts",
+        "Add JSDoc to all functions in src/lib/mechanics/combat.ts",
+        "Add JSDoc to all functions in src/lib/crafting/executor.ts",
+        "Include: @param, @returns, @throws, @example",
+        "Run: bun run build (verify no JSDoc warnings)",
+        "Generate docs with TypeDoc (optional)"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "documentation",
+        "code-quality",
+        "maintenance"
+      ]
+    },
+    {
+      "id": "US162",
+      "title": "Documentation - README Update",
+      "description": "As a developer, I want README updated, so new contributors can onboard.",
+      "acceptanceCriteria": [
+        "Add project overview",
+        "Add setup instructions (bun install, bun run dev)",
+        "Add tech stack description",
+        "Add folder structure explanation",
+        "Add testing instructions",
+        "Add build/deployment instructions",
+        "Add known issues/limitations",
+        "Update README.md"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "documentation",
+        "onboarding",
+        "readme"
+      ]
+    },
+    {
+      "id": "US163",
+      "title": "Documentation - CLAUDE.md Update",
+      "description": "As a developer, I want CLAUDE.md updated, so AI has accurate context.",
+      "acceptanceCriteria": [
+        "Update card count: 105 cards",
+        "Update feature list (battles, collection, etc.)",
+        "Add new sections: battle mechanics, type advantages",
+        "Update architecture diagrams",
+        "Update testing coverage numbers",
+        "Add known issues section",
+        "Update CLAUDE.md"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "documentation",
+        "ai-context",
+        "maintenance"
+      ]
+    },
+    {
+      "id": "US164",
+      "title": "Code Quality - TypeScript Strict Mode",
+      "description": "As a developer, I want strict TypeScript, so type errors are caught early.",
+      "acceptanceCriteria": [
+        "Enable strict mode in tsconfig.json",
+        "Fix all 'any' types",
+        "Add proper type annotations",
+        "Run: bun run build (verify no type errors)",
+        "Run: bunx tsc --noEmit (check all files)",
+        "Target: 0 type errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "typescript",
+        "types"
+      ]
+    },
+    {
+      "id": "US165",
+      "title": "Code Quality - Linting and Formatting",
+      "description": "As a developer, I want consistent code style, so code is readable.",
+      "acceptanceCriteria": [
+        "Run ESLint: bun run lint",
+        "Fix all lint errors",
+        "Run Prettier: bun run format",
+        "Configure Prettier to match project style",
+        "Add pre-commit hook for lint/format",
+        "Target: 0 lint errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "linting",
+        "formatting"
+      ]
+    },
+    {
+      "id": "US166",
+      "title": "Code Quality - Code Coverage",
+      "description": "As a developer, I want 80%+ test coverage, so bugs are caught early.",
+      "acceptanceCriteria": [
+        "Run: bun test --coverage",
+        "Target: 80%+ code coverage",
+        "Focus coverage on: src/lib/, src/stores/",
+        "Add tests for uncovered paths",
+        "Report coverage in CI/CD",
+        "Generate coverage report (HTML)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "testing",
+        "coverage"
+      ]
+    },
+    {
+      "id": "US167",
+      "title": "Code Quality - Dead Code Elimination",
+      "description": "As a developer, I want dead code removed, so bundle size is minimized.",
+      "acceptanceCriteria": [
+        "Use ESLint to find unused variables/functions",
+        "Remove commented-out code",
+        "Remove unused imports",
+        "Remove debug console.log statements",
+        "Check for unused dependencies",
+        "Run: bun run build (verify no dead code warnings)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "code-quality",
+        "cleanup",
+        "optimization"
+      ]
+    },
+    {
+      "id": "US168",
+      "title": "Analytics - Event Tracking",
+      "description": "As a developer, I want event tracking, so I can understand user behavior.",
+      "acceptanceCriteria": [
+        "Track: pack_open (with rarity, card count)",
+        "Track: pack_shared (with platform)",
+        "Track: collection_viewed",
+        "Track: battle_played (with result)",
+        "Track: deck_created",
+        "Use Google Analytics or Plausible",
+        "Privacy-compliant (no PII)",
+        "Test: verify events fire"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "analytics",
+        "tracking",
+        "data"
+      ]
+    },
+    {
+      "id": "US169",
+      "title": "Settings - Audio Settings",
+      "description": "As a player, I want audio controls, so I can customize sound.",
+      "acceptanceCriteria": [
+        "Master volume slider (0-100%)",
+        "Mute toggle button",
+        "Settings persist to LocalStorage",
+        "Accessible via gear icon in nav",
+        "Update audio.ts store",
+        "Add SoundEffectsToggle.svelte"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "settings",
+        "audio",
+        "ux"
+      ]
+    },
+    {
+      "id": "US170",
+      "title": "Settings - Animation Quality",
+      "description": "As a player, I want animation quality controls, so I can optimize performance.",
+      "acceptanceCriteria": [
+        "Quality dropdown: High, Medium, Low",
+        "High: all particles enabled",
+        "Medium: 50% particles",
+        "Low: 20% particles",
+        "Auto-detect based on device performance",
+        "Persist to LocalStorage",
+        "Update ui.ts store with quality setting"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "settings",
+        "performance",
+        "ux"
+      ]
+    },
+    {
+      "id": "US171",
+      "title": "Settings - Theme Toggle",
+      "description": "As a player, I want theme toggle (light/dark), so I can use the app comfortably.",
+      "acceptanceCriteria": [
+        "Sun/moon icon in nav",
+        "Dark mode: dark backgrounds, light text",
+        "Light mode: light backgrounds, dark text",
+        "Auto mode: detect system preference",
+        "Smooth transition (0.3s fade)",
+        "Persist to LocalStorage",
+        "Update theme.ts store"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "settings",
+        "theme",
+        "ux"
+      ]
+    },
+    {
+      "id": "US172",
+      "title": "Settings - Clear Data",
+      "description": "As a player, I want clear data option, so I can start fresh.",
+      "acceptanceCriteria": [
+        "Clear collection button",
+        "Clear settings button",
+        "Clear all data button",
+        "Confirmation dialog for each",
+        "Warning: 'This cannot be undone'",
+        "Success notification",
+        "Update settings panel"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "settings",
+        "data",
+        "ux"
+      ]
+    },
+    {
+      "id": "US173",
+      "title": "Error Handling - Graceful Degradation",
+      "description": "As a player, I want helpful error messages, so I know what went wrong.",
+      "acceptanceCriteria": [
+        "Friendly error messages (no technical jargon)",
+        "Suggested actions for recovery",
+        "Error state shows illustration/icon",
+        "Retry button where applicable",
+        "Errors logged to console",
+        "Never crashes - always shows UI state",
+        "Use ErrorDisplay.svelte consistently"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "error-handling",
+        "ux",
+        "robustness"
+      ]
+    },
+    {
+      "id": "US174",
+      "title": "Error Handling - Network Error Recovery",
+      "description": "As a player, I want network errors handled gracefully, so the app works offline.",
+      "acceptanceCriteria": [
+        "Detect network offline status",
+        "Show offline banner: 'You're offline'",
+        "Queue failed requests, retry when online",
+        "LocalStorage writes work offline",
+        "Sync when connection restored",
+        "Service worker caching for core assets",
+        "Update offline.astro page"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "error-handling",
+        "offline",
+        "pwa"
+      ]
+    },
+    {
+      "id": "US175",
+      "title": "Loading States - Skeleton Screens",
+      "description": "As a player, I want skeleton screens, so the app feels responsive.",
+      "acceptanceCriteria": [
+        "Card skeleton: shimmer effect",
+        "Pack skeleton: animation while generating",
+        "Collection grid skeleton cards",
+        "Smooth fade-in when content loads",
+        "Skeletons match actual layout (no shift)",
+        "Loading clears within 2 seconds",
+        "Use CardSkeleton.svelte, CollectionGridSkeleton.svelte"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "ui",
+        "loading",
+        "ux"
+      ]
+    },
+    {
+      "id": "US176",
+      "title": "Tutorial - First-Time User Experience",
+      "description": "As a new player, I want a quick tutorial, so I understand how to play.",
+      "acceptanceCriteria": [
+        "First visit: show 3-step tutorial overlay",
+        "Step 1: 'Click Open Pack' (highlights button)",
+        "Step 2: 'Watch cards reveal' (highlights pack)",
+        "Step 3: 'Share your pull' (highlights share button)",
+        "Skip button available",
+        "Don't show again checkbox",
+        "Track completion in LocalStorage",
+        "Use TutorialOverlay.svelte"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "ux",
+        "onboarding",
+        "tutorial"
+      ]
+    },
+    {
+      "id": "US177",
+      "title": "Notifications - Toast System",
+      "description": "As a player, I want toast notifications, so I get feedback on actions.",
+      "acceptanceCriteria": [
+        "Toast appears on: pack opened, card crafted, battle won, etc.",
+        "Auto-dismiss after 3 seconds",
+        "Click to dismiss",
+        "Stack multiple toasts (max 3)",
+        "Success: green, error: red, info: blue",
+        "Accessible: announced to screen readers",
+        "Use NotificationContainer.svelte"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "ui",
+        "notifications",
+        "feedback"
+      ]
+    },
+    {
+      "id": "US178",
+      "title": "Achievements - Unlock Notifications",
+      "description": "As a player, I want achievement popups, so I feel rewarded.",
+      "acceptanceCriteria": [
+        "Achievement popup: 'Achievement Unlocked!'",
+        "Shows: achievement name, icon, description",
+        "Confetti effect on unlock",
+        "Auto-dismiss after 5 seconds",
+        "View all achievements in gallery",
+        "Progress tracking: '3/5 First Pack'",
+        "Use AchievementPopup.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "gamification",
+        "achievements",
+        "notifications"
+      ]
+    },
+    {
+      "id": "US179",
+      "title": "Daily Rewards - Streak Tracking",
+      "description": "As a player, I want daily login rewards, so I keep coming back.",
+      "acceptanceCriteria": [
+        "Daily login streak tracking",
+        "Bonus pack every day",
+        "Streak bonus: better rewards on consecutive days",
+        "Streak reset if day missed",
+        "Claim button with countdown timer",
+        "Notification when reward available",
+        "Use DailyRewardsBanner.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "gamification",
+        "retention",
+        "rewards"
+      ]
+    },
+    {
+      "id": "US180",
+      "title": "Social Sharing - Share Modal",
+      "description": "As a player, I want share modal, so I can choose how to share.",
+      "acceptanceCriteria": [
+        "Modal opens on 'Share This Pull' click",
+        "Platform buttons: Twitter/X, Discord, Download",
+        "Preview of shareable image",
+        "Close button (X) and ESC key",
+        "Backdrop click closes modal",
+        "Accessible (ARIA labels, keyboard nav)",
+        "Use ShareModal.svelte"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "modal"
+      ]
+    },
+    {
+      "id": "US181",
+      "title": "Social Sharing - Image Generation",
+      "description": "As a player, I want shareable images, so I can post on social media.",
+      "acceptanceCriteria": [
+        "Generate card image: html2canvas",
+        "Generate pack collage: grid of 6 cards",
+        "Include DadDeck™ branding",
+        "High-res output (2x for retina)",
+        "Transparent background",
+        "Generation completes within 2 seconds",
+        "Update src/lib/utils/image-generation.ts"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "images",
+        "utility"
+      ]
+    },
+    {
+      "id": "US182",
+      "title": "Leaderboard - Global Rankings",
+      "description": "As a player, I want leaderboards, so I can compare my progress.",
+      "acceptanceCriteria": [
+        "Leaderboard: Most Packs Opened",
+        "Leaderboard: Most Unique Cards",
+        "Leaderboard: Highest Collection Value",
+        "Leaderboard: Best Battle Record",
+        "Top 100 displayed",
+        "Your ranking highlighted",
+        "Filters: global, friends (future)",
+        "Use LeaderboardPage.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "gamification",
+        "leaderboard"
+      ]
+    },
+    {
+      "id": "US183",
+      "title": "Trading - Trade Offer System",
+      "description": "As a player, I want to create trade offers, so I can trade with friends.",
+      "acceptanceCriteria": [
+        "Select cards to offer (from collection)",
+        "Select cards requested (from full database)",
+        "Generate trade offer URL (encoded)",
+        "Trade offer shows both sides",
+        "Accept/Reject buttons (future)",
+        "Trade history log",
+        "Use TradeCreator.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "trading",
+        "features"
+      ]
+    },
+    {
+      "id": "US184",
+      "title": "Crafting - Recipe System",
+      "description": "As a player, I want to craft cards, so I can use duplicates.",
+      "acceptanceCriteria": [
+        "Recipe: 5 common → 1 uncommon (100% success)",
+        "Recipe: 5 uncommon → 1 rare (50% success)",
+        "Recipe: 5 rare → 1 epic (30% success)",
+        "Recipe: 5 epic → 1 legendary (10% success)",
+        "Failed craft: returns 60% materials",
+        "Crafting animation (fusing effect)",
+        "Use CraftingStation.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "features",
+        "crafting",
+        "economy"
+      ]
+    },
+    {
+      "id": "US185",
+      "title": "Upgrades - Card Upgrade System",
+      "description": "As a player, I want to upgrade cards, so I can improve favorites.",
+      "acceptanceCriteria": [
+        "Select card to upgrade (consumes 5 duplicates)",
+        "Upgrade: +5 to all stats",
+        "Max 3 upgrades per card (+15 total)",
+        "Visual indicator: star badge for upgraded",
+        "Upgrade history tracked",
+        "Use UpgradeManager.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "features",
+        "upgrades",
+        "progression"
+      ]
+    },
+    {
+      "id": "US186",
+      "title": "Batch Opening - Open Multiple Packs",
+      "description": "As a player, I want to open multiple packs, so I can save time.",
+      "acceptanceCriteria": [
+        "'Open 10 Packs' button",
+        "Fast-forward mode (skip animations)",
+        "Progress: 'Opening pack 3 of 10'",
+        "Cancel button to stop",
+        "Results show summary + all cards",
+        "Use BatchOpener.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "features",
+        "automation",
+        "ux"
+      ]
+    },
+    {
+      "id": "US187",
+      "title": "Card Comparison - Side by Side",
+      "description": "As a player, I want to compare cards, so I can see which is better.",
+      "acceptanceCriteria": [
+        "Select 2 cards from collection",
+        "Side-by-side view shows both",
+        "Stat bars aligned for comparison",
+        "Highlight winner (green vs red)",
+        "Total score calculation",
+        "Use CardComparison.svelte"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "features",
+        "ux"
+      ]
+    },
+    {
+      "id": "US188",
+      "title": "Lightbox - Full-Screen Card View",
+      "description": "As a player, I want lightbox for cards, so I can view artwork.",
+      "acceptanceCriteria": [
+        "Click card → full-screen lightbox",
+        "Shows artwork at max resolution",
+        "Previous/Next navigation",
+        "Download button",
+        "Share button",
+        "Info panel with card details",
+        "Use lightbox.ts store"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "cards",
+        "ui",
+        "media"
+      ]
+    },
+    {
+      "id": "US189",
+      "title": "Pack History - Recent Pulls",
+      "description": "As a player, I want to see pack history, so I can review past pulls.",
+      "acceptanceCriteria": [
+        "History panel shows last 10 packs",
+        "Each entry: timestamp, card count, best card",
+        "Click to expand → see all cards",
+        "Links to detailed pack view",
+        "Infinite scroll if many packs",
+        "Use PackHistoryPanel.svelte"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "history",
+        "ui"
+      ]
+    },
+    {
+      "id": "US190",
+      "title": "Cinematic Mode - Dramatic Pack Opening",
+      "description": "As a player, I want cinematic mode, so pack opening feels epic.",
+      "acceptanceCriteria": [
+        "Cinematic mode toggle",
+        "2x slower animations",
+        "Enhanced particle effects",
+        "Dramatic camera zoom on reveal",
+        "Best for first-time or special packs",
+        "Settings persists",
+        "Update PackOpener.svelte with cinematic mode"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "pack-opening",
+        "features",
+        "fx"
+      ]
+    },
+    {
+      "id": "US191",
+      "title": "Deployment - Production Build",
+      "description": "As a developer, I want production build optimized, so deployment is ready.",
+      "acceptanceCriteria": [
+        "Run: bun run build",
+        "Bundle size <500KB gzipped",
+        "All assets optimized",
+        "Environment variables configured",
+        "Test: bun run preview",
+        "Deploy to Vercel",
+        "Post-deployment smoke test"
+      ],
+      "priority": 1,
+      "passes": false,
+      "labels": [
+        "deployment",
+        "vercel",
+        "build"
+      ]
+    },
+    {
+      "id": "US192",
+      "title": "Deployment - Environment Variables",
+      "description": "As a developer, I want environment variables configured, so secrets are managed.",
+      "acceptanceCriteria": [
+        "Create .env.example",
+        "Document: PUBLIC_ANALYTICS_ID, PUBLIC_SENTRY_DSN",
+        "Load variables in astro.config.mjs",
+        "Validate required vars on build",
+        "Test: build succeeds without vars (uses defaults)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "deployment",
+        "config",
+        "security"
+      ]
+    },
+    {
+      "id": "US193",
+      "title": "Deployment - Error Tracking",
+      "description": "As a developer, I want error tracking, so I can fix production bugs.",
+      "acceptanceCriteria": [
+        "Integrate Sentry",
+        "Capture exceptions",
+        "Capture user feedback (optional)",
+        "Show release version",
+        "Source maps for debugging",
+        "Test: trigger error, verify sent to Sentry"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "deployment",
+        "monitoring",
+        "debugging"
+      ]
+    },
+    {
+      "id": "US194",
+      "title": "Security - Pack Validation",
+      "description": "As a developer, I want pack validation, so exploits are prevented.",
+      "acceptanceCriteria": [
+        "Validate rarity distribution on open",
+        "Detect duplicate packs (same hash)",
+        "Statistical anomaly detection",
+        "Entropy verification",
+        "Log suspicious activity",
+        "Update src/lib/security/pack-validator.ts",
+        "Unit tests for validation logic"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "security",
+        "validation",
+        "anti-cheat"
+      ]
+    },
+    {
+      "id": "US195",
+      "title": "Security - Input Sanitization",
+      "description": "As a developer, I want input sanitized, so XSS is prevented.",
+      "acceptanceCriteria": [
+        "Sanitize all user input (search, deck names, etc.)",
+        "Escape HTML in card names/descriptions",
+        "Validate JSON on import",
+        "CSRF protection (if API added)",
+        "Content Security Policy headers",
+        "Test: try XSS payloads, verify sanitized"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "security",
+        "xss",
+        "validation"
+      ]
+    },
+    {
+      "id": "US196",
+      "title": "Performance - Initial Load Time",
+      "description": "As a developer, I want <3s initial load, so users don't bounce.",
+      "acceptanceCriteria": [
+        "Measure with Lighthouse",
+        "Optimize images (WebP, lazy loading)",
+        "Code split by route",
+        "Inline critical CSS",
+        "Preload critical assets",
+        "Target: <3s on 3G connection",
+        "Test: Lighthouse Performance 90+"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "performance",
+        "optimization",
+        "load-time"
+      ]
+    },
+    {
+      "id": "US197",
+      "title": "Performance - Animation Performance",
+      "description": "As a developer, I want 60fps animations, so experience is smooth.",
+      "acceptanceCriteria": [
+        "Profile with Chrome DevTools",
+        "Use CSS transforms (GPU)",
+        "Object pooling for particles",
+        "Debounce expensive operations",
+        "Will-change for animated elements",
+        "Target: 60fps on iPhone 12",
+        "Test: record frame rate"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "performance",
+        "animation",
+        "optimization"
+      ]
+    },
+    {
+      "id": "US198",
+      "title": "Performance - Runtime Performance",
+      "description": "As a developer, I want fast runtime performance, so interactions feel instant.",
+      "acceptanceCriteria": [
+        "Pack generation: <500ms",
+        "Card search: <100ms for 105 cards",
+        "Collection filter: <50ms",
+        "Deck validation: <100ms",
+        "Battle calculation: <200ms",
+        "Profile and optimize bottlenecks",
+        "Test: measure all operations"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "performance",
+        "runtime",
+        "optimization"
+      ]
+    },
+    {
+      "id": "US199",
+      "title": "Monitoring - Performance Dashboard",
+      "description": "As a developer, I want performance dashboard, so I can track metrics.",
+      "acceptanceCriteria": [
+        "Display: FPS, memory usage, bundle size",
+        "Real-time metrics updates",
+        "Performance warnings (threshold alerts)",
+        "Export metrics as JSON",
+        "Dev-only (not in production)",
+        "Update src/stores/analytics.ts"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "monitoring",
+        "performance",
+        "devtools"
+      ]
+    },
+    {
+      "id": "US200",
+      "title": "Monitoring - Error Logging",
+      "description": "As a developer, I want error logging, so I can debug issues.",
+      "acceptanceCriteria": [
+        "Log all errors to console",
+        "Send to Sentry (if configured)",
+        "Include: error message, stack trace, user agent",
+        "Log ID for cross-referencing",
+        "Error reporting UI (send feedback)",
+        "Test: trigger error, verify logged"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "monitoring",
+        "errors",
+        "debugging"
+      ]
     }
   ],
   "metadata": {
     "createdAt": "2026-01-17T01:00:00Z",
     "version": "2.0.0",
-    "updatedAt": "2026-01-17T20:33:13.067Z"
+    "updatedAt": "2026-01-17T20:33:13.067Z",
+    "totalUserStories": 200,
+    "lastDepthUpdate": "2026-01-17T23:30:00Z"
   }
 }

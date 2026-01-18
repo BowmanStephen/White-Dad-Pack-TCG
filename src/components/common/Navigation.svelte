@@ -7,6 +7,7 @@
     href: string;
     label: string;
     isCta?: boolean;
+    isTutorialTarget?: boolean;
   }
 
   let isMuted = $state(false);
@@ -22,7 +23,7 @@
   const links: NavLink[] = [
     { href: '/', label: 'Home' },
     { href: '/pack', label: 'Open Pack', isCta: true },
-    { href: '/collection', label: 'My Collection' },
+    { href: '/collection', label: 'My Collection', isTutorialTarget: true },
     { href: '/battle', label: 'Battle' },
   ];
 
@@ -92,6 +93,7 @@
           class="nav-link"
           class:active={isActive(link.href)}
           class:cta={link.isCta}
+          data-tutorial={link.isTutorialTarget ? 'collection-link' : undefined}
         >
           {link.label}
         </a>
@@ -152,6 +154,7 @@
           class="mobile-link"
           class:active={isActive(link.href)}
           class:cta={link.isCta}
+          data-tutorial={link.isTutorialTarget ? 'collection-link' : undefined}
           on:click={closeMenu}
         >
           <span class="mobile-link-text">{link.label}</span>

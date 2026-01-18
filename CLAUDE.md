@@ -1874,6 +1874,10 @@ bun astro check          # Type check Astro components
 - ✅ Toast notification system
 - ✅ Card comparison view
 - ✅ Pack history panel
+- ✅ **Collection search** (SEARCH-001) - Full-text search across names and flavor text
+- ✅ **Collection filters** (FILTER-001/002) - Multi-select rarity and dad type filters
+- ✅ **Collection sorting** (FILTER-003) - Sort by date/rarity/type with ascending/descending
+- ✅ **Interactive stat tooltips** - Desktop hover & mobile tap-to-reveal with detailed descriptions
 
 **Analytics:**
 - ✅ Google Analytics integration
@@ -1945,6 +1949,118 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 ---
 
 **Last updated:** January 17, 2026
+
+---
+
+## 🆕 Recent Feature Additions (January 2026)
+
+### Collection Search & Filter System
+
+**Components Added:**
+- **CollectionSearch.svelte** (SEARCH-001) - Full-text search across card names and flavor text
+- **CollectionFilters.svelte** (FILTER-001/002/003) - Multi-select filters for rarity and dad types
+- **CollectionSort.svelte** (FILTER-003) - Sort by date obtained, rarity, or dad type (ascending/descending)
+
+**Features:**
+- **Real-time search** - Filters as you type with debouncing (300ms)
+- **Flavor text search** - Search includes card flavor text for better discoverability
+- **Multi-select filters** - Combine multiple rarities and dad types
+- **Sort options** - Date obtained, rarity, dad type with ascending/descending toggle
+- **Filter chips UI** - Visual filter tags that can be clicked to remove
+- **Clear all button** - Reset all filters and search at once
+
+**Implementation Pattern:**
+```typescript
+// Derived store pattern for filtering
+import { computed } from 'nanostores';
+
+export const filteredCards = computed(
+  [collection, searchQuery, selectedRarities, selectedDadTypes, sortBy],
+  (coll, search, rarities, types, sort) => {
+    let cards = coll.cards;
+
+    // Apply search filter
+    if (search) {
+      cards = cards.filter(card =>
+        card.name.toLowerCase().includes(search.toLowerCase()) ||
+        (card.flavorText && card.flavorText.toLowerCase().includes(search.toLowerCase()))
+      );
+    }
+
+    // Apply rarity filter
+    if (rarities.length > 0) {
+      cards = cards.filter(card => rarities.includes(card.rarity));
+    }
+
+    // Apply dad type filter
+    if (types.length > 0) {
+      cards = cards.filter(card => types.includes(card.type));
+    }
+
+    // Apply sorting
+    cards.sort((a, b) => {
+      // Sort logic based on sortBy option
+      return result;
+    });
+
+    return cards;
+  }
+);
+```
+
+### Interactive Stat Tooltips
+
+**Component Added:**
+- **StatTooltip.svelte** - Interactive tooltip component for card stats
+
+**Features:**
+- **Desktop hover** - 400ms delay before showing tooltip (prevents accidental triggers)
+- **Mobile tap & hold** - Long press to show tooltip, 2-second auto-dismiss
+- **Haptic feedback** - Vibration on mobile when tooltip appears
+- **Smart positioning** - Automatically adjusts to stay within viewport bounds
+- **Stat descriptions** - Detailed explanations of each stat's purpose
+- **Stat ratings** - Visual rating scale (Terrible → Legendary) with color-coded progress bar
+- **Rarity theming** - Tooltip colors match card rarity
+
+**Usage Pattern:**
+```svelte
+<script>
+  import { StatTooltip } from '@/components/card/StatTooltip.svelte';
+
+  let statElement: HTMLElement;
+
+  function handleMouseEnter(event) {
+    // Programmatically trigger tooltip
+  }
+</script>
+
+<div bind:this={statElement} on:mouseenter={handleMouseEnter}>
+  <span>{card.stats.dadJoke}</span>
+</div>
+
+<StatTooltip
+  statKey="dadJoke"
+  statValue={card.stats.dadJoke}
+  triggerElement={statElement}
+  cardRarity={card.rarity}
+/>
+```
+
+**Type Definitions Added:**
+```typescript
+// src/types/index.ts
+export const STAT_DESCRIPTIONS: Record<keyof CardStats, string> = {
+  dadJoke: 'Quality of terrible puns and "groaner" jokes...',
+  grillSkill: 'BBQ mastery level. Determines success at grilling...',
+  // ... etc for all 8 stats
+};
+```
+
+**Accessibility Features:**
+- ARIA `role="tooltip"` and `aria-live="polite"` for screen readers
+- `prefers-reduced-motion` support disables animations
+- Keyboard accessible (focus handling via parent element)
+- High contrast text with text-shadow for readability
 
 ---
 

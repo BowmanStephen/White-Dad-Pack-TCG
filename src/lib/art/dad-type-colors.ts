@@ -112,6 +112,96 @@ export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
     accent: '#fbbf24',       // Gold (legendary)
     background: 'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)',
   },
+  SUBURBAN_SPY: {
+    primary: '#6b7280',      // Gray (stealth)
+    secondary: '#4b5563',    // Dark gray
+    accent: '#ef4444',       // Red (alert)
+    background: 'linear-gradient(135deg, #374151 0%, #4b5563 50%, #374151 100%)',
+  },
+  GAMER_GIZZARDS: {
+    primary: '#8b5cf6',      // Purple (gaming)
+    secondary: '#ec4899',    // Pink
+    accent: '#22d3ee',       // Cyan (screen glow)
+    background: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #581c87 100%)',
+  },
+  PREPPER_PENIS: {
+    primary: '#78716c',      // Brown (earth tones)
+    secondary: '#a8a29e',    // Stone
+    accent: '#fbbf24',       // Gold (supplies)
+    background: 'linear-gradient(135deg, #57534e 0%, #78716c 50%, #57534e 100%)',
+  },
+  BBQ_BRAWLER: {
+    primary: '#ef4444',      // Red (aggressive)
+    secondary: '#dc2626',    // Dark red
+    accent: '#f97316',       // Orange (fire)
+    background: 'linear-gradient(135deg, #991b1b 0%, #dc2626 50%, #991b1b 100%)',
+  },
+  SUBURBAN_SOCIALITE: {
+    primary: '#ec4899',      // Pink (social)
+    secondary: '#f472b6',    // Light pink
+    accent: '#fbbf24',       // Gold (parties)
+    background: 'linear-gradient(135deg, #9d174d 0%, #ec4899 50%, #9d174d 100%)',
+  },
+  NEIGHBORHOOD_NOSY: {
+    primary: '#3b82f6',      // Blue (curiosity)
+    secondary: '#60a5fa',    // Light blue
+    accent: '#fbbf24',       // Yellow (gossip)
+    background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%)',
+  },
+  SON_SPAWNS: {
+    primary: '#22c55e',      // Green (youth)
+    secondary: '#16a34a',    // Dark green
+    accent: '#fbbf24',       // Yellow (energy)
+    background: 'linear-gradient(135deg, #166534 0%, #22c55e 50%, #166534 100%)',
+  },
+  DAUGHTER_DINGBATS: {
+    primary: '#ec4899',      // Pink
+    secondary: '#f472b6',    // Light pink
+    accent: '#a855f7',       // Purple (playful)
+    background: 'linear-gradient(135deg, #9d174d 0%, #ec4899 50%, #9d174d 100%)',
+  },
+  UNCLE_UPROARS: {
+    primary: '#f97316',      // Orange (chaos)
+    secondary: '#ef4444',    // Red
+    accent: '#fbbf24',       // Yellow (fun)
+    background: 'linear-gradient(135deg, #c2410c 0%, #f97316 50%, #c2410c 100%)',
+  },
+  SUBURBAN_SIDEKICKS: {
+    primary: '#64748b',      // Slate (neutral)
+    secondary: '#94a3b8',    // Light slate
+    accent: '#22c55e',       // Green (support)
+    background: 'linear-gradient(135deg, #475569 0%, #64748b 50%, #475569 100%)',
+  },
+  EVENT: {
+    primary: '#f97316',      // Orange (action)
+    secondary: '#ef4444',    // Red
+    accent: '#fbbf24',       // Yellow (impact)
+    background: 'linear-gradient(135deg, #c2410c 0%, #f97316 50%, #c2410c 100%)',
+  },
+  TERRAIN: {
+    primary: '#22c55e',      // Green (nature)
+    secondary: '#16a34a',    // Dark green
+    accent: '#fbbf24',       // Yellow (sun)
+    background: 'linear-gradient(135deg, #14532d 0%, #22c55e 50%, #14532d 100%)',
+  },
+  EVOLUTION: {
+    primary: '#8b5cf6',      // Purple (transformation)
+    secondary: '#a855f7',    // Light purple
+    accent: '#ec4899',       // Pink (change)
+    background: 'linear-gradient(135deg, #581c87 0%, #8b5cf6 50%, #581c87 100%)',
+  },
+  CURSE: {
+    primary: '#dc2626',      // Dark red (negative)
+    secondary: '#991b1b',    // Darker red
+    accent: '#7c2d12',       // Brown (decay)
+    background: 'linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #7f1d1d 100%)',
+  },
+  TRAP: {
+    primary: '#64748b',      // Slate (hidden)
+    secondary: '#475569',    // Dark slate
+    accent: '#ef4444',       // Red (danger)
+    background: 'linear-gradient(135deg, #334155 0%, #64748b 50%, #334155 100%)',
+  },
 };
 
 /**

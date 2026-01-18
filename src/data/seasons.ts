@@ -17,8 +17,12 @@ export const SEASON_1: Season = {
   description: 'Where it all began. 50 cards featuring every dad archetype from BBQ Dads to Fix-It Dads. The foundation of DadDeck™.',
   status: 'active',
   startDate: new Date('2025-01-01'),
-  totalCards: 50,
-  cardIds: Array.from({ length: 50 }, (_, i) => String(i + 1).padStart(3, '0')),
+  totalCards: 52,
+  cardIds: [
+    ...Array.from({ length: 50 }, (_, i) => String(i + 1).padStart(3, '0')),
+    'daddypass_exclusive_legendary',
+    'daddypass_exclusive_mythic',
+  ],
   packDesign: 'base_set',
   theme: {
     name: 'Classic Blue',
@@ -68,8 +72,8 @@ export const SEASON_3: Season = {
   status: 'upcoming',
   startDate: new Date('2025-09-01'),
   endDate: new Date('2025-11-30'),
-  totalCards: 35,
-  cardIds: [],
+  totalCards: 23,
+  cardIds: Array.from({ length: 23 }, (_, i) => String(i + 83).padStart(3, '0')),
   packDesign: 'fall_foliage',
   theme: {
     name: 'Autumn Colors',

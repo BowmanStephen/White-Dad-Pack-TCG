@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { generatePack, generatePacks, DEFAULT_PACK_CONFIG, getPackStats, compareRarity, getHighestRarity } from '../../../src/lib/pack/generator';
-import type { Rarity, Pack } from '../../../src/types';
+import { generatePack, generatePacks, DEFAULT_PACK_CONFIG, getPackStats, compareRarity, getHighestRarity, generateSeasonPack } from '../../../src/lib/pack/generator';
+import type { Rarity, Pack, SeasonId } from '../../../src/types';
 
 describe('Pack Generator - US036 Rarity Distribution', () => {
   describe('Configuration', () => {
@@ -63,6 +63,39 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       expect(pack.cards).toHaveLength(6);
     });
 
+    it('should generate a season pack with matching seasonId', () => {
+      const seasonId: SeasonId = 2;
+      const seasonConfig = {
+        ...DEFAULT_PACK_CONFIG,
+        raritySlots: [
+          { slot: 1, guaranteedRarity: 'common' as const },
+          { slot: 2, guaranteedRarity: 'common' as const },
+          { slot: 3, guaranteedRarity: 'common' as const },
+          {
+            slot: 4,
+            rarityPool: true,
+            probability: { uncommon: 0.7, rare: 0.2, epic: 0.08, legendary: 0.02 },
+          },
+          {
+            slot: 5,
+            rarityPool: true,
+            probability: { uncommon: 0.7, rare: 0.2, epic: 0.08, legendary: 0.02 },
+          },
+          {
+            slot: 6,
+            rarityPool: true,
+            probability: { rare: 0.85, epic: 0.1, legendary: 0.05 },
+          },
+        ],
+      };
+      const pack = generateSeasonPack(seasonId, seasonConfig);
+
+      expect(pack.cards).toHaveLength(6);
+      for (const card of pack.cards) {
+        expect(card.seasonId).toBe(seasonId);
+      }
+    });
+
     it('should generate unique cards in a pack (no duplicates)', () => {
       const pack = generatePack();
       const cardIds = pack.cards.map(c => c.id);
@@ -103,6 +136,43 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       expect(pack1.cards.map(c => c.id)).toEqual(pack2.cards.map(c => c.id));
       expect(pack1.cards.map(c => c.isHolo)).toEqual(pack2.cards.map(c => c.isHolo));
       expect(pack1.bestRarity).toBe(pack2.bestRarity);
+    });
+  });
+
+  describe('Season Pack Generation', () => {
+    it('should generate season packs with valid rarities', () => {
+      const seasonId: SeasonId = 2;
+      const seasonConfig = {
+        ...DEFAULT_PACK_CONFIG,
+        raritySlots: [
+          { slot: 1, guaranteedRarity: 'common' as const },
+          { slot: 2, guaranteedRarity: 'common' as const },
+          { slot: 3, guaranteedRarity: 'common' as const },
+          {
+            slot: 4,
+            rarityPool: true,
+            probability: { uncommon: 0.7, rare: 0.2, epic: 0.08, legendary: 0.02 },
+          },
+          {
+            slot: 5,
+            rarityPool: true,
+            probability: { uncommon: 0.7, rare: 0.2, epic: 0.08, legendary: 0.02 },
+          },
+          {
+            slot: 6,
+            rarityPool: true,
+            probability: { rare: 0.85, epic: 0.1, legendary: 0.05 },
+          },
+        ],
+      };
+      const packs = Array.from({ length: 25 }, () => generateSeasonPack(seasonId, seasonConfig));
+
+      for (const pack of packs) {
+        expect(pack.cards).toHaveLength(6);
+        for (const card of pack.cards) {
+          expect(card.seasonId).toBe(seasonId);
+        }
+      }
     });
   });
 

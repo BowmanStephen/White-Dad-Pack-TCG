@@ -253,7 +253,12 @@ export function createMigrationEncoder() {
 
   return {
     encode(data: Collection): string {
-      const versioned = versionCollection(data);
+      // First encode dates to ISO strings
+      const withStringDates = dateEncoder.encode(data);
+      const collectionWithDates = JSON.parse(withStringDates);
+      
+      // Then wrap in version envelope
+      const versioned = versionCollection(collectionWithDates);
       return JSON.stringify(versioned);
     },
 
@@ -267,10 +272,38 @@ export function createMigrationEncoder() {
 
       // Use date encoder to restore Date objects
       try {
-        // Stringify the migrated collection and run through date decoder
+        // Ensure dates are strings (not Date objects) before passing to date encoder
+        // The migrated collection should have string dates from JSON.parse, but
+        // we need to stringify it again so the date encoder can process it
         const migratedJson = JSON.stringify(result.collection);
-        const withDates = dateEncoder.decode(migratedJson);
-        return withDates;
+        const parsedCollection = JSON.parse(migratedJson);
+        
+        // Manually convert date strings to Date objects using the date encoder's logic
+        const dateFields = ['metadata.created', 'metadata.lastOpenedAt', 'packs.openedAt'];
+        
+        for (const fieldPath of dateFields) {
+          const parts = fieldPath.split('.');
+          
+          if (parts.length === 2) {
+            // Nested field like 'metadata.created' or array field like 'packs.openedAt'
+            const [parentKey, fieldName] = parts;
+            
+            if (parentKey === 'metadata' && parsedCollection.metadata?.[fieldName]) {
+              const value = parsedCollection.metadata[fieldName];
+              if (typeof value === 'string' && value !== null) {
+                parsedCollection.metadata[fieldName] = new Date(value);
+              }
+            } else if (parentKey === 'packs' && Array.isArray(parsedCollection.packs)) {
+              parsedCollection.packs.forEach((pack: any) => {
+                if (pack?.[fieldName] && typeof pack[fieldName] === 'string') {
+                  pack[fieldName] = new Date(pack[fieldName]);
+                }
+              });
+            }
+          }
+        }
+        
+        return parsedCollection;
       } catch (error) {
         console.error('[Encoder] Date restoration failed, returning migrated collection:', error);
         // Fall back to migrated collection (may have string dates)
