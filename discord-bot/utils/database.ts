@@ -31,7 +31,7 @@ export async function loadDatabase(dbPath: string = DEFAULT_DB_PATH): Promise<Us
       }
     }
     return db;
-  } catch (error) {
+  } catch {
     // File doesn't exist or is invalid, return empty database
     return {
       users: {},
@@ -102,7 +102,7 @@ export async function setPremiumStatus(discordId: string, isPremium: boolean, db
  */
 export async function incrementPackCount(discordId: string, dbPath?: string): Promise<DiscordUser> {
   const db = await loadDatabase(dbPath);
-  let user = db.users[discordId];
+  const user = db.users[discordId];
 
   if (!user) {
     throw new Error(`User ${discordId} not found in database`);
