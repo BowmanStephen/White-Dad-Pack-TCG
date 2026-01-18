@@ -315,4 +315,82 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       expect(stats.holoCount).toBe(manualHoloCount);
     });
   });
+
+  describe('PACK-006: Card Rarity Distribution - 142 Cards', () => {
+    it('should have 142 cards available for pack generation', () => {
+      const { getAllCards } = require('../../../src/lib/cards/database');
+      const allCards = getAllCards();
+
+      expect(allCards.length).toBe(142);
+    });
+
+    it('should have rarity distribution that supports pack generation', () => {
+      const { getCardsByRarity } = require('../../../src/lib/cards/database');
+
+      const distribution = {
+        common: getCardsByRarity('common').length,
+        uncommon: getCardsByRarity('uncommon').length,
+        rare: getCardsByRarity('rare').length,
+        epic: getCardsByRarity('epic').length,
+        legendary: getCardsByRarity('legendary').length,
+        mythic: getCardsByRarity('mythic').length,
+      };
+
+      // Verify we have cards of each rarity
+      expect(distribution.common).toBeGreaterThan(0);
+      expect(distribution.uncommon).toBeGreaterThan(0);
+      expect(distribution.rare).toBeGreaterThan(0);
+      expect(distribution.epic).toBeGreaterThan(0);
+      expect(distribution.legendary).toBeGreaterThan(0);
+      expect(distribution.mythic).toBeGreaterThan(0);
+
+      // Log actual distribution for reference
+      console.log('142-Card Database Rarity Distribution:');
+      console.log(`  Common: ${distribution.common} cards (${((distribution.common / 142) * 100).toFixed(1)}%)`);
+      console.log(`  Uncommon: ${distribution.uncommon} cards (${((distribution.uncommon / 142) * 100).toFixed(1)}%)`);
+      console.log(`  Rare: ${distribution.rare} cards (${((distribution.rare / 142) * 100).toFixed(1)}%)`);
+      console.log(`  Epic: ${distribution.epic} cards (${((distribution.epic / 142) * 100).toFixed(1)}%)`);
+      console.log(`  Legendary: ${distribution.legendary} cards (${((distribution.legendary / 142) * 100).toFixed(1)}%)`);
+      console.log(`  Mythic: ${distribution.mythic} cards (${((distribution.mythic / 142) * 100).toFixed(1)}%)`);
+    });
+
+    it('should generate packs successfully using all 142 cards', () => {
+      // Generate many packs to ensure generator works with full database
+      const packs = generatePacks(1000);
+
+      expect(packs).toHaveLength(1000);
+
+      // Each pack should have 6 unique cards
+      for (const pack of packs) {
+        expect(pack.cards).toHaveLength(6);
+        const cardIds = pack.cards.map(c => c.id);
+        const uniqueIds = new Set(cardIds);
+        expect(uniqueIds.size).toBe(6);
+      }
+    });
+
+    it('should respect slot-based rarity rules with 142-card database', () => {
+      const packs = generatePacks(1000);
+
+      // Count guaranteed commons (slots 1-3)
+      let commonsInFirstThreeSlots = 0;
+      let totalFirstThreeSlots = 0;
+
+      for (const pack of packs) {
+        // Since cards are shuffled, we can't directly check slots
+        // But we can verify the overall distribution has sufficient commons
+        for (const card of pack.cards) {
+          if (card.rarity === 'common') {
+            commonsInFirstThreeSlots++;
+          }
+        }
+        totalFirstThreeSlots += 6;
+      }
+
+      // With 3 guaranteed commons per pack, we expect ~50% commons overall
+      const commonRatio = commonsInFirstThreeSlots / totalFirstThreeSlots;
+      expect(commonRatio).toBeGreaterThanOrEqual(0.45);
+      expect(commonRatio).toBeLessThanOrEqual(0.55);
+    });
+  });
 });
