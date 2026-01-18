@@ -48,6 +48,34 @@
     getEffectiveTheme,
     type ThemeMode,
   } from '@/stores/theme';
+  import {
+    notificationPreferences,
+    togglePushEnabled,
+    setPushEnabled,
+    updatePushPermission,
+    requestPushPermission,
+    toggleDailyRewardNotifications,
+    setDailyRewardNotifications,
+    toggleTradeNotifications,
+    setTradeNotifications,
+    toggleAchievementNotifications,
+    setAchievementNotifications,
+    toggleGeneralNotifications,
+    setGeneralNotifications,
+    toggleNotificationSound,
+    setNotificationSound,
+    toggleNotificationVibration,
+    setNotificationVibration,
+    toggleQuietHours,
+    setQuietHours,
+    setQuietHoursStart,
+    setQuietHoursEnd,
+    resetNotificationPreferences,
+    isPushSupported,
+    isPushPermissionGranted,
+    isPushPermissionDenied,
+    type NotificationPreferences,
+  } from '@/stores/notifications';
 
   // Initialize motion settings on mount
   onMount(() => {
@@ -68,6 +96,7 @@
   let currentLocale = $state<Locale>('en');
   let currentThemeMode = $state<ThemeMode>('auto');
   let currentIsDarkMode = $state(false);
+  let currentNotificationPrefs = $state<NotificationPreferences>(notificationPreferences.get());
 
   // Subscribe to store changes
   $effect(() => {
@@ -84,6 +113,7 @@
     const unsubLocale = locale.subscribe((v) => (currentLocale = v));
     const unsubThemeMode = themeMode.subscribe((v) => (currentThemeMode = v));
     const unsubIsDarkMode = isDarkMode.subscribe((v) => (currentIsDarkMode = v));
+    const unsubNotifications = notificationPreferences.subscribe((v) => (currentNotificationPrefs = v));
 
     return () => {
       unsubMuted();
@@ -99,8 +129,26 @@
       unsubLocale();
       unsubThemeMode();
       unsubIsDarkMode();
+      unsubNotifications();
     };
   });
+
+  // Notification helper functions
+  async function handleRequestPushPermission() {
+    const permission = await requestPushPermission();
+    if (permission === 'denied') {
+      alert('Push notifications were denied. You can enable them in your browser settings.');
+    }
+  }
+
+  function formatTime(value: string): string {
+    const [hours, minutes] = value.split(':');
+    const hour = parseInt(hours, 10);
+    const minute = parseInt(minutes, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
+  }
 
   // Sound theme options
   const soundThemes = [
@@ -525,6 +573,254 @@
     </div>
   </section>
 
+  <!-- Notification Settings Section -->
+  <section class="settings-section">
+    <div class="section-header">
+      <h2>🔔 Notification Settings</h2>
+      <p>Manage how and when you receive notifications</p>
+    </div>
+
+    <!-- Push Notifications Toggle -->
+    {#if isPushSupported()}
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="push-toggle" class="setting-label">Push Notifications</label>
+          <p class="setting-description">
+            {isPushPermissionDenied()
+              ? 'Push notifications denied in browser settings'
+              : isPushPermissionGranted()
+                ? 'Push notifications enabled'
+                : 'Enable browser push notifications'}
+          </p>
+        </div>
+        {#if isPushPermissionDenied()}
+          <button
+            class="toggle-button disabled"
+            disabled
+            aria-pressed="false"
+            type="button"
+          >
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Denied</span>
+          </button>
+        {:else if isPushPermissionGranted()}
+          <button
+            id="push-toggle"
+            class="toggle-button"
+            class:active={currentNotificationPrefs.pushEnabled}
+            on:click={togglePushEnabled}
+            aria-pressed={currentNotificationPrefs.pushEnabled}
+            type="button"
+          >
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">{currentNotificationPrefs.pushEnabled ? 'On' : 'Off'}</span>
+          </button>
+        {:else}
+          <button
+            id="push-toggle"
+            class="btn-primary"
+            on:click={handleRequestPushPermission}
+            type="button"
+          >
+            Enable
+          </button>
+        {/if}
+      </div>
+
+      <!-- Daily Reward Notifications -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="daily-reward-toggle" class="setting-label">Daily Rewards</label>
+          <p class="setting-description">Get notified about daily login rewards and streaks</p>
+        </div>
+        <button
+          id="daily-reward-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.dailyRewardNotifications}
+          on:click={toggleDailyRewardNotifications}
+          aria-pressed={currentNotificationPrefs.dailyRewardNotifications}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.dailyRewardNotifications ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- Trade Notifications -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="trade-toggle" class="setting-label">Trade Notifications</label>
+          <p class="setting-description">Get notified about trade offers and updates</p>
+        </div>
+        <button
+          id="trade-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.tradeNotifications}
+          on:click={toggleTradeNotifications}
+          aria-pressed={currentNotificationPrefs.tradeNotifications}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.tradeNotifications ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- Achievement Notifications -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="achievement-toggle" class="setting-label">Achievement Notifications</label>
+          <p class="setting-description">Get notified when you unlock achievements</p>
+        </div>
+        <button
+          id="achievement-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.achievementNotifications}
+          on:click={toggleAchievementNotifications}
+          aria-pressed={currentNotificationPrefs.achievementNotifications}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.achievementNotifications ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- General Notifications -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="general-toggle" class="setting-label">General Notifications</label>
+          <p class="setting-description">General updates and announcements</p>
+        </div>
+        <button
+          id="general-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.generalNotifications}
+          on:click={toggleGeneralNotifications}
+          aria-pressed={currentNotificationPrefs.generalNotifications}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.generalNotifications ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- Notification Sound -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="notification-sound-toggle" class="setting-label">Notification Sound</label>
+          <p class="setting-description">Play sound for notifications</p>
+        </div>
+        <button
+          id="notification-sound-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.soundEnabled}
+          on:click={toggleNotificationSound}
+          aria-pressed={currentNotificationPrefs.soundEnabled}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.soundEnabled ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- Notification Vibration -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="notification-vibration-toggle" class="setting-label">Notification Vibration</label>
+          <p class="setting-description">Vibrate for notifications (mobile only)</p>
+        </div>
+        <button
+          id="notification-vibration-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.vibrationEnabled}
+          on:click={toggleNotificationVibration}
+          aria-pressed={currentNotificationPrefs.vibrationEnabled}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.vibrationEnabled ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- Quiet Hours Toggle -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label for="quiet-hours-toggle" class="setting-label">Quiet Hours</label>
+          <p class="setting-description">Disable notifications during specific hours</p>
+        </div>
+        <button
+          id="quiet-hours-toggle"
+          class="toggle-button"
+          class:active={currentNotificationPrefs.quietHoursEnabled}
+          on:click={toggleQuietHours}
+          aria-pressed={currentNotificationPrefs.quietHoursEnabled}
+          type="button"
+        >
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{currentNotificationPrefs.quietHoursEnabled ? 'On' : 'Off'}</span>
+        </button>
+      </div>
+
+      <!-- Quiet Hours Time Range -->
+      {#if currentNotificationPrefs.quietHoursEnabled}
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label">Quiet Hours Range</label>
+            <p class="setting-description">
+              {formatTime(currentNotificationPrefs.quietHoursStart)} - {formatTime(currentNotificationPrefs.quietHoursEnd)}
+            </p>
+          </div>
+          <div class="time-inputs">
+            <input
+              type="time"
+              bind:value={currentNotificationPrefs.quietHoursStart}
+              on:change={(e) => setQuietHoursStart(e.target.value)}
+              class="time-input"
+              aria-label="Quiet hours start time"
+            />
+            <span class="time-separator">to</span>
+            <input
+              type="time"
+              bind:value={currentNotificationPrefs.quietHoursEnd}
+              on:change={(e) => setQuietHoursEnd(e.target.value)}
+              class="time-input"
+              aria-label="Quiet hours end time"
+            />
+          </div>
+        </div>
+
+        <!-- Quiet Hours Description -->
+        <div class="setting-description-box">
+          <p>🌙 Notifications will be silenced between {formatTime(currentNotificationPrefs.quietHoursStart)} and {formatTime(currentNotificationPrefs.quietHoursEnd)}.</p>
+        </div>
+      {/if}
+
+      <!-- Reset Notifications Button -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <label class="setting-label">Reset Notifications</label>
+          <p class="setting-description">Reset all notification settings to defaults</p>
+        </div>
+        <button
+          class="btn-secondary"
+          on:click={resetNotificationPreferences}
+          type="button"
+        >
+          Reset
+        </button>
+      </div>
+
+      <!-- Notification Note -->
+      <div class="setting-note">
+        <p>💡 <strong>Note:</strong> Push notifications require browser permission. Category-specific settings only apply if push notifications are enabled.</p>
+      </div>
+    {:else}
+      <!-- Push Not Supported Message -->
+      <div class="setting-note">
+        <p>⚠️ <strong>Not Supported:</strong> Your browser does not support push notifications. Try using a modern browser like Chrome, Firefox, or Edge.</p>
+      </div>
+    {/if}
+  </section>
+
   <!-- Save Indicator -->
   <div class="save-indicator">
     <p>✓ All settings are saved automatically</p>
@@ -835,5 +1131,76 @@
     .section-header h2 {
       font-size: 1.25rem;
     }
+  }
+
+  /* Time Inputs for Quiet Hours */
+  .time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .time-input {
+    padding: 0.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 2px solid #475569;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .time-input:hover {
+    border-color: #fbbf24;
+    background-color: rgba(251, 191, 36, 0.1);
+  }
+
+  .time-input:focus {
+    outline: none;
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+  }
+
+  .time-separator {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  /* Disabled Toggle Button */
+  .toggle-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .toggle-button.disabled:hover {
+    border-color: #475569;
+    background: rgba(30, 41, 59, 0.8);
+  }
+
+  /* Secondary Button (for Reset) */
+  .btn-secondary {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 2px solid #ef4444;
+    border-radius: 8px;
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.95);
   }
 </style>
