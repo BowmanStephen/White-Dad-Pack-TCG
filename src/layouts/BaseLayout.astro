@@ -11,6 +11,7 @@ import KeyboardInitializer from '../components/keyboard/KeyboardInitializer.svel
 import ShortcutsModal from '../components/keyboard/ShortcutsModal.svelte';
 import BottomNav from '../components/nav/BottomNav.svelte';
 import ToastContainer from '../components/common/ToastContainer.svelte';
+import StorageQuotaWarning from '../components/storage/StorageQuotaWarning.svelte';
 import { initI18n } from '../i18n';
 
 // Initialize i18n with default locale (client-side will detect browser locale)
@@ -172,6 +173,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- Toast Notification System -->
     <ToastContainer client:load />
+
+    <!-- PACK-045: Storage Quota Warning System (client:only for SSR safety) -->
+    <StorageQuotaWarning client:only="svelte" />
 
     <!-- Bottom Navigation (Mobile Only) -->
     <BottomNav client:load />

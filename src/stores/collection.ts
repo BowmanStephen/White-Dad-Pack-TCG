@@ -96,7 +96,7 @@ export const collection = collectionStore;
 // Track save timeout for debouncing
 let saveTimeout: number | null = null;
 
-// Save to IndexedDB (debounced)
+// Save to IndexedDB (debounced) - PACK-045: With quota warning handling
 function saveToStorage() {
   if (saveTimeout) {
     clearTimeout(saveTimeout);
@@ -109,9 +109,16 @@ function saveToStorage() {
 
       if (!result.success) {
         console.error('[Collection] Failed to save to IndexedDB:', result.error);
+        // PACK-045: Show error notification to user
+        showStorageError(result.error || 'Failed to save collection');
+      } else if (result.quotaWarning) {
+        // PACK-045: Show quota warning to user
+        console.warn('[Collection] Quota warning:', result.quotaWarning);
+        showStorageWarning(result.quotaWarning);
       }
     } catch (error) {
       console.error('[Collection] Error saving collection:', error);
+      showStorageError('An unexpected error occurred while saving');
     }
   }, 500); // Debounce saves to 500ms
 }
@@ -124,7 +131,7 @@ if (typeof window !== 'undefined') {
 }
 
 // ============================================================================
-// STORAGE UTILITIES
+// STORAGE UTILITIES (PACK-045: Enhanced with quota management)
 // ============================================================================
 
 // Check if storage is available
@@ -135,6 +142,55 @@ export async function checkStorageAvailable(): Promise<boolean> {
 // Get current storage usage
 export async function getStorageUsageInfo() {
   return await getStorageUsage();
+}
+
+// PACK-045: Get detailed quota information
+export async function getQuotaInfo() {
+  const { getStorageQuotaInfo } = await import('@/lib/storage/quota-manager');
+  return await getStorageQuotaInfo();
+}
+
+// PACK-045: Get human-readable quota summary
+export async function getQuotaStatus(): Promise<string> {
+  const { getQuotaSummary } = await import('@/lib/storage/quota-manager');
+  return await getQuotaSummary();
+}
+
+// PACK-045: Manually trigger quota management
+export async function manageStorageQuota() {
+  const { autoManageQuota } = await import('@/lib/storage/quota-manager');
+  const current = collection.get();
+  const result = await autoManageQuota(current);
+
+  if (result.success && result.updatedCollection) {
+    collection.set(result.updatedCollection);
+    console.log('[Collection] Quota management actions:', result.actions.join(', '));
+    return { success: true, actions: result.actions };
+  }
+
+  return { success: false, actions: result.actions };
+}
+
+// PACK-045: Show storage warning to user
+function showStorageWarning(message: string) {
+  // Dispatch custom event for UI components to listen to
+  if (typeof window !== 'undefined') {
+    const event = new CustomEvent('daddeck:storage-warning', {
+      detail: { message, type: 'warning' }
+    });
+    window.dispatchEvent(event);
+  }
+}
+
+// PACK-045: Show storage error to user
+function showStorageError(message: string) {
+  // Dispatch custom event for UI components to listen to
+  if (typeof window !== 'undefined') {
+    const event = new CustomEvent('daddeck:storage-error', {
+      detail: { message, type: 'error' }
+    });
+    window.dispatchEvent(event);
+  }
 }
 
 // ============================================================================

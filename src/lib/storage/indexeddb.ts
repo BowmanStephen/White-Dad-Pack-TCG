@@ -1,6 +1,12 @@
 import localforage from 'localforage';
 import type { Collection, Pack } from '@/types';
 import { createStorageError, logError } from '@/lib/utils/errors';
+import {
+  getStorageQuotaInfo,
+  checkQuotaBeforeSave,
+  autoManageQuota,
+  getQuotaSummary
+} from './quota-manager';
 
 // ============================================================================
 // INDEXEDDB CONFIGURATION
@@ -81,8 +87,8 @@ export async function loadCollection(): Promise<Collection | null> {
   }
 }
 
-// Save collection to IndexedDB
-export async function saveCollection(collection: Collection): Promise<{ success: boolean; error?: string }> {
+// Save collection to IndexedDB (PACK-045: With quota management)
+export async function saveCollection(collection: Collection): Promise<{ success: boolean; error?: string; quotaWarning?: string }> {
   try {
     // Check storage availability
     const available = await isStorageAvailable();
@@ -93,19 +99,39 @@ export async function saveCollection(collection: Collection): Promise<{ success:
       };
     }
 
-    // Check storage quota
-    const usage = await getStorageUsage();
+    // PACK-045: Check storage quota before save
     const estimatedSize = JSON.stringify(collection).length * 2; // Rough estimate in bytes
-    
-    if (usage.used + estimatedSize > usage.total * 0.9) {
+    const quotaCheck = await checkQuotaBeforeSave(estimatedSize);
+
+    if (!quotaCheck.canSave) {
+      // Try automatic cleanup
+      console.warn('[IndexedDB] Storage nearly full, attempting auto-cleanup...');
+      const cleanupResult = await autoManageQuota(collection);
+
+      if (cleanupResult.success && cleanupResult.updatedCollection) {
+        console.log('[IndexedDB] Auto-cleanup successful:', cleanupResult.actions.join(', '));
+        // Save the cleaned-up collection instead
+        await localforage.setItem(COLLECTION_KEY, cleanupResult.updatedCollection);
+
+        return {
+          success: true,
+          quotaWarning: `Storage was nearly full. Automatically ${cleanupResult.actions[0].toLowerCase()}`
+        };
+      }
+
       return {
         success: false,
-        error: 'Storage is almost full. Consider deleting old packs to free up space.'
+        error: quotaCheck.warning || 'Storage is full. Please archive old packs or clear data.'
       };
     }
 
+    // Save with warning if approaching limit
     await localforage.setItem(COLLECTION_KEY, collection);
-    return { success: true };
+
+    return {
+      success: true,
+      quotaWarning: quotaCheck.warning
+    };
   } catch (error) {
     const storageError = createStorageError(
       error instanceof Error ? error.message : 'Failed to save collection to IndexedDB',
