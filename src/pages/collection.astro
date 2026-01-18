@@ -6,6 +6,7 @@ import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 import SettingsModal from '../components/common/SettingsModal.svelte';
+import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 
 // Enhanced SEO for collection page
 const title = "My Collection - DadDeck Trading Card Game";
@@ -50,7 +51,12 @@ const collectionPageSchema = {
 
   <!-- Collection Manager -->
   <div class="manager-section">
-    <CollectionManager client:load />
+    <ErrorBoundary
+      fallbackTitle="Collection Manager Error"
+      fallbackMessage="We couldn't load the collection manager. Please refresh the page."
+    >
+      <CollectionManager client:load />
+    </ErrorBoundary>
   </div>
 
   <!-- Collection Stats -->

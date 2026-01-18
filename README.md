@@ -15,28 +15,25 @@ A satirical trading card game pack-opening simulator that parodies suburban Amer
 ✅ **Card Collection** - Persistent collection saved to localStorage
 ✅ **Social Sharing** - Share card pulls as images
 
-### Advanced Features (US090-US099)
-✅ **Card Battles** - Mini-game combat system
-✅ **Discord Bot** - Integration for community features
-✅ **Monetization** - DadPass battle pass system (demo mode - no real payments)
-✅ **Premium Packs** - Simulated premium pack purchases
-✅ **Live Events** - Weekend events & event shop
-✅ **Referral System** - Growth loop with rewards
-✅ **Email System** - Notification system
-✅ **Admin Panel** - Content management UI
-✅ **Security** - Anti-cheat pack validation
-✅ **Localization** - Multi-language support
+### Advanced Features
+✅ **Card Battles** - Mini-game combat system with stat-based logic
+✅ **Deck Building** - Create and manage custom decks with validation
+✅ **Card Upgrades** - Sacrifice duplicates to level up card stats
+✅ **Crafting System** - Combine materials to craft rare cards
+✅ **Achievements** - Badge system with popup notifications
+✅ **Leaderboards** - Global rankings for collections and pack openings
+✅ **Trading** - Card exchange system between players
+✅ **Daily Rewards** - Login streaks and reward bonuses
+✅ **Discord Bot** - Integration for community pack opening and lookups
+✅ **Security** - Anti-cheat pack validation and integrity checks
 
-### Deck Building
-✅ **Deck Builder** - Create and manage card decks
-✅ **Card Upgrades** - Consume duplicates to upgrade cards (+5 stats per level)
-✅ **Import/Export** - Share decks via text format
-
-### Social Features
-✅ **Friends System** - Add friends and compare stats
-✅ **Leaderboards** - Global and friends leaderboards
-✅ **Trading** - Card trading system between players
-✅ **Daily Rewards** - Login rewards and streaks
+### Tech & Platform
+✅ **Analytics** - Google Analytics & Plausible integration
+✅ **SEO** - Dynamic meta tags, Open Graph, and sitemap generation
+✅ **Offline Support** - PWA capabilities and service worker
+✅ **UI/UX** - Theme toggle, cinematic mode, and responsive design
+✅ **Image Optimization** - Automated pre-build image pipeline
+✅ **Localization** - Multi-language support infrastructure
 
 ---
 
@@ -208,21 +205,15 @@ Pack validation prevents client-side manipulation:
 ## 🚧 Future Work (Post-MVP)
 
 ### High Priority
-1. **Cloud Saves** - Sync collections across devices
-2. **Real Multiplayer** - Live battles and trading
+1. **Cloud Saves** - Sync collections across devices (Server-side)
+2. **Real-Time PvP** - Live multiplayer battles
 3. **Season 2 Cards** - 30+ new cards
-4. **Enhanced Deck Building** - More strategy depth
+4. **Mobile Apps** - React Native / Capacitor wrappers
 
 ### Medium Priority
-1. **Payment Integration** - Stripe implementation (currently stubbed)
-2. **Leaderboards** - Server-side global rankings
-3. **Tournaments** - Weekly competitive events
-4. **Achievements System** - Badge and reward tracking
-
-### Low Priority
-1. **Mobile Apps** - React Native wrappers
-2. **3D Card Effects** - Three.js integration
-3. **Voice Chat** - During battles
+1. **Payment Integration** - Real Stripe implementation (currently stubbed)
+2. **Tournaments** - Weekly competitive events
+3. **Guild/Clan System** - Neighborhood alliances
 4. **Marketplace** - Player-to-player card trading with currency
 
 ---

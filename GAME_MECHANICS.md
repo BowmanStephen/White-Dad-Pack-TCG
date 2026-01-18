@@ -325,11 +325,18 @@ Confidence Levels:
 
 ---
 
-## 🚀 Future Expansions
+## 🚀 Completed & Future Expansions
 
-### Planned Mechanics
+### Completed Features ✅
 
 - **Deck Building:** 30-card decks with synergy focus
+- **Card Upgrades:** Stat-based progression system
+- **Trading System:** Player-to-player card exchange
+- **Achievements:** Milestone tracking and rewards
+- **Crafting:** Material-based card creation
+
+### Planned Mechanics 🚧
+
 - **Tournament Mode:** Best of 3, sideboarding
 - **Co-Op Mode:** 2v2 dad battles
 - **Campaign Mode:** Fight through the suburbs, defeat the HOA

@@ -75,10 +75,70 @@ bun run discord-bot:dev  # Run Discord bot in watch mode
 │   │   │   └── PackResults.svelte      # Results screen
 │   │   ├── card/            # Card components
 │   │   │   ├── Card.svelte             # Individual card display
-│   │   │   └── CardStats.svelte        # Card stats visualization
+│   │   │   ├── CardStats.svelte        # Card stats visualization
+│   │   │   ├── CardBack.svelte         # Card back design
+│   │   │   └── CardComparison.svelte   # Side-by-side comparison
+│   │   ├── collection/      # Collection management
+│   │   │   ├── CollectionManager.svelte # Main collection UI
+│   │   │   ├── CollectionStats.svelte  # Stats overview
+│   │   │   ├── Gallery.svelte          # Card gallery
+│   │   │   ├── PackHistoryPanel.svelte # Pack opening history
+│   │   │   └── PackHistoryEntry.svelte # Individual pack entry
+│   │   ├── batch/           # Batch pack opening
+│   │   │   ├── BatchOpener.svelte      # Multi-pack opener
+│   │   │   ├── BatchResults.svelte     # Results display
+│   │   │   └── BatchReview.svelte      # Review batch pulls
+│   │   ├── deck/            # Deck building
+│   │   │   ├── DeckBuilder.svelte      # Main deck builder
+│   │   │   ├── DeckSelector.svelte     # Deck slot selection
+│   │   │   ├── DeckCardList.svelte     # Card list view
+│   │   │   └── DeckStats.svelte        # Deck statistics
+│   │   ├── upgrade/         # Card upgrade system
+│   │   │   ├── UpgradeManager.svelte   # Upgrade UI
+│   │   │   └── CardUpgradeModal.svelte # Upgrade confirmation
+│   │   ├── crafting/        # Card crafting
+│   │   │   ├── CraftingStation.svelte  # Crafting UI
+│   │   │   ├── CardSelector.svelte     # Material selection
+│   │   │   ├── RecipeSelector.svelte   # Recipe selection
+│   │   │   ├── CraftingResult.svelte   # Result display
+│   │   │   └── CraftingAnimation.svelte # Animation
+│   │   ├── trade/           # Trading system
+│   │   │   ├── TradeCreator.svelte     # Create trade offers
+│   │   │   ├── TradeOfferViewer.svelte # View offers
+│   │   │   └── TradeHistory.svelte     # Trade history
+│   │   ├── leaderboard/     # Leaderboards
+│   │   │   ├── LeaderboardPage.svelte  # Main leaderboard
+│   │   │   ├── LeaderboardList.svelte  # Ranking list
+│   │   │   ├── LeaderboardFilters.svelte # Filters
+│   │   │   └── LeaderboardEntry.svelte # Individual entry
+│   │   ├── achievements/    # Achievement system
+│   │   │   ├── AchievementPopup.svelte # Achievement unlock
+│   │   │   ├── AchievementGallery.svelte # Gallery view
+│   │   │   └── index.ts             # Achievement definitions
+│   │   ├── daily/           # Daily rewards
+│   │   │   ├── DailyRewardsBanner.svelte # Streak banner
+│   │   │   └── DailyRewardsModal.svelte  # Rewards modal
+│   │   ├── notifications/   # Notification system
+│   │   │   ├── NotificationContainer.svelte # Container
+│   │   │   ├── ToastItem.svelte           # Toast items
+│   │   │   └── NotificationSettings.svelte # Settings
+│   │   ├── loading/         # Loading states
+│   │   │   ├── CardSkeleton.svelte         # Card placeholder
+│   │   │   ├── CollectionGridSkeleton.svelte # Grid placeholder
+│   │   │   └── FadeIn.svelte               # Fade animation
+│   │   ├── art/            # Generative art
+│   │   │   └── GenerativeCardArt.svelte    # Procedural artwork
 │   │   └── common/          # Shared components
 │   │       ├── Logo.astro             # DadDeck™ logo
-│   │       └── Button.astro           # Reusable button
+│   │       ├── Button.astro           # Reusable button
+│   │       ├── Slider.svelte          # Range slider
+│   │       ├── Toggle.svelte          # Toggle switch
+│   │       ├── ThemeToggle.svelte     # Light/dark mode
+│   │       ├── CinematicToggle.svelte # Animation toggle
+│   │       ├── TutorialOverlay.svelte # Tutorial tooltips
+│   │       ├── ErrorDisplay.svelte    # Error display
+│   │       ├── ErrorMessage.svelte    # Error messages
+│   │       └── ErrorBoundary.svelte   # Error boundary
 │   ├── layouts/             # Astro layouts
 │   │   └── BaseLayout.astro # Root layout with global styles
 │   ├── lib/                 # Business logic
@@ -88,19 +148,74 @@ bun run discord-bot:dev  # Run Discord bot in watch mode
 │   │   │   └── generator.ts # Pack generation logic (512 lines)
 │   │   ├── security/
 │   │   │   └── pack-validator.ts # Anti-cheat validation
+│   │   ├── mechanics/
+│   │   │   └── combat.ts    # Battle mechanics (US090)
+│   │   ├── collection/
+│   │   │   ├── utils.ts     # Collection utilities
+│   │   │   └── presets.ts   # Preset collections
+│   │   ├── deck/
+│   │   │   ├── index.ts     # Deck management
+│   │   │   ├── validators.ts # Deck validation rules
+│   │   │   └── utils.ts     # Deck utilities
+│   │   ├── upgrade/
+│   │   │   ├── index.ts     # Upgrade system
+│   │   │   └── executor.ts  # Upgrade execution
+│   │   ├── crafting/
+│   │   │   └── index.ts     # Crafting recipes & logic
+│   │   ├── leaderboard/
+│   │   │   └── generator.ts # Leaderboard generation
+│   │   ├── art/
+│   │   │   ├── generative-art.ts # Procedural artwork
+│   │   │   └── dad-type-colors.ts # Type color mappings
+│   │   ├── seo.ts           # SEO utilities (meta tags, OG)
 │   │   └── utils/
-│   │       └── random.ts    # Random number utilities
+│   │       ├── random.ts    # Random number utilities
+│   │       ├── seeded-random.ts # Seeded randomness
+│   │       ├── image-generation.ts # Image helpers
+│   │       ├── image-optimization.ts # Image optimization
+│   │       └── performance.ts # Performance monitoring
 │   ├── data/                # Static data files
 │   │   └── cards.json       # Card database (50+ cards)
 │   ├── stores/              # Nanostores (state management)
 │   │   ├── pack.ts          # Pack state & operations
-│   │   └── ui.ts            # UI state (animations, routing)
+│   │   ├── ui.ts            # UI state (animations, routing)
+│   │   ├── deck.ts          # Deck state management
+│   │   ├── upgrade.ts       # Upgrade state
+│   │   ├── batch.ts         # Batch opening state
+│   │   ├── theme.ts         # Theme (light/dark) state
+│   │   ├── audio.ts         # Audio settings state
+│   │   ├── notifications.ts # Notification state
+│   │   ├── lightbox.ts      # Lightbox overlay state
+│   │   ├── tutorial.ts      # Tutorial progress state
+│   │   └── analytics/       # Analytics providers
+│   │       ├── ga.ts        # Google Analytics
+│   │       └── plausible.ts # Plausible Analytics
 │   ├── types/               # TypeScript definitions
-│   │   └── index.ts         # ALL types (Card, Pack, Rarity, etc.)
+│   │   ├── index.ts         # Core types (Card, Pack, Rarity, etc.)
+│   │   └── leaderboard.ts   # Leaderboard types
 │   └── pages/               # Astro routes
-│       └── index.astro      # Landing page
+│       ├── index.astro      # Landing page
+│       ├── pack.astro       # Pack opening page
+│       ├── collection.astro # Collection management
+│       ├── deck-builder.astro # Deck building
+│       ├── upgrade.astro    # Card upgrades
+│       ├── crafting.astro   # Card crafting
+│       ├── trade.astro      # Trading hub
+│       ├── trade/create.astro # Create trade offers
+│       ├── leaderboard.astro # Leaderboards
+│       ├── offline.astro    # Offline page
+│       └── test.astro       # Testing page
 ├── tests/                   # Test files (Vitest)
+│   ├── pack/
+│   │   └── generator.test.ts   # Pack generation tests
+│   ├── card/
+│   │   └── database.test.ts    # Card data validation
+│   ├── unit/
+│   │   ├── lib/security/pack-validator.test.ts
+│   │   └── stores/collection.test.ts
+│   └── integration/         # End-to-end tests
 ├── discord-bot/            # Discord bot integration
+│   └── index.ts            # Bot entry point
 ├── scripts/                # Build utility scripts
 │   ├── optimize-images.mjs # Image optimization
 │   └── generate-sitemap.mjs # Sitemap generation
@@ -530,41 +645,98 @@ bun astro check          # Type check Astro components
 
 ---
 
-## 🎯 Project Status & Recent Features
+## 🎯 Project Status & Features
 
-### Completed Features (US091-US099)
-**Latest Implementations:**
-- ✅ **US099: Live Events System** - Weekend Events & Event Shop
-- ✅ **US098: Referral System** - Growth Loop with rewards
-- ✅ **US097: Email System** - Notifications & updates
-- ✅ **US096: Admin Panel** - Content Management System
-- ✅ **US095: Security** - Anti-Cheat System
-- ✅ **US094: Monetization** - DadPass System (battle pass)
-- ✅ **US093: Monetization** - Premium Packs
-- ✅ **US092: Localization** - Multi-language support
-- ✅ **US091: API Integration** - Discord Bot
-- ✅ **US090: Card Battles** - Minigame
+### Core MVP Features ✅
+- ✅ **Pack Opening Flow** - Complete 6-stage state machine (idle → results)
+- ✅ **Card Reveal Animations** - Individual card flip with skip option
+- ✅ **Rarity-based VFX** - Particle systems, glows, holo effects
+- ✅ **Social Sharing** - Card pull sharing for social media
+- ✅ **Collection Persistence** - LocalStorage-based collection management
+- ✅ **Mobile Responsive** - 65% mobile, 35% desktop optimized
+- ✅ **Batch Opening** - Open multiple packs at once
+- ✅ **Generative Card Art** - Procedural artwork for cards without images
 
-**Core MVP Features:**
-- ✅ Basic pack opening flow
-- ✅ Card reveal animations
-- ✅ Rarity-based visual effects
-- ✅ Social sharing functionality
-- ✅ Card collection persistence (LocalStorage)
-- ✅ Mobile responsiveness polish
+### Advanced Features ✅
 
-### Additional Integration
+**Combat & Mechanics:**
+- ✅ Card battle system (US090) with stat-based logic
+- ✅ Type advantages and synergy bonuses
+- ✅ Status effects (Grilled, Lectured, Drunk, etc.)
+- ✅ Battle log generation and victory conditions
+
+**Trading System:**
+- ✅ Trade offer creation (card-for-card, bulk trades)
+- ✅ Trade history and status tracking
+- ✅ Trade validation and fair exchange checks
+
+**Deck Building:**
+- ✅ Deck builder with validation rules
+- ✅ Multiple deck slots with save/load
+- ✅ Deck stats visualization (type distribution, rarities)
+- ✅ Card collection filtering for deck building
+
+**Card Upgrade System:**
+- ✅ Sacrifice cards to level up favorites
+- ✅ Stat-based upgrade paths
+- ✅ Upgrade success chance mechanics
+- ✅ Material cost calculator
+
+**Achievements & Rewards:**
+- ✅ Achievement system with popup notifications
+- ✅ Daily rewards system (login streaks)
+- ✅ Achievement gallery and tracking
+
+**Crafting:**
+- ✅ Card crafting system with recipes
+- ✅ Material collection and management
+- ✅ Crafting animations and results
+
+**Leaderboards:**
+- ✅ Global leaderboards (collection value, pack count)
+- ✅ Filterable by region and time period
+- ✅ Real-time ranking updates
+
+**UI/UX Enhancements:**
+- ✅ Theme toggle (light/dark mode)
+- ✅ Cinematic mode toggle (reduced animations)
+- ✅ Tutorial overlay system
+- ✅ Performance monitoring dashboard
+- ✅ Error boundaries and error displays
+- ✅ Loading skeletons for better perceived performance
+- ✅ Toast notification system
+- ✅ Card comparison view
+- ✅ Pack history panel
+
+**Analytics:**
+- ✅ Google Analytics integration
+- ✅ Plausible Analytics support (privacy-focused)
+- ✅ Event tracking for pack opens, trades, etc.
+
+**SEO:**
+- ✅ Dynamic meta tags and Open Graph
+- ✅ Sitemap generation (auto-runs on build)
+- ✅ Image optimization pipeline (pre-build hook)
+
+**Offline Support:**
+- ✅ Offline page with service worker
+- ✅ Graceful degradation for network issues
+
+### Integration Features
+
 **Discord Bot** (US091):
-- Command: `bun run discord-bot` (dev) or `bun run discord-bot:dev` (watch mode)
 - Location: `discord-bot/index.ts`
+- Command: `bun run discord-bot` (production) or `bun run discord-bot:dev` (watch mode)
 - Integrates with Discord.js v14.25.1
+- Features: Pack opening, card lookup, leaderboards
 
-### What's Next
-**Post-MVP Roadmap:**
+### Post-MVP Roadmap 🚧
 - Season 2 card expansion (30+ new cards)
 - User accounts & cloud collections
-- Trading system between players
-- Enhanced deck building mini-game
+- Real-time multiplayer PvP matches
+- Enhanced deck mini-game mechanics
+- Tournament mode
+- Guild/clan system
 
 ---
 
