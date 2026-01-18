@@ -54,8 +54,27 @@
   // Debounced reveal using requestAnimationFrame for smoother 60fps
   let rafId: number | null = null;
 
-  // Calculate reveal delay based on cinematic mode
-  $: revealDelay = 300 / cinematicConfig.speedMultiplier;
+  // PACK-026: Calculate reveal delay based on rarity (longer for rarer cards)
+  $: baseDelay = 300;
+  $: rarityDelay = currentCard ? {
+    common: 300,
+    uncommon: 400,
+    rare: 600,
+    epic: 800,
+    legendary: 1000,
+    mythic: 1500,
+  }[currentCard.rarity] || 300 : 300;
+  $: revealDelay = rarityDelay / cinematicConfig.speedMultiplier;
+
+  // PACK-026: Animation class based on rarity
+  $: revealAnimationClass = currentCard ? {
+    common: 'animate-reveal-common',
+    uncommon: 'animate-reveal-uncommon',
+    rare: 'animate-reveal-rare',
+    epic: 'animate-reveal-epic',
+    legendary: 'animate-reveal-legendary',
+    mythic: 'animate-reveal-mythic',
+  }[currentCard.rarity] || 'animate-reveal-common' : 'animate-reveal-common';
 
   // PACK-025: Check and track new discovery
   function checkNewDiscovery(card: typeof currentCard): boolean {
@@ -450,7 +469,8 @@
             ></div>
           {/if}
 
-          <div class:animate-card-reveal={true}>
+          <!-- PACK-026: Rarity-specific reveal animation -->
+          <div class={revealAnimationClass}>
             <Card
               card={currentCard}
               isFlipped={false}
@@ -557,20 +577,173 @@
 </div>
 
 <style>
-  .animate-card-reveal {
-    animation: cardReveal 0.6s ease-out;
+  /* PACK-026: Rarity-specific reveal animations */
+
+  /* Common: Simple flip (0.3s) */
+  .animate-reveal-common {
+    animation: revealCommon 0.3s ease-out;
     will-change: transform;
   }
 
-  @keyframes cardReveal {
+  @keyframes revealCommon {
     0% {
-      transform: scale(0.9);
-    }
-    50% {
-      transform: scale(1.05);
+      transform: scale(0.95) rotateY(-90deg);
+      opacity: 0;
     }
     100% {
-      transform: scale(1);
+      transform: scale(1) rotateY(0deg);
+      opacity: 1;
+    }
+  }
+
+  /* Uncommon: Flip + blue glow (0.4s) */
+  .animate-reveal-uncommon {
+    animation: revealUncommon 0.4s ease-out;
+    will-change: transform, box-shadow;
+  }
+
+  @keyframes revealUncommon {
+    0% {
+      transform: scale(0.9) rotateY(-90deg);
+      opacity: 0;
+      box-shadow: 0 0 0 rgba(96, 165, 250, 0);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+    }
+    100% {
+      transform: scale(1) rotateY(0deg);
+      opacity: 1;
+      box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+    }
+  }
+
+  /* Rare: Flip + gold particles + glow (0.6s) */
+  .animate-reveal-rare {
+    animation: revealRare 0.6s ease-out;
+    will-change: transform, box-shadow;
+  }
+
+  @keyframes revealRare {
+    0% {
+      transform: scale(0.85) rotateY(-90deg) scale(0.8);
+      opacity: 0;
+      box-shadow: 0 0 0 rgba(251, 191, 36, 0);
+    }
+    40% {
+      transform: scale(1.1) rotateY(0deg);
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+    }
+    70% {
+      transform: scale(0.95) rotateY(0deg);
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+    }
+    100% {
+      transform: scale(1) rotateY(0deg);
+      opacity: 1;
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+    }
+  }
+
+  /* Epic: Flip + purple particles + screen shake (0.8s) */
+  .animate-reveal-epic {
+    animation: revealEpic 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, box-shadow;
+  }
+
+  @keyframes revealEpic {
+    0% {
+      transform: scale(0.8) rotateY(-90deg) translateX(-20px);
+      opacity: 0;
+      box-shadow: 0 0 0 rgba(168, 85, 247, 0);
+    }
+    30% {
+      transform: scale(1.2) rotateY(45deg) translateX(10px);
+      box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
+    }
+    60% {
+      transform: scale(0.9) rotateY(0deg) translateX(-5px);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+    }
+    100% {
+      transform: scale(1) rotateY(0deg) translateX(0);
+      opacity: 1;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    }
+  }
+
+  /* Legendary: Flip + orange particles + screen shake + delay (1.0s) */
+  .animate-reveal-legendary {
+    animation: revealLegendary 1.0s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, box-shadow, filter;
+  }
+
+  @keyframes revealLegendary {
+    0% {
+      transform: scale(0.7) rotateY(-90deg) scale(0.6);
+      opacity: 0;
+      box-shadow: 0 0 0 rgba(249, 115, 22, 0);
+      filter: brightness(1);
+    }
+    20% {
+      opacity: 0;
+      transform: scale(0.7) rotateY(-90deg) scale(0.6);
+    }
+    40% {
+      transform: scale(1.3) rotateY(90deg);
+      box-shadow: 0 0 50px rgba(249, 115, 22, 0.8);
+      filter: brightness(1.2);
+    }
+    70% {
+      transform: scale(0.85) rotateY(0deg);
+      box-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
+      filter: brightness(1.1);
+    }
+    100% {
+      transform: scale(1) rotateY(0deg);
+      opacity: 1;
+      box-shadow: 0 0 25px rgba(249, 115, 22, 0.5);
+      filter: brightness(1);
+    }
+  }
+
+  /* Mythic: Flip + rainbow particles + screen shake + delay + fanfare (1.5s) */
+  .animate-reveal-mythic {
+    animation: revealMythic 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, box-shadow, filter;
+  }
+
+  @keyframes revealMythic {
+    0% {
+      transform: scale(0.5) rotateY(-180deg) rotate(0deg) scale(0.4);
+      opacity: 0;
+      box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+      filter: brightness(1) hue-rotate(0deg);
+    }
+    15% {
+      opacity: 0;
+      transform: scale(0.5) rotateY(-180deg) rotate(0deg) scale(0.4);
+    }
+    35% {
+      transform: scale(1.4) rotateY(90deg) rotate(180deg) scale(1.2);
+      box-shadow: 0 0 60px rgba(236, 72, 153, 1);
+      filter: brightness(1.5) hue-rotate(90deg);
+    }
+    60% {
+      transform: scale(0.8) rotateY(0deg) rotate(360deg) scale(0.9);
+      box-shadow: 0 0 40px rgba(236, 72, 153, 0.8);
+      filter: brightness(1.3) hue-rotate(180deg);
+    }
+    85% {
+      transform: scale(1.05) rotateY(0deg) rotate(360deg);
+      box-shadow: 0 0 30px rgba(236, 72, 153, 0.6);
+      filter: brightness(1.1) hue-rotate(270deg);
+    }
+    100% {
+      transform: scale(1) rotateY(0deg) rotate(360deg);
+      opacity: 1;
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.5);
+      filter: brightness(1) hue-rotate(360deg);
     }
   }
 
