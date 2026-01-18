@@ -3,7 +3,7 @@
 **Project:** DadDeck™ - The Ultimate White Dad Trading Card Simulator
 **Type:** Satirical Trading Card Game (TCG) Pack-Opening Simulator
 **Status:** Stable & Production Ready
-**Version:** 2.0.0
+**Version:** 2.1.0
 
 ---
 
@@ -662,6 +662,12 @@ Each card has 0-100 in:
 5. Results Screen → Display all cards, allow sharing
 6. Share → Individual card images for social media
 ```
+
+**Enhanced UX Patterns:** See `docs/TCG_BEST_PRACTICES.md` for:
+- **6-Step Choreographed Emotion Pattern** - Anticipation → Trigger → Burst → Build → Payoff → Collection
+- **Swipe-to-Tear Animation** - Physical pack feel with gesture support
+- **Variable Ratio Reinforcement** - "Near-Miss" effects for dopamine triggers
+- **Holo Shader System** - CSS-based holographic effects (Simey's implementation)
 
 ### State Machine (PackState)
 ```typescript
@@ -1803,17 +1809,18 @@ export function reportWebVitals(metric) {
 5. **`PRD.md`** - Full product requirements (90KB document!)
 
 ### Quick Reference Files
-- **`docs/CARD_MECHANICS.md`** - Complete card collecting & pack opening mechanics (NEW)
+- **`docs/TCG_BEST_PRACTICES.md`** - TCG simulator market research & best practices (NEW - January 18, 2026)
+- **`docs/CARD_MECHANICS.md`** - Complete card collecting & pack opening mechanics
 - **`docs/RALPH_LOOP_ARCHITECTURE.md`** - Agentic loop UX patterns (stop hooks, HOTL)
-- **`docs/CSS_UTILITIES.md`** - Component classes reference (NEW)
-- **`I18N_IMPLEMENTATION.md`** - Internationalization system guide (NEW)
-- **`src/i18n/README.md`** - I18N usage documentation (NEW)
+- **`docs/CSS_UTILITIES.md`** - Component classes reference
+- **`I18N_IMPLEMENTATION.md`** - Internationalization system guide
+- **`src/i18n/README.md`** - I18N usage documentation
 - **`tailwind.config.mjs`** - Custom design tokens
 - **`astro.config.mjs`** - Integrations & build config (code splitting, terser)
 - **`vitest.config.ts`** - Test configuration with path aliases
 - **`src/data/cards.json`** - All card data (50+ cards)
 - **`src/lib/security/pack-validator.ts`** - Anti-cheat validation logic
-- **`src/lib/utils/formatters.ts`** - Number, date, and percentage formatters (NEW)
+- **`src/lib/utils/formatters.ts`** - Number, date, and percentage formatters
 
 ---
 
@@ -2007,6 +2014,7 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 ---
 
 **Last updated:** January 18, 2026
+**Recent Update:** Added `docs/TCG_BEST_PRACTICES.md` - Comprehensive TCG simulator market research and best practices
 
 ---
 
@@ -2281,6 +2289,7 @@ This CLAUDE.md file now contains comprehensive documentation covering:
 - **Tech Stack** - Astro, Svelte, Tailwind, Nanostores, Bun
 - **Quick Commands** - Development, build, test, deploy
 - **Project Structure** - Complete file organization
+- **Market Research** - TCG simulator best practices and competitive analysis (NEW)
 
 ### Architecture Deep Dives
 - **System Architecture** - 4-layer architecture diagram

@@ -50,21 +50,30 @@ Migration 3 (Backyard Boner Edition overhaul) is **100% complete**. All type sys
 
 ## 🎯 Next Priorities
 
-### Week 1 (Jan 20-27)
+### Phase 1: Foundation (Week 1-2) - HIGH PRIORITY
+Based on TCG Best Practices Research (see `docs/TCG_BEST_PRACTICES.md`)
+
+- [ ] **TCG-001**: Migrate LocalStorage to IndexedDB using localForage (solves 5MB limit)
+- [ ] **TCG-002**: Implement swipe-to-tear pack animation with gesture support
+- [ ] **TCG-003**: Implement dynamic OG image generation using Satori for social sharing
+- [ ] **TCG-004**: Migrate to Svelte 5 Runes for fine-grained reactivity
+
+### Phase 2: Visual Polish (Week 3-4) - MEDIUM PRIORITY
+- [ ] **TCG-005**: Implement 6-step choreographed emotion pattern (anticipation → trigger → burst → build → payoff → collection)
+- [ ] **TCG-006**: Add "New" badge to cards not currently in collection
+- [ ] **TCG-007**: Create "Binder" collection UI with series-based organization
+- [ ] **TCG-008**: Implement Simey's holo shader system for premium visual effects
+
+### Phase 3: Engagement Features (Week 5-6) - MEDIUM PRIORITY
+- [ ] **TCG-009**: Implement daily "Dad Allowance" system (3 free packs/day)
+- [ ] **TCG-010**: Create achievements system with satirical rewards (dad sounds, themes)
+
+### Phase 4: Performance & Content (Week 7-8) - LOW PRIORITY
+- [ ] **TCG-011**: Implement virtual scrolling for collections >200 cards
+- [ ] **TCG-012**: Migrate card database to Astro 5 Content Layer for type safety
 - [ ] Generate remaining ~50 cards to reach 150 total
 - [ ] Implement special card type mechanic logic
 - [ ] Add UI displays for special card info
-
-### Week 2-3 (Jan 27 - Feb 10)
-- [ ] Complete battle system integration
-- [ ] Implement card upgrade mechanics
-- [ ] Complete crafting system
-- [ ] Full integration testing
-
-### Month 2 (February)
-- [ ] Season 2 expansion planning
-- [ ] Multiplayer architecture design
-- [ ] User account system design
 
 ---
 
@@ -124,6 +133,7 @@ bun tsc --noEmit --skipLibCheck  # Zero errors
 Key docs:
 - [CLAUDE.md](CLAUDE.md) - Full project guide
 - [PRD.md](PRD.md) - Product requirements
+- [docs/TCG_BEST_PRACTICES.md](docs/TCG_BEST_PRACTICES.md) - TCG simulator market research & best practices (NEW)
 - [MIGRATION_3_VERIFICATION.md](MIGRATION_3_VERIFICATION.md) - Technical verification
 - [FIX_SUMMARY_JAN_18.md](FIX_SUMMARY_JAN_18.md) - Today's work summary
 - [DadDecK_Card_Types.md](DadDecK_Card_Types.md) - Special card type mechanics

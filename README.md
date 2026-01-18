@@ -1,7 +1,7 @@
 # DadDeck™ - The Ultimate White Dad Trading Card Simulator
 
 **Status:** Stable & Production Ready ✅
-**Version:** 2.0.0
+**Version:** 2.1.0
 
 DadDeck™ is a satirical trading card game pack-opening simulator that parodies suburban American dad culture. Built with modern web technologies, it offers a premium, AAA-quality "pack pull" experience without the microtransactions.
 
@@ -12,8 +12,9 @@ DadDeck™ is a satirical trading card game pack-opening simulator that parodies
 - 🏗️ **[Architecture](./ARCHITECTURE.md)** - Technical overview, diagrams, and data flow.
 - 🔌 **[API Reference](./API_REFERENCE.md)** - Core types, stores, and library functions.
 - 🤝 **[Contributing](./CONTRIBUTING.md)** - Coding standards, Svelte 5 patterns, and PR process.
-- 🚢 **[Deployment](./DEPLOYMENT.md)** - Production build, optimization, and hosting guide.
+- 🚀 **[Deployment](./DEPLOYMENT.md)** - Production build, optimization, and hosting guide.
 - 📝 **[PRD](./PRD.md)** - Full product requirements and design goals.
+- 🎴 **[TCG Best Practices](./docs/TCG_BEST_PRACTICES.md)** - Market research and implementation guide (NEW).
 
 ---
 
@@ -67,8 +68,9 @@ Detailed documentation for developers and contributors:
 - 🏗️ **[Architecture](./ARCHITECTURE.md)** - Technical overview, data flow, and state machines.
 - 🤝 **[Contributing](./CONTRIBUTING.md)** - Coding standards, workflow, and PR process.
 - 🔌 **[API Reference](./API_REFERENCE.md)** - Core types, stores, and library functions.
-- 🚢 **[Deployment](./DEPLOYMENT.md)** - Production build and hosting guide.
+- 🚀 **[Deployment](./DEPLOYMENT.md)** - Production build and hosting guide.
 - 📝 **[PRD](./PRD.md)** - Full product requirements and design goals.
+- 🎴 **[TCG Best Practices](./docs/TCG_BEST_PRACTICES.md)** - Market research and implementation guide (NEW).
 
 ---
 

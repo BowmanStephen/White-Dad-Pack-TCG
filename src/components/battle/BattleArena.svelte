@@ -11,6 +11,7 @@
   };
   import Card from '../card/Card.svelte';
   import BattleLog from './BattleLog.svelte';
+  import BattleTutorial from './BattleTutorial.svelte';
   import { simulateBattle } from '../../lib/mechanics/combat';
   import type { BattleLogEntry } from './BattleLog.svelte';
 
@@ -28,6 +29,38 @@
   let damageNumbers = $state<Array<{ id: string; value: number; isPlayer: boolean; isCrit: boolean }>>([]);
   let showVictoryScreen = $state(false);
   let battlePhase = $state<'idle' | 'player_attack' | 'opponent_attack' | 'complete'>('idle');
+
+  // Tutorial state
+  let showTutorial = $state(false);
+  let tutorialCompleted = $state(false);
+
+  // Check if user has seen tutorial
+  function checkTutorialStatus() {
+    const seen = localStorage.getItem('battle-tutorial-completed');
+    if (!seen && !tutorialCompleted) {
+      // Auto-show tutorial for first-time visitors
+      setTimeout(() => {
+        showTutorial = true;
+      }, 1000);
+    }
+  }
+
+  // Run on mount
+  $effect(() => {
+    if (availableCards.length > 0 && !tutorialCompleted) {
+      checkTutorialStatus();
+    }
+  });
+
+  function handleTutorialComplete() {
+    tutorialCompleted = true;
+    localStorage.setItem('battle-tutorial-completed', 'true');
+    showTutorial = false;
+  }
+
+  function handleTutorialSkip() {
+    showTutorial = false;
+  }
 
   $effect(() => {
     const collectionData = collection.get();
@@ -358,6 +391,10 @@
   <div class="duel-header">
     <h1 class="duel-title">Card Duel</h1>
     <p class="duel-subtitle">Pick a card from your collection and run a quick battle.</p>
+    <button class="tutorial-trigger" on:click={() => showTutorial = true}>
+      <span class="tutorial-icon">?</span>
+      <span>How to Battle</span>
+    </button>
   </div>
 
   {#if !hasEnoughCards}
@@ -490,6 +527,13 @@
   {/if}
 </div>
 
+<!-- Battle Tutorial Overlay -->
+<BattleTutorial
+  isOpen={showTutorial}
+  onComplete={handleTutorialComplete}
+  onSkip={handleTutorialSkip}
+/>
+
 <style>
   .duel-container {
     max-width: 1200px;
@@ -512,6 +556,40 @@
   .duel-subtitle {
     color: #94a3b8;
     font-size: 1.05rem;
+  }
+
+  .tutorial-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    color: #60a5fa;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tutorial-trigger:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.6);
+    transform: translateY(-2px);
+  }
+
+  .tutorial-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.3);
+    font-weight: 700;
+    font-size: 0.9rem;
   }
 
   .empty-state {
