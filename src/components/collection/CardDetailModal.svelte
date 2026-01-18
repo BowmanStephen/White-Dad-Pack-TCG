@@ -68,7 +68,6 @@
   // Add to deck (placeholder for now - TODO: Integrate with deck system)
   function handleAddToDeck() {
     // TODO: Open deck builder with this card pre-selected
-    console.log('Add to deck:', card.id);
     alert('Deck builder integration coming soon! (TODO)');
   }
 

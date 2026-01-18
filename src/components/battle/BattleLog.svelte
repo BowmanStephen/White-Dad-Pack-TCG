@@ -163,7 +163,6 @@
     try {
       await navigator.clipboard.writeText(logText);
       // Could add a toast notification here
-      console.log('Battle log copied to clipboard!');
     } catch (err) {
       console.error('Failed to copy battle log:', err);
       // Fallback for older browsers

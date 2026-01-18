@@ -56,11 +56,8 @@ async function initializeCollection() {
   try {
     // Check if migration is needed
     if (await needsLocalStorageMigration()) {
-      console.log('[Collection] Migrating from LocalStorage to IndexedDB...');
       const migrationResult = await migrateFromLocalStorage();
-      if (migrationResult.success) {
-        console.log(`[Collection] Migration complete: ${migrationResult.migrated} packs migrated`);
-      } else {
+      if (!migrationResult.success) {
         console.error('[Collection] Migration failed:', migrationResult.error);
       }
     }
@@ -69,9 +66,6 @@ async function initializeCollection() {
     const loaded = await loadFromIndexedDB();
     if (loaded) {
       loadedCollection = loaded;
-      console.log('[Collection] Loaded from IndexedDB:', loaded.packs.length, 'packs');
-    } else {
-      console.log('[Collection] No existing collection found, using default');
     }
   } catch (error) {
     console.error('[Collection] Failed to initialize:', error);
@@ -164,7 +158,6 @@ export async function manageStorageQuota() {
 
   if (result.success && result.updatedCollection) {
     collection.set(result.updatedCollection);
-    console.log('[Collection] Quota management actions:', result.actions.join(', '));
     return { success: true, actions: result.actions };
   }
 

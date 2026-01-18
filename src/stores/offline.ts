@@ -113,8 +113,6 @@ export function enqueueAction(action: Omit<QueuedAction, 'id' | 'timestamp' | 'r
 
   const current = queuedActions.get();
   queuedActions.set([...current, newAction]);
-
-  console.log('[Offline Queue] Action enqueued:', newAction.type, newAction.id);
 }
 
 /**
@@ -131,7 +129,6 @@ export function dequeueAction(actionId: string): void {
 export function clearQueue(): void {
   queuedActions.set([]);
   processResults.set([]);
-  console.log('[Offline Queue] Queue cleared');
 }
 
 /**
@@ -140,7 +137,6 @@ export function clearQueue(): void {
  */
 async function processAction(action: QueuedAction): Promise<ProcessResult> {
   try {
-    console.log('[Offline Queue] Processing action:', action.type, action.id);
 
     // Simulate processing (in real app, this would call actual APIs)
     switch (action.type) {
@@ -180,17 +176,14 @@ async function processAction(action: QueuedAction): Promise<ProcessResult> {
  */
 export async function processQueue(): Promise<void> {
   if (isProcessing.get()) {
-    console.log('[Offline Queue] Already processing, skipping');
     return;
   }
 
   const actions = queuedActions.get();
   if (actions.length === 0) {
-    console.log('[Offline Queue] No actions to process');
     return;
   }
 
-  console.log(`[Offline Queue] Processing ${actions.length} queued actions`);
   isProcessing.set(true);
 
   const results: ProcessResult[] = [];
@@ -222,7 +215,6 @@ export async function processQueue(): Promise<void> {
   // Store results for display
   processResults.set(results);
 
-  console.log(`[Offline Queue] Processed ${results.length} actions, ${remaining.length} remaining`);
   isProcessing.set(false);
 }
 
@@ -235,7 +227,6 @@ export function setOnlineStatus(online: boolean): void {
 
   if (wasOffline && online) {
     // Connection restored, process queue
-    console.log('[Offline Queue] Connection restored, processing queue');
     processQueue();
   }
 }
@@ -252,12 +243,10 @@ export function initOfflineDetection(): () => void {
   initializeStoredActions();
 
   const handleOnline = () => {
-    console.log('[Offline Queue] Connection restored');
     setOnlineStatus(true);
   };
 
   const handleOffline = () => {
-    console.log('[Offline Queue] Connection lost');
     setOnlineStatus(false);
   };
 

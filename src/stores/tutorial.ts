@@ -169,7 +169,6 @@ export function startTutorial(tutorialId: string): void {
 
   // Check if already completed
   if (isTutorialCompleted(tutorialId)) {
-    console.log(`Tutorial "${tutorialId}" already completed`);
     return;
   }
 
