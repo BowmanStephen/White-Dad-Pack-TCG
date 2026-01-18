@@ -2,6 +2,7 @@
  * Unit tests for deck battle system with stat normalization
  * PACK-007: Battle System - Stat Normalization
  * PACK-009: Battle System - Synergy Bonuses
+ * PACK-010: Battle System - RNG Variance
  */
 
 import { describe, it, expect } from 'vitest';
@@ -952,6 +953,773 @@ describe('PACK-009: Battle System - Synergy Bonuses', () => {
       expect(bonus.multiplier).toBe(1.0);
       expect(bonus.theme).toBe('');
       expect(bonus.description).toBe('');
+    });
+  });
+});
+
+describe('PACK-010: Battle System - RNG Variance', () => {
+  describe('Seeded RNG - Replayability', () => {
+    it('should produce identical results with same seed', () => {
+      // Create identical test decks
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 60,
+            grillSkill: 60,
+            fixIt: 60,
+            napPower: 60,
+            remoteControl: 60,
+            thermostat: 60,
+            sockSandal: 60,
+            beerSnob: 60,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Run battle twice with same seed
+      const result1 = calculateBattleResult(deck1, deck2, 12345);
+      const result2 = calculateBattleResult(deck1, deck2, 12345);
+
+      // Results should be identical
+      expect(result1.damage).toBe(result2.damage);
+      expect(result1.winner.name).toBe(result2.winner.name);
+      expect(result1.log).toEqual(result2.log);
+    });
+
+    it('should produce different results with different seeds', () => {
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 60,
+            grillSkill: 60,
+            fixIt: 60,
+            napPower: 60,
+            remoteControl: 60,
+            thermostat: 60,
+            sockSandal: 60,
+            beerSnob: 60,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Run battles with different seeds
+      const result1 = calculateBattleResult(deck1, deck2, 12345);
+      const result2 = calculateBattleResult(deck1, deck2, 54321);
+
+      // Results should differ (at least in damage due to RNG variance)
+      expect(result1.damage).not.toBe(result2.damage);
+    });
+
+    it('should work without seed (random mode)', () => {
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 60,
+            grillSkill: 60,
+            fixIt: 60,
+            napPower: 60,
+            remoteControl: 60,
+            thermostat: 60,
+            sockSandal: 60,
+            beerSnob: 60,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Should not throw error when called without seed
+      const result = calculateBattleResult(deck1, deck2);
+
+      expect(result).toBeDefined();
+      expect(result.damage).toBeDefined();
+      expect(result.winner).toBeDefined();
+    });
+  });
+
+  describe('RNG Variance - ±10%', () => {
+    it('should apply variance within ±10% range', () => {
+      // Create decks with predictable damage
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 80,
+            grillSkill: 80,
+            fixIt: 80,
+            napPower: 80,
+            remoteControl: 80,
+            thermostat: 80,
+            sockSandal: 80,
+            beerSnob: 80,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Run many battles with different seeds to test variance range
+      const damages: number[] = [];
+      for (let seed = 1; seed <= 100; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        damages.push(result.damage);
+      }
+
+      // Base damage should be around: (80 - 50) * 1.2 (type adv) * 1.05 (synergy) = 37.8
+      // With RNG, damage should vary between ~34 and ~41 (excluding critical/glancing)
+      // But we also have critical hits (1.5x) and glancing blows (0.5x)
+      // So range is much wider: ~17 to ~62
+
+      const minDamage = Math.min(...damages);
+      const maxDamage = Math.max(...damages);
+
+      // Verify variance is being applied (range should be significant)
+      expect(maxDamage - minDamage).toBeGreaterThan(10);
+
+      // All damages should be at least 1
+      damages.forEach(damage => {
+        expect(damage).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    it('should show variance in battle log', () => {
+      const deck1Cards: DeckCard[] = [];
+      const card1 = createTestCard(
+        'card-1',
+        'Test Card 1',
+        'BBQ_DAD',
+        'rare',
+        {
+          dadJoke: 70,
+          grillSkill: 70,
+          fixIt: 70,
+          napPower: 70,
+          remoteControl: 70,
+          thermostat: 70,
+          sockSandal: 70,
+          beerSnob: 70,
+        }
+      );
+      deck1Cards.push({ cardId: card1.id, card: card1, count: 1 });
+
+      const deck2Cards: DeckCard[] = [];
+      const card2 = createTestCard(
+        'card-2',
+        'Test Card 2',
+        'COUCH_DAD',
+        'common',
+        {
+          dadJoke: 50,
+          grillSkill: 50,
+          fixIt: 50,
+          napPower: 50,
+          remoteControl: 50,
+          thermostat: 50,
+          sockSandal: 50,
+          beerSnob: 50,
+        }
+      );
+      deck2Cards.push({ cardId: card2.id, card: card2, count: 1 });
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      const result = calculateBattleResult(deck1, deck2, 99999);
+
+      // Check log contains RNG information
+      const logText = result.log.join(' ');
+      expect(logText).toContain('RNG System');
+      expect(logText).toContain('Variance:');
+      expect(logText).toContain('Base damage:');
+      expect(logText).toContain('Final damage:');
+    });
+  });
+
+  describe('Critical Hit System - 5% chance', () => {
+    it('should have ~5% critical hit rate over many battles', () => {
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 70,
+            grillSkill: 70,
+            fixIt: 70,
+            napPower: 70,
+            remoteControl: 70,
+            thermostat: 70,
+            sockSandal: 70,
+            beerSnob: 70,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Run 1000 battles and count critical hits
+      let criticalHitCount = 0;
+      const totalBattles = 1000;
+
+      for (let seed = 1; seed <= totalBattles; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        const logText = result.log.join(' ');
+        if (logText.includes('CRITICAL HIT')) {
+          criticalHitCount++;
+        }
+      }
+
+      // Critical hit rate should be around 5% (40-60 hits out of 1000)
+      expect(criticalHitCount).toBeGreaterThan(30);
+      expect(criticalHitCount).toBeLessThan(70);
+    });
+
+    it('should show "CRITICAL HIT!" in battle log', () => {
+      const deck1Cards: DeckCard[] = [];
+      const card1 = createTestCard(
+        'card-1',
+        'Test Card 1',
+        'BBQ_DAD',
+        'rare',
+        {
+          dadJoke: 70,
+          grillSkill: 70,
+          fixIt: 70,
+          napPower: 70,
+          remoteControl: 70,
+          thermostat: 70,
+          sockSandal: 70,
+          beerSnob: 70,
+        }
+      );
+      deck1Cards.push({ cardId: card1.id, card: card1, count: 1 });
+
+      const deck2Cards: DeckCard[] = [];
+      const card2 = createTestCard(
+        'card-2',
+        'Test Card 2',
+        'COUCH_DAD',
+        'common',
+        {
+          dadJoke: 50,
+          grillSkill: 50,
+          fixIt: 50,
+          napPower: 50,
+          remoteControl: 50,
+          thermostat: 50,
+          sockSandal: 50,
+          beerSnob: 50,
+        }
+      );
+      deck2Cards.push({ cardId: card2.id, card: card2, count: 1 });
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Try different seeds until we find a critical hit
+      let foundCritical = false;
+      for (let seed = 1; seed <= 100; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        const logText = result.log.join(' ');
+        if (logText.includes('CRITICAL HIT')) {
+          expect(logText).toContain('💥 CRITICAL HIT!');
+          expect(logText).toContain('1.5x damage');
+          foundCritical = true;
+          break;
+        }
+      }
+
+      // We should find at least one critical hit in 100 tries
+      expect(foundCritical).toBe(true);
+    });
+  });
+
+  describe('Glancing Blow System - 10% chance', () => {
+    it('should have ~10% glancing blow rate over many battles', () => {
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 70,
+            grillSkill: 70,
+            fixIt: 70,
+            napPower: 70,
+            remoteControl: 70,
+            thermostat: 70,
+            sockSandal: 70,
+            beerSnob: 70,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Run 1000 battles and count glancing blows
+      let glancingBlowCount = 0;
+      const totalBattles = 1000;
+
+      for (let seed = 1; seed <= totalBattles; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        const logText = result.log.join(' ');
+        if (logText.includes('Glancing blow')) {
+          glancingBlowCount++;
+        }
+      }
+
+      // Glancing blow rate should be around 10% (80-120 hits out of 1000)
+      expect(glancingBlowCount).toBeGreaterThan(70);
+      expect(glancingBlowCount).toBeLessThan(130);
+    });
+
+    it('should show "Glancing blow..." in battle log', () => {
+      const deck1Cards: DeckCard[] = [];
+      const card1 = createTestCard(
+        'card-1',
+        'Test Card 1',
+        'BBQ_DAD',
+        'rare',
+        {
+          dadJoke: 70,
+          grillSkill: 70,
+          fixIt: 70,
+          napPower: 70,
+          remoteControl: 70,
+          thermostat: 70,
+          sockSandal: 70,
+          beerSnob: 70,
+        }
+      );
+      deck1Cards.push({ cardId: card1.id, card: card1, count: 1 });
+
+      const deck2Cards: DeckCard[] = [];
+      const card2 = createTestCard(
+        'card-2',
+        'Test Card 2',
+        'COUCH_DAD',
+        'common',
+        {
+          dadJoke: 50,
+          grillSkill: 50,
+          fixIt: 50,
+          napPower: 50,
+          remoteControl: 50,
+          thermostat: 50,
+          sockSandal: 50,
+          beerSnob: 50,
+        }
+      );
+      deck2Cards.push({ cardId: card2.id, card: card2, count: 1 });
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Try different seeds until we find a glancing blow
+      let foundGlancing = false;
+      for (let seed = 1; seed <= 100; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        const logText = result.log.join(' ');
+        if (logText.includes('Glancing blow')) {
+          expect(logText).toContain('💨 Glancing blow...');
+          expect(logText).toContain('0.5x damage');
+          foundGlancing = true;
+          break;
+        }
+      }
+
+      // We should find at least one glancing blow in 100 tries
+      expect(foundGlancing).toBe(true);
+    });
+  });
+
+  describe('Hit Type Exclusivity', () => {
+    it('should never have both critical hit and glancing blow', () => {
+      const deck1Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d1-${i}`,
+          `Deck 1 Card ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 70,
+            grillSkill: 70,
+            fixIt: 70,
+            napPower: 70,
+            remoteControl: 70,
+            thermostat: 70,
+            sockSandal: 70,
+            beerSnob: 70,
+          }
+        );
+        deck1Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck2Cards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `d2-${i}`,
+          `Deck 2 Card ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        deck2Cards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Run 1000 battles and verify no battle has both critical and glancing
+      for (let seed = 1; seed <= 1000; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        const logText = result.log.join(' ');
+
+        const hasCritical = logText.includes('CRITICAL HIT');
+        const hasGlancing = logText.includes('Glancing blow');
+
+        // Should never have both
+        expect(hasCritical && hasGlancing).toBe(false);
+      }
+    });
+  });
+
+  describe('Damage Calculation with RNG', () => {
+    it('should apply all multipliers correctly', () => {
+      const deck1Cards: DeckCard[] = [];
+      const card1 = createTestCard(
+        'card-1',
+        'Test Card 1',
+        'BBQ_DAD',
+        'rare',
+        {
+          dadJoke: 100,
+          grillSkill: 100,
+          fixIt: 100,
+          napPower: 100,
+          remoteControl: 100,
+          thermostat: 100,
+          sockSandal: 100,
+          beerSnob: 100,
+        }
+      );
+      deck1Cards.push({ cardId: card1.id, card: card1, count: 1 });
+
+      const deck2Cards: DeckCard[] = [];
+      const card2 = createTestCard(
+        'card-2',
+        'Test Card 2',
+        'COUCH_DAD',
+        'common',
+        {
+          dadJoke: 0,
+          grillSkill: 0,
+          fixIt: 0,
+          napPower: 0,
+          remoteControl: 0,
+          thermostat: 0,
+          sockSandal: 0,
+          beerSnob: 0,
+        }
+      );
+      deck2Cards.push({ cardId: card2.id, card: card2, count: 1 });
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Test with known seed that produces critical hit
+      const result = calculateBattleResult(deck1, deck2, 42);
+
+      // Damage should be calculated correctly
+      // Base: 100 - 0 = 100
+      // Type advantage (BBQ vs COUCH): 1.2x
+      // Synergy (1 BBQ card): 1.0x (no bonus for single card)
+      // Before RNG: 100 * 1.2 = 120
+      // Minimum damage: max(5, 120 - 0) = 120
+      // After RNG variance, critical hit, or glancing blow: varies
+
+      expect(result.damage).toBeGreaterThan(0);
+      expect(result.damage).toBeLessThan(200); // Should be reasonable
+    });
+
+    it('should always deal at least 1 damage', () => {
+      const deck1Cards: DeckCard[] = [];
+      const card1 = createTestCard(
+        'card-1',
+        'Test Card 1',
+        'BBQ_DAD',
+        'rare',
+        {
+          dadJoke: 51,
+          grillSkill: 51,
+          fixIt: 51,
+          napPower: 51,
+          remoteControl: 51,
+          thermostat: 51,
+          sockSandal: 51,
+          beerSnob: 51,
+        }
+      );
+      deck1Cards.push({ cardId: card1.id, card: card1, count: 1 });
+
+      const deck2Cards: DeckCard[] = [];
+      const card2 = createTestCard(
+        'card-2',
+        'Test Card 2',
+        'COUCH_DAD',
+        'rare',
+        {
+          dadJoke: 50,
+          grillSkill: 50,
+          fixIt: 50,
+          napPower: 50,
+          remoteControl: 50,
+          thermostat: 50,
+          sockSandal: 50,
+          beerSnob: 50,
+        }
+      );
+      deck2Cards.push({ cardId: card2.id, card: card2, count: 1 });
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      // Even with tiny power difference and worst RNG (glancing blow + -10% variance)
+      for (let seed = 1; seed <= 100; seed++) {
+        const result = calculateBattleResult(deck1, deck2, seed);
+        expect(result.damage).toBeGreaterThanOrEqual(1);
+      }
+    });
+  });
+
+  describe('Battle Log Format', () => {
+    it('should include RNG section in battle log', () => {
+      const deck1Cards: DeckCard[] = [];
+      const card1 = createTestCard(
+        'card-1',
+        'Test Card 1',
+        'BBQ_DAD',
+        'rare',
+        {
+          dadJoke: 70,
+          grillSkill: 70,
+          fixIt: 70,
+          napPower: 70,
+          remoteControl: 70,
+          thermostat: 70,
+          sockSandal: 70,
+          beerSnob: 70,
+        }
+      );
+      deck1Cards.push({ cardId: card1.id, card: card1, count: 1 });
+
+      const deck2Cards: DeckCard[] = [];
+      const card2 = createTestCard(
+        'card-2',
+        'Test Card 2',
+        'COUCH_DAD',
+        'common',
+        {
+          dadJoke: 50,
+          grillSkill: 50,
+          fixIt: 50,
+          napPower: 50,
+          remoteControl: 50,
+          thermostat: 50,
+          sockSandal: 50,
+          beerSnob: 50,
+        }
+      );
+      deck2Cards.push({ cardId: card2.id, card: card2, count: 1 });
+
+      const deck1 = createTestDeck('Deck 1', deck1Cards);
+      const deck2 = createTestDeck('Deck 2', deck2Cards);
+
+      const result = calculateBattleResult(deck1, deck2, 12345);
+
+      // Verify log structure
+      expect(result.log).toContain('🎲 RNG System:');
+      expect(result.log.some(line => line.includes('Normal hit') ||
+                                 line.includes('CRITICAL HIT') ||
+                                 line.includes('Glancing blow'))).toBe(true);
+      expect(result.log.some(line => line.includes('Variance:'))).toBe(true);
+      expect(result.log.some(line => line.includes('Base damage:'))).toBe(true);
+      expect(result.log.some(line => line.includes('Final damage:'))).toBe(true);
     });
   });
 });

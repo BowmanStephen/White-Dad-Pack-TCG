@@ -1,6 +1,7 @@
 import type { Card, CardStats, DadType, Deck } from '../../types';
 import type { DeckBattleResult } from '../../types/deck';
 import { getTypeAdvantage } from './type-advantages';
+import { SeededRandom } from '../utils/seeded-random';
 
 /**
  * DadDeck™ Combat Mechanics
@@ -628,23 +629,42 @@ export function predictWinner(card1: Card, card2: Card): {
  * 2. Calculate effective power for each deck using normalized stats
  * 3. Apply type advantages based on most common card type in each deck
  * 4. Apply synergy bonuses if synergies exist between cards
- * 5. Determine winner based on effective power comparison
+ * 5. Apply RNG variance: ±10% random variance (PACK-010)
+ * 6. Check for critical hit: 5% chance for 1.5x damage (PACK-010)
+ * 7. Check for glancing blow: 10% chance for 0.5x damage (PACK-010)
+ * 8. Determine winner based on effective power comparison
+ *
+ * **RNG SYSTEM (PACK-010):**
+ * - Seeded RNG for replayability: Same seed = same result
+ * - ±10% random variance on final damage
+ * - Critical hit: 5% chance for 1.5x damage
+ * - Glancing blow: 10% chance for 0.5x damage
+ * - Critical and glancing blows are mutually exclusive
  *
  * @param attackerDeck - The attacking deck
  * @param defenderDeck - The defending deck
+ * @param seed - Optional seed for reproducible RNG (default: random)
  * @returns Battle result with winner, loser, damage, stats comparison, and battle details
  *
  * @example
+ * // Random battle
  * const result = calculateBattleResult(threeCardDeck, fiveCardDeck);
  * console.log(`Winner: ${result.winner.name}`);
- * console.log(`Attacker normalized power: ${result.attackerStats.totalPower}`);
- * console.log(`Defender normalized power: ${result.defenderStats.totalPower}`);
  * console.log(`Damage: ${result.damage}`);
+ *
+ * @example
+ * // Seeded battle (reproducible)
+ * const result = calculateBattleResult(deck1, deck2, 12345);
+ * // Using seed 12345 will always produce the same result
  */
 export function calculateBattleResult(
   attackerDeck: Deck,
-  defenderDeck: Deck
+  defenderDeck: Deck,
+  seed?: number
 ): DeckBattleResult {
+  // Initialize seeded RNG if seed provided, otherwise use Math.random()
+  const rng = seed !== undefined ? new SeededRandom(seed) : null;
+
   // Extract normalized stats (already divided by card count)
   const attackerStats = attackerDeck.stats.averageStats;
   const defenderStats = defenderDeck.stats.averageStats;
@@ -668,14 +688,71 @@ export function calculateBattleResult(
   // Apply attacker's themed synergy bonus
   const finalAttackerPower = effectiveAttackerPower * attackerSynergy.multiplier;
 
-  // Calculate damage (difference in power, minimum 5)
-  const rawDamage = Math.max(5, finalAttackerPower - defenderPower);
-  const damage = Math.floor(rawDamage);
+  // Calculate base damage (difference in power, minimum 5)
+  let rawDamage = Math.max(5, finalAttackerPower - defenderPower);
+
+  // PACK-010: RNG Variance System
+  let damageMultiplier = 1.0;
+  let hitType: 'normal' | 'critical' | 'glancing' = 'normal';
+
+  // Helper function for random numbers (seeded or not)
+  const random = (): number => rng ? rng.next() : Math.random();
+
+  // Check for critical hit (5% chance) or glancing blow (10% chance)
+  // Roll for glancing blow first (10%)
+  const glancingRoll = random();
+  if (glancingRoll < 0.10) {
+    // Glancing blow! (10% chance)
+    damageMultiplier = 0.5;
+    hitType = 'glancing';
+  } else {
+    // No glancing blow, check for critical hit (5% chance)
+    const criticalRoll = random();
+    if (criticalRoll < 0.05) {
+      // Critical hit! (5% chance)
+      damageMultiplier = 1.5;
+      hitType = 'critical';
+    }
+  }
+
+  // Apply ±10% random variance to damage
+  const varianceRoll = random();
+  const variance = 0.9 + (varianceRoll * 0.2); // 0.9 to 1.1
+
+  // Calculate final damage with all modifiers
+  let damage = Math.floor(rawDamage * damageMultiplier * variance);
+  damage = Math.max(1, damage); // Minimum 1 damage
 
   // Determine winner
   const attackerWins = finalAttackerPower > defenderPower;
   const winner = attackerWins ? attackerDeck : defenderDeck;
   const loser = attackerWins ? defenderDeck : attackerDeck;
+
+  // Build battle log with RNG information
+  const log: string[] = [
+    `⚔️ BATTLE: ${attackerDeck.name} (${attackerDeck.stats.totalCards} cards) vs ${defenderDeck.name} (${defenderDeck.stats.totalCards} cards)`,
+    `Attacker normalized power: ${attackerPower.toFixed(1)}`,
+    `Defender normalized power: ${defenderPower.toFixed(1)}`,
+    typeAdvantage > 1.0
+      ? `${attackerMainType} has advantage over ${defenderMainType}! (+${Math.round((typeAdvantage - 1) * 100)}% damage)`
+      : typeAdvantage < 1.0
+      ? `${attackerMainType} at disadvantage against ${defenderMainType}! (${Math.round(typeAdvantage * 100)}% damage)`
+      : 'No type advantage',
+    attackerSynergy.multiplier > 1.0 ? attackerSynergy.description : '',
+    `Final attacker power: ${finalAttackerPower.toFixed(1)}`,
+    '',
+    `🎲 RNG System:`,
+    hitType === 'critical'
+      ? `  💥 CRITICAL HIT! (1.5x damage)`
+      : hitType === 'glancing'
+      ? `  💨 Glancing blow... (0.5x damage)`
+      : '  Normal hit',
+    `  Variance: ${variance < 1.0 ? '-' : '+'}${Math.abs((variance - 1.0) * 100).toFixed(1)}%`,
+    `  Base damage: ${Math.floor(rawDamage)}`,
+    `  Final damage: ${damage}`,
+    '',
+    `🏆 Winner: ${winner.name}`,
+  ].filter(Boolean);
 
   return {
     winner,
@@ -698,16 +775,7 @@ export function calculateBattleResult(
     typeAdvantage,
     synergyBonus: attackerSynergy.multiplier, // PACK-009: Themed synergy bonus
     turns: 1, // Deck battles are single-turn calculations
-    log: [
-      `⚔️ BATTLE: ${attackerDeck.name} (${attackerDeck.stats.totalCards} cards) vs ${defenderDeck.name} (${defenderDeck.stats.totalCards} cards)`,
-      `Attacker normalized power: ${attackerPower.toFixed(1)}`,
-      `Defender normalized power: ${defenderPower.toFixed(1)}`,
-      typeAdvantage > 1.0 ? `${attackerMainType} has advantage over ${defenderMainType}! (+${Math.round((typeAdvantage - 1) * 100)}% damage)` : typeAdvantage < 1.0 ? `${attackerMainType} at disadvantage against ${defenderMainType}! (${Math.round(typeAdvantage * 100)}% damage)` : 'No type advantage',
-      attackerSynergy.multiplier > 1.0 ? `${attackerSynergy.description}` : '',
-      `Final attacker power: ${finalAttackerPower.toFixed(1)}`,
-      `Damage dealt: ${damage}`,
-      `🏆 Winner: ${winner.name}`,
-    ].filter(Boolean),
+    log,
   };
 }
 
