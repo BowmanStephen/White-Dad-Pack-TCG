@@ -1,0 +1,64 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AchievementGallery from '@/components/achievements/AchievementGallery.svelte';
+import { t } from '@/i18n';
+
+const title = t('achievements.title');
+---
+
+<BaseLayout title={title}>
+  <main class="achievements-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">{t('achievements.title')}</h1>
+        <p class="page-subtitle">{t('achievements.subtitle')}</p>
+      </header>
+
+      <AchievementGallery client:load />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .achievements-page {
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fbbf24;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+    }
+  }
+</style>

@@ -76,6 +76,10 @@ const translations: Record<string, string> = {
   'common.save': 'Save',
   'common.cancel': 'Cancel',
   'common.delete': 'Delete',
+
+  // Achievements
+  'achievements.title': 'Achievements',
+  'achievements.subtitle': 'Track your progress and unlock rewards',
 };
 
 /**

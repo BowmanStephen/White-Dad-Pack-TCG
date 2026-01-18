@@ -14,6 +14,7 @@ import MotionInitializer from '../components/motion/MotionInitializer.svelte';
 import BottomNav from '../components/nav/BottomNav.svelte';
 import ToastContainer from '../components/common/ToastContainer.svelte';
 import StorageQuotaWarning from '../components/storage/StorageQuotaWarning.svelte';
+import AchievementPopup from '../components/achievements/AchievementPopup.svelte';
 
 interface Props {
   title?: string;
@@ -180,6 +181,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- PACK-045: Storage Quota Warning System (client:only for SSR safety) -->
     <StorageQuotaWarning client:only="svelte" />
+
+    <!-- PACK-081: Achievement Popup Notification System -->
+    <AchievementPopup client:load />
 
     <!-- Bottom Navigation (Mobile Only) -->
     <BottomNav client:load />
