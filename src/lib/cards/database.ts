@@ -1,8 +1,13 @@
 import type { Card, Rarity } from '../../types';
 import cardsData from '../../data/cards.json';
+import seasonalCardsData from '../../data/seasonal-cards.json';
 
 // Type assertion for imported JSON
-const cards: Card[] = cardsData.cards as Card[];
+const baseCards: Card[] = cardsData.cards as Card[];
+const seasonalCards: Card[] = seasonalCardsData.cards as Card[];
+
+// Merge base cards and seasonal cards
+const cards: Card[] = [...baseCards, ...seasonalCards];
 
 
 /**
@@ -76,7 +81,49 @@ export function getCardCountByRarity(): Record<Rarity, number> {
  */
 export function searchCardsByName(query: string): Card[] {
   const lowerQuery = query.toLowerCase();
-  return cards.filter((card) => 
+  return cards.filter((card) =>
     card.name.toLowerCase().includes(lowerQuery)
   );
+}
+
+/**
+ * Get only seasonal cards (seasonId > 1)
+ */
+export function getSeasonalCards(): Card[] {
+  return cards.filter((card) => card.seasonId && card.seasonId > 1);
+}
+
+/**
+ * Get only base cards (seasonId = 1 or undefined)
+ */
+export function getBaseCards(): Card[] {
+  return cards.filter((card) => !card.seasonId || card.seasonId === 1);
+}
+
+/**
+ * Get cards by season
+ */
+export function getCardsBySeason(seasonId: number): Card[] {
+  return cards.filter((card) => card.seasonId === seasonId);
+}
+
+/**
+ * Get Father's Day seasonal cards
+ */
+export function getFathersDayCards(): Card[] {
+  return seasonalCards.filter((card) => card.id.startsWith('fd_'));
+}
+
+/**
+ * Get Summer seasonal cards
+ */
+export function getSummerCards(): Card[] {
+  return seasonalCards.filter((card) => card.id.startsWith('summer_'));
+}
+
+/**
+ * Get Holiday seasonal cards
+ */
+export function getHolidayCards(): Card[] {
+  return seasonalCards.filter((card) => card.id.startsWith('holiday_'));
 }
