@@ -134,6 +134,14 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <!-- DNS prefetch for potential external resources -->
     <link rel="dns-prefetch" href="https://dadddeck.com" />
 
+    <!-- Preload hero images for instant visual feedback -->
+    <link rel="preload" href="/images/pack-closed.png" as="image" type="image/png" />
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
+
+    <!-- Fetch hints for improved performance -->
+    <link rel="prefetch" href="/pack" />
+    <link rel="prefetch" href="/collection" />
+
     <!-- Performance Monitoring (dev only) -->
     <PerformanceMonitor />
 

@@ -1,4 +1,5 @@
 import type { Card, CardStats, Deck, DeckCard, DeckStats, Rarity, DadType } from '@/types';
+import { escapeHTML } from '../security/sanitizer';
 
 /**
  * Calculate deck statistics from deck cards
@@ -178,6 +179,7 @@ export function updateDeckCards(deck: Deck, cards: DeckCard[]): Deck {
 
 /**
  * Update deck metadata
+ * Sanitizes name and description to prevent XSS attacks
  */
 export function updateDeckMetadata(
   deck: Deck,
@@ -186,8 +188,10 @@ export function updateDeckMetadata(
 ): Deck {
   return {
     ...deck,
-    name: name.trim(),
-    description: description?.trim() || undefined,
+    // Escape HTML to prevent XSS in deck names
+    name: escapeHTML(name.trim()),
+    // Escape HTML in deck descriptions
+    description: description ? escapeHTML(description.trim()) : undefined,
     updatedAt: new Date(),
   };
 }

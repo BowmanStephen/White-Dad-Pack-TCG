@@ -426,7 +426,16 @@ export function importBinder(jsonData: string): boolean {
       return false;
     }
 
-    binderStore.set(state);
+    const normalizedState: BinderState = {
+      ...state,
+      pages: state.pages.map((page) => ({
+        ...page,
+        createdAt: page.createdAt ? new Date(page.createdAt) : new Date(),
+        updatedAt: page.updatedAt ? new Date(page.updatedAt) : new Date()
+      }))
+    };
+
+    binderStore.set(normalizedState);
     return true;
   } catch {
     return false;

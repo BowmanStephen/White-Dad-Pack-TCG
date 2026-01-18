@@ -2,6 +2,7 @@
   import type { CardAbility, Rarity } from '../../types';
   import { RARITY_CONFIG, type Card } from '../../types';
   import { onMount, onDestroy, tick } from 'svelte';
+  import { sanitizeHTML } from '../../lib/security/sanitizer';
 
   export let ability: CardAbility;
   export let triggerElement: HTMLElement;
@@ -143,6 +144,7 @@
   }
 
   // Format ability description with rich text support
+  // Sanitizes HTML to prevent XSS attacks while preserving safe formatting
   function formatDescription(text: string): string {
     // Bold keywords (words in ALL CAPS or with special formatting)
     text = text.replace(/\b([A-Z]{2,})\b/g, '<strong>$1</strong>');
@@ -150,7 +152,8 @@
     // Highlight ability triggers (e.g., "Flip a coin", "When X happens")
     text = text.replace(/(When |Whenever |If |At the beginning of )/gi, '<strong class="text-blue-300">$1</strong>');
 
-    return text;
+    // Sanitize HTML to prevent XSS while preserving safe tags
+    return sanitizeHTML(text);
   }
 
   // Extract examples from ability description (if any)

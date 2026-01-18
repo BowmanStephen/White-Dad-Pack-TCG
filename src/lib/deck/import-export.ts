@@ -10,6 +10,7 @@
 import type { Deck, DeckExport, DeckCard } from '@/types';
 import { getAllCards } from '@/lib/cards/database';
 import { calculateDeckStats } from './utils';
+import { validateJSON, escapeHTML } from '../security/sanitizer';
 
 /**
  * Export a deck to JSON format
@@ -92,14 +93,25 @@ export function importDeckFromJSON(
   jsonString: string,
   userCards?: string[]
 ): Deck {
-  let importData: DeckExport;
+  // Validate and sanitize JSON input to prevent XSS
+  const sanitizedData = validateJSON<DeckExport>(
+    jsonString,
+    (data): data is DeckExport => {
+      // Schema validation
+      return (
+        typeof data === 'object' &&
+        data !== null &&
+        typeof data.name === 'string' &&
+        Array.isArray(data.cards)
+      );
+    }
+  );
 
-  // Parse JSON
-  try {
-    importData = JSON.parse(jsonString);
-  } catch (error) {
+  if (!sanitizedData) {
     throw new Error('Invalid JSON format. Please check the deck data.');
   }
+
+  const importData = sanitizedData;
 
   // Validate import data structure
   if (!importData.name || typeof importData.name !== 'string') {

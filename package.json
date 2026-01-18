@@ -31,6 +31,8 @@
     "prebuild": "bun run optimize:images && bun run generate-og-image && bun run generate-sitemap && bun run generate-svgs",
     "generate-sitemap": "node scripts/generate-sitemap.mjs",
     "validate:env": "node scripts/validate-env.mjs",
+    "lighthouse": "node scripts/lighthouse-test.mjs",
+    "test:performance": "npm run build && npm run preview & sleep 5 && npm run lighthouse",
     "discord-bot": "bun run discord-bot/index.ts",
     "discord-bot:dev": "bun --watch run discord-bot/index.ts",
     "storybook": "storybook dev -p 6006",

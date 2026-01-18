@@ -171,4 +171,29 @@ export default defineConfig({
     // Enable clientPrerender for smoother transitions
     clientPrerender: true,
   },
+
+  // Security headers
+  headers: {
+    // Content Security Policy headers for XSS prevention
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://*",
+      "font-src 'self' data:",
+      "connect-src 'self' https://api.github.com",
+      "frame-src 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ].join('; '),
+
+    // Additional security headers
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+  },
 });

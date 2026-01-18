@@ -17,18 +17,19 @@ import type { Pack, Rarity, HoloVariant } from '../../src/types';
 import { SeededRandom } from '../../src/lib/utils/random';
 
 /**
- * PACK-048: Pack Generation Tests for 142-Card Pool
+ * PACK-048: Pack Generation Tests for 173-Card Pool
  *
  * Comprehensive test suite for pack generation mechanics with the expanded card database.
  * Tests variety verification, rarity distribution, duplicate prevention, holo chance,
  * and performance benchmarks.
  *
- * Total Cards: 142 (base + seasonal)
- * - Base cards: 117 cards from cards.json
- * - Seasonal cards: 25 cards from seasonal-cards.json
+ * Total Cards: 173 (base + seasonal + new)
+ * - Base cards: 148 cards from cards.json
+ * - Seasonal cards: 12 cards from seasonal-cards.json
+ * - New cards: 13 cards from cards-new.json
  */
 
-describe('PACK-048: Pack Generation with 142-Card Pool', () => {
+describe('PACK-048: Pack Generation with 173-Card Pool', () => {
   let totalCardCount: number;
   let rarityDistribution: Record<Rarity, number>;
 

@@ -325,10 +325,10 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       expect(allCards.length).toBeGreaterThanOrEqual(105);
     });
 
-    it('should have 160 cards available for pack generation', () => {
+    it('should have 173 cards available for pack generation', () => {
       const allCards = getAllCards();
 
-      expect(allCards.length).toBe(160);
+      expect(allCards.length).toBe(173);
     });
 
     it('should have rarity distribution that supports pack generation', () => {
@@ -352,7 +352,7 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
 
       // Log actual distribution for reference
       const totalCards = getAllCards().length;
-      console.log('160-Card Database Rarity Distribution:');
+      console.log('173-Card Database Rarity Distribution:');
       console.log(`  Common: ${distribution.common} cards (${((distribution.common / totalCards) * 100).toFixed(1)}%)`);
       console.log(`  Uncommon: ${distribution.uncommon} cards (${((distribution.uncommon / totalCards) * 100).toFixed(1)}%)`);
       console.log(`  Rare: ${distribution.rare} cards (${((distribution.rare / totalCards) * 100).toFixed(1)}%)`);
@@ -361,7 +361,7 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       console.log(`  Mythic: ${distribution.mythic} cards (${((distribution.mythic / totalCards) * 100).toFixed(1)}%)`);
     });
 
-    it('should generate packs successfully using all 160 cards', () => {
+    it('should generate packs successfully using all 173 cards', () => {
       // Generate many packs to ensure generator works with full database
       const packs = generatePacks(1000);
 
@@ -376,7 +376,7 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       }
     });
 
-    it('should respect slot-based rarity rules with 160-card database', () => {
+    it('should respect slot-based rarity rules with 173-card database', () => {
       const packs = generatePacks(1000);
 
       // Count guaranteed commons (slots 1-3)
@@ -429,7 +429,7 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
         }
 
         // PACK-024: Verify variety across 1000 packs
-        // With 160 cards and 6000 total card slots (1000 packs × 6 cards),
+        // With 173 cards and 6000 total card slots (1000 packs × 6 cards),
         // we expect significant variety but NOT all cards (due to rarity)
         const missingCards = allCards.filter(card => !cardAppearanceTracker.has(card.id));
 

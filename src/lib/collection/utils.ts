@@ -1,5 +1,6 @@
 import type { Pack, Rarity, CollectionDisplayCard, DadType, SortOption, StatRanges, HoloVariant, AdvancedSearchFilters } from '../../types';
 import { RARITY_ORDER, DAD_TYPE_NAMES } from '../../types';
+import { sanitizeSearchQuery } from '../security/sanitizer';
 
 /**
  * Count duplicate cards across all packs
@@ -66,11 +67,15 @@ export function filterCardsByRarity(cards: CollectionDisplayCard[], rarity: Rari
 
 /**
  * Filter cards by search term (name, flavor text, or type)
+ * Sanitizes search term to prevent XSS attacks
  */
 export function filterCardsBySearch(cards: CollectionDisplayCard[], searchTerm: string): CollectionDisplayCard[] {
   if (!searchTerm.trim()) return cards;
 
-  const term = searchTerm.toLowerCase();
+  // Sanitize search term to prevent XSS
+  const sanitizedTerm = sanitizeSearchQuery(searchTerm);
+  const term = sanitizedTerm.toLowerCase();
+
   return cards.filter((card) => {
     return (
       card.name.toLowerCase().includes(term) ||
