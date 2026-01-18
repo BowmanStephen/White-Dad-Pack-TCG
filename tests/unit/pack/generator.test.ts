@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { generatePack, DEFAULT_PACK_CONFIG, getPackStats, compareRarity, getHighestRarity } from '../../../src/lib/pack/generator';
+import { getAllCards, getCardsByRarity } from '../../../src/lib/cards/database';
 import type { Rarity, Pack } from '../../../src/types';
 
 // Helper function to generate multiple packs
@@ -316,16 +317,21 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
     });
   });
 
-  describe('PACK-006: Card Rarity Distribution - 142 Cards', () => {
+  describe('PACK-024: 105-Card Pool Integration', () => {
+    it('should have at least 105 cards available for pack generation', () => {
+      const allCards = getAllCards();
+
+      // PACK-024: User story requires 105-card pool
+      expect(allCards.length).toBeGreaterThanOrEqual(105);
+    });
+
     it('should have 142 cards available for pack generation', () => {
-      const { getAllCards } = require('../../../src/lib/cards/database');
       const allCards = getAllCards();
 
       expect(allCards.length).toBe(142);
     });
 
     it('should have rarity distribution that supports pack generation', () => {
-      const { getCardsByRarity } = require('../../../src/lib/cards/database');
 
       const distribution = {
         common: getCardsByRarity('common').length,
@@ -391,6 +397,80 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
       const commonRatio = commonsInFirstThreeSlots / totalFirstThreeSlots;
       expect(commonRatio).toBeGreaterThanOrEqual(0.45);
       expect(commonRatio).toBeLessThanOrEqual(0.55);
+    });
+
+    describe('PACK-024: Variety Verification (1000 Packs)', () => {
+      it('should generate 1000 packs with variety verification', () => {
+        const allCards = getAllCards();
+
+        // PACK-024: Generate 1000 packs and verify variety
+        const packs = generatePacks(1000);
+        expect(packs).toHaveLength(1000);
+
+        // Track all card IDs that appeared
+        const cardAppearanceTracker = new Map<string, number>();
+        const packCardIds = new Set<string>();
+
+        for (const pack of packs) {
+          // Verify no duplicates within pack
+          const cardIds = pack.cards.map(c => c.id);
+          const uniqueIds = new Set(cardIds);
+          expect(uniqueIds.size).toBe(6);
+
+          // Track card appearances
+          for (const card of pack.cards) {
+            cardAppearanceTracker.set(
+              card.id,
+              (cardAppearanceTracker.get(card.id) || 0) + 1
+            );
+            packCardIds.add(card.id);
+          }
+        }
+
+        // PACK-024: Verify variety across 1000 packs
+        // With 142 cards and 6000 total card slots (1000 packs × 6 cards),
+        // we expect significant variety but NOT all cards (due to rarity)
+        const missingCards = allCards.filter(card => !cardAppearanceTracker.has(card.id));
+
+        // Verify variety statistics
+        const appearances = Array.from(cardAppearanceTracker.values());
+        const minAppearances = Math.min(...appearances);
+        const maxAppearances = Math.max(...appearances);
+        const avgAppearances = appearances.reduce((a, b) => a + b, 0) / appearances.length;
+        const varietyPercentage = (cardAppearanceTracker.size / allCards.length) * 100;
+
+        console.log('PACK-024: 1000-Pack Variety Statistics:');
+        console.log(`  Total cards in database: ${allCards.length}`);
+        console.log(`  Unique cards that appeared: ${cardAppearanceTracker.size} (${varietyPercentage.toFixed(1)}%)`);
+        console.log(`  Cards that never appeared: ${missingCards.length}`);
+        console.log(`  Card appearances: min=${minAppearances}, avg=${avgAppearances.toFixed(1)}, max=${maxAppearances}`);
+        console.log(`  Expected average: ${(6000 / allCards.length).toFixed(1)} appearances per card`);
+
+        // PACK-024: At least 30% of all cards should appear in 1000 packs
+        // This is realistic given rarity distribution (commons appear more often)
+        expect(cardAppearanceTracker.size).toBeGreaterThanOrEqual(Math.floor(allCards.length * 0.3));
+
+        // Most cards should appear multiple times (showing good distribution)
+        expect(avgAppearances).toBeGreaterThan(10);
+      });
+
+      it('should generate 1000 packs in under 500ms total', () => {
+        // PACK-024: Performance requirement - pack generation should be fast
+        const startTime = performance.now();
+
+        const packs = generatePacks(1000);
+
+        const endTime = performance.now();
+        const totalTime = endTime - startTime;
+        const avgTimePerPack = totalTime / 1000;
+
+        console.log(`PACK-024: Generated 1000 packs in ${totalTime.toFixed(2)}ms`);
+        console.log(`  Average time per pack: ${avgTimePerPack.toFixed(3)}ms`);
+
+        expect(packs).toHaveLength(1000);
+        expect(totalTime).toBeLessThan(500); // Total time for 1000 packs
+        expect(avgTimePerPack).toBeLessThan(0.5); // Average <0.5ms per pack
+      });
     });
   });
 });
