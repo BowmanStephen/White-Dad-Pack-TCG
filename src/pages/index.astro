@@ -6,6 +6,8 @@ import FeaturedCards from '../components/landing/FeaturedCards.astro';
 import PackPreview from '../components/landing/PackPreview.svelte';
 import Footer from '../components/landing/Footer.astro';
 import Navigation from '../components/common/Navigation.svelte';
+import Tutorial from '../components/onboarding/Tutorial.svelte';
+import TutorialAutoStart from '../components/onboarding/TutorialAutoStart.svelte';
 
 
 
@@ -72,4 +74,8 @@ const webApplicationSchema = {
 
   <!-- Additional structured data for homepage -->
   <script type="application/ld+json" is:inline set:html={JSON.stringify(webApplicationSchema)} />
+
+  <!-- Tutorial System (client-only to avoid SSR issues) -->
+  <Tutorial client:only="svelte" />
+  <TutorialAutoStart client:idle />
 </BaseLayout>
