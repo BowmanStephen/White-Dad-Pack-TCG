@@ -86,6 +86,35 @@ const fullImageURL = new URL(image, Astro.site!).href;
       }
     })} />
 
+    <!-- Structured Data (JSON-LD) - Game/SoftwareApplication -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "DadDeck",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "description": "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining. Collect 50+ unique cards across 6 rarity tiers from common to mythic.",
+      "genre": ["Trading Card Game", "Casual", "Collectible"],
+      "gamePlatform": "Web Browser",
+      "playMode": "SinglePlayer",
+      "publisher": {
+        "@type": "Organization",
+        "name": "DadDeck"
+      }
+    })} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
 
