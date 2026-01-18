@@ -36,12 +36,16 @@ const videoGameSchema = {
   description={description}
   image="/og-image.png"
 >
-  <Navigation client:load />
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <main id="main-content" class="pt-20 pb-8 min-h-screen" tabindex="-1" role="main" aria-label="Pack opening area">
     <ErrorBoundary
+      component="PackOpener"
       fallbackTitle="Pack Opening Error"
       fallbackMessage="We couldn't open your pack. Please refresh the page or try again later."
+      onRetry={() => window.location.reload()}
     >
       <PackOpener client:load />
     </ErrorBoundary>

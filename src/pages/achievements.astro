@@ -4,13 +4,18 @@ import AchievementToast from '@/components/achievements/AchievementToast.svelte'
 import AchievementList from '@/components/achievements/AchievementList.svelte';
 import Navigation from '@/components/common/Navigation.svelte';
 import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
 ---
 
 <BaseLayout title="Achievements - DadDeck™">
-  <Navigation client:load />
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <!-- Breadcrumbs -->
-  <Breadcrumbs client:load />
+  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
+    <Breadcrumbs client:load />
+  </ErrorBoundary>
 
   <div class="container">
     <header>
@@ -63,11 +68,19 @@ import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
 
     <!-- Achievements Gallery -->
     <section class="achievements-section">
-      <AchievementList client:load achievements={[]} />
+      <ErrorBoundary
+        component="AchievementList"
+        fallbackTitle="Achievements Error"
+        fallbackMessage="We couldn't load your achievements. Please refresh the page."
+      >
+        <AchievementList client:load achievements={[]} />
+      </ErrorBoundary>
     </section>
   </div>
 
-  <AchievementToast client:load />
+  <ErrorBoundary component="AchievementToast" fallbackMessage="Achievement notifications unavailable.">
+    <AchievementToast client:load />
+  </ErrorBoundary>
 </BaseLayout>
 
 <style>

@@ -9,8 +9,7 @@ import Navigation from '../components/common/Navigation.svelte';
 import WelcomeModal from '../components/onboarding/WelcomeModal.svelte';
 import Tutorial from '../components/onboarding/Tutorial.svelte';
 import TutorialAutoStart from '../components/onboarding/TutorialAutoStart.svelte';
-
-
+import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 
 // Enhanced SEO for homepage
 const title = "DadDeck - The Ultimate White Dad Trading Card Simulator";
@@ -53,12 +52,11 @@ const webApplicationSchema = {
   image="/og-image.png"
 >
   <!-- Critical components: load immediately -->
-  <Navigation client:load />
-
-
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <!-- Defer non-critical components: load when browser is idle -->
-
 
   <main id="main-content" class="pt-16" tabindex="-1" role="main">
     <!-- Static content: server-side rendered -->
@@ -66,7 +64,9 @@ const webApplicationSchema = {
     <Features />
 
     <!-- Interactive components: lazy load when visible -->
-    <PackPreview client:visible />
+    <ErrorBoundary component="PackPreview" fallbackMessage="Pack preview unavailable.">
+      <PackPreview client:visible />
+    </ErrorBoundary>
     <FeaturedCards />
   </main>
 
@@ -78,8 +78,14 @@ const webApplicationSchema = {
 
   <!-- Onboarding System (client-only to avoid SSR issues) -->
   <!-- Welcome modal shows first for new users -->
-  <WelcomeModal client:idle />
+  <ErrorBoundary component="WelcomeModal" fallbackMessage="Welcome modal unavailable.">
+    <WelcomeModal client:idle />
+  </ErrorBoundary>
   <!-- Tutorial system starts after welcome (or directly if welcome already seen) -->
-  <Tutorial client:only="svelte" />
-  <TutorialAutoStart client:idle />
+  <ErrorBoundary component="Tutorial" fallbackMessage="Tutorial unavailable.">
+    <Tutorial client:only="svelte" />
+  </ErrorBoundary>
+  <ErrorBoundary component="TutorialAutoStart" fallbackMessage="Tutorial system unavailable.">
+    <TutorialAutoStart client:idle />
+  </ErrorBoundary>
 </BaseLayout>

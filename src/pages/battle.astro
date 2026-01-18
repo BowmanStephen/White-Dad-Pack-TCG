@@ -3,18 +3,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import BattleArena from '../components/battle/BattleArena.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
+import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 ---
 
 <BaseLayout
   title="Card Battles - DadDeck"
   description="Battle your cards against AI opponents! Auto-battle system with stats-based combat. Climb the ranked ladder and become the ultimate dad!"
 >
-  <Navigation client:load />
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <!-- Breadcrumbs -->
-  <Breadcrumbs client:load />
+  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
+    <Breadcrumbs client:load />
+  </ErrorBoundary>
 
   <main id="main-content" class="container mx-auto px-4 py-8">
-    <BattleArena client:load />
+    <ErrorBoundary
+      component="BattleArena"
+      fallbackTitle="Battle Arena Error"
+      fallbackMessage="We couldn't load the battle arena. Please refresh the page."
+      onRetry={() => window.location.reload()}
+    >
+      <BattleArena client:load />
+    </ErrorBoundary>
   </main>
 </BaseLayout>

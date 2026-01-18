@@ -31,10 +31,14 @@ const profilePageSchema = {
   description={description}
   image="/og-image.png"
 >
-  <Navigation client:load />
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <!-- Breadcrumbs -->
-  <Breadcrumbs client:load />
+  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
+    <Breadcrumbs client:load />
+  </ErrorBoundary>
 
   <!-- Page Header -->
   <div class="page-header">
@@ -51,8 +55,10 @@ const profilePageSchema = {
   <!-- Profile View -->
   <div class="profile-section">
     <ErrorBoundary
+      component="ProfileView"
       fallbackTitle="Profile Error"
       fallbackMessage="We couldn't load your profile. Please refresh the page."
+      onRetry={() => window.location.reload()}
     >
       <ProfileView client:load />
     </ErrorBoundary>

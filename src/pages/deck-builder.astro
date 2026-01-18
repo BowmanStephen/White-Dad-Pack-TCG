@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import DeckBuilder from '@/components/deck/DeckBuilder.svelte';
 import Navigation from '@/components/common/Navigation.svelte';
 import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
 import { t } from '@/i18n';
 
 // SEO Meta Tags
@@ -11,13 +12,24 @@ const description = t('deck.metaDescription');
 ---
 
 <BaseLayout title={title} description={description}>
-  <Navigation client:load />
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <!-- Breadcrumbs -->
-  <Breadcrumbs client:load />
+  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
+    <Breadcrumbs client:load />
+  </ErrorBoundary>
 
   <main class="deck-builder-page">
-    <DeckBuilder client:only />
+    <ErrorBoundary
+      component="DeckBuilder"
+      fallbackTitle="Deck Builder Error"
+      fallbackMessage="We couldn't load the deck builder. Please refresh the page."
+      onRetry={() => window.location.reload()}
+    >
+      <DeckBuilder client:only />
+    </ErrorBoundary>
   </main>
 </BaseLayout>
 

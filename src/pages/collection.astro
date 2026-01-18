@@ -38,10 +38,14 @@ const collectionPageSchema = {
   description={description}
   image="/og-image.png"
 >
-  <Navigation client:load />
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
 
   <!-- Breadcrumbs -->
-  <Breadcrumbs client:load />
+  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
+    <Breadcrumbs client:load />
+  </ErrorBoundary>
 
   <!-- Page Header -->
   <div class="page-header">
@@ -58,8 +62,10 @@ const collectionPageSchema = {
   <!-- Collection Manager -->
   <div class="manager-section">
     <ErrorBoundary
+      component="CollectionManager"
       fallbackTitle="Collection Manager Error"
       fallbackMessage="We couldn't load the collection manager. Please refresh the page."
+      onRetry={() => window.location.reload()}
     >
       <CollectionManager client:load />
     </ErrorBoundary>
@@ -68,6 +74,7 @@ const collectionPageSchema = {
   <!-- Missing Cards Tracker -->
   <div class="missing-cards-section">
     <ErrorBoundary
+      component="MissingCardsPanel"
       fallbackTitle="Missing Cards Error"
       fallbackMessage="We couldn't load the missing cards tracker. Please refresh the page."
     >
@@ -78,6 +85,7 @@ const collectionPageSchema = {
   <!-- Wishlist Panel (PACK-020) -->
   <div class="wishlist-section">
     <ErrorBoundary
+      component="WishlistPanel"
       fallbackTitle="Wishlist Error"
       fallbackMessage="We couldn't load your wishlist. Please refresh the page."
     >
@@ -87,12 +95,15 @@ const collectionPageSchema = {
 
   <!-- Collection Stats -->
   <div class="stats-section">
-    <CollectionStats client:load />
+    <ErrorBoundary component="CollectionStats" fallbackMessage="Stats unavailable.">
+      <CollectionStats client:load />
+    </ErrorBoundary>
   </div>
 
   <!-- Pack Opening Stats -->
   <div class="pack-stats-section">
     <ErrorBoundary
+      component="PackStats"
       fallbackTitle="Pack Stats Error"
       fallbackMessage="We couldn't load the pack statistics. Please refresh the page."
     >
@@ -102,12 +113,21 @@ const collectionPageSchema = {
 
   <!-- Pack History -->
   <div class="history-section">
-    <PackHistoryPanel client:load />
+    <ErrorBoundary component="PackHistoryPanel" fallbackMessage="Pack history unavailable.">
+      <PackHistoryPanel client:load />
+    </ErrorBoundary>
   </div>
 
   <!-- Gallery -->
   <main id="main-content" class="collection-main" tabindex="-1" role="main" aria-label="Card collection gallery">
-    <Gallery client:load />
+    <ErrorBoundary
+      component="Gallery"
+      fallbackTitle="Gallery Error"
+      fallbackMessage="We couldn't load your card gallery. Please refresh the page."
+      onRetry={() => window.location.reload()}
+    >
+      <Gallery client:load />
+    </ErrorBoundary>
   </main>
 
   <!-- Structured data for collection page -->
