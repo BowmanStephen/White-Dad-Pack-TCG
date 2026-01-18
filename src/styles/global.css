@@ -11,6 +11,9 @@
 /* Import Firefox-specific fixes */
 @import './firefox-fixes.css';
 
+/* Import graceful degradation fallbacks */
+@import './fallbacks.css';
+
 /* ===== CARD STYLES ===== */
 
 /* Card container with 3D perspective */

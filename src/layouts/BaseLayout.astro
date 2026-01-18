@@ -3,6 +3,7 @@ import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
 import InstallPrompt from '../components/pwa/InstallPrompt.svelte';
 import OfflineBanner from '../components/common/OfflineBanner.svelte';
 import CookieConsent from '../components/common/CookieConsent.svelte';
+import BrowserUpgradeBanner from '../components/common/BrowserUpgradeBanner.svelte';
 import CardLightbox from '../components/card/CardLightbox.svelte';
 import NotificationInitializer from '../components/notifications/NotificationInitializer.svelte';
 import MusicInitializer from '../components/audio/MusicInitializer.svelte';
@@ -141,6 +142,10 @@ const fullImageURL = new URL(image, Astro.site!).href;
     >
       Skip to main content
     </a>
+
+    <!-- Browser Upgrade Banner -->
+    <BrowserUpgradeBanner client:load />
+
     <slot />
 
     <!-- PWA Install Prompt -->
