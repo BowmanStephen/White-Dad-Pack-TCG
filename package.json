@@ -11,7 +11,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "prebuild": "bun run optimize:images && bun run generate-sitemap",
+    "generate-og-image": "node scripts/generate-og-image.mjs",
+    "prebuild": "bun run optimize:images && bun run generate-og-image && bun run generate-sitemap",
     "generate-sitemap": "node scripts/generate-sitemap.mjs",
     "discord-bot": "bun run discord-bot/index.ts",
     "discord-bot:dev": "bun --watch run discord-bot/index.ts"
