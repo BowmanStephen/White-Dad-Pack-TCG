@@ -81,6 +81,11 @@ export const packProgress = computed(
   }
 );
 
+// Computed: Loading state for pack operations
+export const isLoading = computed(packState, (state) => {
+  return state === 'generating' || state === 'pack_animate';
+});
+
 /**
  * Actions
  */

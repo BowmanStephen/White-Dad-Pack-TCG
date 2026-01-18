@@ -8,7 +8,7 @@
  * - Success/failure tracking
  */
 
-import { atom, map } from 'nanostores';
+import { atom, computed, map } from 'nanostores';
 import { persistentAtom } from '@nanostores/persistent';
 import type {
   CraftingState,
@@ -217,6 +217,13 @@ export const craftingUI = map({
   showRecipeSelector: false,
   isAnimating: false,
   showResult: false,
+});
+
+/**
+ * Computed: Loading state for crafting operations
+ */
+export const isLoading = computed([craftingState, craftingUI], (state, ui) => {
+  return state === 'selecting' || state === 'crafting' || ui.isAnimating;
 });
 
 // ============================================================================
