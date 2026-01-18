@@ -189,16 +189,15 @@
           <h4 class="text-sm font-black" style="color: {rarityConfig.color};">
             {statName}
           </h4>
-          <p class="text-[10px] text-slate-400">Stat Value: <span class="font-mono font-bold text-white">{statValue}</span>/100</p>
+          <!-- WCAG AA: Increased contrast from text-slate-400 to text-slate-300 -->
+          <p class="text-[10px] text-slate-300">Stat Value: <span class="font-mono font-bold text-white">{statValue}</span>/100</p>
         </div>
       </div>
 
       <!-- Stat description -->
       <div class="px-3 py-2.5">
-        <p
-          class="text-xs leading-relaxed text-slate-200"
-          style="text-shadow: 0 1px 2px rgba(0,0,0,0.5);"
-        >
+        <!-- WCAG AA: Increased contrast from text-slate-200 to text-slate-100, removed text-shadow (not WCAG compliant) -->
+        <p class="text-xs leading-relaxed text-slate-100">
           {statDescription}
         </p>
       </div>
@@ -219,7 +218,8 @@
             ></div>
           </div>
         </div>
-        <span class="text-[9px] text-slate-500">Tap & hold on mobile</span>
+        <!-- WCAG AA: Increased contrast from text-slate-500 to text-slate-400 -->
+        <span class="text-[9px] text-slate-400">Tap & hold on mobile</span>
       </div>
 
       <!-- Decorative corner accents -->

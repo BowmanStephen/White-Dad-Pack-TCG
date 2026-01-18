@@ -25,12 +25,20 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    /* WCAG AA compliant: darker background for contrast */
+    background: rgba(220, 38, 38, 0.25); /* red-700 at 25% opacity (was red-500 at 10%) */
+    border: 2px solid rgba(239, 68, 68, 0.6); /* Thicker, more opaque border */
     border-radius: 0.5rem;
-    color: #fca5a5;
+    /* WCAG AA: lighter text for better contrast on dark backgrounds */
+    color: #fca5a5; /* red-400 */
     font-size: 0.875rem;
     line-height: 1.4;
+  }
+
+  /* Dark mode override - higher contrast */
+  :global(.dark) .error-message {
+    background: rgba(220, 38, 38, 0.35); /* Higher opacity in dark mode */
+    color: #fecaca; /* red-300 - lighter for dark mode */
   }
 
   .error-message.compact {

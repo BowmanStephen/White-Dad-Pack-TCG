@@ -101,7 +101,8 @@
           use:tooltipTarget={{ key: stat.key, register: (el) => tooltipTargets[stat.key] = el }}
         >
           <span class="text-xs w-4 drop-shadow-sm stat-icon" aria-hidden="true">{stat.icon}</span>
-          <span class="text-[9px] text-slate-400 stat-label font-medium uppercase tracking-tight" class:text-slate-300={stat.isHighStat}>{stat.name}</span>
+          <!-- WCAG AA: Increased contrast for stat labels (was text-slate-400) -->
+          <span class="text-[9px] text-slate-300 stat-label font-medium uppercase tracking-tight" class:text-white={stat.isHighStat}>{stat.name}</span>
           <div class="flex-1 h-1.5 bg-slate-700/60 rounded-full overflow-hidden relative stat-bar-container">
             <div
               class="h-full rounded-full transition-all duration-700 ease-out relative stat-bar"
@@ -121,10 +122,10 @@
               ></div>
             </div>
           </div>
+          <!-- WCAG AA: Increased contrast for stat values, removed text-shadow (not WCAG compliant) -->
           <span
-            class="text-[10px] w-7 text-right font-mono font-bold stat-value"
+            class="text-[10px] w-7 text-right font-mono font-bold stat-value text-slate-200"
             class:text-white={stat.isHighStat}
-            style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);"
           >
             {formatCardStat(stat.value)}
           </span>

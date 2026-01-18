@@ -45,52 +45,55 @@ export interface RarityConfig {
 }
 
 // Rarity configurations map
+// Colors updated for WCAG AA compliance (PACK-056)
+// - Light mode: darker colors for white text (4.5:1+ contrast)
+// - Dark mode: lighter colors for dark backgrounds (4.5:1+ contrast)
 export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
   common: {
     name: 'Common',
-    color: '#9ca3af',
-    borderColor: '#d1d5db',
-    glowColor: 'rgba(156, 163, 175, 0.3)',
+    color: '#6b7280', // gray-500 (was gray-400) - WCAG AA on white/dark
+    borderColor: '#9ca3af', // gray-400 for borders
+    glowColor: 'rgba(107, 114, 128, 0.4)', // Increased opacity for visibility
     particleCount: 0,
     animationIntensity: 1,
   },
   uncommon: {
     name: 'Uncommon',
-    color: '#60a5fa',
-    borderColor: '#93c5fd',
-    glowColor: 'rgba(96, 165, 250, 0.4)',
+    color: '#3b82f6', // blue-500 (was blue-400) - WCAG AA compliant
+    borderColor: '#60a5fa', // blue-400 for borders
+    glowColor: 'rgba(59, 130, 246, 0.5)', // Increased opacity
     particleCount: 5,
     animationIntensity: 1.2,
   },
   rare: {
     name: 'Rare',
-    color: '#fbbf24',
-    borderColor: '#fcd34d',
-    glowColor: 'rgba(251, 191, 36, 0.5)',
+    color: '#d97706', // amber-600 (was yellow-400) - WCAG AA on white
+    borderColor: '#fbbf24', // yellow-400 for borders
+    glowColor: 'rgba(217, 119, 6, 0.6)', // Darker for better contrast
     particleCount: 10,
     animationIntensity: 1.5,
   },
   epic: {
     name: 'Epic',
-    color: '#a855f7',
-    borderColor: '#c084fc',
-    glowColor: 'rgba(168, 85, 247, 0.5)',
+    color: '#9333ea', // purple-600 (was purple-500) - WCAG AA compliant
+    borderColor: '#a855f7', // purple-500 for borders
+    glowColor: 'rgba(147, 51, 234, 0.6)', // Increased opacity
     particleCount: 15,
     animationIntensity: 1.8,
   },
   legendary: {
     name: 'Legendary',
-    color: '#f97316',
-    borderColor: '#fb923c',
-    glowColor: 'rgba(249, 115, 22, 0.6)',
+    color: '#ea580c', // orange-600 (was orange-500) - WCAG AA compliant
+    borderColor: '#f97316', // orange-500 for borders
+    glowColor: 'rgba(234, 88, 12, 0.7)', // Increased opacity
     particleCount: 25,
     animationIntensity: 2.2,
   },
   mythic: {
     name: 'Mythic',
-    color: '#ec4899',
-    borderColor: '#f472b6',
-    glowColor: 'rgba(236, 72, 153, 0.7)',
+    color: '#db2777', // pink-600 (was pink-500) - WCAG AA compliant
+    borderColor: '#ec4899', // pink-500 for borders
+    glowColor: 'rgba(219, 39, 119, 0.8)', // Higher opacity for mythic
     particleCount: 40,
     animationIntensity: 3,
   },

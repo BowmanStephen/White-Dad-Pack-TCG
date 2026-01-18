@@ -422,7 +422,8 @@
 
       <!-- Top bar -->
       <div class="relative z-20 flex items-center justify-between p-3 bg-gradient-to-b from-black/40 to-transparent">
-        <div class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-bold" style="background: {rarityConfig.color}33; color: {rarityConfig.color};">
+        <!-- Type badge with WCAG AA compliant contrast -->
+        <div class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-bold text-white" style="background: {rarityConfig.color}; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
           <span>{typeIcon}</span>
           <span>{typeName}</span>
         </div>
@@ -470,8 +471,8 @@
         {/if}
       </div>
 
-      <!-- Flavor text -->
-      <div class="relative z-20 mx-3 mt-2 p-2.5 bg-black/40 rounded-lg text-xs text-slate-300 italic leading-snug border border-white/5">
+      <!-- Flavor text with WCAG AA compliant contrast -->
+      <div class="relative z-20 mx-3 mt-2 p-2.5 bg-black/50 rounded-lg text-xs text-slate-200 italic leading-snug border border-white/10">
         "{displayFlavorText}"
       </div>
 

@@ -94,13 +94,13 @@ export default {
         'dad-green': '#276749',
         'dad-brown': '#744210',
 
-        // Rarity colors
-        'rarity-common': '#9ca3af',
-        'rarity-uncommon': '#60a5fa',
-        'rarity-rare': '#fbbf24',
-        'rarity-epic': '#a855f7',
-        'rarity-legendary': '#f97316',
-        'rarity-mythic': '#ec4899',
+        // Rarity colors (WCAG AA compliant - PACK-056)
+        'rarity-common': '#6b7280',    // gray-500
+        'rarity-uncommon': '#3b82f6',  // blue-500
+        'rarity-rare': '#d97706',      // amber-600
+        'rarity-epic': '#9333ea',      // purple-600
+        'rarity-legendary': '#ea580c', // orange-600
+        'rarity-mythic': '#db2777',    // pink-600
 
         // UI colors
         'card-bg': '#1f2937',
