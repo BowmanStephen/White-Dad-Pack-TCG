@@ -38,6 +38,7 @@
     "title": "DadDeck - El Simulador Definitivo de Cartas Coleccionables de Papás Blancos",
     "description": "Abre sobres digitales de refuerzo con cartas colecionables temáticas de papás. Gratis, hilarante y infinitamente entretenido.",
     "openPack": "Abrir Sobre",
+    "open": "Abrir Sobre",
     "openAnother": "Abrir Otro Sobre",
     "backToStreet": "Volver a la Calle",
     "readyToOpen": "Listo para abrir un sobre...",
@@ -52,8 +53,8 @@
     "signatureBestPull": "Mejor Extracción Firma",
     "fullPackContents": "Contenido Completo del Sobre",
     "distribution": "Distribución",
-    "generating": "Generando...",
-    "shared": "¡Compartido!"
+    "shared": "¡Compartido!",
+    "open_desc": "Abre sobres y colecciona cartas de papás"
   },
   "card": {
     "inspect": "Inspeccionar {name}",
@@ -123,7 +124,8 @@
     "descending": "Descendente",
     "clearAll": "Limpiar Todo",
     "noCards": "No se encontraron cartas",
-    "emptyCollection": "Tu colección está vacía. ¡Abre algunos sobres para comenzar!"
+    "emptyCollection": "Tu colección está vacía. ¡Abre algunos sobres para comenzar!",
+    "view_desc": "Ver y gestionar tu colección de cartas"
   },
   "share": {
     "title": "Comparte Tu Extracción",
@@ -140,6 +142,7 @@
   "deck": {
     "title": "Constructor de Mazos",
     "buildDeck": "Construye Tu Mazo",
+    "build_desc": "Construye y gestiona tus mazos",
     "selectDeck": "Seleccionar Espacio de Mazo",
     "deckSlot": "Espacio de Mazo {number}",
     "addToDeck": "Añadir al Mazo",
@@ -180,6 +183,7 @@
   },
   "trade": {
     "title": "Centro de Intercambio",
+    "create_desc": "Crea y gestiona ofertas de intercambio",
     "createTrade": "Crear Oferta de Intercambio",
     "myTrades": "Mis Intercambios",
     "browseTrades": "Explorar Intercambios",
@@ -261,6 +265,13 @@
     "title": "Estás sin conexión",
     "message": "Algunas funciones pueden estar limitadas",
     "retry": "Reintentar"
+  },
+  "error": {
+    "not_found": "Página No Encontrada",
+    "not_found_desc": "La página que buscas no existe o ha sido movida. Igual que mi línea de cabello desde los 90s.",
+    "suggestions": "Aquí tienes algunos lugares donde puedes ir:",
+    "back_home": "Volver al Inicio",
+    "dad_joke": "¿Por qué el papá se perdió en el sitio web? ¡Porque se negó a pedir direcciones!"
   },
   "accessibility": {
     "skipToContent": "Saltar al contenido principal",

@@ -38,6 +38,7 @@
     "title": "DadDeck - The Ultimate White Dad Trading Card Simulator",
     "description": "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining.",
     "openPack": "Open Pack",
+    "open": "Open Pack",
     "openAnother": "Open Another Pack",
     "backToStreet": "Back to Street",
     "readyToOpen": "Ready to open a pack...",
@@ -52,8 +53,8 @@
     "signatureBestPull": "Signature Best Pull",
     "fullPackContents": "Full Pack Contents",
     "distribution": "Distribution",
-    "generating": "Generating...",
-    "shared": "Shared!"
+    "shared": "Shared!",
+    "open_desc": "Open booster packs and collect dad cards"
   },
   "card": {
     "inspect": "Inspect {name}",
@@ -123,7 +124,8 @@
     "descending": "Descending",
     "clearAll": "Clear All",
     "noCards": "No cards found",
-    "emptyCollection": "Your collection is empty. Open some packs to get started!"
+    "emptyCollection": "Your collection is empty. Open some packs to get started!",
+    "view_desc": "View and manage your card collection"
   },
   "share": {
     "title": "Share Your Pull",
@@ -141,6 +143,7 @@
     "title": "Deck Builder",
     "metaDescription": "Build and manage your DadDeck™ decks. Drag and drop cards, view statistics, and create the ultimate deck.",
     "buildDeck": "Build Your Deck",
+    "build_desc": "Build and manage your decks",
     "selectDeck": "Select Deck Slot",
     "deckSlot": "Deck Slot {number}",
     "addToDeck": "Add to Deck",
@@ -224,6 +227,7 @@
   },
   "trade": {
     "title": "Trading Hub",
+    "create_desc": "Create and manage trade offers",
     "createTrade": "Create Trade Offer",
     "myTrades": "My Trades",
     "browseTrades": "Browse Trades",
@@ -305,6 +309,13 @@
     "title": "You're offline",
     "message": "Some features may be limited",
     "retry": "Retry"
+  },
+  "error": {
+    "not_found": "Page Not Found",
+    "not_found_desc": "The page you're looking for doesn't exist or has been moved. Kind of like my hairline since the 90s.",
+    "suggestions": "Here are some places you can go instead:",
+    "back_home": "Back to Home",
+    "dad_joke": "Why did the dad get lost on the website? He refused to stop and ask for directions!"
   },
   "accessibility": {
     "skipToContent": "Skip to main content",

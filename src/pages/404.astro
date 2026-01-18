@@ -1,0 +1,151 @@
+---
+import Layout from '@/layouts/BaseLayout.astro';
+import { t } from '@/i18n';
+
+// Dad-themed 404 messages
+const lostDadQuotes = [
+  {
+    quote: "Well, I tried to fix it, but I think I made it worse.",
+    dadType: "Fix-It Dad"
+  },
+  {
+    quote: "I told you to ask for directions, but NOOOO...",
+    dadType: "Couch Dad"
+  },
+  {
+    quote: "This isn't the hardware store. This isn't even the right neighborhood!",
+    dadType: "Car Dad"
+  },
+  {
+    quote: "I've got a map somewhere... let me check my pocket... nope, that's a receipt from 2003.",
+    dadType: "Vintage Dad"
+  },
+  {
+    quote: "You call this lost? I haven't been able to find my good sunglasses since 1998!",
+    dadType: "BBQ Dad"
+  }
+];
+
+// Randomly select one
+const randomQuote = lostDadQuotes[Math.floor(Math.random() * lostDadQuotes.length)];
+
+// Suggested pages
+const suggestedPages = [
+  {
+    title: 'pack.open',
+    url: '/pack',
+    description: 'pack.open_desc',
+    icon: '🎴'
+  },
+  {
+    title: 'collection.title',
+    url: '/collection',
+    description: 'collection.view_desc',
+    icon: '📚'
+  },
+  {
+    title: 'deck.title',
+    url: '/deck-builder',
+    description: 'deck.build_desc',
+    icon: '🃏'
+  },
+  {
+    title: 'trade.title',
+    url: '/trade',
+    description: 'trade.create_desc',
+    icon: '🤝'
+  }
+];
+---
+
+<Layout title="404 - Page Not Found | DadDeck™">
+  <main class="min-h-screen flex items-center justify-center px-4 py-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="max-w-2xl w-full text-center">
+      <!-- 404 Number -->
+      <div class="mb-8 relative">
+        <h1 class="text-[150px] md:text-[200px] font-black leading-none text-transparent bg-clip-text bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 animate-pulse-slow">
+          404
+        </h1>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span class="text-6xl md:text-8xl">🔧</span>
+        </div>
+      </div>
+
+      <!-- Dad Quote -->
+      <div class="mb-8 p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-slate-700 shadow-2xl">
+        <p class="text-2xl md:text-3xl font-bold text-amber-400 mb-3">
+          "{randomQuote.quote}"
+        </p>
+        <p class="text-lg text-slate-400">
+          — {randomQuote.dadType}
+        </p>
+      </div>
+
+      <!-- Error Message -->
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+        {t('error.not_found')}
+      </h2>
+      <p class="text-xl text-slate-400 mb-12 max-w-lg mx-auto">
+        {t('error.not_found_desc')}
+      </p>
+
+      <!-- Suggested Pages -->
+      <div class="mb-12">
+        <h3 class="text-xl font-bold text-white mb-6">
+          {t('error.suggestions')}
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {suggestedPages.map(page => (
+            <a
+              href={page.url}
+              class="group p-6 bg-slate-800/50 backdrop-blur-sm rounded-xl border-2 border-slate-700 hover:border-amber-500 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20 hover:scale-105"
+            >
+              <div class="text-4xl mb-3">{page.icon}</div>
+              <h4 class="text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                {t(page.title)}
+              </h4>
+              <p class="text-sm text-slate-400">
+                {t(page.description)}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Back to Home Button -->
+      <a
+        href="/"
+        class="btn-primary inline-flex items-center gap-3 text-lg px-8 py-4"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        {t('error.back_home')}
+      </a>
+
+      <!-- Dad Joke Footer -->
+      <div class="mt-16 p-4 bg-slate-800/30 rounded-lg border border-slate-700">
+        <p class="text-sm text-slate-500 italic">
+          {t('error.dad_joke')}
+        </p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(0.98);
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+</style>
