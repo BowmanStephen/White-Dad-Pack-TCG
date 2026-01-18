@@ -219,7 +219,6 @@ export const HOLO_DROP_RATE = {
 
 // Dad Type Display Names
 export const DAD_TYPE_NAMES: Record<DadType, string> = {
-  // Clean names (Season 1)
   BBQ_DAD: 'BBQ Dad',
   FIX_IT_DAD: 'Fix-It Dad',
   GOLF_DAD: 'Golf Dad',
@@ -235,53 +234,11 @@ export const DAD_TYPE_NAMES: Record<DadType, string> = {
   VINTAGE_DAD: 'Vintage Dad',
   FASHION_DAD: 'Fashion Dad',
   TECH_DAD: 'Tech Dad',
-  // Unhinged names (Season 2+)
-  BBQ_DICKTATOR: 'BBQ Dicktator',
-  FIX_IT_FUCKBOY: 'Fix-It Fuckboy',
-  GOLF_GONAD: 'Golf Gonad',
-  COUCH_CUMMANDER: 'Couch Cummander',
-  LAWN_LUNATIC: 'Lawn Lunatic',
-  CAR_COCK: 'Car Cock',
-  OFFICE_ORGASMS: 'Office Orgasms',
-  COOL_CUCKS: 'Cool Cucks',
-  COACH_CUMSTERS: 'Coach Cumsters',
-  CHEF_CUMSTERS: 'Chef Cumsters',
-  HOLIDAY_HORNDOGS: 'Holiday Horndogs',
-  WAREHOUSE_WANKERS: 'Warehouse Wankers',
-  VINTAGE_VAGABONDS: 'Vintage Vagabonds',
-  FASHION_FUCK: 'Fashion Fuck',
-  TECH_TWATS: 'Tech Twats',
-  // Extended Archetypes
-  SUBURBAN_SPY: 'Suburban Spy',
-  GAMER_GIZZARDS: 'Gamer Gizzards',
-  PREPPER_PENIS: 'Prepper Penis',
-  BBQ_BRAWLER: 'BBQ Brawler',
-  SUBURBAN_SOCIALITE: 'Suburban Socialite',
-  NEIGHBORHOOD_NOSY: 'Neighborhood Nosy',
-  // Crossover Events
-  DUNE_DESERT: 'Dune Desert',
-  MARVEL_MASH: 'Marvel Mash',
-  STAR_WARS_SWINGER: 'Star Wars Swinger',
-  MCDONALDS_MEAT: 'McDonalds Meat',
-  POTTER_PERVERT: 'Potter Pervert',
-  FORTNITE_FUCKER: 'Fortnite Fucker',
-  // Family Variants
-  SON_SPAWNS: 'Son Spawns',
-  DAUGHTER_DINGBATS: 'Daughter Dingbats',
-  UNCLE_UPROARS: 'Uncle Uproars',
-  SUBURBAN_SIDEKICKS: 'Suburban Sidekicks',
-  // Special Card Types
   ITEM: 'Item',
-  EVENT: 'Event (Shitshow Scenarios)',
-  TERRAIN: 'Terrain (Suburban Shitfields)',
-  EVOLUTION: 'Evolution (Midlife Crisis Mutations)',
-  CURSE: 'Curse (Dad Damnations)',
-  TRAP: 'Trap (Suburban Suckerpunches)',
 };
 
 // Dad Type Icons (emoji)
 export const DAD_TYPE_ICONS: Record<DadType, string> = {
-  // Clean names (Season 1)
   BBQ_DAD: '🔥',
   FIX_IT_DAD: '🛠️',
   GOLF_DAD: '🏌️',
@@ -297,48 +254,7 @@ export const DAD_TYPE_ICONS: Record<DadType, string> = {
   VINTAGE_DAD: '🔧',
   FASHION_DAD: '👟',
   TECH_DAD: '💻',
-  // Unhinged names (Season 2+)
-  BBQ_DICKTATOR: '🔥',
-  FIX_IT_FUCKBOY: '🛠️',
-  GOLF_GONAD: '🏌️',
-  COUCH_CUMMANDER: '📺',
-  LAWN_LUNATIC: '🌱',
-  CAR_COCK: '🚗',
-  OFFICE_ORGASMS: '👔',
-  COOL_CUCKS: '🎸',
-  COACH_CUMSTERS: '🎒',
-  CHEF_CUMSTERS: '👨‍🍳',
-  HOLIDAY_HORNDOGS: '🎄',
-  WAREHOUSE_WANKERS: '📦',
-  VINTAGE_VAGABONDS: '🔧',
-  FASHION_FUCK: '👟',
-  TECH_TWATS: '💻',
-  // Extended Archetypes
-  SUBURBAN_SPY: '🕵️',
-  GAMER_GIZZARDS: '🎮',
-  PREPPER_PENIS: '🥫',
-  BBQ_BRAWLER: '🥊',
-  SUBURBAN_SOCIALITE: '🥂',
-  NEIGHBORHOOD_NOSY: '👀',
-  // Crossover Events
-  DUNE_DESERT: '🏜️',
-  MARVEL_MASH: '🦸',
-  STAR_WARS_SWINGER: '⭐',
-  MCDONALDS_MEAT: '🍔',
-  POTTER_PERVERT: '🧙',
-  FORTNITE_FUCKER: '🎮',
-  // Family Variants
-  SON_SPAWNS: '👦',
-  DAUGHTER_DINGBATS: '👧',
-  UNCLE_UPROARS: '🎉',
-  SUBURBAN_SIDEKICKS: '🤝',
-  // Special Card Types
   ITEM: '🎁',
-  EVENT: '💥',
-  TERRAIN: '🗺️',
-  EVOLUTION: '🔄',
-  CURSE: '👿',
-  TRAP: '⚠️',
 };
 
 // Stat Display Names

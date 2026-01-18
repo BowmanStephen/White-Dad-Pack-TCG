@@ -1,16 +1,10 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState } from '../types';
-import { generateSeasonPack, getPackStats } from '../lib/pack/generator';
+import { generatePack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
-import {
-  initSecurity,
-  validatePackBeforeOpen,
-  isCurrentUserBanned,
-  getBanStatus,
-} from './security';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -98,18 +92,8 @@ export async function openNewPack(): Promise<void> {
         // Start timer for pack generation
         const generationStartTime = performance.now();
 
-        // Get current pack type (standard or premium)
-        let pack: Pack;
-
-        // Select a season with weighted distribution:
-        // - Season 3: 50% (newest content)
-        // - Season 2: 35% (mid-tier)
-        // - Season 1: 15% (legacy)
-        const roll = Math.random();
-        const seasonId: 1 | 2 | 3 = roll < 0.15 ? 1 : roll < 0.5 ? 2 : 3;
-
-        // Generate pack from selected season
-        pack = generateSeasonPack(seasonId);
+        // Generate pack
+        const pack = generatePack();
 
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;

@@ -28,7 +28,7 @@
   import ErrorDisplay from '../common/ErrorDisplay.svelte';
   import ErrorMessage from '../common/ErrorMessage.svelte';
   import CinematicToggle from '../common/CinematicToggle.svelte';
-  import RateLimitCooldown from './RateLimitCooldown.svelte';
+  
 
   // Reactive state using Svelte 5 runes
   let currentPack = $state<Pack | null>(null);
@@ -210,7 +210,6 @@
   {:else if packState === 'results' && currentPack && packStats}
     <!-- Results screen -->
     <div class="results-container">
-      <RateLimitCooldown />
       <PackResults
         pack={currentPack}
         stats={packStats}

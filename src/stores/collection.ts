@@ -2,7 +2,6 @@ import { persistentAtom } from '@nanostores/persistent';
 import type { Collection, CollectionMetadata, CollectionState, CollectionStats, Pack, Rarity } from '../types';
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
-import { safeJsonParse } from '../lib/utils/safe-parse';
 import { createStorageError, logError } from '@/lib/utils/errors';
 import {
   createMigrationEncoder,

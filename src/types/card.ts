@@ -72,48 +72,6 @@ export interface CardAttribute {
   description: string;
 }
 
-// Event Card Type - SHITSHOW SCENARIOS
-export interface EventCardType {
-  effectType: 'instant' | 'sorcery';
-  effect: CardEffect;
-  targetRequirement?: string;
-  flavorTrigger?: string;
-}
-
-// Terrain Card Type - SUBURBAN SHITFIELDS
-export interface TerrainCardType {
-  fieldEffect: CardEffect;
-  affectedArchetypes?: DadType[];
-  negativeEffectOnOpponents?: CardEffect;
-  permanentUntilReplaced: boolean;
-  activationCost?: number;
-}
-
-// Evolution Card Type - MIDLIFE CRISIS MUTATIONS
-export interface EvolutionCardType {
-  evolvesFrom: string;
-  statBoosts: Partial<CardStats>;
-  newAbilities: CardAbility[];
-  transformationFlavor: string;
-}
-
-// Curse Card Type - DAD DAMNATIONS
-export interface CurseCardType {
-  target: 'single_dad' | 'all_opponents';
-  effect: CardEffect;
-  duration: number;
-  canBeRemoved: boolean;
-  removalCondition?: string;
-}
-
-// Trap Card Type - SUBURBAN SUCKERPUNCHES
-export interface TrapCardType {
-  trigger: 'on_attack' | 'on_card_play' | 'on_stat_boost' | 'on_end_of_turn';
-  effect: CardEffect;
-  faceDown: boolean;
-  oneTimeUse: boolean;
-}
-
 // Main Card Interface
 export interface Card {
   id: string;
@@ -131,13 +89,6 @@ export interface Card {
   artist: string;
   holoVariant?: HoloVariant;
   seasonId?: SeasonId;
-
-  // Special card type data (only present if type is EVENT, TERRAIN, EVOLUTION, CURSE, or TRAP)
-  eventData?: EventCardType;
-  terrainData?: TerrainCardType;
-  evolutionData?: EvolutionCardType;
-  curseData?: CurseCardType;
-  trapData?: TrapCardType;
 }
 
 // Card in a pack (with runtime properties)

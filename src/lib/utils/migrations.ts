@@ -5,7 +5,7 @@
  * No schema versioning - just clean encode/decode with Date serialization.
  */
 
-import type { Collection, Rarity } from '@/types';
+import type { Collection } from '@/types';
 import { createDateEncoder } from './encoders';
 
 /**
