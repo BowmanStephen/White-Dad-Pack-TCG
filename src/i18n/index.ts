@@ -80,6 +80,34 @@ const translations: Record<string, string> = {
   // Achievements
   'achievements.title': 'Achievements',
   'achievements.subtitle': 'Track your progress and unlock rewards',
+
+  // Batch Opening
+  'batch.openMultiple': 'Open Multiple Packs',
+  'batch.selectCount': 'Select number of packs to open:',
+  'batch.fastForwardInfo': 'Packs will open in fast-forward mode with no animations',
+  'batch.openPacks': 'Open {count} Packs',
+  'batch.opening': 'Opening Packs...',
+  'batch.progress': 'Opening pack {current} of {total}',
+  'batch.cardsOpened': 'Cards Opened',
+  'batch.complete': 'Complete',
+  'batch.currentPack': 'Current Pack Preview',
+  'batch.cancel': 'Cancel',
+  'batch.paused': 'Batch Paused',
+  'batch.pausedInfo': '{opened} of {total} packs opened before pause',
+  'batch.resume': 'Resume',
+  'batch.reset': 'Reset',
+  'batch.newBatch': 'Start New Batch',
+  'batch.completeTitle': 'Batch Complete!',
+  'batch.completeInfo': '{count} packs opened successfully',
+  'batch.resultsTitle': 'Batch Results',
+  'batch.packsOpened': 'Packs Opened',
+  'batch.totalCards': 'Total Cards',
+  'batch.holoCount': 'Holo Cards',
+  'batch.duration': 'Duration',
+  'batch.rarityBreakdown': 'Rarity Breakdown',
+  'batch.bestPulls': 'Best Pulls',
+  'batch.allCards': 'All Cards',
+  'batch.noResults': 'No batch results available',
 };
 
 /**
