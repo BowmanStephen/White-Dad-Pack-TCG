@@ -10,6 +10,55 @@ import {
   importCollection as migrateImportCollection,
 } from '@/lib/utils/migrations';
 
+// ============================================================================
+// SERVICE WORKER COMMUNICATION
+// ============================================================================
+
+// Send collection to service worker for IndexedDB caching
+async function syncToServiceWorker(collection: Collection): Promise<void> {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    registration.active?.postMessage({
+      type: 'SAVE_COLLECTION',
+      collection,
+    });
+    console.log('[Collection] Synced to service worker IndexedDB');
+  } catch (error) {
+    console.error('[Collection] Failed to sync to service worker:', error);
+  }
+}
+
+// Register background sync for when we come back online
+async function registerBackgroundSync(): Promise<void> {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.sync.register('sync-collection');
+    console.log('[Collection] Background sync registered');
+  } catch (error) {
+    console.error('[Collection] Failed to register background sync:', error);
+  }
+}
+
+// Listen for online events and trigger sync
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', async () => {
+    console.log('[Collection] Back online, registering background sync...');
+    await registerBackgroundSync();
+  });
+}
+
+// ============================================================================
+// COLLECTION STATE MANAGEMENT
+// ============================================================================
+
 // Initialize empty rarity counts
 function initializeRarityCounts(): Record<Rarity, number> {
   return {
@@ -197,7 +246,7 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
     }
 
     // Update collection with new pack
-    collection.set({
+    const newCollection: Collection = {
       packs: [pack, ...current.packs], // New packs first
       metadata: {
         totalPacksOpened: current.metadata.totalPacksOpened + 1,
@@ -208,7 +257,12 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
         created: current.metadata.created,
         rarityCounts: newRarityCounts, // Cache rarity counts (US107)
       },
-    });
+    };
+
+    collection.set(newCollection);
+
+    // Sync to service worker IndexedDB for offline support
+    syncToServiceWorker(newCollection);
 
     return { success: true };
   } catch (error) {
@@ -227,7 +281,7 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
 // Clear the entire collection
 export function clearCollection(): { success: boolean; error?: string } {
   try {
-    collection.set({
+    const newCollection: Collection = {
       packs: [],
       metadata: {
         totalPacksOpened: 0,
@@ -238,7 +292,13 @@ export function clearCollection(): { success: boolean; error?: string } {
         created: new Date(), // Reset creation date when clearing
         rarityCounts: initializeRarityCounts(), // Reset rarity counts (US107)
       },
-    });
+    };
+
+    collection.set(newCollection);
+
+    // Sync empty collection to service worker
+    syncToServiceWorker(newCollection);
+
     return { success: true };
   } catch (error) {
     const storageError = createStorageError(
@@ -288,6 +348,10 @@ export function importCollection(
   }
 
   collection.set(result.collection);
+
+  // Sync imported collection to service worker
+  syncToServiceWorker(result.collection);
+
   return { success: true, imported: result.collection.packs.length };
 }
 
@@ -328,4 +392,4 @@ export function trackCollectionSort(sortOption: string): void {
 // ============================================================================
 // COLLECTION COMPLETION FUNCTIONS
 // (Roadmap feature removed in MVP)
-// ==========================================================================
+// ============================================================================

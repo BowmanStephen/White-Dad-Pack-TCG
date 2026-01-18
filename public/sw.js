@@ -1,7 +1,10 @@
 /// <reference lib="webworker" />
 
-const CACHE_NAME = 'dadddeck-v1';
+const CACHE_NAME = 'dadddeck-v2';
 const OFFLINE_URL = '/offline';
+const DB_NAME = 'DadDeckDB';
+const DB_VERSION = 1;
+const COLLECTION_STORE = 'collection';
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
@@ -26,6 +29,86 @@ const CACHE_PATTERNS = {
     /^\/$/,
   ],
 };
+
+// ============================================================================
+// INDEXEDDB SETUP
+// ============================================================================
+
+// Open IndexedDB
+function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onerror = () => {
+      console.error('[SW] IndexedDB error:', request.error);
+      reject(request.error);
+    };
+
+    request.onsuccess = () => {
+      console.log('[SW] IndexedDB opened successfully');
+      resolve(request.result);
+    };
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+
+      // Create collection store if it doesn't exist
+      if (!db.objectStoreNames.contains(COLLECTION_STORE)) {
+        const store = db.createObjectStore(COLLECTION_STORE, { keyPath: 'id' });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+        console.log('[SW] Created collection store');
+      }
+    };
+  });
+}
+
+// Save collection data to IndexedDB
+async function saveCollectionToDB(data: any): Promise<void> {
+  const db = await openDB();
+  const tx = db.transaction(COLLECTION_STORE, 'readwrite');
+  const store = tx.objectStore(COLLECTION_STORE);
+
+  const record = {
+    id: 'current-collection',
+    timestamp: Date.now(),
+    data,
+  };
+
+  store.put(record);
+
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => {
+      console.log('[SW] Collection saved to IndexedDB');
+      resolve();
+    };
+    tx.onerror = () => {
+      console.error('[SW] Failed to save collection:', tx.error);
+      reject(tx.error);
+    };
+  });
+}
+
+// Get collection data from IndexedDB
+async function getCollectionFromDB(): Promise<any> {
+  const db = await openDB();
+  const tx = db.transaction(COLLECTION_STORE, 'readonly');
+  const store = tx.objectStore(COLLECTION_STORE);
+  const request = store.get('current-collection');
+
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => {
+      resolve(request.result?.data);
+    };
+    request.onerror = () => {
+      console.error('[SW] Failed to get collection:', request.error);
+      reject(request.error);
+    };
+  });
+}
+
+// ============================================================================
+// SERVICE WORKER LIFECYCLE
+// ============================================================================
 
 // Install event - cache core assets
 self.addEventListener('install', (event) => {
@@ -63,6 +146,10 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// ============================================================================
+// FETCH HANDLING
+// ============================================================================
+
 // Fetch event - implement caching strategies
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -73,6 +160,12 @@ self.addEventListener('fetch', (event) => {
 
   // Skip chrome extensions and other protocols
   if (!url.protocol.startsWith('http')) return;
+
+  // Handle API requests for collection
+  if (url.pathname === '/api/collection') {
+    event.respondWith(handleCollectionAPI(request));
+    return;
+  }
 
   // Check which strategy to use
   if (isStaticAsset(url)) {
@@ -87,9 +180,44 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
+// Handle collection API requests
+async function handleCollectionAPI(request: Request): Promise<Response> {
+  const db = await openDB();
+  const tx = db.transaction(COLLECTION_STORE, 'readonly');
+  const store = tx.objectStore(COLLECTION_STORE);
+  const dbRequest = store.get('current-collection');
+
+  return new Promise((resolve) => {
+    dbRequest.onsuccess = () => {
+      const collection = dbRequest.result?.data;
+      if (collection) {
+        console.log('[SW] Serving collection from IndexedDB');
+        resolve(new Response(JSON.stringify(collection), {
+          headers: { 'Content-Type': 'application/json' },
+        }));
+      } else {
+        resolve(new Response(JSON.stringify({ error: 'Collection not found' }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        }));
+      }
+    };
+    dbRequest.onerror = () => {
+      resolve(new Response(JSON.stringify({ error: 'Failed to read collection' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }));
+    };
+  });
+}
+
+// ============================================================================
+// CACHING STRATEGIES
+// ============================================================================
+
 // Strategy: Cache First
 // Try cache first, if miss, fetch from network and cache
-async function cacheFirst(request) {
+async function cacheFirst(request: Request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
 
@@ -111,7 +239,7 @@ async function cacheFirst(request) {
 
 // Strategy: Network First
 // Try network first, if fail, fallback to cache, then offline page
-async function networkFirst(request) {
+async function networkFirst(request: Request) {
   const cache = await caches.open(CACHE_NAME);
 
   try {
@@ -144,30 +272,40 @@ async function networkFirst(request) {
   }
 }
 
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
 // Check if URL matches static asset pattern
-function isStaticAsset(url) {
+function isStaticAsset(url: URL): boolean {
   const pathname = url.pathname;
   return CACHE_PATTERNS.static.some((pattern) => pattern.test(pathname));
 }
 
 // Check if URL matches page request pattern
-function isPageRequest(url) {
+function isPageRequest(url: URL): boolean {
   const pathname = url.pathname;
-  return CACHE_PATTERNS.pages.some((pattern) => pattern.test(pathname)) ||
-         pathname === '/' ||
-         requestPageAcceptsHTML(url);
+  return (
+    CACHE_PATTERNS.pages.some((pattern) => pattern.test(pathname)) ||
+    pathname === '/' ||
+    requestPageAcceptsHTML(url)
+  );
 }
 
 // Check if request accepts HTML
-function requestPageAcceptsHTML(url) {
-  // This is a simplified check - in production you'd inspect the Accept header
-  // but we can't access it here easily
-  return url.pathname === '/' ||
-         url.pathname.endsWith('.html') ||
-         !url.pathname.includes('.');
+function requestPageAcceptsHTML(url: URL): boolean {
+  return (
+    url.pathname === '/' ||
+    url.pathname.endsWith('.html') ||
+    !url.pathname.includes('.')
+  );
 }
 
-// Handle messages from clients (e.g., manual cache updates)
+// ============================================================================
+// MESSAGE HANDLING
+// ============================================================================
+
+// Handle messages from clients
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -180,4 +318,58 @@ self.addEventListener('message', (event) => {
       })
     );
   }
+
+  // Save collection to IndexedDB
+  if (event.data && event.data.type === 'SAVE_COLLECTION') {
+    event.waitUntil(saveCollectionToDB(event.data.collection));
+  }
+
+  // Get collection from IndexedDB
+  if (event.data && event.data.type === 'GET_COLLECTION') {
+    event.waitUntil(
+      getCollectionFromDB().then((collection) => {
+        event.ports[0].postMessage({ collection });
+      })
+    );
+  }
 });
+
+// ============================================================================
+// BACKGROUND SYNC
+// ============================================================================
+
+// Handle background sync event (for future use with server sync)
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Background sync:', event.tag);
+
+  if (event.tag === 'sync-collection') {
+    event.waitUntil(syncCollection());
+  }
+});
+
+// Sync collection with server (placeholder for future server integration)
+async function syncCollection(): Promise<void> {
+  console.log('[SW] Syncing collection...');
+
+  try {
+    // Get collection from IndexedDB
+    const collection = await getCollectionFromDB();
+
+    if (!collection) {
+      console.log('[SW] No collection to sync');
+      return;
+    }
+
+    // TODO: Send collection to server when backend is available
+    // const response = await fetch('/api/collection/sync', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(collection),
+    // });
+
+    console.log('[SW] Collection synced successfully');
+  } catch (error) {
+    console.error('[SW] Failed to sync collection:', error);
+    throw error;
+  }
+}
