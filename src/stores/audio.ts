@@ -17,6 +17,13 @@ const MUTED_KEY = 'daddeck_audio_muted';
 const VOLUME_KEY = 'daddeck_audio_volume';
 const MUSIC_VOLUME_KEY = 'daddeck_audio_music_volume';
 const SFX_VOLUME_KEY = 'daddeck_audio_sfx_volume';
+const SOUND_THEME_KEY = 'daddeck_audio_theme';
+
+export type SoundTheme = 'default' | 'japanese' | 'retro';
+
+const initialSoundTheme = typeof window !== 'undefined'
+  ? (localStorage.getItem(SOUND_THEME_KEY) as SoundTheme) || 'default'
+  : 'default';
 
 const initialMuted = typeof window !== 'undefined'
   ? localStorage.getItem(MUTED_KEY) === 'true'
@@ -38,6 +45,20 @@ export const muted = atom<boolean>(initialMuted);
 export const masterVolume = atom<number>(initialVolume);
 export const musicVolume = atom<number>(initialMusicVolume);
 export const sfxVolume = atom<number>(initialSfxVolume);
+export const soundTheme = atom<SoundTheme>(initialSoundTheme);
+
+/**
+ * Set sound theme (default, japanese, retro)
+ */
+export function setSoundTheme(theme: SoundTheme): void {
+  soundTheme.set(theme);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SOUND_THEME_KEY, theme);
+  }
+  // Clear sound cache to reload with new theme
+  soundCache.clear();
+  preloadSounds();
+}
 
 // Audio context for iOS compatibility (created on first user interaction)
 let audioContext: AudioContext | null = null;
@@ -230,8 +251,10 @@ export function playSound(
   // Initialize audio context if needed
   initAudioContext();
 
-  // Build sound path based on type and rarity
-  let soundPath = '/sounds/';
+  // Build sound path based on type, rarity, and theme
+  const currentTheme = soundTheme.get();
+  const themePath = currentTheme === 'default' ? '' : `${currentTheme}/`;
+  let soundPath = `/sounds/${themePath}`;
   let targetRarity: Rarity = 'common';
 
   switch (soundType) {

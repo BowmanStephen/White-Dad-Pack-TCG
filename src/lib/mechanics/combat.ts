@@ -377,7 +377,7 @@ export function checkSynergy(card1: Card, card2: Card): {
       '+20% all stats for all lawn/car/warehouse dads'
     ],
     'Couch Potato Crew': [
-      ['COUCH_DAD', 'REMOTE_CONTROL' as any],
+      ['COUCH_DAD', 'ITEM'],
       ['COUCH_DAD'],
       'Infinite Nap',
       'Target never wakes up'
@@ -395,7 +395,7 @@ export function checkSynergy(card1: Card, card2: Card): {
   }
 
   // Check type synergies
-  for (const [name, [types1, types2], synergyName, description] of Object.values(typeSynergies)) {
+  for (const [types1, types2, synergyName, description] of Object.values(typeSynergies)) {
     if (
       types1.includes(card1.type) &&
       types2.includes(card2.type)
@@ -403,7 +403,7 @@ export function checkSynergy(card1: Card, card2: Card): {
       return {
         hasSynergy: true,
         synergyBonus: 1.3,
-        synergyName: name,
+        synergyName,
         description,
       };
     }

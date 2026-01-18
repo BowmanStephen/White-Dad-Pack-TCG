@@ -202,25 +202,34 @@ function rollHolo(rarity: Rarity, rng: SeededRandom): HoloVariant {
 
 ## 4. Pity & Bad Luck Protection
 
+> **STATUS: IMPLEMENTED**
+> - Types: `src/types/index.ts` (PityCounter, PityThresholds, PityState)
+> - Store: `src/stores/pity.ts`
+> - Integration: `src/lib/pack/generator.ts` (generatePackWithPity)
+> - Tests: `tests/unit/stores/pity.test.ts`
+
 ### 4.1 Pity System Overview
 
 The pity system protects players from extended bad luck streaks by guaranteeing higher rarity pulls after a threshold.
 
-**Recommended Implementation:**
+**Actual Implementation:**
 
 ```typescript
+// From src/types/index.ts
 interface PityCounter {
-  packsSinceEpic: number;      // Reset when Epic+ pulled
-  packsSinceLegendary: number; // Reset when Legendary+ pulled
-  packsSinceMythic: number;    // Reset when Mythic pulled
-  packsSinceHolo: number;      // Reset when any Holo pulled
+  packsSinceRare: number;        // Reset when Rare+ pulled
+  packsSinceEpic: number;        // Reset when Epic+ pulled
+  packsSinceLegendary: number;   // Reset when Legendary+ pulled
+  packsSinceMythic: number;      // Reset when Mythic pulled
+  lastUpdated: Date;
 }
 
-const PITY_THRESHOLDS = {
-  epic: 50,        // Guaranteed Epic+ after 50 packs
-  legendary: 200,  // Guaranteed Legendary+ after 200 packs
-  mythic: 500,     // Guaranteed Mythic after 500 packs
-  holo: 10,        // Guaranteed Holo after 10 packs
+// From src/types/index.ts
+const DEFAULT_PITY_THRESHOLDS = {
+  rare: { softPity: 15, hardPity: 30, softPityMultiplier: 1.5 },
+  epic: { softPity: 40, hardPity: 60, softPityMultiplier: 2.0 },
+  legendary: { softPity: 80, hardPity: 100, softPityMultiplier: 3.0 },
+  mythic: { softPity: 150, hardPity: 200, softPityMultiplier: 5.0 },
 };
 ```
 
@@ -295,6 +304,12 @@ Show players their pity progress transparently:
 
 ## 5. Collection System
 
+> **STATUS: IMPLEMENTED**
+> - Base Store: `src/stores/collection.ts`
+> - Completion Tracking: `src/lib/collection/completion.ts` (NEW)
+> - Types: `src/types/index.ts` (CollectionCompletion, RarityCompletion, etc.)
+> - Tests: `tests/unit/lib/collection/completion.test.ts`
+
 ### 5.1 Collection State
 
 ```typescript
@@ -351,14 +366,31 @@ function getDuplicateCount(packs: Pack[], cardId: string): number {
 
 ### 5.4 Collection Completion Bonuses
 
-**Tier Rewards:**
+> **STATUS: IMPLEMENTED** in `src/lib/collection/completion.ts`
+
+**Tier Rewards (from `COMPLETION_MILESTONES`):**
 
 | Completion % | Reward |
 |--------------|--------|
-| 25% | "Quarter Collector" badge + 5 bonus packs |
-| 50% | "Half-Way Dad" badge + 10 bonus packs |
-| 75% | "Serious Collector" badge + 15 bonus packs |
-| 100% | "Complete Dad" badge + Exclusive Mythic |
+| 25% | "Quarter Complete" badge + 3 bonus packs |
+| 50% | "Halfway There" badge + 5 bonus packs |
+| 75% | "Almost There" badge + 10 bonus packs |
+| 100% | "Master Collector" badge + 20 bonus packs + Exclusive Title |
+
+**Usage:**
+```typescript
+import { calculateCollectionCompletion, getCompletionSummary } from '@/lib/collection/completion';
+
+// Get full completion data
+const completion = calculateCollectionCompletion(collection);
+console.log(`Overall: ${completion.overallPercentage}%`);
+console.log(`Missing cards:`, completion.rarityCompletion.rare.missingCardIds);
+
+// Get summary for UI
+const summary = getCompletionSummary(collection);
+console.log(`Next milestone: ${summary.nextMilestone}%`);
+console.log(`Cards needed: ${summary.cardsToNextMilestone}`);
+```
 
 **Set Completion Bonuses:**
 

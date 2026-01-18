@@ -18,6 +18,7 @@ import type {
 } from '@/types';
 import { AVATARS, PROFILE_BADGES } from '@/types';
 import { userProfile as leaderboardProfile } from '@/stores/leaderboard';
+import { sanitizeProfileName } from '@/lib/security';
 
 /**
  * Custom encoder to handle Date serialization in persistent storage
@@ -90,7 +91,7 @@ export function createProfile(stats: PlayerStats): PlayerProfile {
 
   return {
     playerId: generatePlayerId(),
-    pseudonym: leaderboardProf?.pseudonym || 'New Dad 🍖',
+    pseudonym: sanitizeProfileName(leaderboardProf?.pseudonym || 'New Dad 🍖'),
     username: '', // User will set this
     avatarId: defaultAvatar,
     bio: '',
@@ -145,7 +146,7 @@ export function updateProfileSettings(settings: Partial<ProfileSettings>): void 
 
   const updated: PlayerProfile = {
     ...current,
-    ...(settings.username && { username: settings.username.trim() }),
+    ...(settings.username && { username: sanitizeProfileName(settings.username) }),
     ...(settings.avatarId && { avatarId: settings.avatarId }),
     ...(settings.bio !== undefined && { bio: settings.bio.trim() }),
     ...(settings.favoriteCardId !== undefined && { favoriteCardId: settings.favoriteCardId }),

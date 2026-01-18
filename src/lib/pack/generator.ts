@@ -1,8 +1,9 @@
-import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign, SeasonId } from '../../types';
+import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign, SeasonId, PityThresholds } from '../../types';
 import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
-import { PACK_DESIGN_CONFIG, SEASON_PACK_CONFIG, RARITY_ORDER } from '../../types';
+import { PACK_DESIGN_CONFIG, SEASON_PACK_CONFIG, RARITY_ORDER, DEFAULT_PITY_THRESHOLDS } from '../../types';
 import { getSeasonById } from '../../data/seasons';
+import { getGuaranteedRarity, applyPityToRarityProbabilities, updatePityCounters } from '../../stores/pity';
 
 /**
  * Select cards from the rarity pool, excluding already used cards.
@@ -323,6 +324,17 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
 }
 
 /**
+ * Pack generation options
+ */
+export interface GeneratePackOptions {
+  config?: PackConfig;
+  seed?: number;
+  applyPity?: boolean;           // Whether to apply pity system (default: true)
+  pityThresholds?: PityThresholds; // Custom pity thresholds
+  updatePityAfterOpen?: boolean; // Whether to update pity counters (default: true)
+}
+
+/**
  * Generate a single pack of cards based on configuration
  *
  * @param config - Pack configuration defining rarity slots and probabilities
@@ -339,6 +351,10 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
  * const pack2 = generatePack(DEFAULT_PACK_CONFIG, 12345);
  * // pack1 === pack2 (identical cards and design)
  *
+ * @example
+ * // Generate pack with pity system
+ * const pack = generatePackWithOptions({ applyPity: true });
+ *
  * @description
  * This function implements the core pack opening mechanics:
  * - Processes each rarity slot in the config (guaranteed or probabilistic)
@@ -346,6 +362,7 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
  * - Determines holo variants based on rarity probabilities
  * - Shuffles cards to prevent position-based prediction
  * - Assigns pack design (standard/holiday/premium)
+ * - Applies pity system for bad luck protection (NEW)
  */
 export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: number): Pack {
   const rng = new SeededRandom(seed);
@@ -420,6 +437,132 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
 }
 
 /**
+ * Generate a pack with pity system integration
+ *
+ * This is the preferred method for production pack generation as it:
+ * - Checks for guaranteed rarities from pity system
+ * - Applies soft pity probability boosts
+ * - Updates pity counters after pack generation
+ *
+ * @param options - Generation options including pity configuration
+ * @returns A Pack with pity system applied
+ *
+ * @example
+ * // Generate pack with pity
+ * const pack = generatePackWithPity();
+ *
+ * @example
+ * // Generate pack without updating pity counters (for preview)
+ * const previewPack = generatePackWithPity({ updatePityAfterOpen: false });
+ */
+export function generatePackWithPity(options: GeneratePackOptions = {}): Pack {
+  const {
+    config = DEFAULT_PACK_CONFIG,
+    seed,
+    applyPity = true,
+    pityThresholds = DEFAULT_PITY_THRESHOLDS,
+    updatePityAfterOpen = true,
+  } = options;
+
+  const rng = new SeededRandom(seed);
+  const packCards: PackCard[] = [];
+  const usedCardIds = new Set<string>();
+
+  // Check if pity guarantees a specific rarity
+  const guaranteedRarity = applyPity ? getGuaranteedRarity(pityThresholds) : null;
+  let guaranteedSlotUsed = false;
+
+  // Process each slot in the pack
+  for (const slot of config.raritySlots) {
+    let rarity: Rarity;
+
+    if (slot.guaranteedRarity) {
+      // Guaranteed rarity slot
+      rarity = slot.guaranteedRarity;
+    } else if (slot.rarityPool && slot.probability) {
+      // Check if we need to force a guaranteed rarity from pity
+      if (guaranteedRarity && !guaranteedSlotUsed) {
+        // Use the last probability slot for the guaranteed rarity
+        if (slot.slot === config.raritySlots.length) {
+          rarity = guaranteedRarity;
+          guaranteedSlotUsed = true;
+        } else {
+          // Apply pity-boosted probabilities
+          const boostedProbabilities = applyPity
+            ? applyPityToRarityProbabilities(slot.probability, pityThresholds)
+            : slot.probability;
+          rarity = weightedRandom(boostedProbabilities, rng);
+        }
+      } else {
+        // Apply pity-boosted probabilities
+        const boostedProbabilities = applyPity
+          ? applyPityToRarityProbabilities(slot.probability, pityThresholds)
+          : slot.probability;
+        rarity = weightedRandom(boostedProbabilities, rng);
+      }
+    } else {
+      // Fallback to common
+      rarity = 'common';
+    }
+
+    // Use the selectCards function to get a card from the appropriate rarity pool
+    const [selectedCard] = selectCards(rarity, usedCardIds, 1, rng);
+
+    // If no card was selected (database is empty), skip this slot
+    if (!selectedCard) {
+      continue;
+    }
+
+    // Determine holographic variant using rollHolo (US038)
+    const holoType = rollHolo(rarity, rng);
+    const isHolo = holoType !== 'none';
+
+    // Create pack card with runtime properties
+    const packCard: PackCard = {
+      ...selectedCard,
+      isRevealed: false,
+      isHolo,
+      holoType,
+    };
+
+    packCards.push(packCard);
+  }
+
+  // SAFEGUARD 1: Verify pack has exactly 6 cards
+  if (packCards.length !== config.cardsPerPack) {
+    throw new Error(
+      `Pack generation failed: expected ${config.cardsPerPack} cards but got ${packCards.length}. ` +
+      `This may indicate the card database is empty or missing required rarities.`
+    );
+  }
+
+  // Shuffle the cards so rarity isn't predictable by position
+  const shuffledCards = rng.shuffle(packCards);
+
+  // SAFEGUARD 2: Verify rarity distribution within acceptable tolerance
+  validateRarityDistribution(shuffledCards, config);
+
+  // Roll for pack design (US068 - 80% standard, 15% holiday, 5% premium)
+  const packDesign = rollPackDesign(rng);
+
+  // Create the pack
+  const pack: Pack = {
+    id: generateId(),
+    cards: shuffledCards,
+    openedAt: new Date(),
+    bestRarity: getHighestRarity(shuffledCards),
+    design: packDesign,
+  };
+
+  // Update pity counters after pack generation
+  if (updatePityAfterOpen) {
+    updatePityCounters(pack);
+  }
+
+  return pack;
+}
+
+/**
  * Generate multiple packs
  *
  * @param count - Number of packs to generate
@@ -438,6 +581,25 @@ export function generatePacks(count: number, config?: PackConfig): Pack[] {
   const packs: Pack[] = [];
   for (let i = 0; i < count; i++) {
     packs.push(generatePack(config));
+  }
+  return packs;
+}
+
+/**
+ * Generate multiple packs with pity system integration
+ *
+ * Each pack updates the pity counters, so pulling a rare in pack 1
+ * resets the counter for subsequent packs.
+ *
+ * @param count - Number of packs to generate
+ * @param options - Generation options
+ * @returns Array of generated packs with pity applied
+ */
+export function generatePacksWithPity(count: number, options: GeneratePackOptions = {}): Pack[] {
+  const packs: Pack[] = [];
+  for (let i = 0; i < count; i++) {
+    // Each pack updates pity counters, affecting subsequent packs
+    packs.push(generatePackWithPity(options));
   }
   return packs;
 }

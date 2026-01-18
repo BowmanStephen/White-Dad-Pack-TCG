@@ -3,7 +3,8 @@
   import { backOut } from 'svelte/easing';
   import { modalOpen, closeModal, animationQuality, setAnimationQuality, getEffectiveQuality, screenShakeEnabled, setScreenShakeEnabled, toggleScreenShake } from '@/stores/ui';
   import type { AnimationQuality } from '@/stores/ui';
-  import { muted, masterVolume, musicVolume, sfxVolume, toggleMute, setMasterVolume, setMusicVolume, setSfxVolume } from '@/stores/audio';
+  import { muted, masterVolume, musicVolume, sfxVolume, soundTheme, toggleMute, setMasterVolume, setMusicVolume, setSfxVolume, setSoundTheme } from '@/stores/audio';
+  import type { SoundTheme } from '@/stores/audio';
   import { onMount, onDestroy, untrack } from 'svelte';
   import Slider from './Slider.svelte';
   import Toggle from './Toggle.svelte';
@@ -18,6 +19,8 @@
   let masterVol = $state(70);
   let musicVol = $state(70);
   let sfxVol = $state(80);
+  let currentSoundTheme: SoundTheme = $state('default');
+  let themeDropdownOpen = $state(false);
 
   // Graphics state
   let quality: AnimationQuality = 'auto';
@@ -82,6 +85,9 @@
     const unsubSfx = sfxVolume.subscribe((value) => {
       sfxVol = Math.round(value * 100);
     });
+    const unsubTheme = soundTheme.subscribe((value) => {
+      currentSoundTheme = value;
+    });
     const unsubQuality = animationQuality.subscribe((value) => {
       quality = value;
     });
@@ -94,6 +100,7 @@
       unsubMaster();
       unsubMusic();
       unsubSfx();
+      unsubTheme();
       unsubQuality();
       unsubScreenShake();
     };
@@ -187,6 +194,39 @@
     sfxVol = val;
     setSfxVolume(val / 100);
   }
+
+  function handleSoundThemeChange(theme: SoundTheme) {
+    setSoundTheme(theme);
+    themeDropdownOpen = false;
+  }
+
+  function toggleThemeDropdown() {
+    themeDropdownOpen = !themeDropdownOpen;
+  }
+
+  function getSoundThemeLabel(theme: SoundTheme): string {
+    switch (theme) {
+      case 'default':
+        return 'Default';
+      case 'japanese':
+        return 'Japanese Zen';
+      case 'retro':
+        return 'Retro Arcade';
+    }
+  }
+
+  function getSoundThemeDescription(theme: SoundTheme): string {
+    switch (theme) {
+      case 'default':
+        return 'Standard pack opening sounds';
+      case 'japanese':
+        return 'Soothing koto, temple bells, and bamboo sounds';
+      case 'retro':
+        return '8-bit arcade-style sound effects';
+    }
+  }
+
+  const soundThemeOptions: SoundTheme[] = ['default', 'japanese', 'retro'];
 
   function handleQualityChange(q: AnimationQuality) {
     setAnimationQuality(q);
@@ -374,6 +414,61 @@
               </Slider>
               <p class="setting-description">
                 Pack tears, card reveals, and other game sounds.
+              </p>
+            </div>
+
+            <!-- Sound Theme Dropdown -->
+            <div class="setting-row">
+              <div class="relative" use:clickOutside={() => themeDropdownOpen = false}>
+                <button
+                  on:click={toggleThemeDropdown}
+                  class="quality-select-button"
+                  aria-expanded={themeDropdownOpen}
+                  aria-haspopup="listbox"
+                  type="button"
+                >
+                  <span class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <span class="font-medium text-white">Sound Theme</span>
+                  </span>
+                  <span class="flex items-center gap-2">
+                    <span class="text-slate-300">{getSoundThemeLabel(currentSoundTheme)}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 transition-transform duration-200" class:rotate-180={themeDropdownOpen} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </button>
+
+                {#if themeDropdownOpen}
+                  <div
+                    class="quality-dropdown-menu"
+                    role="listbox"
+                    aria-label="Sound theme options"
+                  >
+                    {#each soundThemeOptions as option}
+                      <button
+                        on:click={() => handleSoundThemeChange(option)}
+                        class="quality-option"
+                        class:active={option === currentSoundTheme}
+                        role="option"
+                        aria-selected={option === currentSoundTheme}
+                        type="button"
+                      >
+                        <span class="flex-1 text-left">{getSoundThemeLabel(option)}</span>
+                        {#if option === currentSoundTheme}
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        {/if}
+                      </button>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+              <p class="setting-description">
+                {getSoundThemeDescription(currentSoundTheme)}
               </p>
             </div>
           </div>

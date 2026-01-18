@@ -191,6 +191,73 @@ export function fingerprintsMatch(fp1: string, fp2: string): boolean {
 }
 
 /**
+ * Basic profanity filter word list
+ * This is a starter list that should be expanded based on community needs
+ */
+const PROFANITY_LIST = [
+  // Common profanity (censored versions shown)
+  'fuck', 'shit', 'damn', 'bitch', 'ass',
+  'dick', 'piss', 'cock', 'pussy', 'bastard',
+  // Variations and common misspellings
+  'fuk', 'sh1t', 'd4mn', 'b1tch',
+];
+
+/**
+ * Escape HTML special characters to prevent XSS attacks
+ * Converts: & -> &amp;, < -> &lt;, > -> &gt;, " -> &quot;, ' -> &#39;
+ */
+export function escapeHtml(input: string): string {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+  };
+
+  return input.replace(/[&<>"'/]/g, (char) => htmlEscapes[char]);
+}
+
+/**
+ * Filter profanity from user input
+ * Replaces profanity with asterisks: ****
+ */
+export function filterProfanity(input: string): string {
+  let filtered = input;
+
+  for (const word of PROFANITY_LIST) {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    filtered = filtered.replace(regex, '*'.repeat(word.length));
+  }
+
+  return filtered;
+}
+
+/**
+ * Sanitize profile name with comprehensive validation
+ * - Limits to 20 characters max
+ * - Escapes HTML to prevent XSS
+ * - Filters profanity
+ * - Trims whitespace
+ */
+export function sanitizeProfileName(input: string): string {
+  // Trim whitespace first
+  let sanitized = input.trim();
+
+  // Filter profanity (before HTML escaping so word boundaries work correctly)
+  sanitized = filterProfanity(sanitized);
+
+  // Escape HTML special characters
+  sanitized = escapeHtml(sanitized);
+
+  // Limit to 20 characters (after escaping so we don't cut off escaped sequences mid-way)
+  sanitized = sanitized.substring(0, 20);
+
+  return sanitized;
+}
+
+/**
  * Sanitize user input to prevent injection attacks
  */
 export function sanitizeInput(input: string): string {
