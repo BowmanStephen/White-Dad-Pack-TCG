@@ -2110,6 +2110,21 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 
 ## 🆕 Recent Feature Additions (January 2026)
 
+### LocalStorage Quota Management (PACK-045) - Version 2.2.0
+
+**Latest Addition** - Completed January 18, 2026
+
+**What's New:**
+- Comprehensive quota management system preventing LocalStorage overflow
+- Automatic cleanup at 75%, 85%, 90%, and 95% capacity thresholds
+- User-facing warning banners and storage management UI
+- Dedicated `/storage` page for manual control
+- Full test coverage (311 lines, 10 tests, all passing)
+
+**See documentation:** `docs/PACK-045_IMPLEMENTATION_SUMMARY.md` and section above for full details.
+
+---
+
 ### Internationalization (I18N) System
 
 **Infrastructure Added:**
@@ -2458,7 +2473,14 @@ This CLAUDE.md file now contains comprehensive documentation covering:
 - **Tech Stack** - Astro, Svelte, Tailwind, Nanostores, Bun
 - **Quick Commands** - Development, build, test, deploy
 - **Project Structure** - Complete file organization
-- **Market Research** - TCG simulator best practices and competitive analysis (NEW)
+- **Market Research** - TCG simulator best practices and competitive analysis
+
+### Feature Documentation
+- **PACK-045 Implementation** - LocalStorage quota management system (`docs/PACK-045_IMPLEMENTATION_SUMMARY.md`)
+- **I18N Implementation** - Internationalization system (`I18N_IMPLEMENTATION.md`, `src/i18n/README.md`)
+- **CSS Utilities** - Component classes reference (`docs/CSS_UTILITIES.md`)
+- **TCG Best Practices** - Market research and competitive analysis (`docs/TCG_BEST_PRACTICES.md`)
+- **Ralph Loop Architecture** - Agentic loop UX patterns (`docs/RALPH_LOOP_ARCHITECTURE.md`)
 
 ### Architecture Deep Dives
 - **System Architecture** - 4-layer architecture diagram
