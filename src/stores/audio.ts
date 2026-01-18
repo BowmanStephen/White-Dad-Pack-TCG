@@ -353,6 +353,36 @@ export function playRarityJingle(rarity: Rarity): void {
 }
 
 /**
+ * PACK-025: Play new discovery sound ("ding!" for first-time pull)
+ * Special celebratory sound when discovering a card for the first time
+ */
+export function playNewDiscoverySound(): void {
+  if (muted.get()) return;
+  initAudioContext();
+
+  // Use the reveal-rare sound as the "ding!" effect
+  // It's celebratory but not too long
+  const soundPath = '/sounds/reveal-rare.mp3';
+  const audio = getCachedAudio(soundPath);
+
+  // Slightly higher volume for discovery celebration
+  const finalVolume = masterVolume.get() * sfxVolume.get() * 0.9;
+  audio.volume = Math.max(0, Math.min(1, finalVolume));
+
+  audio.addEventListener('error', () => {
+    console.debug(`Discovery sound not found: ${soundPath}`);
+  });
+
+  audio.addEventListener('ended', () => {
+    audio.remove();
+  });
+
+  audio.play().catch(() => {
+    console.debug(`Discovery sound playback prevented: ${soundPath}`);
+  });
+}
+
+/**
  * Play card flip sound
  */
 export function playCardFlip(): void {

@@ -6,10 +6,12 @@
   import CardSkeleton from '../loading/CardSkeleton.svelte';
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
-  import { playCardReveal, playCinematicCardReveal } from '../../stores/audio';
+  import { playCardReveal, playCinematicCardReveal, playNewDiscoverySound } from '../../stores/audio';
   import ConfettiEffects from '../card/ConfettiEffects.svelte';
   import ScreenShake from '../card/ScreenShake.svelte';
+  import NewBadge from '../card/NewBadge.svelte';
   import * as uiStore from '../../stores/ui';
+  import { markCardAsDiscovered, discoveryProgressText } from '../../stores/discovered';
 
   export let pack: Pack;
   export let currentIndex: number;
@@ -22,6 +24,10 @@
   $: progress = `${currentIndex + 1}/${pack.cards.length}`;
   $: allRevealed = revealedIndices.size >= pack.cards.length;
   $: rarityConfig = currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common;
+
+  // PACK-025: Track new discoveries for first-time pull effects
+  let isNewDiscovery = false;
+  let showNewBadge = false;
 
   // Screen reader announcement for card reveals
   let announcement = '';
@@ -42,6 +48,7 @@
   let particlesActive = false;
   let confettiActive = false;
   let screenShakeActive = false;
+  let discoveryConfettiActive = false; // PACK-025: Separate confetti for new discoveries
   let autoRevealTimers: number[] = [];
 
   // Debounced reveal using requestAnimationFrame for smoother 60fps
@@ -49,6 +56,25 @@
 
   // Calculate reveal delay based on cinematic mode
   $: revealDelay = 300 / cinematicConfig.speedMultiplier;
+
+  // PACK-025: Check and track new discovery
+  function checkNewDiscovery(card: typeof currentCard): boolean {
+    if (!card) return false;
+    const newlyDiscovered = markCardAsDiscovered(card);
+    if (newlyDiscovered) {
+      isNewDiscovery = true;
+      showNewBadge = true;
+      // Trigger discovery confetti burst (separate from rarity confetti)
+      discoveryConfettiActive = true;
+      setTimeout(() => { discoveryConfettiActive = false; }, 3000);
+      // PACK-025: Play celebratory "ding!" sound for new discovery
+      playNewDiscoverySound();
+    } else {
+      isNewDiscovery = false;
+      showNewBadge = false;
+    }
+    return newlyDiscovered;
+  }
 
   // Start auto-reveal when component mounts and cards are ready
   onMount(() => {
@@ -77,7 +103,13 @@
 
       if (!revealedIndices.has(index)) {
         particlesActive = true;
-        const cardRarity = pack.cards[index]?.rarity;
+        const card = pack.cards[index];
+        const cardRarity = card?.rarity;
+
+        // PACK-025: Check for new discovery and trigger effects
+        if (card) {
+          checkNewDiscovery(card);
+        }
 
         // Activate camera zoom for cinematic mode (except common/uncommon)
         if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
@@ -158,7 +190,13 @@
 
     if (!isCurrentRevealed) {
       particlesActive = true;
-      const cardRarity = currentCard?.rarity;
+      const card = currentCard;
+      const cardRarity = card?.rarity;
+
+      // PACK-025: Check for new discovery and trigger effects
+      if (card) {
+        checkNewDiscovery(card);
+      }
 
       // Activate camera zoom for cinematic mode
       if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
@@ -209,7 +247,13 @@
     stopAutoRevealSequence();
     if (!isCurrentRevealed) {
       particlesActive = true;
-      const cardRarity = currentCard?.rarity;
+      const card = currentCard;
+      const cardRarity = card?.rarity;
+
+      // PACK-025: Check for new discovery and trigger effects
+      if (card) {
+        checkNewDiscovery(card);
+      }
 
       // Activate camera zoom for cinematic mode
       if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
@@ -340,12 +384,14 @@
   <!-- Progress indicator -->
   <div class="flex items-center gap-4 w-full">
     <div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-      <div 
+      <div
         class="h-full bg-amber-500 transition-all duration-300"
         style="width: {((currentIndex + 1) / pack.cards.length) * 100}%;"
       ></div>
     </div>
     <span class="text-slate-400 text-sm font-mono">{progress}</span>
+    <!-- PACK-025: Discovery progress -->
+    <span class="text-slate-400 text-sm font-mono">{$discoveryProgressText}</span>
   </div>
   
   <!-- Card display -->
@@ -375,6 +421,11 @@
       {:else}
         <!-- FadeIn wrapper for smooth reveal (slower in cinematic mode) -->
         <FadeIn duration={300 / cinematicConfig.speedMultiplier}>
+          <!-- PACK-025: Discovery confetti burst for first-time pulls -->
+          {#if isNewDiscovery}
+            <ConfettiEffects rarity="legendary" active={discoveryConfettiActive} />
+          {/if}
+
           <!-- Confetti effects for legendary+ cards (enhanced in cinematic) -->
           <ConfettiEffects rarity={currentCard.rarity} active={confettiActive} />
 
@@ -384,6 +435,11 @@
             active={particlesActive}
             duration={1500 / cinematicConfig.speedMultiplier}
           />
+
+          <!-- PACK-025: NEW! badge for first-time discoveries -->
+          {#if currentCard}
+            <NewBadge card={currentCard} show={showNewBadge} delay={200} />
+          {/if}
 
           <!-- Legendary/Mythic burst effect -->
           {#if currentCard.rarity === 'legendary' || currentCard.rarity === 'mythic'}
