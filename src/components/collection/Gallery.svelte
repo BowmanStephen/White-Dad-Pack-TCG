@@ -1370,7 +1370,7 @@
 
   .duplicate-badge {
     position: absolute;
-    top: -0.5rem;
+    bottom: -0.5rem;
     right: -0.5rem;
     padding: 0.25rem 0.5rem;
     background: linear-gradient(135deg, #ef4444, #dc2626);
