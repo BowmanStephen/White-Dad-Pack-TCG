@@ -1,9 +1,9 @@
 <script lang="ts">
   import { fade, scale } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
-  import { modalOpen, closeModal } from '@/stores/ui';
+  import { modalOpen, closeModal, showToast } from '@/stores/ui';
   import { trackEvent } from '@/stores/analytics';
-  import { notifySuccess, notifyError, notifyInfo } from '@/stores/notifications';
+  import { RARITY_ORDER } from '@/types';
   import type { Card } from '@/types';
   import { onMount, onDestroy } from 'svelte';
 
@@ -128,10 +128,10 @@
     if (!cards.length) return;
 
     const bestCard = cards.reduce((best, card) =>
-      card.rarityTier > best.rarityTier ? card : best
+      RARITY_ORDER[card.rarity] > RARITY_ORDER[best.rarity] ? card : best
     );
 
-    const rarityStars = '★'.repeat(bestCard.rarityTier + 1);
+    const rarityStars = '★'.repeat(RARITY_ORDER[bestCard.rarity] + 1);
     const text = `Just pulled: ${bestCard.name} ${rarityStars} ${bestCard.flavorText}`;
 
     const twitterUrl = new URL('https://twitter.com/intent/tweet');
@@ -168,16 +168,16 @@
         },
       });
 
-      notifyInfo('Instructions copied! Paste them in Discord, then right-click the image to copy it.');
+      showToast('Instructions copied! Paste them in Discord, then right-click the image to copy it.', 'info');
     } catch (error) {
       console.error('Failed to copy Discord instructions:', error);
-      notifyInfo('Right-click the preview image → Copy Image → Paste in Discord!');
+      showToast('Right-click the preview image → Copy Image → Paste in Discord!', 'info');
     }
   }
 
   async function downloadPackImage() {
     if (!packImageElement) {
-      notifyError('No pack image to download.');
+      showToast('No pack image to download.', 'error');
       return;
     }
 
@@ -187,16 +187,23 @@
         throw new Error('Failed to load image generation library');
       });
 
-      const canvas = html2canvas.default(packImageElement!, {
-        backgroundColor: '#0f172a',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      });
+       const canvas = await html2canvas.default(packImageElement!, {
+         backgroundColor: '#0f172a',
+         scale: 2,
+         logging: false,
+         useCORS: true,
+         allowTaint: true,
+       });
 
-      const blob = await new Promise<Blob>((resolve) => canvas.toBlob(resolve, 'image/png'));
-      if (!blob) throw new Error('Failed to create image blob');
+       const blob = await new Promise<Blob>((resolve, reject) => {
+         canvas.toBlob((b) => {
+           if (!b) {
+             reject(new Error('Failed to create image blob'));
+             return;
+           }
+           resolve(b);
+         }, 'image/png');
+       });
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -217,10 +224,10 @@
         },
       });
 
-      notifySuccess('Pack image downloaded!');
+      showToast('Pack image downloaded!', 'success');
     } catch (error) {
       console.error('Download failed:', error);
-      notifyError('Failed to download image. Please try again.');
+      showToast('Failed to download image. Please try again.', 'error');
     }
   }
 
@@ -316,18 +323,23 @@
                     throw new Error('Failed to load image generation library');
                   });
 
-                  const canvas = html2canvas.default(packImageElement!, {
-                    backgroundColor: '#0f172a',
-                    scale: 2,
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                  });
+                   const canvas = await html2canvas.default(packImageElement!, {
+                     backgroundColor: '#0f172a',
+                     scale: 2,
+                     logging: false,
+                     useCORS: true,
+                     allowTaint: true,
+                   });
 
-                  const blob = await new Promise<Blob>((resolve) =>
-                    canvas.toBlob(resolve, 'image/png')
-                  );
-                  if (!blob) throw new Error('Failed to create image blob');
+                   const blob = await new Promise<Blob>((resolve, reject) => {
+                     canvas.toBlob((b) => {
+                       if (!b) {
+                         reject(new Error('Failed to create image blob'));
+                         return;
+                       }
+                       resolve(b);
+                     }, 'image/png');
+                   });
 
                   const file = new File([blob], 'daddieck-pack.png', { type: 'image/png' });
 
@@ -347,16 +359,16 @@
                     },
                   });
 
-                  notifySuccess('Thanks for sharing!');
+                   showToast('Thanks for sharing!', 'success');
                 } catch (error) {
                   // User cancelled the share dialog - this is expected behavior, not an error
                   if ((error as Error).name !== 'AbortError') {
                     console.error('Native share failed:', error);
-                    notifyError('Failed to open share dialog. Please try again.');
+                     showToast('Failed to open share dialog. Please try again.', 'error');
                   }
                 }
               } else {
-                notifyError('No pack image available to share.');
+                 showToast('No pack image available to share.', 'error');
               }
             }}
             class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
