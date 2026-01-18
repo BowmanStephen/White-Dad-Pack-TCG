@@ -1,5 +1,6 @@
 import type { Card, CardStats, DadType, Deck } from '../../types';
 import type { DeckBattleResult } from '../../types/deck';
+import { getTypeAdvantage } from './type-advantages';
 
 /**
  * DadDeck™ Combat Mechanics
@@ -252,99 +253,26 @@ export function executeAbility(
 }
 
 /**
- * Check for type advantages
+ * Check for type advantages (imported from type-advantages.ts)
  *
- * Certain dad types have advantages over others, similar to Pokémon types:
- * - Advantage: 1.5x damage (e.g., BBQ_DAD vs COUCH_DAD)
- * - Disadvantage: 0.75x damage (e.g., COUCH_DAD vs BBQ_DAD)
+ * This function is now a re-export for backwards compatibility.
+ * The actual implementation is in src/lib/mechanics/type-advantages.ts
+ *
+ * Type advantages work like Pokémon:
+ * - Advantage: 1.2x damage (+20% bonus)
+ * - Disadvantage: 0.8x damage (-20% penalty)
  * - Neutral: 1.0x damage
  *
  * @param attacker - Attacking dad type
  * @param defender - Defending dad type
- * @returns Damage multiplier (1.5 for advantage, 0.75 for disadvantage, 1.0 for neutral)
+ * @returns Damage multiplier (1.2 for advantage, 0.8 for disadvantage, 1.0 for neutral)
  *
  * @example
- * getTypeAdvantage('BBQ_DAD', 'COUCH_DAD') // Returns 1.5 (advantage)
- * getTypeAdvantage('COUCH_DAD', 'BBQ_DAD') // Returns 0.75 (disadvantage)
- * getTypeAdvantage('BBQ_DAD', 'FIX_IT_DAD') // Returns 1.0 (neutral)
+ * getTypeAdvantage('BBQ_DAD', 'GOLF_DAD') // Returns 1.2 (advantage)
+ * getTypeAdvantage('GOLF_DAD', 'BBQ_DAD') // Returns 1.0 (neutral)
+ * getTypeAdvantage('FIX_IT_DAD', 'TECH_DAD') // Returns 1.2 (advantage)
  */
-export function getTypeAdvantage(attacker: DadType, defender: DadType): number {
-  // Type advantages - each type has advantages over certain other types
-  // Unhinged names map to their clean name equivalents for advantage calculation
-  const advantages: Record<DadType, DadType[]> = {
-    // Clean names (Season 1)
-    BBQ_DAD: ['COUCH_DAD', 'CHEF_DAD', 'COUCH_DAD', 'CHEF_DAD'],
-    FIX_IT_DAD: ['CAR_DAD', 'WAREHOUSE_DAD', 'CAR_DAD', 'WAREHOUSE_DAD'],
-    GOLF_DAD: ['COOL_DAD', 'COACH_DAD', 'COOL_DAD', 'COACH_DAD'],
-    COUCH_DAD: ['OFFICE_DAD', 'COACH_DAD', 'OFFICE_DAD', 'COACH_DAD'],
-    LAWN_DAD: ['FASHION_DAD', 'COUCH_DAD', 'FASHION_DAD', 'COUCH_DAD'],
-    CAR_DAD: ['FIX_IT_DAD', 'VINTAGE_DAD', 'FIX_IT_DAD', 'VINTAGE_DAD'],
-    OFFICE_DAD: ['COUCH_DAD', 'TECH_DAD', 'COUCH_DAD', 'TECH_DAD'],
-    COOL_DAD: ['GOLF_DAD', 'VINTAGE_DAD', 'GOLF_DAD', 'VINTAGE_DAD'],
-    COACH_DAD: ['COUCH_DAD', 'LAWN_DAD', 'COUCH_DAD', 'LAWN_DAD'],
-    CHEF_DAD: ['BBQ_DAD', 'COUCH_DAD', 'BBQ_DAD', 'COUCH_DAD'],
-    HOLIDAY_DAD: ['LAWN_DAD', 'FASHION_DAD', 'LAWN_DAD', 'FASHION_DAD'],
-    WAREHOUSE_DAD: ['CAR_DAD', 'FIX_IT_DAD', 'CAR_DAD', 'FIX_IT_DAD'],
-    VINTAGE_DAD: ['TECH_DAD', 'COOL_DAD', 'TECH_DAD', 'COOL_DAD'],
-    FASHION_DAD: ['COOL_DAD', 'OFFICE_DAD', 'COOL_DAD', 'OFFICE_DAD'],
-    TECH_DAD: ['OFFICE_DAD', 'VINTAGE_DAD', 'OFFICE_DAD', 'VINTAGE_DAD'],
-    // Unhinged names (Season 2+) - same advantages as clean names
-    BBQ_DAD: ['COUCH_DAD', 'CHEF_DAD', 'COUCH_DAD', 'CHEF_DAD'],
-    FIX_IT_DAD: ['CAR_DAD', 'WAREHOUSE_DAD', 'CAR_DAD', 'WAREHOUSE_DAD'],
-    GOLF_DAD: ['COOL_DAD', 'COACH_DAD', 'COOL_DAD', 'COACH_DAD'],
-    COUCH_DAD: ['OFFICE_DAD', 'COACH_DAD', 'OFFICE_DAD', 'COACH_DAD'],
-    LAWN_DAD: ['FASHION_DAD', 'COUCH_DAD', 'FASHION_DAD', 'COUCH_DAD'],
-    CAR_DAD: ['FIX_IT_DAD', 'VINTAGE_DAD', 'FIX_IT_DAD', 'VINTAGE_DAD'],
-    OFFICE_DAD: ['COUCH_DAD', 'TECH_DAD', 'COUCH_DAD', 'TECH_DAD'],
-    COOL_DAD: ['GOLF_DAD', 'VINTAGE_DAD', 'GOLF_DAD', 'VINTAGE_DAD'],
-    COACH_DAD: ['COUCH_DAD', 'LAWN_DAD', 'COUCH_DAD', 'LAWN_DAD'],
-    CHEF_DAD: ['BBQ_DAD', 'COUCH_DAD', 'BBQ_DAD', 'COUCH_DAD'],
-    HOLIDAY_DAD: ['LAWN_DAD', 'FASHION_DAD', 'LAWN_DAD', 'FASHION_DAD'],
-    WAREHOUSE_DAD: ['CAR_DAD', 'FIX_IT_DAD', 'CAR_DAD', 'FIX_IT_DAD'],
-    VINTAGE_DAD: ['TECH_DAD', 'COOL_DAD', 'TECH_DAD', 'COOL_DAD'],
-    FASHION_DAD: ['COOL_DAD', 'OFFICE_DAD', 'COOL_DAD', 'OFFICE_DAD'],
-    TECH_DAD: ['OFFICE_DAD', 'VINTAGE_DAD', 'OFFICE_DAD', 'VINTAGE_DAD'],
-    // Extended Archetypes
-    BBQ_DAD: ['NEIGHBORHOOD_NOSY', 'OFFICE_DAD', 'OFFICE_DAD'],
-    BBQ_DAD: ['COUCH_DAD', 'TECH_DAD', 'COUCH_DAD', 'TECH_DAD'],
-    PREPPER_PENIS: ['SUBURBAN_SOCIALITE', 'HOLIDAY_DAD', 'HOLIDAY_DAD'],
-    BBQ_BRAWLER: ['BBQ_DAD', 'CHEF_DAD', 'BBQ_DAD', 'CHEF_DAD'],
-    SUBURBAN_SOCIALITE: ['FASHION_DAD', 'COOL_DAD', 'FASHION_DAD', 'COOL_DAD'],
-    NEIGHBORHOOD_NOSY: ['BBQ_DAD', 'OFFICE_DAD', 'OFFICE_DAD'],
-    // Crossover Events - neutral advantages
-    DUNE_DESERT: ['LAWN_DAD', 'LAWN_DAD'],
-    MARVEL_MASH: ['COOL_DAD', 'COOL_DAD'],
-    STAR_WARS_SWINGER: ['TECH_DAD', 'TECH_DAD'],
-    MCDONALDS_MEAT: ['CHEF_DAD', 'CHEF_DAD'],
-    POTTER_PERVERT: ['VINTAGE_DAD', 'VINTAGE_DAD'],
-    FORTNITE_FUCKER: ['BBQ_DAD', 'COUCH_DAD', 'COUCH_DAD'],
-    // Family Variants
-    SON_SPAWNS: ['DAUGHTER_DINGBATS'],
-    DAUGHTER_DINGBATS: ['SON_SPAWNS'],
-    UNCLE_UPROARS: ['HOLIDAY_DAD', 'HOLIDAY_DAD'],
-    SUBURBAN_SIDEKICKS: ['NEIGHBORHOOD_NOSY'],
-    // Special Card Types - no type advantages
-    ITEM: [],
-    EVENT: [],
-    TERRAIN: [],
-    EVOLUTION: [],
-    CURSE: [],
-    TRAP: [],
-  };
-
-  if (advantages[attacker]?.includes(defender)) {
-    return 1.5; // 50% bonus damage
-  }
-
-  // Check for disadvantage
-  for (const [type, disadvantaged] of Object.entries(advantages)) {
-    if (disadvantaged.includes(attacker) && type === defender) {
-      return 0.75; // 25% reduced damage
-    }
-  }
-
-  return 1.0; // neutral
-}
+export { getTypeAdvantage };
 
 /**
  * Apply status effects to a card
