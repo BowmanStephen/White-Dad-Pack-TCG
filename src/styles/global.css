@@ -397,6 +397,16 @@
   @apply text-sm text-gray-600 dark:text-gray-400;
 }
 
+/* ===== MOBILE BOTTOM NAVIGATION ===== */
+
+/* Add padding to body on mobile to account for fixed bottom nav */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 5rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0));
+  }
+}
+
 /* ===== REDUCED MOTION ===== */
 
 @media (prefers-reduced-motion: reduce) {
