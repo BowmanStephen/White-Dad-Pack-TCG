@@ -9,7 +9,7 @@
  * - Device fingerprinting
  */
 
-import { atom } from 'nanostores';
+import { atom, computed } from 'nanostores';
 import type { Pack } from '../types';
 import type {
   SecurityViolation,
@@ -81,6 +81,18 @@ export const packRateLimit = atom<RateLimitStatus>({
   remaining: Infinity,
   resetAt: new Date(),
   isBlocked: false,
+});
+
+/**
+ * Cooldown time remaining in seconds (computed from packRateLimit)
+ */
+export const cooldownRemaining = computed(packRateLimit, (status) => {
+  if (!status.isBlocked) return 0;
+
+  const now = Date.now();
+  const resetTime = status.resetAt.getTime();
+  const remainingMs = Math.max(0, resetTime - now);
+  return Math.ceil(remainingMs / 1000); // Return seconds
 });
 
 /**

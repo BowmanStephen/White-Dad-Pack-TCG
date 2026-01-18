@@ -26,9 +26,9 @@ interface RateLimitBucket {
  */
 export const DEFAULT_RATE_LIMITS: Record<string, RateLimitConfig> = {
   pack_open: {
-    maxRequests: 60, // 60 packs per minute
+    maxRequests: 10, // 10 packs per minute
     windowMs: 60000, // 1 minute
-    burstAllowed: 10, // Allow brief bursts of 10 over limit
+    burstAllowed: 2, // Allow brief bursts of 2 over limit
   },
   premium_pack_open: {
     maxRequests: 10, // 10 premium packs per hour

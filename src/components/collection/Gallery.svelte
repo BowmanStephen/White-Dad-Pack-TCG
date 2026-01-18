@@ -1426,20 +1426,29 @@
     will-change: transform;
   }
 
-  /* Card Grid */
+  /* Card Grid - Responsive with 2/4/6 columns */
   .card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  /* Mobile landscape (3 columns) */
+  @media (min-width: 480px) and (max-width: 767px) {
+    .card-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+    }
   }
 
   /* Tablet: 4 columns */
   @media (min-width: 768px) {
     .card-grid {
       grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-      padding: 1.5rem;
+      gap: 1.25rem;
+      padding: 1.25rem;
     }
 
     .scroll-container {
@@ -1447,12 +1456,12 @@
     }
   }
 
-  /* Desktop: 6 columns */
+  /* Small desktop: 5 columns */
   @media (min-width: 1024px) {
     .card-grid {
-      grid-template-columns: repeat(6, 1fr);
-      gap: 2rem;
-      padding: 2rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+      padding: 1.5rem;
     }
 
     .scroll-container {
@@ -1460,10 +1469,42 @@
     }
   }
 
+  /* Large desktop: 6 columns */
+  @media (min-width: 1280px) {
+    .card-grid {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1.75rem;
+      padding: 1.75rem;
+    }
+  }
+
+  /* Extra large screens: 7 columns for ultra-wide displays */
+  @media (min-width: 1536px) {
+    .card-grid {
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2rem;
+      padding: 2rem;
+    }
+  }
+
+  /* Card wrapper - ensures cards scale with grid */
   .card-wrapper {
     position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4; /* Standard trading card ratio */
     cursor: pointer;
     transition: transform 0.2s ease;
+  }
+
+  .card-wrapper :global(.card-perspective) {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Make card content responsive */
+  .card-wrapper :global(.card-container) {
+    width: 100%;
+    height: 100%;
   }
 
   .card-wrapper:hover {
