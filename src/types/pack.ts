@@ -1,10 +1,12 @@
-import type { Rarity, DadType, PackCard } from './card';
+import type { Rarity, DadType, PackCard, PackType } from './index';
 
 // Pack Configuration
 export interface PackConfig {
   cardsPerPack: number;
   raritySlots: RaritySlot[];
   holoChance: number;
+  packType?: PackType;
+  themeType?: DadType; // For theme packs - specific dad type to filter by (PACK-001)
 }
 
 // Rarity Slot Configuration

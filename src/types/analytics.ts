@@ -1,4 +1,5 @@
 import type { Rarity, HoloVariant, SortOption } from './core';
+import type { PackType, DadType } from './index';
 
 // ============================================================================
 // ANALYTICS TYPES
@@ -41,7 +42,8 @@ export interface PackOpenEvent extends AnalyticsEvent {
   data: {
     packId: string;           // Pack identifier
     cardCount: number;        // Number of cards in pack
-    packType?: string;        // Type of pack (standard, premium)
+    packType?: PackType;      // Type of pack (standard, premium, theme) (PACK-001)
+    themeType?: DadType;      // Theme dad type (for theme packs) (PACK-001)
     premiumConfigId?: string; // ID of premium configuration
   };
 }

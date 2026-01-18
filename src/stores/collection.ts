@@ -68,8 +68,10 @@ async function initializeCollection() {
   }
 }
 
-// Initialize on module load (but don't block)
-initializeCollection();
+// Initialize on module load (but don't block) - only in browser environment
+if (typeof window !== 'undefined') {
+  initializeCollection();
+}
 
 // ============================================================================
 // COLLECTION STORE (ATOM + INDEXEDDB PERSISTENCE)
@@ -104,10 +106,12 @@ function saveToStorage() {
   }, 500); // Debounce saves to 500ms
 }
 
-// Subscribe to store changes and persist to IndexedDB
-collectionStore.subscribe(() => {
-  saveToStorage();
-});
+// Subscribe to store changes and persist to IndexedDB (only in browser)
+if (typeof window !== 'undefined') {
+  collectionStore.subscribe(() => {
+    saveToStorage();
+  });
+}
 
 // ============================================================================
 // STORAGE UTILITIES

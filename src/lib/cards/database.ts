@@ -50,6 +50,13 @@ export function getCardsByType(type: string): Card[] {
 }
 
 /**
+ * Get cards by both rarity and type (for theme packs - PACK-001)
+ */
+export function getCardsByRarityAndType(rarity: Rarity, type: string): Card[] {
+  return cards.filter((card) => card.rarity === rarity && card.type === type);
+}
+
+/**
  * Get total card count
  */
 export function getCardCount(): number {

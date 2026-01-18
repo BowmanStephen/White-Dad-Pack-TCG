@@ -2598,8 +2598,8 @@ export const FRIEND_ACTIVITY_CONFIG: Record<FriendActivityType, { icon: string; 
 // MONETIZATION TYPES (US093 - Monetization - Premium Packs)
 // ============================================================================
 
-// Pack purchase type - standard free pack vs paid premium pack
-export type PackType = 'standard' | 'premium';
+// Pack purchase type - standard free pack vs paid premium pack vs theme pack (PACK-001)
+export type PackType = 'standard' | 'premium' | 'theme';
 
 // Premium pack purchase configuration
 export interface PremiumPackConfig {

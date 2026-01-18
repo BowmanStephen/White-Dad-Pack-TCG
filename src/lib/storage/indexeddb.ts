@@ -7,15 +7,18 @@ import { createStorageError, logError } from '@/lib/utils/errors';
 // ============================================================================
 
 // Configure localForage with IndexedDB as primary, LocalStorage as fallback
-localforage.config({
-  name: 'DadDeck',
-  storeName: 'collection',
-  driver: [
-    localforage.INDEXEDDB,
-    localforage.WEBSQL,
-    localforage.LOCALSTORAGE
-  ]
-});
+// Only configure in browser environment (SSR-safe)
+if (typeof window !== 'undefined') {
+  localforage.config({
+    name: 'DadDeck',
+    storeName: 'collection',
+    driver: [
+      localforage.INDEXEDDB,
+      localforage.WEBSQL,
+      localforage.LOCALSTORAGE
+    ]
+  });
+}
 
 // ============================================================================
 // STORAGE INTERFACE

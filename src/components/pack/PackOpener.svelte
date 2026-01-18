@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Pack, PackState } from '../../types';
+  import type { Pack, PackState, PackType, DadType } from '../../types';
   import type { AppError } from '../../lib/utils/errors';
   import {
     openNewPack,
@@ -23,12 +23,13 @@
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
+  import PackTypeSelector from './PackTypeSelector.svelte';
   import PackSkeleton from '../loading/PackSkeleton.svelte';
   import FadeIn from '../loading/FadeIn.svelte';
   import ErrorDisplay from '../common/ErrorDisplay.svelte';
   import ErrorMessage from '../common/ErrorMessage.svelte';
   import CinematicToggle from '../common/CinematicToggle.svelte';
-  
+
 
   // Reactive state using Svelte 5 runes
   let currentPack = $state<Pack | null>(null);
@@ -38,6 +39,11 @@
   let packStats = $state<any>(null);
   let packError = $state<AppError | null>(null);
   let storageError = $state<AppError | null>(null);
+
+  // Track selected pack type (PACK-001)
+  let selectedPackType: PackType = $state<PackType>('standard');
+  let selectedThemeType: DadType | undefined = $state<DadType | undefined>();
+  let showPackSelector = $state<boolean>(false);
 
   // Subscribe to Nanostores and sync to Svelte 5 state on mount
   onMount(() => {
@@ -52,8 +58,8 @@
       storageErrorStore.subscribe((value) => { storageError = value as AppError | null; }),
     ];
 
-    // Start opening a pack
-    openNewPack();
+    // Start opening a pack with default settings
+    openNewPack(selectedPackType, selectedThemeType);
 
     // Cleanup subscriptions on unmount
     return () => {
@@ -83,8 +89,19 @@
     prevCard();
   }
 
+  function handlePackTypeSelect(packType: PackType, themeType?: DadType) {
+    selectedPackType = packType;
+    selectedThemeType = themeType;
+  }
+
+  function handleOpenPack() {
+    openNewPack(selectedPackType, selectedThemeType);
+    showPackSelector = false;
+  }
+
   function handleOpenAnother() {
-    openNewPack();
+    // Show pack selector for "Open Another"
+    showPackSelector = true;
   }
 
   function handleGoHome() {
@@ -163,7 +180,39 @@
     <CinematicToggle />
   </div>
 
-  {#if packState === 'idle'}
+  {#if showPackSelector}
+    <!-- Pack type selector (PACK-001) -->
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white mb-2">Select Pack Type</h1>
+        <p class="text-slate-400">Choose your pack style</p>
+      </div>
+
+      <PackTypeSelector
+        onPackTypeSelect={handlePackTypeSelect}
+        disabled={packState === 'generating'}
+      />
+
+      <div class="flex justify-center gap-4 mt-6">
+        <button
+          onclick={handleOpenPack}
+          disabled={packState === 'generating'}
+          class="btn-primary"
+          type="button"
+        >
+          Open Pack
+        </button>
+        <button
+          onclick={() => showPackSelector = false}
+          class="btn-secondary"
+          type="button"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+
+  {:else if packState === 'idle'}
     <!-- Idle state - waiting to open -->
     <div class="text-center">
       <div class="text-4xl mb-4">📦</div>

@@ -1,10 +1,14 @@
 import { atom, computed } from 'nanostores';
-import type { Pack, PackState } from '../types';
-import { generatePack, getPackStats } from '../lib/pack/generator';
+import type { Pack, PackState, PackType, DadType } from '../types';
+import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
+
+// Current pack type selection (for UI state)
+export const selectedPackType = atom<PackType>('standard');
+export const selectedThemeType = atom<DadType | undefined>(undefined);
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -72,8 +76,16 @@ export const isLoading = computed(packState, (state) => {
  * Actions
  */
 
-// Start opening a new pack (standard or premium)
-export async function openNewPack(): Promise<void> {
+// Start opening a new pack with specified type (PACK-001)
+export async function openNewPack(packType?: PackType, themeType?: DadType): Promise<void> {
+  // Use provided pack type or fall back to store selection
+  const finalPackType = packType || selectedPackType.get();
+  const finalThemeType = themeType !== undefined ? themeType : selectedThemeType.get();
+
+  // Update store state if arguments provided
+  if (packType) selectedPackType.set(packType);
+  if (themeType !== undefined) selectedThemeType.set(themeType);
+
   // Reset state first
   currentCardIndex.set(0);
   revealedCards.set(new Set());
@@ -92,8 +104,11 @@ export async function openNewPack(): Promise<void> {
         // Start timer for pack generation
         const generationStartTime = performance.now();
 
-        // Generate pack
-        const pack = generatePack();
+        // Get pack configuration based on type
+        const packConfig = getPackConfig(finalPackType, finalThemeType);
+
+        // Generate pack with configuration
+        const pack = generatePack(packConfig);
 
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;
@@ -136,7 +151,8 @@ export async function openNewPack(): Promise<void> {
           data: {
             packId: pack.id,
             cardCount: pack.cards.length,
-            packType: 'standard',
+            packType: finalPackType,
+            themeType: finalThemeType,
           },
         });
 
@@ -159,7 +175,7 @@ export async function openNewPack(): Promise<void> {
       [
         {
           label: 'Try Again',
-          action: () => openNewPack(),
+          action: () => openNewPack(finalPackType, finalThemeType),
           primary: true,
         },
         {

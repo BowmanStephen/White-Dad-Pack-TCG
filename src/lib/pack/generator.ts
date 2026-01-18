@@ -1,5 +1,5 @@
-import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign } from '../../types';
-import { getCardsByRarity, getAllCards } from '../cards/database';
+import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign, PackType, DadType } from '../../types';
+import { getCardsByRarity, getAllCards, getCardsByRarityAndType } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
 import { RARITY_ORDER } from '../../types';
 
@@ -7,7 +7,7 @@ import { RARITY_ORDER } from '../../types';
  * Select cards from the rarity pool, excluding already used cards.
  *
  * This function implements the card selection logic for pack generation:
- * - Filters the card database by rarity
+ * - Filters the card database by rarity (and type for theme packs)
  * - Prevents duplicate cards within the same pack
  * - Falls back to adjacent rarities if the pool is exhausted
  * - As a last resort, allows duplicates if all pools are exhausted
@@ -18,19 +18,23 @@ import { RARITY_ORDER } from '../../types';
  * @param excludedIds - Set of card IDs already used in this pack (will be mutated)
  * @param count - Number of cards to select (default: 1)
  * @param rng - Optional seeded random number generator
+ * @param themeType - Optional dad type filter for theme packs (PACK-001)
  * @returns Array of selected cards (may be empty if no cards available)
  */
 export function selectCards(
   rarity: Rarity,
   excludedIds: Set<string>,
   count: number = 1,
-  rng?: SeededRandom
+  rng?: SeededRandom,
+  themeType?: DadType
 ): Card[] {
   const selected: Card[] = [];
 
   for (let i = 0; i < count; i++) {
-    // Get available cards of the requested rarity
-    let available = getCardsByRarity(rarity).filter((card) => !excludedIds.has(card.id));
+    // Get available cards of the requested rarity (and type for theme packs)
+    let available = themeType
+      ? getCardsByRarityAndType(rarity, themeType).filter((card) => !excludedIds.has(card.id))
+      : getCardsByRarity(rarity).filter((card) => !excludedIds.has(card.id));
 
     // Fallback 1: Try adjacent rarities if pool is exhausted
     if (available.length === 0) {
@@ -44,7 +48,9 @@ export function selectCards(
         const otherValue = RARITY_ORDER[otherRarity];
         // Try lower rarities first
         if (otherValue < rarityValue) {
-          available = getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
+          available = themeType
+            ? getCardsByRarityAndType(otherRarity, themeType).filter((card) => !excludedIds.has(card.id))
+            : getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
           if (available.length > 0) break;
         }
       }
@@ -56,7 +62,9 @@ export function selectCards(
 
           const otherValue = RARITY_ORDER[otherRarity];
           if (otherValue > rarityValue) {
-            available = getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
+            available = themeType
+              ? getCardsByRarityAndType(otherRarity, themeType).filter((card) => !excludedIds.has(card.id))
+              : getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
             if (available.length > 0) break;
           }
         }
@@ -65,7 +73,9 @@ export function selectCards(
 
     // Fallback 2: Allow duplicates if all pools are exhausted
     if (available.length === 0) {
-      available = getCardsByRarity(rarity);
+      available = themeType
+        ? getCardsByRarityAndType(rarity, themeType)
+        : getCardsByRarity(rarity);
       // If still no cards, try all rarities
       if (available.length === 0) {
         available = getAllCards();
@@ -118,7 +128,123 @@ export const DEFAULT_PACK_CONFIG: PackConfig = {
     },
   ],
   holoChance: 1 / 6, // ~16.67% chance for any card to be holographic
+  packType: 'standard',
 };
+
+/**
+ * Premium pack configuration with higher rare chance (PACK-001)
+ *
+ * Slot breakdown:
+ * - Slot 1-2: Common (100%)
+ * - Slot 3-4: Uncommon or better (60% uncommon, 30% rare, 8% epic, 2% legendary+)
+ * - Slot 5-6: Rare or better (70% rare, 20% epic, 9% legendary+, 1% mythic)
+ * - Holo chance: 1 in 3 cards (~33.33%) - doubled from standard
+ */
+export const PREMIUM_PACK_CONFIG: PackConfig = {
+  cardsPerPack: 6,
+  raritySlots: [
+    { slot: 1, guaranteedRarity: 'common' },
+    { slot: 2, guaranteedRarity: 'common' },
+    {
+      slot: 3,
+      rarityPool: true,
+      probability: { uncommon: 0.60, rare: 0.30, epic: 0.08, legendary: 0.019, mythic: 0.001 }
+    },
+    {
+      slot: 4,
+      rarityPool: true,
+      probability: { uncommon: 0.60, rare: 0.30, epic: 0.08, legendary: 0.019, mythic: 0.001 }
+    },
+    {
+      slot: 5,
+      rarityPool: true,
+      probability: { rare: 0.70, epic: 0.20, legendary: 0.09, mythic: 0.01 }
+    },
+    {
+      slot: 6,
+      rarityPool: true,
+      probability: { rare: 0.70, epic: 0.20, legendary: 0.09, mythic: 0.01 }
+    },
+  ],
+  holoChance: 1 / 3, // ~33.33% chance for holo (doubled from standard)
+  packType: 'premium',
+};
+
+/**
+ * Theme pack configuration for specific dad types (PACK-001)
+ *
+ * Same rarity distribution as standard packs, but all cards are from
+ * a specific dad type (BBQ_DAD, FIX_IT_DAD, etc.)
+ *
+ * Slot breakdown:
+ * - Slot 1-3: Common (100%) of theme type
+ * - Slot 4-5: Uncommon or better (74% uncommon, 20% rare, 5% epic, 1% legendary+) of theme type
+ * - Slot 6: Rare or better (87.9% rare, 10% epic, 2% legendary+, 0.1% mythic) of theme type
+ * - Holo chance: 1 in 6 cards (~16.67%)
+ */
+export function createThemePackConfig(themeType: DadType): PackConfig {
+  return {
+    cardsPerPack: 6,
+    raritySlots: [
+      { slot: 1, guaranteedRarity: 'common' },
+      { slot: 2, guaranteedRarity: 'common' },
+      { slot: 3, guaranteedRarity: 'common' },
+      {
+        slot: 4,
+        rarityPool: true,
+        probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 }
+      },
+      {
+        slot: 5,
+        rarityPool: true,
+        probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 }
+      },
+      {
+        slot: 6,
+        rarityPool: true,
+        probability: { rare: 0.879, epic: 0.10, legendary: 0.0199, mythic: 0.001 }
+      },
+    ],
+    holoChance: 1 / 6, // ~16.67% chance for holo
+    packType: 'theme',
+    themeType,
+  };
+}
+
+/**
+ * Get pack configuration by type (PACK-001)
+ *
+ * @param packType - The type of pack to get configuration for
+ * @param themeType - Optional dad type for theme packs
+ * @returns Pack configuration for the specified pack type
+ *
+ * @example
+ * // Get standard pack config
+ * const config = getPackConfig('standard');
+ *
+ * @example
+ * // Get premium pack config
+ * const config = getPackConfig('premium');
+ *
+ * @example
+ * // Get theme pack config for BBQ dads
+ * const config = getPackConfig('theme', 'BBQ_DAD');
+ */
+export function getPackConfig(packType: PackType, themeType?: DadType): PackConfig {
+  switch (packType) {
+    case 'standard':
+      return DEFAULT_PACK_CONFIG;
+    case 'premium':
+      return PREMIUM_PACK_CONFIG;
+    case 'theme':
+      if (!themeType) {
+        throw new Error('Theme pack requires a themeType parameter (dad type)');
+      }
+      return createThemePackConfig(themeType);
+    default:
+      return DEFAULT_PACK_CONFIG;
+  }
+}
 
 /**
  * Compare two rarities
@@ -351,6 +477,9 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
   const packCards: PackCard[] = [];
   const usedCardIds = new Set<string>();
 
+  // Extract theme type for theme packs (PACK-001)
+  const themeType = config.themeType as DadType | undefined;
+
   // Process each slot in the pack
   for (const slot of config.raritySlots) {
     let rarity: Rarity;
@@ -367,7 +496,8 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
     }
 
     // Use the selectCards function to get a card from the appropriate rarity pool
-    const [selectedCard] = selectCards(rarity, usedCardIds, 1, rng);
+    // Pass themeType for theme packs to filter by dad type
+    const [selectedCard] = selectCards(rarity, usedCardIds, 1, rng, themeType);
 
     // If no card was selected (database is empty), skip this slot
     if (!selectedCard) {
