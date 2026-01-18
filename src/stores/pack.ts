@@ -18,6 +18,11 @@ import {
   recordPackOpenStart,
   recordPackOpenComplete,
 } from '../lib/analytics/events';
+import {
+  getSessionId,
+  recordPackOpen,
+  updateSessionActivity,
+} from '../lib/analytics/engagement';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -206,6 +211,12 @@ export async function openNewPack(): Promise<void> {
         // Security: Record successful pack open
         recordSuccessfulPackOpen(pack, 'standard');
 
+        // Engagement: Update session activity on pack open (ANALYTICS-002)
+        updateSessionActivity();
+
+        // Engagement: Record pack open in current session (ANALYTICS-002)
+        recordPackOpen();
+
         // Analytics: Record pack open start time (ANALYTICS-001)
         recordPackOpenStart();
 
@@ -219,6 +230,7 @@ export async function openNewPack(): Promise<void> {
             packId: pack.id,
             cardCount: pack.cards.length,
             packType: 'standard',
+            sessionId: getSessionId(),  // Include session ID for correlation
           },
         });
 

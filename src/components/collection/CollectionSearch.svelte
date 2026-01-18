@@ -18,6 +18,7 @@
    */
 
   import { onDestroy } from 'svelte';
+  import { recordFeatureUsage } from '@/lib/analytics/engagement';
 
   interface Props {
     searchTerm?: string;
