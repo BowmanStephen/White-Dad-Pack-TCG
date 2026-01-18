@@ -13,6 +13,11 @@ import {
   getBanStatus,
 } from './security';
 import { haptics } from '../lib/utils/haptics';
+import {
+  saveRarityDistribution,
+  recordPackOpenStart,
+  recordPackOpenComplete,
+} from '../lib/analytics/events';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -201,6 +206,12 @@ export async function openNewPack(): Promise<void> {
         // Security: Record successful pack open
         recordSuccessfulPackOpen(pack, 'standard');
 
+        // Analytics: Record pack open start time (ANALYTICS-001)
+        recordPackOpenStart();
+
+        // Analytics: Save rarity distribution for balancing (ANALYTICS-001)
+        saveRarityDistribution(pack);
+
         // Track pack open event
         trackEvent({
           type: 'pack_open',
@@ -378,6 +389,9 @@ export function showResults(): void {
 function trackPackComplete(pack: Pack, skipped: boolean): void {
   const duration = packOpenStartTime ? Date.now() - packOpenStartTime : 0;
   const holoCount = pack.cards.filter((c) => c.isHolo).length;
+
+  // Analytics: Record pack open complete (ANALYTICS-001)
+  recordPackOpenComplete();
 
   trackEvent({
     type: 'pack_complete',
