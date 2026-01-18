@@ -178,13 +178,18 @@
     if (!packImageElement) return;
 
     try {
-      const canvas = await import('html2canvas').then((m) => m.default(packImageElement!, {
+      const html2canvas = await import('html2canvas').catch((err) => {
+        console.error('[ShareModal] Failed to load html2canvas:', err);
+        throw new Error('Failed to load image generation library');
+      });
+
+      const canvas = html2canvas.default(packImageElement!, {
         backgroundColor: '#0f172a',
         scale: 2,
         logging: false,
         useCORS: true,
         allowTaint: true,
-      }));
+      });
 
       const blob = await new Promise<Blob>((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('Failed to create image blob');
@@ -300,15 +305,18 @@
             on:click={async () => {
               if (cards.length && packImageElement) {
                 try {
-                  const canvas = await import('html2canvas').then((m) =>
-                    m.default(packImageElement!, {
-                      backgroundColor: '#0f172a',
-                      scale: 2,
-                      logging: false,
-                      useCORS: true,
-                      allowTaint: true,
-                    })
-                  );
+                  const html2canvas = await import('html2canvas').catch((err) => {
+                    console.error('[ShareModal] Failed to load html2canvas:', err);
+                    throw new Error('Failed to load image generation library');
+                  });
+
+                  const canvas = html2canvas.default(packImageElement!, {
+                    backgroundColor: '#0f172a',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                  });
 
                   const blob = await new Promise<Blob>((resolve) =>
                     canvas.toBlob(resolve, 'image/png')
