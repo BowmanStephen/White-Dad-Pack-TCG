@@ -6,7 +6,6 @@
  */
 
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import type { DiscordUser } from '../types/index.js';
 import { getUser, createUser, saveUser } from '../utils/database.js';
 import { checkCooldown, setCooldown, formatCooldown } from '../utils/cooldowns.js';
 import { generateDiscordPack, createCardEmbed, getRarityEmoji } from '../utils/packs.js';

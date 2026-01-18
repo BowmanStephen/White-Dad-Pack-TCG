@@ -202,6 +202,134 @@ export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
     accent: '#ef4444',       // Red (danger)
     background: 'linear-gradient(135deg, #334155 0%, #64748b 50%, #334155 100%)',
   },
+  // Unhinged names (Season 2+) - same colors as clean counterparts
+  BBQ_DICKTATOR: {
+    primary: '#ef4444',
+    secondary: '#f97316',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%)',
+  },
+  FIX_IT_FUCKBOY: {
+    primary: '#6366f1',
+    secondary: '#8b5cf6',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #312e81 0%, #3730a3 50%, #312e81 100%)',
+  },
+  GOLF_GONAD: {
+    primary: '#22c55e',
+    secondary: '#84cc16',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #14532d 100%)',
+  },
+  COUCH_CUMMANDER: {
+    primary: '#3b82f6',
+    secondary: '#6366f1',
+    accent: '#8b5cf6',
+    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%)',
+  },
+  LAWN_LUNATIC: {
+    primary: '#22c55e',
+    secondary: '#16a34a',
+    accent: '#84cc16',
+    background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #14532d 100%)',
+  },
+  CAR_COCK: {
+    primary: '#64748b',
+    secondary: '#94a3b8',
+    accent: '#ef4444',
+    background: 'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)',
+  },
+  OFFICE_ORGASMS: {
+    primary: '#6366f1',
+    secondary: '#8b5cf6',
+    accent: '#ec4899',
+    background: 'linear-gradient(135deg, #312e81 0%, #3730a3 50%, #312e81 100%)',
+  },
+  COOL_CUCKS: {
+    primary: '#8b5cf6',
+    secondary: '#ec4899',
+    accent: '#f97316',
+    background: 'linear-gradient(135deg, #581c87 0%, #6b21a8 50%, #581c87 100%)',
+  },
+  COACH_CUMSTERS: {
+    primary: '#f97316',
+    secondary: '#ef4444',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #9a3412 0%, #c2410c 50%, #9a3412 100%)',
+  },
+  CHEF_CUMSTERS: {
+    primary: '#ffffff',
+    secondary: '#fbbf24',
+    accent: '#ef4444',
+    background: 'linear-gradient(135deg, #78716c 0%, #a8a29e 50%, #78716c 100%)',
+  },
+  HOLIDAY_HORNDOGS: {
+    primary: '#ef4444',
+    secondary: '#22c55e',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #7f1d1d 0%, #14532d 50%, #7f1d1d 100%)',
+  },
+  WAREHOUSE_WANKERS: {
+    primary: '#f97316',
+    secondary: '#fbbf24',
+    accent: '#ef4444',
+    background: 'linear-gradient(135deg, #9a3412 0%, #c2410c 50%, #9a3412 100%)',
+  },
+  VINTAGE_VAGABONDS: {
+    primary: '#a8a29e',
+    secondary: '#78716c',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #57534e 0%, #78716c 50%, #57534e 100%)',
+  },
+  FASHION_FUCK: {
+    primary: '#ec4899',
+    secondary: '#f472b6',
+    accent: '#8b5cf6',
+    background: 'linear-gradient(135deg, #831843 0%, #9d174d 50%, #831843 100%)',
+  },
+  TECH_TWATS: {
+    primary: '#06b6d4',
+    secondary: '#3b82f6',
+    accent: '#22d3ee',
+    background: 'linear-gradient(135deg, #164e63 0%, #0e7490 50%, #164e63 100%)',
+  },
+  // Crossover Events
+  DUNE_DESERT: {
+    primary: '#d97706',
+    secondary: '#f59e0b',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #92400e 0%, #d97706 50%, #92400e 100%)',
+  },
+  MARVEL_MASH: {
+    primary: '#dc2626',
+    secondary: '#3b82f6',
+    accent: '#fbbf24',
+    background: 'linear-gradient(135deg, #991b1b 0%, #1e40af 50%, #991b1b 100%)',
+  },
+  STAR_WARS_SWINGER: {
+    primary: '#1e3a8a',
+    secondary: '#fbbf24',
+    accent: '#22c55e',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)',
+  },
+  MCDONALDS_MEAT: {
+    primary: '#ef4444',
+    secondary: '#fbbf24',
+    accent: '#f97316',
+    background: 'linear-gradient(135deg, #991b1b 0%, #ef4444 50%, #991b1b 100%)',
+  },
+  POTTER_PERVERT: {
+    primary: '#7c3aed',
+    secondary: '#fbbf24',
+    accent: '#dc2626',
+    background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #4c1d95 100%)',
+  },
+  FORTNITE_FUCKER: {
+    primary: '#3b82f6',
+    secondary: '#8b5cf6',
+    accent: '#22d3ee',
+    background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%)',
+  },
 };
 
 /**

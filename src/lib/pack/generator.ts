@@ -1,8 +1,7 @@
-import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign, SeasonId, PityThresholds } from '../../types';
+import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign } from '../../types';
 import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
 import { RARITY_ORDER } from '../../types';
-import { getSeasonById } from '../../data/seasons';
 
 /**
  * Select cards from the rarity pool, excluding already used cards.
@@ -323,17 +322,6 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
 }
 
 /**
- * Pack generation options
- */
-export interface GeneratePackOptions {
-  config?: PackConfig;
-  seed?: number;
-  applyPity?: boolean;           // Whether to apply pity system (default: true)
-  pityThresholds?: PityThresholds; // Custom pity thresholds
-  updatePityAfterOpen?: boolean; // Whether to update pity counters (default: true)
-}
-
-/**
  * Generate a single pack of cards based on configuration
  *
  * @param config - Pack configuration defining rarity slots and probabilities
@@ -350,10 +338,6 @@ export interface GeneratePackOptions {
  * const pack2 = generatePack(DEFAULT_PACK_CONFIG, 12345);
  * // pack1 === pack2 (identical cards and design)
  *
- * @example
- * // Generate pack with pity system
- * const pack = generatePackWithOptions({ applyPity: true });
- *
  * @description
  * This function implements the core pack opening mechanics:
  * - Processes each rarity slot in the config (guaranteed or probabilistic)
@@ -361,7 +345,6 @@ export interface GeneratePackOptions {
  * - Determines holo variants based on rarity probabilities
  * - Shuffles cards to prevent position-based prediction
  * - Assigns pack design (standard/holiday/premium)
- * - Applies pity system for bad luck protection (NEW)
  */
 export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: number): Pack {
   const rng = new SeededRandom(seed);
@@ -436,55 +419,6 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
 }
 
 /**
- * Generate pack with pity system integration
- * (Roadmap feature - removed in MVP)
- */
-export function generatePackWithPity(): Pack {
-  return generatePack();
-}
-
-/**
- * Generate multiple packs
- *
- * @param count - Number of packs to generate
- * @param config - Optional pack configuration (defaults to DEFAULT_PACK_CONFIG)
- * @returns Array of generated packs
- *
- * @example
- * // Generate 5 random packs
- * const packs = generatePacks(5);
- *
- * @example
- * // Generate 3 packs with custom configuration
- * const customPacks = generatePacks(3, customConfig);
- */
-export function generatePacks(count: number, config?: PackConfig): Pack[] {
-  const packs: Pack[] = [];
-  for (let i = 0; i < count; i++) {
-    packs.push(generatePack(config));
-  }
-  return packs;
-}
-
-/**
- * Generate multiple packs with pity system integration
- *
- * Each pack updates the pity counters, so pulling a rare in pack 1
- * resets the counter for subsequent packs.
- *
- * @param count - Number of packs to generate
- * @param options - Generation options
- * @returns Array of generated packs with pity applied
- */
-export function generatePacksWithPity(count: number): Pack[] {
-  const packs: Pack[] = [];
-  for (let i = 0; i < count; i++) {
-    packs.push(generatePackWithPity());
-  }
-  return packs;
-}
-
-/**
  * Calculate pack statistics for display purposes
  *
  * Computes useful statistics about a pack including:
@@ -535,185 +469,4 @@ export function getPackStats(pack: Pack): {
     holoCount,
     bestCard,
   };
-}
-
-// ============================================================================
-// SEASON-AWARE PACK GENERATION (US086 - Season System - Rotating Content)
-// ============================================================================
-
-/**
- * Generate a pack from a specific season
- *
- * @param seasonId - The season to generate a pack from
- * @param config - Optional pack configuration (defaults to DEFAULT_PACK_CONFIG)
- * @param seed - Optional seed for reproducible packs
- * @returns A Pack with cards from the specified season
- */
-export function generateSeasonPack(
-  seasonId: SeasonId,
-  config: PackConfig = DEFAULT_PACK_CONFIG,
-  seed?: number
-): Pack {
-  const season = getSeasonById(seasonId);
-  if (!season) {
-    // Fallback to regular pack if season not found
-    return generatePack(config, seed);
-  }
-
-  const rng = new SeededRandom(seed);
-  const packCards: PackCard[] = [];
-  const usedCardIds = new Set<string>();
-
-  // Process each slot in the pack
-  for (const slot of config.raritySlots) {
-    let rarity: Rarity;
-
-    if (slot.guaranteedRarity) {
-      rarity = slot.guaranteedRarity;
-    } else if (slot.rarityPool && slot.probability) {
-      rarity = weightedRandom(slot.probability, rng);
-    } else {
-      rarity = 'common';
-    }
-
-    // Select from season cards first
-    const [selectedCard] = selectSeasonCards(seasonId, rarity, usedCardIds, 1, rng);
-
-    if (!selectedCard) {
-      continue;
-    }
-
-    const holoType = rollHolo(rarity, rng);
-    const isHolo = holoType !== 'none';
-
-    const packCard: PackCard = {
-      ...selectedCard,
-      isRevealed: false,
-      isHolo,
-      holoType,
-    };
-
-    packCards.push(packCard);
-  }
-
-  // SAFEGUARD 1: Verify pack has exactly 6 cards
-  if (packCards.length !== config.cardsPerPack) {
-    throw new Error(
-      `Season pack generation failed: expected ${config.cardsPerPack} cards but got ${packCards.length}. ` +
-      `This may indicate the season card database is empty or missing required rarities.`
-    );
-  }
-
-  const shuffledCards = rng.shuffle(packCards);
-
-  // SAFEGUARD 2: Verify rarity distribution within acceptable tolerance
-  validateRarityDistribution(shuffledCards, config);
-
-  // Use season's pack design
-  const packDesign = season.packDesign;
-
-  const pack: Pack = {
-    id: generateId(),
-    cards: shuffledCards,
-    openedAt: new Date(),
-    bestRarity: getHighestRarity(shuffledCards),
-    design: packDesign as PackDesign,
-  };
-
-  return pack;
-}
-
-/**
- * Select cards from a specific season's card pool
- *
- * @param seasonId - The season to select cards from
- * @param rarity - The rarity tier to select from
- * @param excludedIds - Set of card IDs already used
- * @param count - Number of cards to select
- * @param rng - Seeded random number generator
- * @returns Array of selected cards
- */
-export function selectSeasonCards(
-  seasonId: SeasonId,
-  rarity: Rarity,
-  excludedIds: Set<string>,
-  count: number = 1,
-  rng?: SeededRandom
-): Card[] {
-  const season = getSeasonById(seasonId);
-  if (!season) {
-    // Fallback to regular selection
-    return selectCards(rarity, excludedIds, count, rng);
-  }
-
-  const selected: Card[] = [];
-  const allCards = getAllCards();
-
-  // Filter cards that belong to this season
-  const seasonCards = allCards.filter((card) => {
-    const belongsToSeason = card.seasonId === seasonId;
-    const matchesRarity = card.rarity === rarity;
-    const notUsed = !excludedIds.has(card.id);
-    return belongsToSeason && matchesRarity && notUsed;
-  });
-
-  // If not enough cards in season, fall back to any cards of the rarity
-  const availablePool = seasonCards.length > 0
-    ? seasonCards
-    : getCardsByRarity(rarity).filter((card) => !excludedIds.has(card.id));
-
-  for (let i = 0; i < count; i++) {
-    if (availablePool.length === 0) {
-      // Last resort: allow duplicates from season
-      const seasonAllRarity = allCards.filter(
-        (card) => card.seasonId === seasonId && card.rarity === rarity
-      );
-      if (seasonAllRarity.length > 0) {
-        const card = rng
-          ? rng.pick(seasonAllRarity)
-          : seasonAllRarity[Math.floor(Math.random() * seasonAllRarity.length)];
-        selected.push(card);
-        excludedIds.add(card.id);
-      }
-      continue;
-    }
-
-    const card = rng
-      ? rng.pick(availablePool)
-      : availablePool[Math.floor(Math.random() * availablePool.length)];
-    selected.push(card);
-    excludedIds.add(card.id);
-    availablePool.splice(availablePool.indexOf(card), 1);
-  }
-
-  return selected;
-}
-
-/**
- * Get the season pack theme configuration
- *
- * @param seasonId - The season ID
- * @returns The season's theme configuration
- */
-export function getSeasonPackTheme(seasonId: SeasonId) {
-  const season = getSeasonById(seasonId);
-  return season?.packDesign || 'base_set';
-}
-
-/**
- * Check if a season is currently active
- *
- * @param seasonId - The season ID to check
- * @returns True if the season is active
- */
-export function isSeasonActive(seasonId: SeasonId): boolean {
-  const season = getSeasonById(seasonId);
-  if (!season) return false;
-
-  const now = new Date();
-  const isActive = season.status === 'active';
-  const hasStarted = now >= season.startDate;
-  const hasNotEnded = !season.endDate || now <= season.endDate;
-
-  return isActive && hasStarted && hasNotEnded;
 }

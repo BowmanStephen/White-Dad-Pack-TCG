@@ -5,7 +5,7 @@
  * to create packs for Discord users.
  */
 
-import type { Card, Pack } from '../../src/types/index.js';
+import type { Card } from '../../src/types/index.js';
 import { generatePack } from '../../src/lib/pack/generator.js';
 import type { DiscordCardDisplay, PackOpenData } from '../types/index.js';
 

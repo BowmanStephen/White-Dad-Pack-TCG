@@ -18,8 +18,9 @@ export function calculateDeckStats(cards: DeckCard[]): DeckStats {
     mythic: 0,
   };
 
-  // Initialize type breakdown
+  // Initialize type breakdown with all DadType values
   const typeBreakdown: Record<DadType, number> = {
+    // Clean names (Season 1)
     BBQ_DAD: 0,
     FIX_IT_DAD: 0,
     GOLF_DAD: 0,
@@ -35,7 +36,48 @@ export function calculateDeckStats(cards: DeckCard[]): DeckStats {
     VINTAGE_DAD: 0,
     FASHION_DAD: 0,
     TECH_DAD: 0,
+    // Unhinged names (Season 2+)
+    BBQ_DICKTATOR: 0,
+    FIX_IT_FUCKBOY: 0,
+    GOLF_GONAD: 0,
+    COUCH_CUMMANDER: 0,
+    LAWN_LUNATIC: 0,
+    CAR_COCK: 0,
+    OFFICE_ORGASMS: 0,
+    COOL_CUCKS: 0,
+    COACH_CUMSTERS: 0,
+    CHEF_CUMSTERS: 0,
+    HOLIDAY_HORNDOGS: 0,
+    WAREHOUSE_WANKERS: 0,
+    VINTAGE_VAGABONDS: 0,
+    FASHION_FUCK: 0,
+    TECH_TWATS: 0,
+    // Extended Archetypes
+    SUBURBAN_SPY: 0,
+    GAMER_GIZZARDS: 0,
+    PREPPER_PENIS: 0,
+    BBQ_BRAWLER: 0,
+    SUBURBAN_SOCIALITE: 0,
+    NEIGHBORHOOD_NOSY: 0,
+    // Crossover Events
+    DUNE_DESERT: 0,
+    MARVEL_MASH: 0,
+    STAR_WARS_SWINGER: 0,
+    MCDONALDS_MEAT: 0,
+    POTTER_PERVERT: 0,
+    FORTNITE_FUCKER: 0,
+    // Family Variants
+    SON_SPAWNS: 0,
+    DAUGHTER_DINGBATS: 0,
+    UNCLE_UPROARS: 0,
+    SUBURBAN_SIDEKICKS: 0,
+    // Special Card Types
     ITEM: 0,
+    EVENT: 0,
+    TERRAIN: 0,
+    EVOLUTION: 0,
+    CURSE: 0,
+    TRAP: 0,
   };
 
   // Initialize stat totals

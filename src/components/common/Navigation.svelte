@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { muted, toggleMute } from '../../stores/audio';
   import ThemeToggle from './ThemeToggle.svelte';
+  import LanguageSelector from './LanguageSelector.svelte';
 
   interface NavLink {
     href: string;
@@ -124,6 +125,9 @@
       <!-- Theme Toggle -->
       <ThemeToggle />
 
+      <!-- Language Selector -->
+      <LanguageSelector />
+
     </nav>
 
     <!-- Mobile Menu Button -->
@@ -194,6 +198,11 @@
           {/if}
         </span>
       </button>
+
+      <!-- Language Selector in mobile menu -->
+      <div class="px-4 py-3">
+        <LanguageSelector />
+      </div>
 
     </div>
   </nav>

@@ -2,6 +2,11 @@
 import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
 import InstallPrompt from '../components/pwa/InstallPrompt.svelte';
 import OfflineIndicator from '../components/common/OfflineIndicator.svelte';
+import CardLightbox from '../components/card/CardLightbox.svelte';
+import { initI18n } from '../i18n';
+
+// Initialize i18n with default locale (client-side will detect browser locale)
+initI18n('en');
 
 interface Props {
   title?: string;
@@ -107,6 +112,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- Offline Indicator -->
     <OfflineIndicator client:load />
+
+    <!-- Card Detail Lightbox -->
+    <CardLightbox client:load />
 
     <!-- Service Worker Registration (deferred for performance) -->
     <script is:inline define:vars={{}}>

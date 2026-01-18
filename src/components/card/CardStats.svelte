@@ -3,6 +3,7 @@
   import { STAT_ICONS, STAT_NAMES } from '../../types';
   import { hasCardStats } from '../../lib/card-types';
   import StatTooltip from './StatTooltip.svelte';
+  import { formatCardStat } from '../../lib/utils/formatters';
 
   export let stats: CardStatsType;
   export let rarityConfig: RarityConfig;
@@ -89,7 +90,7 @@
           class:text-white={stat.isHighStat}
           style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);"
         >
-          {stat.value}
+          {formatCardStat(stat.value)}
         </span>
       </div>
     {/each}

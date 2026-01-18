@@ -526,8 +526,34 @@ loops in UI/state machines.
 │   │       ├── ga.ts        # Google Analytics
 │   │       └── plausible.ts # Plausible Analytics
 │   ├── types/               # TypeScript definitions
-│   │   ├── index.ts         # Core types (Card, Pack, Rarity, etc.)
-│   │   └── leaderboard.ts   # Leaderboard types
+│   │   ├── index.ts         # Main export (re-exports all types)
+│   │   ├── card.ts          # Card-related types
+│   │   ├── pack.ts          # Pack types
+│   │   ├── collection.ts    # Collection types
+│   │   ├── achievements.ts  # Achievement types
+│   │   ├── daily-rewards.ts # Daily rewards types
+│   │   ├── constants.ts     # Game constants
+│   │   ├── trading-crafting.ts # Trading & crafting types
+│   │   ├── season.ts        # Season types
+│   │   ├── core.ts          # Core shared types
+│   │   ├── admin.ts         # Admin types
+│   │   ├── analytics.ts     # Analytics types
+│   │   ├── api.ts           # API types
+│   │   ├── email.ts         # Email types
+│   │   ├── events.ts        # Event types
+│   │   ├── features.ts      # Feature flags
+│   │   ├── gameplay.ts      # Gameplay mechanics
+│   │   ├── leaderboard.ts   # Leaderboard types
+│   │   ├── monetization.ts  # Monetization types
+│   │   ├── security.ts      # Security types
+│   │   └── social.ts        # Social features
+│   ├── i18n/                # Internationalization
+│   │   ├── index.ts         # Translation utilities
+│   │   ├── store.ts         # Locale state management
+│   │   ├── locales/         # Translation files
+│   │   │   ├── en.json      # English (300+ keys)
+│   │   │   └── es.json      # Spanish
+│   │   └── README.md        # I18N documentation
 │   └── pages/               # Astro routes
 │       ├── index.astro      # Landing page
 │       ├── pack.astro       # Pack opening page
@@ -1045,6 +1071,24 @@ global.localStorage = {
 ---
 
 ## 🎨 Styling & Theming
+
+### CSS Utilities Strategy
+
+**Two-Tier Approach:**
+1. **Component Classes** (`src/styles/global.css`) - Reusable semantic classes
+2. **Tailwind Utilities** - Layout, spacing, and one-off styling
+
+**When to Use Component Classes:**
+- ✅ Repeated patterns (buttons, modals, inputs)
+- ✅ Complex hover/focus states
+- ✅ Consistent UI elements
+
+**When to Use Tailwind:**
+- ✅ Layout (grid, flex, spacing)
+- ✅ Responsive breakpoints
+- ✅ One-off styling needs
+
+**Documentation:** See `docs/CSS_UTILITIES.md` for complete component class reference.
 
 ### Tailwind Configuration
 
@@ -1953,6 +1997,131 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 ---
 
 ## 🆕 Recent Feature Additions (January 2026)
+
+### Internationalization (I18N) System
+
+**Infrastructure Added:**
+- **`src/i18n/`** - Complete i18n system with locales
+- **`src/i18n/index.ts`** - Core translation utilities (`t()`, `tc()`, `formatNumber()`, `formatDate()`)
+- **`src/i18n/store.ts`** - Nanostores integration for reactive locale state
+- **`src/i18n/locales/en.json`** - English base translation (300+ keys)
+- **`src/i18n/locales/es.json`** - Complete Spanish translation
+- **`src/components/common/LanguageSelector.svelte`** - Language dropdown UI
+
+**Features:**
+- **300+ translation keys** covering all UI strings
+- **Parameter interpolation** - `{count}`, `{name}`, etc.
+- **Browser language detection** - Auto-detects `navigator.language`
+- **LocalStorage persistence** - Remembers user's language preference
+- **Feature organization** - Keys grouped by feature (pack, card, collection, deck, trade, etc.)
+- **Culturally appropriate translations** - Maintains dad humor tone in Spanish
+
+**Usage Pattern:**
+```svelte
+<script>
+  import { t } from '@/i18n';
+
+  let packCount = 5;
+</script>
+
+<h1>{$t('pack.title')}</h1>
+<p>{$t('pack.opened', { count: packCount })}</p>
+
+<!-- Output: "Opened 5 packs" / "5 sobres abiertos" -->
+```
+
+**Updated Components:**
+- **BaseLayout.astro** - Initializes i18n on app load
+- **Navigation.svelte** - Integrated language selector (desktop + mobile)
+- **All feature pages** - Using `t()` for UI strings
+
+**Documentation:** See `I18N_IMPLEMENTATION.md` and `src/i18n/README.md`
+
+---
+
+### CSS Utilities Consolidation
+
+**Problem Solved:** Components were repeating the same long Tailwind class strings, leading to larger HTML output and harder maintenance.
+
+**Solution:** Created semantic component classes using Tailwind's `@apply` directive in `src/styles/global.css`.
+
+**Documentation:** See `docs/CSS_UTILITIES.md` for complete reference.
+
+**New Component Classes:**
+
+**Buttons:**
+- `.btn-primary` - Primary action buttons with gradient (pack opening, confirm)
+- `.btn-secondary` - Secondary actions (cancel, go back)
+- `.btn-icon` - Icon-only buttons (close, settings)
+- `.btn-cta` - Large call-to-action buttons
+
+**Modals:**
+- `.modal-container` - Full-screen flex-centered wrapper
+- `.modal-backdrop` - Backdrop overlay with blur
+- `.modal-content` - Modal content container
+- `.modal-close-btn` - Positioned close button
+
+**Feature Cards:**
+- `.feature-card` - Feature showcase cards
+- `.icon-container` - Circular icon containers
+- `.text-feature-title` - Feature title typography
+- `.text-feature-desc` - Feature description typography
+
+**Form Elements:**
+- `.input-field` - Standard text input styling
+- `.select-field` - Dropdown select styling
+- `.checkbox-field` - Checkbox input styling
+- `.range-slider` - Range input styling
+
+**Loaders:**
+- `.spinner` - Rotating loading spinner
+- `.pulse-text` - Pulsing text animation
+- `.skeleton` - Content placeholder animation
+
+**Usage:**
+```svelte
+<!-- Before: Long Tailwind strings -->
+<button class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-lg shadow-lg hover:from-amber-400 hover:to-orange-400 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900">
+  Open Pack
+</button>
+
+<!-- After: Semantic class -->
+<button class="btn-primary">
+  Open Pack
+</button>
+```
+
+**Benefits:**
+- 40-60% less HTML/Svelte output
+- Consistent styling across components
+- Easy to update common patterns
+- More readable component code
+
+---
+
+### Type System Reorganization
+
+**Changes:** Split monolithic `src/types/index.ts` into feature-specific type files for better maintainability.
+
+**New Type Files:**
+- `src/types/card.ts` - Card-related types (Card, CardStats, CardInCollection)
+- `src/types/pack.ts` - Pack types (Pack, PackConfig, PackState)
+- `src/types/collection.ts` - Collection types (UserCollection, PackHistoryEntry)
+- `src/types/achievements.ts` - Achievement system types
+- `src/types/daily-rewards.ts` - Daily rewards types
+- `src/types/constants.ts` - Game constants (RARITY_CONFIG, DAD_TYPES, etc.)
+- `src/types/trading-crafting.ts` - Trading and crafting types
+- `src/types/season.ts` - Season-related types
+
+**Benefits:**
+- Faster TypeScript compilation
+- Easier to find relevant types
+- Better code organization
+- Reduced merge conflicts
+
+**Backward Compatible:** All types still re-exported from `src/types/index.ts` for existing imports.
+
+---
 
 ### Collection Search & Filter System
 

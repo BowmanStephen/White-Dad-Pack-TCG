@@ -6,7 +6,7 @@
  */
 
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
-import { getUser, createUser, saveUser, setPremiumStatus } from '../utils/database.js';
+import { getUser, createUser, setPremiumStatus } from '../utils/database.js';
 
 export const data = new SlashCommandBuilder()
   .setName('premium')

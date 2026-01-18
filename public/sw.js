@@ -35,7 +35,7 @@ const CACHE_PATTERNS = {
 // ============================================================================
 
 // Open IndexedDB
-function openDB(): Promise<IDBDatabase> {
+function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -50,7 +50,7 @@ function openDB(): Promise<IDBDatabase> {
     };
 
     request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
+      const db = event.target.result;
 
       // Create collection store if it doesn't exist
       if (!db.objectStoreNames.contains(COLLECTION_STORE)) {
@@ -63,7 +63,7 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 // Save collection data to IndexedDB
-async function saveCollectionToDB(data: any): Promise<void> {
+async function saveCollectionToDB(data) {
   const db = await openDB();
   const tx = db.transaction(COLLECTION_STORE, 'readwrite');
   const store = tx.objectStore(COLLECTION_STORE);
@@ -89,7 +89,7 @@ async function saveCollectionToDB(data: any): Promise<void> {
 }
 
 // Get collection data from IndexedDB
-async function getCollectionFromDB(): Promise<any> {
+async function getCollectionFromDB() {
   const db = await openDB();
   const tx = db.transaction(COLLECTION_STORE, 'readonly');
   const store = tx.objectStore(COLLECTION_STORE);
@@ -143,7 +143,11 @@ self.addEventListener('activate', (event) => {
   );
 
   // Take control of all clients immediately
-  self.clients.claim();
+  // @ts-ignore - ServiceWorkerGlobalScope.clients exists in service worker context
+  if (self.clients && typeof self.clients.claim === 'function') {
+    // @ts-ignore
+    self.clients.claim();
+  }
 });
 
 // ============================================================================
@@ -181,7 +185,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Handle collection API requests
-async function handleCollectionAPI(request: Request): Promise<Response> {
+async function handleCollectionAPI(_request) {
   const db = await openDB();
   const tx = db.transaction(COLLECTION_STORE, 'readonly');
   const store = tx.objectStore(COLLECTION_STORE);
@@ -217,7 +221,7 @@ async function handleCollectionAPI(request: Request): Promise<Response> {
 
 // Strategy: Cache First
 // Try cache first, if miss, fetch from network and cache
-async function cacheFirst(request: Request) {
+async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
 
@@ -239,7 +243,7 @@ async function cacheFirst(request: Request) {
 
 // Strategy: Network First
 // Try network first, if fail, fallback to cache, then offline page
-async function networkFirst(request: Request) {
+async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
 
   try {
@@ -277,13 +281,13 @@ async function networkFirst(request: Request) {
 // ============================================================================
 
 // Check if URL matches static asset pattern
-function isStaticAsset(url: URL): boolean {
+function isStaticAsset(url) {
   const pathname = url.pathname;
   return CACHE_PATTERNS.static.some((pattern) => pattern.test(pathname));
 }
 
 // Check if URL matches page request pattern
-function isPageRequest(url: URL): boolean {
+function isPageRequest(url) {
   const pathname = url.pathname;
   return (
     CACHE_PATTERNS.pages.some((pattern) => pattern.test(pathname)) ||
@@ -293,7 +297,7 @@ function isPageRequest(url: URL): boolean {
 }
 
 // Check if request accepts HTML
-function requestPageAcceptsHTML(url: URL): boolean {
+function requestPageAcceptsHTML(url) {
   return (
     url.pathname === '/' ||
     url.pathname.endsWith('.html') ||
@@ -348,7 +352,7 @@ self.addEventListener('sync', (event) => {
 });
 
 // Sync collection with server (placeholder for future server integration)
-async function syncCollection(): Promise<void> {
+async function syncCollection() {
   console.log('[SW] Syncing collection...');
 
   try {

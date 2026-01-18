@@ -1,0 +1,156 @@
+// Card Rarity Types
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+
+// Dad Type Categories - Core archetypes only (Season 1)
+export type DadType =
+  // Core Dad Archetypes
+  | 'BBQ_DAD'
+  | 'FIX_IT_DAD'
+  | 'GOLF_DAD'
+  | 'COUCH_DAD'
+  | 'LAWN_DAD'
+  | 'CAR_DAD'
+  | 'OFFICE_DAD'
+  | 'COOL_DAD'
+  | 'COACH_DAD'
+  | 'CHEF_DAD'
+  | 'HOLIDAY_DAD'
+  | 'WAREHOUSE_DAD'
+  | 'VINTAGE_DAD'
+  | 'FASHION_DAD'
+  | 'TECH_DAD'
+  // Special Card Type
+  | 'ITEM';
+
+// Holographic Variant Types
+export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';
+
+// Cinematic mode enables slower, more dramatic pack opening animations
+export type CinematicMode = 'normal' | 'cinematic';
+
+// Cinematic mode configuration
+export interface CinematicConfig {
+  speedMultiplier: number;
+  particleMultiplier: number;
+  zoomEnabled: boolean;
+  audioEnhanced: boolean;
+}
+
+// Card Stats Interface
+export interface CardStats {
+  dadJoke: number;
+  grillSkill: number;
+  fixIt: number;
+  napPower: number;
+  remoteControl: number;
+  thermostat: number;
+  sockSandal: number;
+  beerSnob: number;
+}
+
+// Card Ability Interface
+export interface CardAbility {
+  name: string;
+  description: string;
+  effects?: CardEffect[];
+}
+
+// Card Effect Interface - For special card mechanics
+export interface CardEffect {
+  type: 'damage' | 'heal' | 'buff' | 'debuff' | 'draw' | 'discard' | 'control' | 'transform';
+  target: 'self' | 'opponent' | 'all' | 'field';
+  value: number;
+  condition?: string;
+  duration?: number;
+}
+
+// Card Attribute Interface - For card gameplay attributes
+export interface CardAttribute {
+  key: string;
+  value: number | string | boolean;
+  label: string;
+  description: string;
+}
+
+// Event Card Type - SHITSHOW SCENARIOS
+export interface EventCardType {
+  effectType: 'instant' | 'sorcery';
+  effect: CardEffect;
+  targetRequirement?: string;
+  flavorTrigger?: string;
+}
+
+// Terrain Card Type - SUBURBAN SHITFIELDS
+export interface TerrainCardType {
+  fieldEffect: CardEffect;
+  affectedArchetypes?: DadType[];
+  negativeEffectOnOpponents?: CardEffect;
+  permanentUntilReplaced: boolean;
+  activationCost?: number;
+}
+
+// Evolution Card Type - MIDLIFE CRISIS MUTATIONS
+export interface EvolutionCardType {
+  evolvesFrom: string;
+  statBoosts: Partial<CardStats>;
+  newAbilities: CardAbility[];
+  transformationFlavor: string;
+}
+
+// Curse Card Type - DAD DAMNATIONS
+export interface CurseCardType {
+  target: 'single_dad' | 'all_opponents';
+  effect: CardEffect;
+  duration: number;
+  canBeRemoved: boolean;
+  removalCondition?: string;
+}
+
+// Trap Card Type - SUBURBAN SUCKERPUNCHES
+export interface TrapCardType {
+  trigger: 'on_attack' | 'on_card_play' | 'on_stat_boost' | 'on_end_of_turn';
+  effect: CardEffect;
+  faceDown: boolean;
+  oneTimeUse: boolean;
+}
+
+// Main Card Interface
+export interface Card {
+  id: string;
+  name: string;
+  subtitle: string;
+  type: DadType;
+  rarity: Rarity;
+  artwork: string;
+  stats: CardStats;
+  flavorText: string;
+  abilities: CardAbility[];
+  series: number;
+  cardNumber: number;
+  totalInSeries: number;
+  artist: string;
+  holoVariant?: HoloVariant;
+  seasonId?: SeasonId;
+
+  // Special card type data (only present if type is EVENT, TERRAIN, EVOLUTION, CURSE, or TRAP)
+  eventData?: EventCardType;
+  terrainData?: TerrainCardType;
+  evolutionData?: EvolutionCardType;
+  curseData?: CurseCardType;
+  trapData?: TrapCardType;
+}
+
+// Card in a pack (with runtime properties)
+export interface PackCard extends Card {
+  isRevealed: boolean;
+  isHolo: boolean;
+  holoType: HoloVariant;
+}
+
+// Card for display in collection (with duplicate count)
+export interface CollectionDisplayCard extends PackCard {
+  duplicateCount: number;
+}
+
+// Season identifier - imported from season types
+export type SeasonId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;

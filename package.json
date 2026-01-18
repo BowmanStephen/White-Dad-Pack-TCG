@@ -29,6 +29,7 @@
     "html2canvas": "^1.4.1",
     "nanostores": "^1.1.0",
     "svelte": "^5.46.4",
+    "svelte-i18n": "^4.0.1",
     "tailwindcss": "3",
     "typescript": "^5.9.3",
     "vite-imagetools": "^9.0.2"

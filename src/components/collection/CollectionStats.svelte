@@ -4,6 +4,12 @@
   import { getCardCount } from '../../lib/cards/database';
   import { DEFAULT_PACK_CONFIG } from '../../lib/pack/generator';
   import { DAD_TYPE_COLORS } from '../../lib/art/dad-type-colors';
+  import {
+    formatCardCount,
+    formatPackCount,
+    formatPercentage,
+    formatLuckPercentage,
+  } from '../../lib/utils/formatters';
 
   // Create a combined config object for dad types
   const DAD_TYPE_CONFIG: Record<DadType, { name: string; emoji: string; color: string }> = Object.keys(DAD_TYPE_NAMES).reduce((acc, type) => {
@@ -362,7 +368,7 @@
         <div class="luck-message">{luckInfo.message}</div>
         {#if luckPercentage !== null}
           <div class="luck-percentage" class:lucky={luckPercentage > 0} class:unlucky={luckPercentage < 0}>
-            {luckPercentage > 0 ? '+' : ''}{luckPercentage.toFixed(1)}% vs average
+            {formatLuckPercentage(luckPercentage)} vs average
           </div>
         {/if}
       </div>
@@ -383,13 +389,13 @@
           <div class="rarity-dot" style="background: {config.color}"></div>
           <span class="rarity-name">{config.name}</span>
           <span class="rarity-count">{count}</span>
-          <span class="rarity-percent">{actual.toFixed(1)}%</span>
-          <span class="rarity-expected" title="Expected: {expected.toFixed(1)}%">
-            (expected {expected.toFixed(1)}%)
+          <span class="rarity-percent">{formatPercentage(actual / 100)}</span>
+          <span class="rarity-expected" title="Expected: {formatPercentage(expected / 100)}">
+            (expected {formatPercentage(expected / 100)})
           </span>
           {#if diff !== 0}
             <span class="rarity-diff" class:above={diff > 0} class:below={diff < 0}>
-              {diff > 0 ? '+' : ''}{diff.toFixed(1)}%
+              {formatLuckPercentage(diff)}
             </span>
           {/if}
         </div>
@@ -410,7 +416,7 @@
           <div class="bar-track">
             <div class="bar-fill" style="width: {percentage}%"></div>
           </div>
-          <div class="bar-value">{count} ({percentage.toFixed(1)}%)</div>
+          <div class="bar-value">{count} ({formatPercentage(percentage / 100)})</div>
         </div>
       {/each}
     </div>
@@ -430,8 +436,8 @@
             <div class="type-info">
               <div class="type-name">{config.name}</div>
               <div class="type-stats">
-                <span class="type-count">{count} cards</span>
-                <span class="type-percent">{percentage.toFixed(1)}%</span>
+                <span class="type-count">{formatCardCount(count)} cards</span>
+                <span class="type-percent">{formatPercentage(percentage / 100)}</span>
               </div>
             </div>
             <div class="type-bar" style="width: {percentage}%"></div>

@@ -38,18 +38,23 @@ export const SEASON_1: Season = {
 
 /**
  * Season 2: Summer BBQ Dads
- * 30 new cards focused on summer cooking and outdoor activities
+ * 38 cards focused on summer cooking, outdoor activities, and family variants
  */
 export const SEASON_2: Season = {
   id: 2,
   name: 'Summer BBQ Dads',
   subtitle: 'Grill Season is Here',
-  description: 'The temperature is rising and so is the grill mastery. 30 new cards dedicated to the art of outdoor cooking, summer parties, and dad fashion in 90-degree heat.',
+  description: 'The temperature is rising and so is the grill mastery. 38 cards dedicated to the art of outdoor cooking, summer parties, dad fashion in 90-degree heat, and family variants.',
   status: 'active',
   startDate: new Date('2025-01-01'),
   endDate: new Date('2099-12-31'),
-  totalCards: 30,
-  cardIds: Array.from({ length: 30 }, (_, i) => String(i + 53).padStart(3, '0')),
+  totalCards: 38,
+  cardIds: [
+    // Core Summer BBQ cards (053-082)
+    ...Array.from({ length: 30 }, (_, i) => String(i + 53).padStart(3, '0')),
+    // Additional cards
+    '091', '099', '100', '101', '102', '103', '104', '105',
+  ],
   packDesign: 'summer_bbq',
   theme: {
     name: 'Summer Heat',
@@ -63,27 +68,31 @@ export const SEASON_2: Season = {
 };
 
 /**
- * Season 3: Fall Foliage
+ * Season 3: Crossover Chaos
+ * 15 cards featuring pop culture crossovers (Marvel, Star Wars, Dune, etc.)
  */
 export const SEASON_3: Season = {
   id: 3,
-  name: 'Fall Foliage',
-  subtitle: 'Leaf Pile Champions',
-  description: 'Rake. Bag. Repeat. The cycle continues. Fall-themed cards featuring lawn care mastery and cozy sweater energy.',
+  name: 'Crossover Chaos',
+  subtitle: 'When Worlds Collide',
+  description: 'Dad energy meets pop culture! 15 crossover cards featuring Marvel heroes, Star Wars legends, Dune warriors, and more - all with maximum dad energy.',
   status: 'active',
   startDate: new Date('2025-01-01'),
   endDate: new Date('2099-12-31'),
-  totalCards: 23,
-  cardIds: Array.from({ length: 23 }, (_, i) => String(i + 83).padStart(3, '0')),
+  totalCards: 15,
+  cardIds: [
+    '083', '084', '085', '086', '087', '088', '089', '090',
+    '092', '093', '094', '095', '096', '097', '098',
+  ],
   packDesign: 'fall_foliage',
   theme: {
-    name: 'Autumn Colors',
-    primaryColor: '#d97706',
-    secondaryColor: '#92400e',
+    name: 'Crossover Colors',
+    primaryColor: '#7c3aed',
+    secondaryColor: '#5b21b6',
     accentColor: '#fbbf24',
-    backgroundColor: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)',
+    backgroundColor: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
     textColor: '#ffffff',
-    icon: '🍂',
+    icon: '🦸',
   },
 };
 

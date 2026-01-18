@@ -96,12 +96,12 @@ export function createDateEncoder<T>({
           if (Array.isArray(data)) {
             // Handle array of objects
             data.forEach((item: any) => {
-              if (item[fieldName]) {
+              if (item && item[fieldName] != null && typeof item[fieldName] === 'string') {
                 item[fieldName] = new Date(item[fieldName]);
               }
             });
-          } else if (data[fieldName]) {
-            // Handle single object
+          } else if (data && data[fieldName] != null && typeof data[fieldName] === 'string') {
+            // Handle single object (check for string to convert, null stays null)
             data[fieldName] = new Date(data[fieldName]);
           }
         } else {
@@ -119,7 +119,7 @@ export function createDateEncoder<T>({
               if (Array.isArray(parent)) {
                 // Apply to all elements in array
                 parent.forEach((item: any) => {
-                  if (item && item[leafField]) {
+                  if (item && item[leafField] != null && typeof item[leafField] === 'string') {
                     item[leafField] = new Date(item[leafField]);
                   }
                 });
@@ -134,16 +134,16 @@ export function createDateEncoder<T>({
             }
           }
 
-          // Convert leaf field to Date
-          if (parent && parent[leafField]) {
+          // Convert leaf field to Date (only if it's a string, preserve null)
+          if (parent) {
             if (Array.isArray(parent)) {
               // Handle array of objects with the same field
               parent.forEach((item: any) => {
-                if (item && item[leafField]) {
+                if (item && item[leafField] != null && typeof item[leafField] === 'string') {
                   item[leafField] = new Date(item[leafField]);
                 }
               });
-            } else if (typeof parent === 'object' && parent[leafField]) {
+            } else if (typeof parent === 'object' && parent[leafField] != null && typeof parent[leafField] === 'string') {
               parent[leafField] = new Date(parent[leafField]);
             }
           }

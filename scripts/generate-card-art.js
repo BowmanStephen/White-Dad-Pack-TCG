@@ -353,7 +353,6 @@ function addHoloVariants(cards) {
     // If holo, determine variant type
     let holoType = 'none';
     if (isHolo) {
-      const variants = ['standard', 'reverse', 'full_art', 'prismatic'];
       // Higher rarities more likely to get better holo variants
       const weightedVariants = {
         common: ['standard', 'standard', 'standard', 'reverse'],

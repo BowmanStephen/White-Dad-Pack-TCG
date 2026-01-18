@@ -94,6 +94,8 @@
       alt={alt}
       loading="lazy"
       decoding="async"
+      width={width}
+      height={height}
       class="absolute inset-0 z-10 w-full h-full object-cover transition-opacity duration-300"
       class:opacity-0={!imageLoaded}
       class:opacity-100={imageLoaded}

@@ -6,7 +6,9 @@
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
+  import HoloEffect from './HoloEffect.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
+  import { openLightbox } from '../../stores/lightbox';
 
   export let card: PackCard;
   export let isFlipped: boolean = false;
@@ -16,6 +18,9 @@
   export let enableShare: boolean = false;
   export let showUpgradeButton: boolean = false;
   export let onUpgradeClick: (() => void) | undefined = undefined;
+  export let enableLightbox: boolean = true;
+  export let cardList: PackCard[] = [];
+  export let cardIndex: number = 0;
 
   $: rarityConfig = RARITY_CONFIG[card.rarity];
   $: typeIcon = DAD_TYPE_ICONS[card.type];
@@ -44,6 +49,9 @@
   let holoEffectsEnabled = true;
   let particleElements: HTMLSpanElement[] = [];
 
+  // Touch device detection for tilt effect
+  let isTouchDevice = false;
+
   if (isBrowser) {
     // Check for low-end device indicators
     const hardwareConcurrency = navigator.hardwareConcurrency || 4;
@@ -53,10 +61,17 @@
     // Disable holo effects on low-end devices
     // Criteria: mobile with < 4 cores OR < 4GB RAM
     holoEffectsEnabled = !(isMobile && (hardwareConcurrency < 4 || memory < 4));
+
+    // Detect touch devices - check for touch support or touch events
+    isTouchDevice = (
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      (navigator as any).msMaxTouchPoints > 0
+    );
   }
 
   function handleMouseMove(event: MouseEvent) {
-    if (!interactive) return;
+    if (!interactive || isTouchDevice) return;
 
     const rect = cardElement.getBoundingClientRect();
     mouseX = (event.clientX - rect.left) / rect.width;
@@ -64,11 +79,15 @@
   }
 
   function handleMouseEnter() {
-    if (!interactive) return;
+    if (!interactive || isTouchDevice) return;
     isHovered = true;
   }
 
   function handleMouseLeave() {
+    if (isTouchDevice) {
+      isHovered = false;
+      return;
+    }
     mouseX = 0.5;
     mouseY = 0.5;
     isHovered = false;
@@ -98,8 +117,8 @@
     }
   });
 
-  $: rotateX = interactive ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0;
-  $: rotateY = interactive ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0;
+  $: rotateX = (interactive && !isTouchDevice) ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0;
+  $: rotateY = (interactive && !isTouchDevice) ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0;
 
   function getRarityStars(rarity: string): number {
     const starMap: Record<string, number> = {
@@ -240,14 +259,26 @@
       isGeneratingImage = false;
     }
   }
+
+  function handleCardClick() {
+    if (!enableLightbox || !interactive) return;
+
+    // Use provided card list or default to single card
+    const cards = cardList.length > 0 ? cardList : [card];
+    const index = cardList.length > 0 ? cardIndex : 0;
+
+    openLightbox(card, cards, index);
+  }
 </script>
 
 <div
   class="card-perspective {sizeClasses[size]}"
+  class:cursor-pointer={enableLightbox && interactive}
   bind:this={cardElement}
   on:mousemove={handleMouseMove}
   on:mouseenter={handleMouseEnter}
   on:mouseleave={handleMouseLeave}
+  on:click={handleCardClick}
   role="img"
   aria-label="{card.name} - {rarityConfig.name} {typeName}"
 >
@@ -286,40 +317,12 @@
       <div class="absolute inset-3 border border-white/3 rounded-md"></div>
 
       <!-- Holographic overlay -->
-      {#if card.isHolo && holoEffectsEnabled}
-        {#if card.holoType === 'standard'}
-          <div
-            class="absolute inset-0 pointer-events-none z-10 holo-sheen"
-            style="
-              background: linear-gradient({mouseX * 360}deg, rgba(255,0,0,0.15), rgba(255,127,0,0.13), rgba(255,255,0,0.15), rgba(0,255,0,0.13), rgba(0,0,255,0.15), rgba(75,0,130,0.13), rgba(148,0,211,0.15));
-              mix-blend-mode: color-dodge;
-            "
-          ></div>
-          <div class="absolute inset-0 pointer-events-none z-10" style="background: radial-gradient(circle at {mouseX * 100}% {mouseY * 100}%, rgba(255,255,255,0.3) 0%, transparent 50%);"></div>
-        {:else if card.holoType === 'reverse'}
-          <div class="absolute inset-0 pointer-events-none z-10" style="background: linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.08) 50%, transparent 55%);"></div>
-          <div class="absolute inset-0 pointer-events-none z-10" style="background: radial-gradient(circle at {mouseX * 100}% {mouseY * 100}%, rgba(255,255,255,0.4) 0%, transparent 45%);"></div>
-        {:else if card.holoType === 'full_art'}
-          <div
-            class="absolute inset-0 pointer-events-none z-10"
-            style="
-              background: linear-gradient({time * 0.05}deg, rgba(255,0,0,0.2), rgba(255,127,0,0.18), rgba(255,255,0,0.2), rgba(0,255,0,0.18), rgba(0,0,255,0.2), rgba(75,0,130,0.18), rgba(148,0,211,0.2));
-              mix-blend-mode: color-dodge;
-              animation: holo-sheen 8s linear infinite;
-            "
-          ></div>
-          <div class="absolute inset-0 pointer-events-none z-10" style="background: radial-gradient(circle at {mouseX * 100}% {mouseY * 100}%, rgba(255,255,255,0.4) 0%, transparent 50%);"></div>
-        {:else if card.holoType === 'prismatic'}
-          <div
-            class="absolute inset-0 pointer-events-none z-10 prismatic-holo"
-            style="
-              background: linear-gradient({time * 0.1}deg, rgba(255,0,128,0.25), rgba(128,0,255,0.23), rgba(0,128,255,0.25), rgba(0,255,255,0.23), rgba(0,255,128,0.25), rgba(128,255,0,0.23), rgba(255,255,0,0.25), rgba(255,128,0,0.23));
-              mix-blend-mode: color-dodge;
-            "
-          ></div>
-          <div class="absolute inset-0 pointer-events-none z-10" style="background: radial-gradient(circle at {mouseX * 100}% {mouseY * 100}%, rgba(255,255,255,0.5) 0%, transparent 40%);"></div>
-        {/if}
-      {/if}
+      <HoloEffect
+        {card}
+        {mouseX}
+        {mouseY}
+        interactive={interactive && !isTouchDevice}
+      />
 
       <!-- Sparkle particles based on rarity -->
       {#if card.isHolo && holoEffectsEnabled && rarityConfig.particleCount > 0}
@@ -541,27 +544,6 @@
     transform: rotateY(180deg);
   }
 
-  .holo-sheen {
-    transition: background 0.3s ease-out;
-    will-change: background;
-  }
-
-  .prismatic-holo {
-    animation: prismatic-shift 6s linear infinite;
-    will-change: filter, background;
-  }
-
-  @keyframes prismatic-shift {
-    0% { filter: hue-rotate(0deg) brightness(1); }
-    50% { filter: hue-rotate(180deg) brightness(1.1); }
-    100% { filter: hue-rotate(360deg) brightness(1); }
-  }
-
-  @keyframes holo-sheen {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.9; }
-  }
-
   /* Rarity glow effect with pulse animation */
   .card-glow {
     animation: rarity-glow-pulse 3s ease-in-out infinite;
@@ -628,9 +610,7 @@
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     .sparkle,
-    .prismatic-holo,
-    .card-glow,
-    .holo-sheen {
+    .card-glow {
       animation: none !important;
       transition: none !important;
     }

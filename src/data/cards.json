@@ -4,7 +4,7 @@
       "id": "001",
       "name": "Grill Master Gary the Groin-Griller",
       "subtitle": "Propane Makes Me Hard",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "rare",
       "artwork": "/cards/grill-master-gary.svg",
       "stats": {
@@ -34,7 +34,7 @@
       "id": "002",
       "name": "Thermostat Tyrant Tim",
       "subtitle": "68°F or Fuck Off",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "epic",
       "artwork": "/cards/thermostat-tyrant.svg",
       "stats": {
@@ -68,7 +68,7 @@
       "id": "003",
       "name": "New Balance Nathan Nut-Kicker",
       "subtitle": "Fashion Fuckery Since 2004",
-      "type": "FASHION_DAD",
+      "type": "FASHION_FUCK",
       "rarity": "common",
       "artwork": "/cards/new-balance-nathan.svg",
       "stats": {
@@ -98,7 +98,7 @@
       "id": "004",
       "name": "Lawn Legend Larry",
       "subtitle": "GET OFF MY LAWN",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "uncommon",
       "artwork": "/cards/lawn-legend-larry.svg",
       "stats": {
@@ -128,7 +128,7 @@
       "id": "005",
       "name": "Remote Control Randy",
       "subtitle": "Don't Touch The Buttons",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "common",
       "artwork": "/cards/remote-control-randy.svg",
       "stats": {
@@ -158,7 +158,7 @@
       "id": "006",
       "name": "Handyman Hank",
       "subtitle": "Duct Tape & WD-40",
-      "type": "FIX_IT_DAD",
+      "type": "FIX_IT_FUCKBOY",
       "rarity": "uncommon",
       "artwork": "/cards/handyman-hank.svg",
       "stats": {
@@ -192,7 +192,7 @@
       "id": "007",
       "name": "Bogey Bob",
       "subtitle": "It's Not About The Score",
-      "type": "GOLF_DAD",
+      "type": "GOLF_GONAD",
       "rarity": "common",
       "stats": {
         "dadJoke": 85,
@@ -222,7 +222,7 @@
       "id": "008",
       "name": "Cargo Shorts Carl",
       "subtitle": "Pocket Dimension",
-      "type": "FASHION_DAD",
+      "type": "FASHION_FUCK",
       "rarity": "rare",
       "artwork": "/cards/cargo-shorts-carl.svg",
       "stats": {
@@ -256,7 +256,7 @@
       "id": "009",
       "name": "Oil Change Oscar",
       "subtitle": "3,000 Miles or Whenever",
-      "type": "CAR_DAD",
+      "type": "CAR_COCK",
       "rarity": "common",
       "stats": {
         "dadJoke": 72,
@@ -286,7 +286,7 @@
       "id": "010",
       "name": "TPS Report Terry",
       "subtitle": "Did You Get The Memo?",
-      "type": "OFFICE_DAD",
+      "type": "OFFICE_ORGASMS",
       "rarity": "common",
       "stats": {
         "dadJoke": 85,
@@ -316,7 +316,7 @@
       "id": "011",
       "name": "Skateboard Scott",
       "subtitle": "The Cool Dad (Confirmed)",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 60,
@@ -349,8 +349,8 @@
     {
       "id": "012",
       "name": "Soccer Stan",
-      "subtitle": " sideline General",
-      "type": "COACH_DAD",
+      "subtitle": "Sideline General",
+      "type": "COACH_CUMSTERS",
       "rarity": "common",
       "stats": {
         "dadJoke": 80,
@@ -380,7 +380,7 @@
       "id": "013",
       "name": "Secret Recipe Rick",
       "subtitle": "The Secret Is Butter",
-      "type": "CHEF_DAD",
+      "type": "CHEF_CUMSTERS",
       "rarity": "rare",
       "stats": {
         "dadJoke": 85,
@@ -414,7 +414,7 @@
       "id": "014",
       "name": "Costco Craig",
       "subtitle": "Bulk Buy Boss",
-      "type": "WAREHOUSE_DAD",
+      "type": "WAREHOUSE_WANKERS",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
@@ -448,7 +448,7 @@
       "id": "015",
       "name": "Christmas Clark",
       "subtitle": "Decorate Or Die",
-      "type": "HOLIDAY_DAD",
+      "type": "HOLIDAY_HORNDOGS",
       "rarity": "rare",
       "stats": {
         "dadJoke": 90,
@@ -482,7 +482,7 @@
       "id": "016",
       "name": "The Ultimate Dad",
       "subtitle": "Hi Hungry, I'm Dad",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "mythic",
       "artwork": "/cards/ultimate-dad.svg",
       "stats": {
@@ -520,7 +520,7 @@
       "id": "017",
       "name": "WiFi Wizard Walter",
       "subtitle": "Have You Tried Turning It Off?",
-      "type": "TECH_DAD",
+      "type": "TECH_TWATS",
       "rarity": "epic",
       "stats": {
         "dadJoke": 70,
@@ -550,7 +550,7 @@
       "id": "018",
       "name": "Smoker Steve",
       "subtitle": "Low & Slow Legend",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "rare",
       "stats": {
         "dadJoke": 80,
@@ -584,7 +584,7 @@
       "id": "019",
       "name": "Minivan Mike",
       "subtitle": "Swagger Wagon Commander",
-      "type": "CAR_DAD",
+      "type": "CAR_COCK",
       "rarity": "common",
       "stats": {
         "dadJoke": 85,
@@ -614,7 +614,7 @@
       "id": "020",
       "name": "Recliner Randy",
       "subtitle": "Horizontal Life Evaluation",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
@@ -648,7 +648,7 @@
       "id": "021",
       "name": "Fertilizer Fred",
       "subtitle": "Grass Growth Guru",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 65,
@@ -678,7 +678,7 @@
       "id": "022",
       "name": "LinkedIn Larry",
       "subtitle": "Humble Brag Master",
-      "type": "OFFICE_DAD",
+      "type": "OFFICE_ORGASMS",
       "rarity": "common",
       "stats": {
         "dadJoke": 80,
@@ -708,7 +708,7 @@
       "id": "023",
       "name": "Band Dad Brad",
       "subtitle": "Almost Got Signed",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "common",
       "stats": {
         "dadJoke": 60,
@@ -738,7 +738,7 @@
       "id": "024",
       "name": "Classic Car Craig",
       "subtitle": "It's A Classic, Not A Clunker",
-      "type": "CAR_DAD",
+      "type": "CAR_COCK",
       "rarity": "epic",
       "artwork": "/cards/classic-car-craig.svg",
       "stats": {
@@ -772,7 +772,7 @@
       "id": "025",
       "name": "Breakfast King Keith",
       "subtitle": "Pancake Perfectionist",
-      "type": "CHEF_DAD",
+      "type": "CHEF_CUMSTERS",
       "rarity": "common",
       "stats": {
         "dadJoke": 85,
@@ -956,7 +956,7 @@
       "id": "031",
       "name": "Propane Paul",
       "subtitle": "Tank Tender",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "common",
       "stats": {
         "dadJoke": 75,
@@ -986,7 +986,7 @@
       "id": "032",
       "name": "YouTube Tutorial Tom",
       "subtitle": "10 Minutes To Expert",
-      "type": "FIX_IT_DAD",
+      "type": "FIX_IT_FUCKBOY",
       "rarity": "common",
       "stats": {
         "dadJoke": 70,
@@ -1016,7 +1016,7 @@
       "id": "033",
       "name": "Country Club Chad",
       "subtitle": "Back Nine Boss",
-      "type": "GOLF_DAD",
+      "type": "GOLF_GONAD",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
@@ -1046,7 +1046,7 @@
       "id": "034",
       "name": "Little League Lou",
       "subtitle": "Dugout Dynamo",
-      "type": "COACH_DAD",
+      "type": "COACH_CUMSTERS",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 80,
@@ -1076,7 +1076,7 @@
       "id": "035",
       "name": "Riding Mower Rex",
       "subtitle": "Lawn Cavalry",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "rare",
       "stats": {
         "dadJoke": 70,
@@ -1200,7 +1200,7 @@
       "id": "039",
       "name": "Hawaiian Shirt Harry",
       "subtitle": "Casual Friday Every Day",
-      "type": "FASHION_DAD",
+      "type": "FASHION_FUCK",
       "rarity": "common",
       "stats": {
         "dadJoke": 80,
@@ -1260,7 +1260,7 @@
       "id": "041",
       "name": "Conference Call Carl",
       "subtitle": "You're On Mute",
-      "type": "OFFICE_DAD",
+      "type": "OFFICE_ORGASMS",
       "rarity": "uncommon",
       "stats": {
         "dadJoke": 75,
@@ -1290,7 +1290,7 @@
       "id": "042",
       "name": "SportsCenter Sam",
       "subtitle": "Highlight Historian",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "common",
       "artwork": "/cards/sportscenter-sam.svg",
       "stats": {
@@ -1320,7 +1320,7 @@
       "id": "043",
       "name": "IPA Ian",
       "subtitle": "Hop Head Supreme",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "uncommon",
       "artwork": "/cards/ipa-ian.svg",
       "stats": {
@@ -1354,7 +1354,7 @@
       "id": "044",
       "name": "Vintage Vinyl Vince",
       "subtitle": "Analog Audiophile",
-      "type": "VINTAGE_DAD",
+      "type": "VINTAGE_VAGABONDS",
       "rarity": "uncommon",
       "artwork": "/cards/vinyl-vince.svg",
       "stats": {
@@ -1414,7 +1414,7 @@
       "id": "046",
       "name": "Fourth of July Frank",
       "subtitle": "Patriotic Pyro",
-      "type": "HOLIDAY_DAD",
+      "type": "HOLIDAY_HORNDOGS",
       "rarity": "uncommon",
       "artwork": "/cards/fourth-july-frank.svg",
       "stats": {
@@ -1444,7 +1444,7 @@
       "id": "047",
       "name": "Home Depot Hero",
       "subtitle": "Aisle Navigator",
-      "type": "WAREHOUSE_DAD",
+      "type": "WAREHOUSE_WANKERS",
       "rarity": "common",
       "stats": {
         "dadJoke": 75,
@@ -1474,7 +1474,7 @@
       "id": "048",
       "name": "Smart Home Steve",
       "subtitle": "IoT Overlord",
-      "type": "TECH_DAD",
+      "type": "TECH_TWATS",
       "rarity": "rare",
       "artwork": "/cards/smart-home-steve.svg",
       "stats": {
@@ -1642,7 +1642,7 @@
       "id": "053",
       "name": "Smoke Master Sam",
       "subtitle": "The Low and Slow Prophet",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "legendary",
       "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
@@ -1673,7 +1673,7 @@
       "id": "054",
       "name": "Pool Side Paul",
       "subtitle": "Guardian of the Deep End",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "rare",
       "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
@@ -1703,7 +1703,7 @@
       "id": "055",
       "name": "Mosquito Magnet Mike",
       "subtitle": "Sacrificing Blood for the Yard",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "common",
       "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
@@ -1733,7 +1733,7 @@
       "id": "056",
       "name": "Sunburn Stan",
       "subtitle": "Lobster-Tinted Leisure",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "uncommon",
       "artwork": "/cards/because-i-said-so-magic-card--t3chat--1.webp",
       "stats": {
@@ -1763,7 +1763,7 @@
       "id": "057",
       "name": "Flip Flop Floyd",
       "subtitle": "The Rhythmic Slap of Summer",
-      "type": "FASHION_DAD",
+      "type": "FASHION_FUCK",
       "rarity": "common",
       "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
@@ -1823,7 +1823,7 @@
       "id": "059",
       "name": "Back Deck Barry",
       "subtitle": "Outdoor Napping Specialist",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "uncommon",
       "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
@@ -1853,7 +1853,7 @@
       "id": "060",
       "name": "Tongs-Clicking Tim",
       "subtitle": "Checking the Calibration",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "common",
       "artwork": "/cards/grill-master-gary-bbq-dad--t3chat--1.webp",
       "stats": {
@@ -1883,7 +1883,7 @@
       "id": "061",
       "name": "Marinade Mark",
       "subtitle": "24 Hours of Flavor Prep",
-      "type": "CHEF_DAD",
+      "type": "CHEF_CUMSTERS",
       "rarity": "rare",
       "artwork": "/cards/bogey-bob-eternal-duffer--t3chat--1.webp",
       "stats": {
@@ -1913,7 +1913,7 @@
       "id": "062",
       "name": "Charcoal Charlie",
       "subtitle": "Analog Heat Enthusiast",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "uncommon",
       "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
@@ -1943,7 +1943,7 @@
       "id": "063",
       "name": "Cornhole Chris",
       "subtitle": "The Beanbag Sniper",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "rare",
       "artwork": "/cards/bogey-bob-eternal-duffer--t3chat--1.webp",
       "stats": {
@@ -1973,7 +1973,7 @@
       "id": "064",
       "name": "Ladder Ball Larry",
       "subtitle": "Tangled in Plastic",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "uncommon",
       "artwork": "/cards/because-i-said-so-magic-card--t3chat--1.webp",
       "stats": {
@@ -2003,7 +2003,7 @@
       "id": "065",
       "name": "Badminton Brad",
       "subtitle": "Intense Backyard Athletics",
-      "type": "COACH_DAD",
+      "type": "COACH_CUMSTERS",
       "rarity": "common",
       "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
@@ -2033,7 +2033,7 @@
       "id": "066",
       "name": "Water Balloon Walter",
       "subtitle": "Tactical Hydration Deployment",
-      "type": "COACH_DAD",
+      "type": "COACH_CUMSTERS",
       "rarity": "common",
       "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
@@ -2063,7 +2063,7 @@
       "id": "067",
       "name": "Slip n Slide Sid",
       "subtitle": "Defying Friction",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "epic",
       "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
@@ -2123,7 +2123,7 @@
       "id": "069",
       "name": "Tiki Torch Tom",
       "subtitle": "Backyard Illumination Expert",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "uncommon",
       "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
@@ -2153,7 +2153,7 @@
       "id": "070",
       "name": "Light Beer Bill",
       "subtitle": "Hydration is Mostly Water",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "common",
       "artwork": "/cards/grill-master-gary-bbq-dad--t3chat--1.webp",
       "stats": {
@@ -2183,7 +2183,7 @@
       "id": "071",
       "name": "Zucchini Zeus",
       "subtitle": "The Garden Over-Producer",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "rare",
       "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
@@ -2213,7 +2213,7 @@
       "id": "072",
       "name": "Burger Builder Bob",
       "subtitle": "Architect of the Bun",
-      "type": "CHEF_DAD",
+      "type": "CHEF_CUMSTERS",
       "rarity": "uncommon",
       "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
@@ -2243,7 +2243,7 @@
       "id": "073",
       "name": "Hot Dog Harry",
       "subtitle": "Tube Meat Traditionalist",
-      "type": "CHEF_DAD",
+      "type": "CHEF_CUMSTERS",
       "rarity": "common",
       "artwork": "/cards/bogey-bob-eternal-duffer--t3chat--1.webp",
       "stats": {
@@ -2303,7 +2303,7 @@
       "id": "075",
       "name": "Ice Run Ian",
       "subtitle": "The Essential Supply Driver",
-      "type": "CAR_DAD",
+      "type": "CAR_COCK",
       "rarity": "common",
       "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
@@ -2333,7 +2333,7 @@
       "id": "076",
       "name": "Shade Seeker Steve",
       "subtitle": "Chasing the Shadow",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "uncommon",
       "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
@@ -2363,7 +2363,7 @@
       "id": "077",
       "name": "Sprinkler Spencer",
       "subtitle": "Yard Irrigation Veteran",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "common",
       "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
@@ -2423,7 +2423,7 @@
       "id": "079",
       "name": "Patriotic Pete",
       "subtitle": "The Flag-Waver",
-      "type": "HOLIDAY_DAD",
+      "type": "HOLIDAY_HORNDOGS",
       "rarity": "rare",
       "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
@@ -2453,7 +2453,7 @@
       "id": "080",
       "name": "Bug Zapper Ben",
       "subtitle": "The Electric Blue Judge",
-      "type": "TECH_DAD",
+      "type": "TECH_TWATS",
       "rarity": "uncommon",
       "artwork": "/cards/weber-genesis-grill-artifact--t3chat--1.webp",
       "stats": {
@@ -2483,7 +2483,7 @@
       "id": "081",
       "name": "Fire Pit Fred",
       "subtitle": "Storytelling in the Smoke",
-      "type": "VINTAGE_DAD",
+      "type": "VINTAGE_VAGABONDS",
       "rarity": "rare",
       "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
@@ -2543,7 +2543,7 @@
       "id": "083",
       "name": "Iron Dad Tony Stark",
       "subtitle": "Arc Reactor Conspiracy Theorist",
-      "type": "TECH_DAD",
+      "type": "TECH_TWATS",
       "rarity": "legendary",
       "artwork": "/cards/wifi-wizard-walter.svg",
       "stats": {
@@ -2573,7 +2573,7 @@
       "id": "084",
       "name": "Hulk Hump Bruce Banner",
       "subtitle": "Gamma Ray Conspiracy Victim",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "epic",
       "artwork": "/cards/recliner-randy.svg",
       "stats": {
@@ -2603,7 +2603,7 @@
       "id": "085",
       "name": "Spider-Dad Peter Parker",
       "subtitle": "Web-Slinging Conspiracy Theorist",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "rare",
       "artwork": "/cards/skateboard-scott.svg",
       "stats": {
@@ -2633,7 +2633,7 @@
       "id": "086",
       "name": "Darth Dad Vader",
       "subtitle": "Dark Side Conspiracy Dominator",
-      "type": "OFFICE_DAD",
+      "type": "OFFICE_ORGASMS",
       "rarity": "legendary",
       "artwork": "/cards/tps-report-terry.svg",
       "stats": {
@@ -2663,7 +2663,7 @@
       "id": "087",
       "name": "Luke Lawnwalker",
       "subtitle": "Lightsaber Lawn Care Specialist",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "epic",
       "artwork": "/cards/lawn-legend-larry.svg",
       "stats": {
@@ -2693,7 +2693,7 @@
       "id": "088",
       "name": "Big Mac Boner-Burger",
       "subtitle": "Double Decker Conspiracy Burger",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "rare",
       "artwork": "/cards/grill-master-gary.svg",
       "stats": {
@@ -2723,7 +2723,7 @@
       "id": "089",
       "name": "McNugget Nut-Nibbler",
       "subtitle": "Chicken Conspiracy Specialist",
-      "type": "CHEF_DAD",
+      "type": "CHEF_CUMSTERS",
       "rarity": "epic",
       "artwork": "/cards/secret-recipe-rick.svg",
       "stats": {
@@ -2753,7 +2753,7 @@
       "id": "090",
       "name": "Harry Pothead Humper",
       "subtitle": "Wand-Wacking Conspiracy Wizard",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "rare",
       "artwork": "/cards/skateboard-scott.svg",
       "stats": {
@@ -2813,7 +2813,7 @@
       "id": "092",
       "name": "Paul Atreides Ass-Traitor",
       "subtitle": "Muad'Dib Conspiracy Theorist",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "legendary",
       "artwork": "/cards/skateboard-scott.svg",
       "stats": {
@@ -2843,7 +2843,7 @@
       "id": "093",
       "name": "Leto Lawnreides II",
       "subtitle": "God-Emperor Lawn Care Specialist",
-      "type": "LAWN_DAD",
+      "type": "LAWN_LUNATIC",
       "rarity": "mythic",
       "artwork": "/cards/lawn-legend-larry.svg",
       "stats": {
@@ -2873,7 +2873,7 @@
       "id": "094",
       "name": "Duncan Idaho Dick-Hoe",
       "subtitle": "Swordmaster Conspiracy Fighter",
-      "type": "FIX_IT_DAD",
+      "type": "FIX_IT_FUCKBOY",
       "rarity": "epic",
       "artwork": "/cards/handyman-hank.svg",
       "stats": {
@@ -2903,7 +2903,7 @@
       "id": "095",
       "name": "Coke Can Cock-Crasher",
       "subtitle": "Fizzy Conspiracy Fountain",
-      "type": "BBQ_DAD",
+      "type": "BBQ_DICKTATOR",
       "rarity": "rare",
       "artwork": "/cards/grill-master-gary.svg",
       "stats": {
@@ -2933,7 +2933,7 @@
       "id": "096",
       "name": "Diet Dad Cola",
       "subtitle": "Zero Calorie Zero Trust",
-      "type": "COOL_DAD",
+      "type": "COOL_CUCKS",
       "rarity": "epic",
       "artwork": "/cards/ipa-ian.svg",
       "stats": {
@@ -2963,7 +2963,7 @@
       "id": "097",
       "name": "Billy Bookshelf Boner-Banger",
       "subtitle": "Shelf Assembly Conspiracy Specialist",
-      "type": "FIX_IT_DAD",
+      "type": "FIX_IT_FUCKBOY",
       "rarity": "rare",
       "artwork": "/cards/handyman-hank.svg",
       "stats": {
@@ -2993,7 +2993,7 @@
       "id": "098",
       "name": "Malm Mattress Meat-Masher",
       "subtitle": "Bedframe Assembly Nightmare",
-      "type": "COUCH_DAD",
+      "type": "COUCH_CUMMANDER",
       "rarity": "epic",
       "artwork": "/cards/recliner-randy.svg",
       "stats": {

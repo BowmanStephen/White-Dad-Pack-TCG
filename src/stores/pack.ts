@@ -1,28 +1,16 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState } from '../types';
-import { generatePack, generateSeasonPack, getPackStats } from '../lib/pack/generator';
+import { generateSeasonPack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
-import { DEFAULT_SEASON_CONFIG } from '../types';
+import { haptics } from '../lib/utils/haptics';
 import {
   initSecurity,
   validatePackBeforeOpen,
-  recordSuccessfulPackOpen,
   isCurrentUserBanned,
   getBanStatus,
 } from './security';
-import { haptics } from '../lib/utils/haptics';
-import {
-  saveRarityDistribution,
-  recordPackOpenStart,
-  recordPackOpenComplete,
-} from '../lib/analytics/events';
-import {
-  getSessionId,
-  recordPackOpen,
-  updateSessionActivity,
-} from '../lib/analytics/engagement';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -92,29 +80,6 @@ export const isLoading = computed(packState, (state) => {
 
 // Start opening a new pack (standard or premium)
 export async function openNewPack(): Promise<void> {
-  // Initialize security system if not already initialized
-  await initSecurity();
-
-  // Check if user is banned
-  if (isCurrentUserBanned()) {
-    const ban = getBanStatus();
-    const appError = createAppError(
-      'banned',
-      ban.reason || 'Your account has been suspended due to suspicious activity.',
-      [
-        {
-          label: 'Go Home',
-          action: () => {
-            window.location.href = '/';
-          },
-        },
-      ]
-    );
-    packError.set(appError);
-    packState.set('idle');
-    return;
-  }
-
   // Reset state first
   currentCardIndex.set(0);
   revealedCards.set(new Set());
@@ -163,33 +128,6 @@ export async function openNewPack(): Promise<void> {
           throw new Error('Generated pack has no cards');
         }
 
-        // Security: Validate pack integrity and check for exploits
-        const validationResult = await validatePackBeforeOpen(pack);
-        if (!validationResult.valid) {
-          // Create security error
-          const securityError = createAppError(
-            'security',
-            validationResult.violation?.details || 'Pack validation failed. Please try again.',
-            [
-              {
-                label: 'Try Again',
-                action: () => openNewPack(),
-                primary: true,
-              },
-              {
-                label: 'Go Home',
-                action: () => {
-                  window.location.href = '/';
-                },
-              },
-            ]
-          );
-          packError.set(securityError);
-          packState.set('idle');
-          logError(securityError, validationResult.violation);
-          return;
-        }
-
         // Save pack to collection (LocalStorage)
         const saveResult = addPackToCollection(pack);
         if (!saveResult.success) {
@@ -208,21 +146,6 @@ export async function openNewPack(): Promise<void> {
           logError(storageAppError, saveResult.error);
         }
 
-        // Security: Record successful pack open
-        recordSuccessfulPackOpen(pack, 'standard');
-
-        // Engagement: Update session activity on pack open (ANALYTICS-002)
-        updateSessionActivity();
-
-        // Engagement: Record pack open in current session (ANALYTICS-002)
-        recordPackOpen();
-
-        // Analytics: Record pack open start time (ANALYTICS-001)
-        recordPackOpenStart();
-
-        // Analytics: Save rarity distribution for balancing (ANALYTICS-001)
-        saveRarityDistribution(pack);
-
         // Track pack open event
         trackEvent({
           type: 'pack_open',
@@ -230,7 +153,6 @@ export async function openNewPack(): Promise<void> {
             packId: pack.id,
             cardCount: pack.cards.length,
             packType: 'standard',
-            sessionId: getSessionId(),  // Include session ID for correlation
           },
         });
 
@@ -402,9 +324,6 @@ function trackPackComplete(pack: Pack, skipped: boolean): void {
   const duration = packOpenStartTime ? Date.now() - packOpenStartTime : 0;
   const holoCount = pack.cards.filter((c) => c.isHolo).length;
 
-  // Analytics: Record pack open complete (ANALYTICS-001)
-  recordPackOpenComplete();
-
   trackEvent({
     type: 'pack_complete',
     data: {
@@ -416,7 +335,6 @@ function trackPackComplete(pack: Pack, skipped: boolean): void {
       skipped,
     },
   });
-
 
   // Reset pack open start time
   packOpenStartTime = null;

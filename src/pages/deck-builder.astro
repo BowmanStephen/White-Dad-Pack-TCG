@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DeckBuilder from '@/components/deck/DeckBuilder.svelte';
+import { t } from '@/i18n';
+
+// SEO Meta Tags
+const title = t('deck.title');
+const description = t('deck.metaDescription');
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="deck-builder-page">
+    <DeckBuilder client:only />
+  </main>
+</BaseLayout>
+
+<style>
+  .deck-builder-page {
+    width: 100%;
+    min-height: 100vh;
+  }
+</style>

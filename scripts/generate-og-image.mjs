@@ -8,7 +8,6 @@
  */
 
 import Sharp from 'sharp';
-import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 

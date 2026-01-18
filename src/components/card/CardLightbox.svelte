@@ -14,6 +14,8 @@
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import type { PackCard } from '../../types';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
+  import CardStats from './CardStats.svelte';
+  import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
   // Subscribe to store changes
@@ -146,6 +148,10 @@
       prismatic: 'Prismatic Holo',
     };
     return names[holoType] || holoType;
+  }
+
+  function isStatlessCard(type: string): boolean {
+    return isSpecialCardType(type) && type !== 'EVOLUTION' && type !== 'ITEM';
   }
 </script>
 
@@ -286,6 +292,19 @@
           <div class="flavor-text-section">
             <p class="flavor-text">"{card.flavorText}"</p>
           </div>
+
+          <!-- Card Stats -->
+          {#if !isStatlessCard(card.type)}
+            <div class="stats-section">
+              <h3 class="stats-title">Stats</h3>
+              <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={false} cardType={card.type} />
+            </div>
+          {:else}
+            <div class="statless-card-section">
+              <p class="statless-card-text">{getSpecialCardTypeLabel(card.type)} Card</p>
+              <p class="statless-card-subtext">Effect-based abilities</p>
+            </div>
+          {/if}
 
           <!-- Action Buttons -->
           <div class="lightbox-actions">
@@ -652,6 +671,43 @@
     font-style: italic;
     text-align: center;
     line-height: 1.5;
+  }
+
+  .stats-section {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(71, 85, 105, 0.2);
+  }
+
+  .stats-title {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .statless-card-section {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(71, 85, 105, 0.2);
+    text-align: center;
+  }
+
+  .statless-card-text {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.875rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .statless-card-subtext {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
   }
 
   .lightbox-actions {
