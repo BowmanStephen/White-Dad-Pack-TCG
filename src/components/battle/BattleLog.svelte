@@ -10,6 +10,7 @@
     damage?: number;
     statusEffects?: string[];
     type: 'attack' | 'counter' | 'synergy' | 'status' | 'victory' | 'defeat' | 'info';
+    timestamp?: Date;
   }
 
   interface Props {
@@ -83,13 +84,124 @@
   function isLogHighlighted(logId: string): boolean {
     return logId === highlightedLogId;
   }
+
+  function formatTimestamp(timestamp?: Date): string {
+    if (!timestamp) return '';
+    const now = new Date();
+    const diff = now.getTime() - timestamp.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+
+    if (seconds < 60) {
+      return `${seconds}s ago`;
+    } else if (minutes < 60) {
+      return `${minutes}m ago`;
+    } else if (hours < 24) {
+      return `${hours}h ago`;
+    } else {
+      return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+  }
+
+  function formatLogEntryAsText(log: BattleLogEntry, index: number): string {
+    const timestamp = log.timestamp ? log.timestamp.toLocaleTimeString() : 'N/A';
+    const actor = log.actor.toUpperCase();
+    const turn = log.turn > 0 ? `[Turn ${log.turn}]` : '';
+    const critical = log.isCritical ? ' (CRITICAL!)' : '';
+    const damage = log.damage !== undefined ? ` - ${log.damage} damage${critical}` : '';
+    const detail = log.detail ? ` | ${log.detail}` : '';
+    const statusEffects = log.statusEffects && log.statusEffects.length > 0
+      ? ` | Effects: ${log.statusEffects.join(', ')}`
+      : '';
+
+    return `[${timestamp}] ${actor} ${turn} ${log.action}${damage}${detail}${statusEffects}`;
+  }
+
+  function exportBattleLog() {
+    if (logs.length === 0) return;
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const filename = `battle-log-${timestamp}.txt`;
+
+    let logText = `=== DADDECK™ BATTLE LOG ===\n`;
+    logText += `Generated: ${new Date().toLocaleString()}\n`;
+    logText += `Total Actions: ${logs.length}\n`;
+    logText += `${'='.repeat(50)}\n\n`;
+
+    logs.forEach((log, index) => {
+      logText += formatLogEntryAsText(log, index) + '\n';
+    });
+
+    logText += `\n${'='.repeat(50)}\n`;
+    logText += `=== END OF BATTLE LOG ===\n`;
+
+    // Create blob and download
+    const blob = new Blob([logText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  async function copyBattleLog() {
+    if (logs.length === 0) return;
+
+    let logText = `=== DADDECK™ BATTLE LOG ===\n`;
+    logText += `Generated: ${new Date().toLocaleString()}\n`;
+    logText += `Total Actions: ${logs.length}\n`;
+    logText += `${'='.repeat(50)}\n\n`;
+
+    logs.forEach((log, index) => {
+      logText += formatLogEntryAsText(log, index) + '\n';
+    });
+
+    try {
+      await navigator.clipboard.writeText(logText);
+      // Could add a toast notification here
+      console.log('Battle log copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy battle log:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = logText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  }
 </script>
 
 <div class="battle-log-container">
   <div class="battle-log-header">
-    <h3>Battle Log</h3>
+    <div class="header-left">
+      <h3>Battle Log</h3>
+      {#if logs.length > 0}
+        <span class="log-count">{logs.length} actions</span>
+      {/if}
+    </div>
     {#if logs.length > 0}
-      <span class="log-count">{logs.length} actions</span>
+      <div class="header-actions">
+        <button
+          class="action-button"
+          on:click={copyBattleLog}
+          title="Copy battle log to clipboard"
+        >
+          📋 Copy
+        </button>
+        <button
+          class="action-button"
+          on:click={exportBattleLog}
+          title="Export battle log as text file"
+        >
+          💾 Export
+        </button>
+      </div>
     {/if}
   </div>
 
@@ -117,6 +229,11 @@
                 <span class="log-turn">Turn {log.turn}</span>
               {/if}
               <span class="log-action">{log.action}</span>
+              {#if log.timestamp}
+                <span class="log-timestamp" title={log.timestamp.toLocaleString()}>
+                  {formatTimestamp(log.timestamp)}
+                </span>
+              {/if}
             </div>
 
             {#if log.detail}
@@ -158,6 +275,14 @@
     padding: 1rem 1.25rem;
     border-bottom: 1px solid rgba(148, 163, 184, 0.15);
     background: rgba(30, 41, 59, 0.4);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
 
   .battle-log-header h3 {
@@ -173,6 +298,34 @@
     background: rgba(148, 163, 184, 0.1);
     padding: 0.25rem 0.6rem;
     border-radius: 999px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .action-button:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .action-button:active {
+    transform: translateY(0);
   }
 
   .battle-log-empty {
@@ -303,6 +456,16 @@
   .log-action {
     font-weight: 600;
     color: #e2e8f0;
+  }
+
+  .log-timestamp {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-left: auto;
+    background: rgba(148, 163, 184, 0.1);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
   }
 
   .log-detail {

@@ -130,6 +130,7 @@
   function parseBattleLog(logs: string[]): BattleLogEntry[] {
     const parsedLogs: BattleLogEntry[] = [];
     let currentTurn = 0;
+    const battleStartTime = new Date();
 
     for (const log of logs) {
       // Battle start
@@ -139,7 +140,8 @@
           action: 'Battle Started',
           actor: 'system',
           detail: log.replace('⚔️ BATTLE: ', ''),
-          type: 'info'
+          type: 'info',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
@@ -152,7 +154,8 @@
           action: cardName + ' Power',
           actor: 'system',
           detail: power + ' HP',
-          type: 'info'
+          type: 'info',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
@@ -164,7 +167,8 @@
           action: 'Type Advantage',
           actor: 'system',
           detail: log.split('!')[0] + '!',
-          type: 'info'
+          type: 'info',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
@@ -175,7 +179,8 @@
           action: 'Type Disadvantage',
           actor: 'system',
           detail: log.split('!')[0] + '!',
-          type: 'info'
+          type: 'info',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
@@ -188,7 +193,8 @@
           action: 'Synergy Activated',
           actor: 'system',
           detail: synergyName || 'Unknown synergy',
-          type: 'synergy'
+          type: 'synergy',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
@@ -209,7 +215,8 @@
           action: 'Attack',
           actor,
           detail: actionText,
-          type: 'attack'
+          type: 'attack',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
@@ -227,86 +234,59 @@
 
           parsedLogs.push({
             turn: currentTurn,
-            action: 'Damage Dealt',
+            action: 'Damage',
             actor,
             damage,
             isCritical,
-            type: actor === 'player' ? 'counter' : 'attack'
+            type: 'counter',
+            timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
           });
         }
         continue;
       }
 
       // Status effects
-      if (log.includes('Status effects:')) {
-        const effects = log.replace('  → Status effects:', '').trim().split(', ');
-        const actor = parsedLogs.length > 0 ? parsedLogs[parsedLogs.length - 1].actor : 'player';
+      if (log.includes('applies') && log.includes('!')) {
+        const statusMatch = log.match(/applies (.+?)!/);
+        if (statusMatch) {
+          const statusEffect = statusMatch[1];
+          const actor = log.includes(selectedCard?.name || '') ? 'player' : 'opponent';
 
-        parsedLogs.push({
-          turn: currentTurn,
-          action: 'Status Effects Applied',
-          actor,
-          statusEffects: effects,
-          type: 'status'
-        });
-        continue;
-      }
-
-      // Counter attack
-      if (log.includes('Counter:')) {
-        const damageMatch = log.match(/hits back for (\d+) damage/);
-        if (damageMatch) {
           parsedLogs.push({
             turn: currentTurn,
-            action: 'Counter Attack',
-            actor: 'opponent',
-            detail: 'Opponent strikes back',
-            damage: parseInt(damageMatch[1]),
-            type: 'counter'
+            action: 'Status Effect',
+            actor,
+            detail: `Applies ${statusEffect}!`,
+            statusEffects: [statusEffect],
+            type: 'status',
+            timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
           });
         }
         continue;
       }
 
-      // HP display
-      if (log.includes('HP:')) {
+      // Victory
+      if (log.includes('🏆 VICTORY!')) {
         parsedLogs.push({
           turn: currentTurn,
-          action: 'Health Status',
+          action: 'Victory!',
           actor: 'system',
-          detail: log.replace('  HP: ', ''),
-          type: 'info'
+          detail: log.replace('🏆 VICTORY! ', ''),
+          type: 'victory',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
 
-      // Victory/Defeat
-      if (log.includes('🏆') && log.includes('WINS')) {
-        const winnerName = log.match(/🏆 (.+?) WINS/)?.[1];
-        const turns = log.match(/in (\d+) turns/)?.[1];
-        const isPlayerVictory = selectedCard && winnerName === selectedCard.name;
-
+      // Defeat
+      if (log.includes('💀 DEFEAT')) {
         parsedLogs.push({
           turn: currentTurn,
-          action: 'Battle Ended',
+          action: 'Defeat',
           actor: 'system',
-          detail: winnerName + ' wins in ' + turns + ' turns!',
-          type: isPlayerVictory ? 'victory' : 'defeat'
-        });
-        continue;
-      }
-
-      // Time's up
-      if (log.includes("Time's up!")) {
-        const winnerName = log.match(/Time's up! (.+?) wins/)?.[1];
-        const isPlayerVictory = selectedCard && winnerName === selectedCard.name;
-
-        parsedLogs.push({
-          turn: currentTurn,
-          action: 'Time Limit Reached',
-          actor: 'system',
-          detail: winnerName + ' wins by HP!',
-          type: isPlayerVictory ? 'victory' : 'defeat'
+          detail: log.replace('💀 DEFEAT: ', ''),
+          type: 'defeat',
+          timestamp: new Date(battleStartTime.getTime() + parsedLogs.length * 100)
         });
         continue;
       }
