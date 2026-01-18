@@ -38,6 +38,9 @@ export default defineConfig({
     ['list'],
   ],
 
+  /* Snapshot path for visual regression tests */
+  snapshotPathTemplate: '{testDir}/{projectName}/__screenshots__/{testFilePath}/{arg}{ext}',
+
   /* Shared settings for all tests */
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
@@ -89,6 +92,43 @@ export default defineConfig({
     {
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
+    },
+
+    /* Visual Regression Test Projects */
+    {
+      name: 'visual-tests-chromium',
+      testDir: './tests/visual',
+      use: {
+        ...devices['Desktop Chrome'],
+        screenshot: 'only-on-failure',
+      },
+    },
+
+    {
+      name: 'visual-tests-firefox',
+      testDir: './tests/visual',
+      use: {
+        ...devices['Desktop Firefox'],
+        screenshot: 'only-on-failure',
+      },
+    },
+
+    {
+      name: 'visual-tests-webkit',
+      testDir: './tests/visual',
+      use: {
+        ...devices['Desktop Safari'],
+        screenshot: 'only-on-failure',
+      },
+    },
+
+    {
+      name: 'visual-tests-mobile',
+      testDir: './tests/visual',
+      use: {
+        ...devices['Pixel 5'],
+        screenshot: 'only-on-failure',
+      },
     },
   ],
 

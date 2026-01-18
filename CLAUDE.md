@@ -1214,8 +1214,22 @@ export default {
 
 ### Run Tests
 ```bash
+# Unit Tests (Vitest)
 bun test                    # Watch mode
 bun run test:run            # Single run
+
+# E2E Tests (Playwright)
+bun run test:e2e            # Run all E2E tests
+bun run test:e2e:ui         # Run with Playwright UI
+bun run test:e2e:chromium   # Run on Chrome only
+bun run test:e2e:firefox    # Run on Firefox only
+bun run test:e2e:webkit     # Run on Safari (WebKit) only
+
+# Visual Regression Tests (Playwright)
+bun run test:visual         # Run visual tests on Chromium
+bun run test:visual:all     # Run on all desktop browsers
+bun run test:visual:mobile  # Run mobile viewport tests
+bun run test:visual:update  # Update baseline screenshots
 ```
 
 ### Test Configuration
@@ -1223,6 +1237,13 @@ bun run test:run            # Single run
 - **Environment:** Node (for unit tests)
 - **Include pattern:** `tests/**/*.test.ts`
 - **Path aliases:** Same as tsconfig.json (`@/`, `@lib/`, `@stores/`, etc.)
+
+**Playwright setup** (`playwright.config.ts`):
+- **E2E tests:** `tests/e2e/` directory
+- **Visual tests:** `tests/visual/` directory
+- **Browsers:** Chromium, Firefox, WebKit (Safari)
+- **Viewports:** Desktop, Laptop, Tablet, Mobile
+- **Screenshot comparison:** Built-in visual regression testing
 
 ### Test Structure
 ```
@@ -1234,7 +1255,15 @@ tests/
 ├── unit/
 │   ├── lib/security/pack-validator.test.ts  # Anti-cheat tests
 │   └── stores/collection.test.ts            # Store tests
-└── integration/            # End-to-end flow tests
+├── e2e/                    # End-to-end flow tests
+│   ├── pack-opening.spec.ts
+│   ├── collection.spec.ts
+│   └── navigation.spec.ts
+└── visual/                 # Visual regression tests (NEW!)
+    ├── card-visual.test.ts           # Card component screenshots
+    ├── pack-opening-visual.test.ts   # Pack opening flow screenshots
+    ├── ui-components-visual.test.ts  # UI component screenshots
+    └── README.md                     # Visual testing guide
 ```
 
 ### What to Test
@@ -1243,6 +1272,41 @@ tests/
 - **Random functions** - Distribution accuracy
 - **UI state** - State transitions work correctly
 - **Security** - Pack validation, anti-cheat measures
+- **Visual regression** - Screenshot comparison to detect unintended UI changes
+
+### Visual Regression Testing (DX-003)
+
+**Overview:** Automated screenshot comparison across browsers and viewports to catch unintended UI changes.
+
+**When to Use:**
+- ✅ After CSS/styling changes
+- ✅ Before merging to main
+- ✅ When refactoring components
+- ✅ To catch cross-browser rendering issues
+
+**Quick Start:**
+```bash
+# Generate baseline screenshots (first time)
+bun run test:visual:update
+
+# Run visual tests
+bun run test:visual
+
+# View diff report (if tests fail)
+bun run test:visual --reporter=html
+bunx playwright show-report
+```
+
+**Test Coverage:**
+- All card rarities (common → mythic)
+- Holographic variants
+- Pack opening flow stages
+- Navigation (desktop + mobile)
+- Buttons and interactive states
+- Theme variations (light/dark)
+- Collection interface
+
+**Documentation:** See `tests/visual/README.md` and `docs/VISUAL_TESTING_GUIDE.md` for complete guide.
 
 ---
 
