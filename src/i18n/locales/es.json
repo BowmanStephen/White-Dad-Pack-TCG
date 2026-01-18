@@ -304,6 +304,34 @@
       "epicCard": "Carta Épica",
       "legendaryCard": "Carta Legendaria",
       "currency": "{amount} Monedas"
+    },
+    "notifications": {
+      "title": "Protección de Racha",
+      "subtitle": "¡Recibe notificaciones antes de que expire tu racha!",
+      "streakStatus": "Tiempo Hasta la Expiración de la Racha",
+      "expiringSoon": "¡Tu racha está a punto de expirar! ¡Inicia sesión ahora para salvarla!",
+      "safeForNow": "Tu racha está segura por ahora.",
+      "browserNotifications": "Notificaciones del Navegador",
+      "browserDescription": "Recibe notificaciones de escritorio cuando tu racha esté a punto de expirar",
+      "notSupported": "Las notificaciones del navegador no son compatibles con este navegador",
+      "blockedHint": "Las notificaciones están bloqueadas. Actívalas en la configuración de tu navegador.",
+      "emailReminders": "Recordatorios por Correo",
+      "emailDescription": "Recibe recordatorios por correo antes de que expire tu racha (próximamente)",
+      "emailPlaceholder": "tu@correo.com",
+      "emailHint": "Solo enviaremos recordatorios de racha, sin spam",
+      "warningThresholds": "Umbrales de Advertencia",
+      "thresholdsDescription": "Cuándo notificarte antes de la expiración de la racha",
+      "critical": "Advertencia Crítica",
+      "warning": "Advertencia",
+      "reminder": "Recordatorio Amigable",
+      "enable": "Activar Notificaciones",
+      "disable": "Desactivar Notificaciones",
+      "grantPermission": "Conceder Permiso",
+      "permissionDenied": "Permiso denegado",
+      "permissionGranted": "Permiso concedido",
+      "notificationSent": "¡Notificación enviada!",
+      "emailSaved": "Dirección de correo guardada",
+      "emailError": "Por favor ingresa una dirección de correo válida"
     }
   }
 }

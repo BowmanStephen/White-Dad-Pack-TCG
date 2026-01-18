@@ -348,6 +348,34 @@
       "epicCard": "Epic Card",
       "legendaryCard": "Legendary Card",
       "currency": "{amount} Coins"
+    },
+    "notifications": {
+      "title": "Streak Protection",
+      "subtitle": "Get notified before your streak expires!",
+      "streakStatus": "Time Until Streak Expiry",
+      "expiringSoon": "Your streak is about to expire! Login now to save it!",
+      "safeForNow": "Your streak is safe for now.",
+      "browserNotifications": "Browser Notifications",
+      "browserDescription": "Receive desktop notifications when your streak is about to expire",
+      "notSupported": "Browser notifications are not supported in this browser",
+      "blockedHint": "Notifications are blocked. Enable them in your browser settings.",
+      "emailReminders": "Email Reminders",
+      "emailDescription": "Get email reminders before your streak expires (coming soon)",
+      "emailPlaceholder": "your@email.com",
+      "emailHint": "We'll only send streak reminders, no spam",
+      "warningThresholds": "Warning Thresholds",
+      "thresholdsDescription": "When to notify you before streak expiry",
+      "critical": "Critical Warning",
+      "warning": "Warning",
+      "reminder": "Friendly Reminder",
+      "enable": "Enable Notifications",
+      "disable": "Disable Notifications",
+      "grantPermission": "Grant Permission",
+      "permissionDenied": "Permission denied",
+      "permissionGranted": "Permission granted",
+      "notificationSent": "Notification sent!",
+      "emailSaved": "Email address saved",
+      "emailError": "Please enter a valid email address"
     }
   }
 }
