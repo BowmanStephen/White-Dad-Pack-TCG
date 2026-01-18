@@ -2,9 +2,13 @@
   import type { PlayerProfile, AvatarId, ProfileSettings } from '@/types';
   import { AVATARS } from '@/types';
 
-  export let profile: PlayerProfile;
-  export let onSave: (settings: Partial<PlayerProfile>) => void;
-  export let onCancel: () => void;
+  interface Props {
+    profile: PlayerProfile;
+    onSave: (settings: Partial<PlayerProfile>) => void;
+    onCancel: () => void;
+  }
+
+  let { profile, onSave, onCancel }: Props = $props();
 
   let username = $state(profile.username);
   let pseudonym = $state(profile.pseudonym);

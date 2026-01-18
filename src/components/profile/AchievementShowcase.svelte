@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { achievements } from '@/stores/achievements';
   import type { Achievement, AchievementRarity } from '@/types';
-  import { ACHIEVEMENT_CATEGORIES } from '@/types';
+  import { ACHIEVEMENT_CATEGORY_NAMES } from '@/types';
 
   let unlockedAchievements = $state<Achievement[]>([]);
   let isLoading = $state(true);
@@ -22,13 +22,13 @@
   });
 
   // Group achievements by rarity
-  $: achievementsByRarity = unlockedAchievements.reduce((acc, achievement) => {
+  const achievementsByRarity = $derived(unlockedAchievements.reduce((acc, achievement) => {
     if (!acc[achievement.rarity]) {
       acc[achievement.rarity] = [];
     }
     acc[achievement.rarity].push(achievement);
     return acc;
-  }, {} as Record<AchievementRarity, Achievement[]>);
+  }, {} as Record<AchievementRarity, Achievement[]>));
 
   // Rarity order for display
   const rarityOrder: AchievementRarity[] = ['platinum', 'gold', 'silver', 'bronze'];
@@ -72,7 +72,7 @@
                     <span class="achievement-desc">{achievement.description}</span>
                   </div>
                   <div class="achievement-category">
-                    {ACHIEVEMENT_CATEGORIES[achievement.category] || achievement.category}
+                    {ACHIEVEMENT_CATEGORY_NAMES[achievement.category] || achievement.category}
                   </div>
                 </div>
               {/each}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { collection, collectionStats } from '@/stores/collection';
+  import { collection, getCollectionStats } from '@/stores/collection';
   import { achievements } from '@/stores/achievements';
   import type { PlayerProfile, AvatarId, Badge } from '@/types';
   import { AVATARS, PROFILE_BADGES, BADGE_RARITY_CONFIG, BADGE_CATEGORY_NAMES } from '@/types';
@@ -42,7 +42,7 @@
   // Create default profile from collection data
   function createDefaultProfile(): PlayerProfile {
     const coll = collection.get();
-    const stats = collectionStats.get();
+    const stats = getCollectionStats();
 
     return {
       playerId: crypto.randomUUID(),
@@ -51,9 +51,9 @@
       avatarId: 'grill_master',
       bio: 'Just another dad collecting cards.',
       favoriteCardId: null,
-      badges: calculateBadges(stats.totalPacksOpened, achievements.get()),
+      badges: calculateBadges(stats.totalPacks, achievements.get()),
       stats: {
-        totalPacksOpened: stats.totalPacksOpened,
+        totalPacksOpened: stats.totalPacks,
         totalCards: stats.totalCards,
         uniqueCards: stats.uniqueCards,
         rarePulls: stats.rarePulls,
@@ -160,11 +160,11 @@
   }
 
   // Get current avatar
-  $: currentAvatar = profile ? AVATARS[profile.avatarId] : null;
+  const currentAvatar = $derived(profile ? AVATARS[profile.avatarId] : null);
 
   // Get unlocked badges
-  $: unlockedBadges = profile?.badges.filter(b => b.unlockedAt) || [];
-  $: inProgressBadges = profile?.badges.filter(b => !b.unlockedAt && b.progress && b.progress > 0) || [];
+  const unlockedBadges = $derived(profile?.badges.filter(b => b.unlockedAt) || []);
+  const inProgressBadges = $derived(profile?.badges.filter(b => !b.unlockedAt && b.progress && b.progress > 0) || []);
 </script>
 
 <div class="profile-container">

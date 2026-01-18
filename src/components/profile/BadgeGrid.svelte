@@ -2,16 +2,20 @@
   import type { Badge, BadgeRarity, BadgeCategory } from '@/types';
   import { BADGE_RARITY_CONFIG, BADGE_CATEGORY_NAMES } from '@/types';
 
-  export let badges: Badge[] = [];
+  interface Props {
+    badges: Badge[];
+  }
+
+  let { badges = [] }: Props = $props();
 
   // Group badges by category
-  $: groupedBadges = badges.reduce((acc, badge) => {
+  const groupedBadges = $derived(badges.reduce((acc, badge) => {
     if (!acc[badge.category]) {
       acc[badge.category] = [];
     }
     acc[badge.category].push(badge);
     return acc;
-  }, {} as Record<BadgeCategory, Badge[]>);
+  }, {} as Record<BadgeCategory, Badge[]>));
 </script>
 
 <div class="badge-grid">

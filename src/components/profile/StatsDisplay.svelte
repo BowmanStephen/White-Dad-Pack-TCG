@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { PlayerStats } from '@/types';
 
-  export let stats: PlayerStats;
+  interface Props {
+    stats: PlayerStats;
+  }
+
+  let { stats }: Props = $props();
 
   // Stat items to display
   const statItems = [
