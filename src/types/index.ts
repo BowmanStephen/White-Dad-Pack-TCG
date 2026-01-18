@@ -992,6 +992,16 @@ export const CRAFTING_RECIPES: CraftingRecipe[] = [
 ];
 
 // ============================================================================
+// DATA VALIDATION (MP-006: Database validation checks)
+// ============================================================================
+
+/**
+ * Validate crafting recipes on module load
+ * Logs warnings for missing required fields
+ */
+// Note: Validation is performed in lib/crafting/executor.ts to avoid circular imports
+
+// ============================================================================
 // LEADERBOARD TYPES (US079 - Leaderboard - Global Rankings)
 // ============================================================================
 

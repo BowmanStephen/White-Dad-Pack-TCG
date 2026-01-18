@@ -14,7 +14,19 @@ import type {
   Card,
   Rarity,
 } from '@/types';
-import { RARITY_CONFIG, RARITY_ORDER } from '@/types';
+import { RARITY_CONFIG, RARITY_ORDER, CRAFTING_RECIPES } from '@/types';
+import { validateRecipes, logValidationResults } from '../validation';
+
+// ============================================================================
+// DATA VALIDATION (MP-006: Database validation checks)
+// ============================================================================
+
+/**
+ * Validate crafting recipes on module load
+ * Logs warnings for missing required fields
+ */
+const recipeValidation = validateRecipes(CRAFTING_RECIPES);
+logValidationResults(recipeValidation, 'recipes');
 
 // ============================================================================
 // CRAFTING VALIDATION

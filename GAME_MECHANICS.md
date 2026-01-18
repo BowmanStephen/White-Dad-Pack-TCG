@@ -1,6 +1,7 @@
 # DadDeck™ Game Mechanics Guide
 
-**Version:** 2.0 - Rated R Edition
+**Version:** 2.0.0 - Rated R Edition
+**Status:** Stable & Production Ready
 **Last Updated:** January 17, 2026
 
 ---
@@ -337,11 +338,13 @@ Confidence Levels:
 
 ### Planned Mechanics 🚧
 
+- **Real-Time PvP:** Live multiplayer matches
 - **Tournament Mode:** Best of 3, sideboarding
 - **Co-Op Mode:** 2v2 dad battles
 - **Campaign Mode:** Fight through the suburbs, defeat the HOA
 - **Custom Cards:** User-generated dad cards
 - **Season 2 Dads:** 30+ new cards (Influencer Dad, Crypto Dad, etc.)
+- **Guild/Clan System:** Neighborhood alliances
 
 ---
 

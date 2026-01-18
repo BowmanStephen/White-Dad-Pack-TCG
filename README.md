@@ -1,6 +1,7 @@
 # DadDeck™ - The Ultimate White Dad Trading Card Simulator
 
-**Status:** MVP - Stable & Production Ready ✅
+**Status:** Stable & Production Ready ✅
+**Version:** 2.0.0
 
 A satirical trading card game pack-opening simulator that parodies suburban American dad culture. Free to play, no microtransactions, premium pack opening feel.
 
@@ -246,6 +247,6 @@ Built by Stephen Bowman with AI assistance (Claude Code)
 ---
 
 **Last Updated:** January 17, 2026
-**Version:** MVP 1.0.0
+**Version:** 2.0.0
 **Test Status:** ✅ 286/286 passing
 **Build Status:** ✅ Production ready

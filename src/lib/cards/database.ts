@@ -1,8 +1,20 @@
 import type { Card, Rarity } from '../../types';
 import cardsData from '../../data/cards.json';
+import { validateCards, logValidationResults } from '../validation';
 
 // Type assertion for imported JSON
 const cards: Card[] = cardsData.cards as Card[];
+
+// ============================================================================
+// DATA VALIDATION (MP-006: Database validation checks)
+// ============================================================================
+
+/**
+ * Validate card database on load
+ * Logs warnings for missing required fields
+ */
+const cardValidation = validateCards(cardsData.cards);
+logValidationResults(cardValidation, 'cards');
 
 /**
  * Get all cards from the database
