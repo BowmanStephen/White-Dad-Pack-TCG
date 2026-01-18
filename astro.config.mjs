@@ -61,9 +61,17 @@ export default defineConfig({
       // Optimize CSS code splitting
       cssCodeSplit: true,
 
+      // Improve chunk size warnings
+      chunkSizeWarningLimit: 1000,
+
       // Code splitting optimization
       rollupOptions: {
         output: {
+          // Optimize chunk names for better caching
+          chunkFileNames: '_astro/[name].[hash].js',
+          entryFileNames: '_astro/[name].[hash].js',
+          assetFileNames: '_astro/[name].[hash].[ext]',
+
           manualChunks: (id) => {
             // Split vendor chunks for better caching
             if (id.includes('node_modules')) {
@@ -78,6 +86,10 @@ export default defineConfig({
               // Split nanostores
               if (id.includes('nanostores')) {
                 return 'vendor-nanostores';
+              }
+              // Split analytics libraries (lazy loaded)
+              if (id.includes('dompurify') || id.includes('entities')) {
+                return 'vendor-security';
               }
               // Other node modules
               return 'vendor';
@@ -97,10 +109,28 @@ export default defineConfig({
         compress: {
           drop_console: true, // Remove console.logs in production
           drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug'],
+          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+          dead_code: true, // Remove unreachable code
+          conditionals: true, // Optimize if-else statements
+          evaluate: true, // Evaluate constant expressions
+          inline: 2, // Inline small functions
+          passes: 3, // Run compression multiple times
+          reduce_funcs: true, // Reduce single-use functions
+          reduce_vars: true, // Reduce constant variables
+          sequences: true, // Compose sequential statements
+          typeofs: true, // Transform typeof expressions
+          unused: true, // Remove unused variables
         },
         format: {
           comments: false, // Remove comments
+          beautify: false, // Minify output
+          ascii_only: true, // Escape non-ASCII characters
+        },
+        mangle: {
+          safari10: true, // Workaround Safari 10 bugs
+          properties: {
+            regex: /^_/, // Mangle private properties
+          },
         },
       },
     },
