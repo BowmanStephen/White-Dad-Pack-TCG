@@ -8,6 +8,7 @@
   import BadgeGrid from './BadgeGrid.svelte';
   import StatsDisplay from './StatsDisplay.svelte';
   import AchievementShowcase from './AchievementShowcase.svelte';
+  import PlayHistory from './PlayHistory.svelte';
 
   // Profile state
   let profile = $state<PlayerProfile | null>(null);
@@ -256,6 +257,12 @@
         <h3>Achievement Showcase</h3>
         <AchievementShowcase />
       </section>
+
+      <!-- Play History -->
+      <section class="history-section">
+        <h3>Play History</h3>
+        <PlayHistory />
+      </section>
     </div>
   {/if}
 </div>
@@ -430,7 +437,8 @@
   /* Sections */
   .stats-section,
   .badges-section,
-  .achievements-section {
+  .achievements-section,
+  .history-section {
     background: white;
     dark:bg-gray-900;
     border-radius: 16px;
