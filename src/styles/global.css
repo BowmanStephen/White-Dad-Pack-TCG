@@ -407,6 +407,122 @@
   @apply text-sm text-gray-600 dark:text-gray-400;
 }
 
+/* ===== MOBILE TOUCH TARGETS (PACK-058) ===== */
+
+/**
+ * iOS Human Interface Guidelines: 44x44pt minimum touch target
+ * Android Material Design: 48x48dp minimum touch target
+ * WCAG 2.1 Success Criterion 2.5.5: Target size 44x44 CSS pixels
+ */
+
+/* Ensure all interactive elements meet minimum touch target sizes */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.clickable,
+[tabindex]:not([tabindex="-1"]) {
+  min-height: 44px;  /* iOS guideline */
+  min-width: 44px;
+}
+
+/* Larger touch targets for Android (48dp) on mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  .clickable,
+  [tabindex]:not([tabindex="-1"]) {
+    min-height: 48px;  /* Android guideline */
+    min-width: 48px;
+  }
+
+  /* Icon buttons need explicit sizing */
+  button[class*="icon"],
+  .btn-icon,
+  [aria-label*="icon"],
+  [aria-label*="button"] {
+    min-height: 48px;
+    min-width: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Ensure adequate spacing between interactive elements */
+button + button,
+a + a,
+button + a,
+a + button,
+input + input,
+select + select,
+input + button,
+button + input {
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+/* Stack buttons vertically on mobile for better touch targets */
+@media (max-width: 768px) {
+  .button-group,
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;  /* 12px spacing between touch targets */
+  }
+
+  .button-group button,
+  .action-buttons button,
+  .button-group a,
+  .action-buttons a {
+    width: 100%;  /* Full-width touch targets on mobile */
+    margin: 0;
+  }
+}
+
+/* Prevent hover-only interactions on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  /* Show all tooltips and dropdowns on tap, not hover */
+  [data-tooltip]:hover::after,
+  [data-tooltip]:hover::before {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Make all hover states active on touch devices */
+  button:hover,
+  a:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover {
+    background: initial;  /* Remove hover effects */
+    transform: none;      /* Remove hover transforms */
+  }
+
+  /* Ensure tap feedback is visible */
+  button:active,
+  a:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+    transition: all 0.1s ease;
+  }
+}
+
+/* Safe area support for notched devices (iPhone X+) */
+button,
+a,
+input,
+select,
+textarea {
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+           env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+
 /* ===== MOBILE BOTTOM NAVIGATION ===== */
 
 /* Add padding to body on mobile to account for fixed bottom nav */
