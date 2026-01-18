@@ -1,8 +1,38 @@
-import type { Card, CardStats, DadType } from '../../types';
+import type { Card, CardStats, DadType, Deck } from '../../types';
+import type { DeckBattleResult } from '../../types/deck';
 
 /**
  * DadDeck™ Combat Mechanics
  * Where dad stereotypes battle for suburban dominance
+ *
+ * ## STAT NORMALIZATION (PACK-007)
+ *
+ * **Problem:** Without normalization, larger decks (5 cards) would always beat
+ * smaller decks (3 cards) because they have higher TOTAL stats, even if their
+ * average stats per card are lower.
+ *
+ * **Solution:** All stats are normalized by card count before battles.
+ *
+ * **Normalization Formula:**
+ * ```
+ * normalizedStat = statTotal / totalCards
+ * normalizedPower = average(all normalizedStats)
+ * ```
+ *
+ * **Example:**
+ * - 3-card deck: Each card has 70 stats → normalized power = 70
+ * - 5-card deck: Each card has 50 stats → normalized power = 50
+ * - Result: 3-card deck wins despite lower TOTAL stats (210 vs 250)
+ *
+ * **Benefits:**
+ * - ✅ Fair gameplay regardless of deck size
+ * - ✅ Quality over quantity (better stats win, not more cards)
+ * - ✅ Strategic deck building (optimize per-card stats)
+ *
+ * **Implementation:**
+ * - `DeckStats.averageStats` already contains normalized stats (divided by card count)
+ * - `calculateBattleResult()` uses these normalized stats for fair battles
+ * - Type advantages and synergies apply AFTER normalization
  */
 
 // Damage types for abilities
@@ -651,4 +681,176 @@ export function predictWinner(card1: Card, card2: Card): {
     confidence: 55,
     reason: `Close match! Could go either way.`,
   };
+}
+
+/**
+ * Calculate battle result between two decks with stat normalization
+ *
+ * **STAT NORMALIZATION:**
+ * To ensure fair gameplay regardless of deck size, all stats are normalized by card count.
+ * This prevents larger decks (e.g., 5 cards) from always beating smaller decks (e.g., 3 cards).
+ *
+ * Normalization formula:
+ * - normalizedStat = statTotal / totalCards
+ * - A 3-card deck with total stats of 300 will have the same normalized power as a 5-card deck with total stats of 500
+ *
+ * Battle calculation:
+ * 1. Extract normalized stats from each deck's stats.averageStats (already divided by card count)
+ * 2. Calculate effective power for each deck using normalized stats
+ * 3. Apply type advantages based on most common card type in each deck
+ * 4. Apply synergy bonuses if synergies exist between cards
+ * 5. Determine winner based on effective power comparison
+ *
+ * @param attackerDeck - The attacking deck
+ * @param defenderDeck - The defending deck
+ * @returns Battle result with winner, loser, damage, stats comparison, and battle details
+ *
+ * @example
+ * const result = calculateBattleResult(threeCardDeck, fiveCardDeck);
+ * console.log(`Winner: ${result.winner.name}`);
+ * console.log(`Attacker normalized power: ${result.attackerStats.totalPower}`);
+ * console.log(`Defender normalized power: ${result.defenderStats.totalPower}`);
+ * console.log(`Damage: ${result.damage}`);
+ */
+export function calculateBattleResult(
+  attackerDeck: Deck,
+  defenderDeck: Deck
+): DeckBattleResult {
+  // Extract normalized stats (already divided by card count)
+  const attackerStats = attackerDeck.stats.averageStats;
+  const defenderStats = defenderDeck.stats.averageStats;
+
+  // Calculate total normalized power for each deck
+  const attackerPower = calculateNormalizedPower(attackerStats);
+  const defenderPower = calculateNormalizedPower(defenderStats);
+
+  // Determine most common types for type advantage calculation
+  const attackerMainType = getMainType(attackerDeck);
+  const defenderMainType = getMainType(defenderDeck);
+
+  // Apply type advantage
+  const typeAdvantage = getTypeAdvantage(attackerMainType, defenderMainType);
+  const effectiveAttackerPower = attackerPower * typeAdvantage;
+
+  // Check for synergies between cards in both decks
+  const synergyBonus = calculateDeckSynergyBonus(attackerDeck, defenderDeck);
+  const finalAttackerPower = effectiveAttackerPower * synergyBonus;
+
+  // Calculate damage (difference in power, minimum 5)
+  const rawDamage = Math.max(5, finalAttackerPower - defenderPower);
+  const damage = Math.floor(rawDamage);
+
+  // Determine winner
+  const attackerWins = finalAttackerPower > defenderPower;
+  const winner = attackerWins ? attackerDeck : defenderDeck;
+  const loser = attackerWins ? defenderDeck : attackerDeck;
+
+  return {
+    winner,
+    loser,
+    damage,
+    attackerStats: {
+      totalPower: attackerPower,
+      effectivePower: effectiveAttackerPower,
+      finalPower: finalAttackerPower,
+      normalizedStats: attackerStats,
+      mainType: attackerMainType,
+    },
+    defenderStats: {
+      totalPower: defenderPower,
+      effectivePower: defenderPower, // No type advantage applied to defender in this calculation
+      finalPower: defenderPower,
+      normalizedStats: defenderStats,
+      mainType: defenderMainType,
+    },
+    typeAdvantage,
+    synergyBonus,
+    turns: 1, // Deck battles are single-turn calculations
+    log: [
+      `⚔️ BATTLE: ${attackerDeck.name} (${attackerDeck.stats.totalCards} cards) vs ${defenderDeck.name} (${defenderDeck.stats.totalCards} cards)`,
+      `Attacker normalized power: ${attackerPower.toFixed(1)}`,
+      `Defender normalized power: ${defenderPower.toFixed(1)}`,
+      typeAdvantage > 1.0 ? `${attackerMainType} has advantage over ${defenderMainType}! (+${Math.round((typeAdvantage - 1) * 100)}% damage)` : typeAdvantage < 1.0 ? `${attackerMainType} at disadvantage against ${defenderMainType}! (${Math.round(typeAdvantage * 100)}% damage)` : 'No type advantage',
+      synergyBonus > 1.0 ? `Synergy bonus: +${Math.round((synergyBonus - 1) * 100)}%` : '',
+      `Final attacker power: ${finalAttackerPower.toFixed(1)}`,
+      `Damage dealt: ${damage}`,
+      `🏆 Winner: ${winner.name}`,
+    ].filter(Boolean),
+  };
+}
+
+/**
+ * Calculate normalized power from card stats
+ *
+ * Normalized power is the average of all stats, ensuring that decks of different
+ * sizes can compete fairly. Stats should already be normalized (divided by card count)
+ * before passing to this function.
+ *
+ * @param stats - Normalized card stats (average stats per card)
+ * @returns Normalized power value (average of all stats)
+ *
+ * @example
+ * const normalizedStats = { dadJoke: 50, grillSkill: 70, fixIt: 60, ... };
+ * const power = calculateNormalizedPower(normalizedStats); // ~60
+ */
+function calculateNormalizedPower(stats: CardStats): number {
+  const statValues = Object.values(stats);
+  return statValues.reduce((sum, stat) => sum + stat, 0) / statValues.length;
+}
+
+/**
+ * Get the most common card type in a deck
+ *
+ * Used for determining type advantages in deck battles.
+ * Returns the type with the highest count in the deck.
+ *
+ * @param deck - The deck to analyze
+ * @returns The most common dad type in the deck
+ *
+ * @example
+ * const mainType = getMainType(deck); // 'BBQ_DAD'
+ */
+function getMainType(deck: Deck): DadType {
+  const typeBreakdown = deck.stats.typeBreakdown;
+  let maxCount = 0;
+  let mainType: DadType = 'BBQ_DAD'; // default
+
+  for (const [type, count] of Object.entries(typeBreakdown)) {
+    if (count > maxCount) {
+      maxCount = count;
+      mainType = type as DadType;
+    }
+  }
+
+  return mainType;
+}
+
+/**
+ * Calculate synergy bonus between two decks
+ *
+ * Checks all card pairs between decks for synergies and returns
+ * the highest synergy bonus found.
+ *
+ * @param deck1 - First deck
+ * @param deck2 - Second deck
+ * @returns Synergy bonus multiplier (1.0 = no synergy, up to 2.0 for mythic alliances)
+ *
+ * @example
+ * const bonus = calculateDeckSynergyBonus(deck1, deck2);
+ * // Returns 1.3 if BBQ_DAD + CHEF_DAD synergy found
+ */
+function calculateDeckSynergyBonus(deck1: Deck, deck2: Deck): number {
+  let maxBonus = 1.0;
+
+  // Check all card pairs between decks
+  for (const dc1 of deck1.cards) {
+    for (const dc2 of deck2.cards) {
+      const synergy = checkSynergy(dc1.card, dc2.card);
+      if (synergy.hasSynergy && synergy.synergyBonus > maxBonus) {
+        maxBonus = synergy.synergyBonus;
+      }
+    }
+  }
+
+  return maxBonus;
 }
