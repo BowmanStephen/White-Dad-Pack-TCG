@@ -62,12 +62,16 @@
   let showStatRanges = false;
   let showHoloVariants = false;
   let showSavedSearches = false;
+  let showAbilitiesFilter = false;
 
   // Holo variant selection (multi-select)
   let selectedHoloVariants = new Set<HoloVariant>();
 
   // Stat range filters
   let statRanges: StatRanges = {};
+
+  // Abilities filter
+  let abilitiesMode: 'any' | 'hasAbilities' | 'noAbilities' = 'any';
 
   // Saved searches
   let savedSearches = SAVED_SEARCH_PRESETS;
@@ -173,6 +177,17 @@
 
     // Apply stat range filter (US077)
     filtered = filterCardsByStatRanges(filtered, statRanges);
+
+    // Apply abilities filter (PACK-021)
+    if (abilitiesMode === 'hasAbilities') {
+      filtered = filtered.filter(card =>
+        card.card.abilities && card.card.abilities.length > 0
+      );
+    } else if (abilitiesMode === 'noAbilities') {
+      filtered = filtered.filter(card =>
+        !card.card.abilities || card.card.abilities.length === 0
+      );
+    }
 
     // Track total filtered count for result indicator
     totalFilteredCount = filtered.length;
@@ -436,6 +451,21 @@
   function clearHoloVariants() {
     selectedHoloVariants = new Set();
     holoOnly = false;
+    resetPagination();
+  }
+
+  /**
+   * Toggle abilities filter panel
+   */
+  function toggleAbilitiesFilter() {
+    showAbilitiesFilter = !showAbilitiesFilter;
+  }
+
+  /**
+   * Set abilities filter mode
+   */
+  function setAbilitiesMode(mode: 'any' | 'hasAbilities' | 'noAbilities') {
+    abilitiesMode = mode;
     resetPagination();
   }
 
@@ -793,6 +823,52 @@
                   </div>
                 </div>
               {/each}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Abilities Filter -->
+        <div class="advanced-filter-section">
+          <button
+            class="advanced-filter-section-toggle"
+            onclick={toggleAbilitiesFilter}
+          >
+            <span class="section-icon">⚡</span>
+            <span class="section-title">Abilities</span>
+            <span class="section-arrow" class:rotated={showAbilitiesFilter}>▼</span>
+            {#if abilitiesMode !== 'any'}
+              <span class="section-count">(active)</span>
+            {/if}
+          </button>
+          {#if showAbilitiesFilter}
+            <div class="abilities-filter-grid">
+              <button
+                class="ability-mode-button"
+                class:active={abilitiesMode === 'any'}
+                onclick={() => setAbilitiesMode('any')}
+              >
+                <span class="mode-icon">🃏</span>
+                <span class="mode-name">All Cards</span>
+                <span class="mode-description">Show cards with or without abilities</span>
+              </button>
+              <button
+                class="ability-mode-button"
+                class:active={abilitiesMode === 'hasAbilities'}
+                onclick={() => setAbilitiesMode('hasAbilities')}
+              >
+                <span class="mode-icon">✨</span>
+                <span class="mode-name">Has Abilities</span>
+                <span class="mode-description">Only cards with abilities</span>
+              </button>
+              <button
+                class="ability-mode-button"
+                class:active={abilitiesMode === 'noAbilities'}
+                onclick={() => setAbilitiesMode('noAbilities')}
+              >
+                <span class="mode-icon">📄</span>
+                <span class="mode-name">No Abilities</span>
+                <span class="mode-description">Only cards without abilities</span>
+              </button>
             </div>
           {/if}
         </div>
@@ -1819,6 +1895,74 @@
 
   .clear-holo-button:hover {
     background: rgba(239, 68, 68, 0.3);
+  }
+
+  /* Abilities Filter Grid */
+  .abilities-filter-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  @media (min-width: 640px) {
+    .abilities-filter-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ability-mode-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 80px;
+  }
+
+  .ability-mode-button:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: white;
+    border-color: rgba(168, 85, 247, 0.5);
+  }
+
+  .ability-mode-button.active {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(16, 185, 129, 0.2));
+    border-color: #22c55e;
+    color: #22c55e;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+  }
+
+  .mode-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .mode-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .mode-description {
+    font-size: 0.6rem;
+    color: #64748b;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .ability-mode-button.active .mode-description {
+    color: rgba(34, 197, 94, 0.8);
   }
 
   /* Stat Ranges Grid */

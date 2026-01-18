@@ -83,3 +83,28 @@ export type SeasonPackDesign =
   | 'fall_foliage'
   | 'winter_wonderland'
   | 'spring_bloom';
+
+// Advanced collection filters (PACK-021)
+export interface StatRangeFilter {
+  stat: keyof CardStats;
+  min: number;
+  max: number;
+}
+
+export type AbilitiesFilterMode = 'any' | 'all' | 'none';
+
+export type HoloFilterMode = 'all' | 'holoOnly' | 'nonHoloOnly';
+
+export interface AdvancedCollectionFilters {
+  statRanges: StatRangeFilter[];
+  abilitiesMode: AbilitiesFilterMode;
+  holoMode: HoloFilterMode;
+}
+
+// Search preset (PACK-021)
+export interface SearchPreset {
+  id: string;
+  name: string;
+  filters: AdvancedCollectionFilters;
+  createdAt: Date;
+}

@@ -12,36 +12,57 @@
   import { getRandomJoke } from '../../lib/jokes';
   import { isInWishlist, addToWishlist, removeFromWishlist } from '../../stores/wishlist';
 
-  export let card: PackCard;
-  export let isFlipped: boolean = false;
-  export let showBack: boolean = true;
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  export let interactive: boolean = true;
-  export let enableShare: boolean = false;
-  export let showUpgradeButton: boolean = false;
-  export let onUpgradeClick: (() => void) | undefined = undefined;
-  export let enableLightbox: boolean = true;
-  export let cardList: PackCard[] = [];
-  export let cardIndex: number = 0;
-  export let useRandomJoke: boolean = false;
-  export let showWishlistButton: boolean = false; // PACK-020: Show star button
-  export let onWishlistToggle: ((isWishlisted: boolean) => void) | undefined = undefined;
+  interface Props {
+    card: PackCard;
+    isFlipped?: boolean;
+    showBack?: boolean;
+    size?: 'sm' | 'md' | 'lg';
+    interactive?: boolean;
+    enableShare?: boolean;
+    showUpgradeButton?: boolean;
+    onUpgradeClick?: (() => void) | undefined;
+    enableLightbox?: boolean;
+    cardList?: PackCard[];
+    cardIndex?: number;
+    useRandomJoke?: boolean;
+    showWishlistButton?: boolean; // PACK-020: Show star button
+    onWishlistToggle?: ((isWishlisted: boolean) => void) | undefined;
+  }
 
-  $: rarityConfig = RARITY_CONFIG[card.rarity];
-  $: typeIcon = DAD_TYPE_ICONS[card.type];
-  $: typeName = DAD_TYPE_NAMES[card.type];
-  $: shareSupport = checkShareSupport();
-  $: canShare = enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles;
-  $: displayFlavorText = useRandomJoke ? getRandomJoke(card.type) : card.flavorText;
+  let {
+    card,
+    isFlipped = false,
+    showBack = true,
+    size = 'md',
+    interactive = true,
+    enableShare = false,
+    showUpgradeButton = false,
+    onUpgradeClick = undefined,
+    enableLightbox = true,
+    cardList = [],
+    cardIndex = 0,
+    useRandomJoke = false,
+    showWishlistButton = false,
+    onWishlistToggle = undefined
+  }: Props = $props();
+
+  let rarityConfig = $derived(RARITY_CONFIG[card.rarity]);
+  let typeIcon = $derived(DAD_TYPE_ICONS[card.type]);
+  let typeName = $derived(DAD_TYPE_NAMES[card.type]);
+  let shareSupport = $state(checkShareSupport());
+  let canShare = $derived(enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles);
+  let displayFlavorText = $derived(useRandomJoke ? getRandomJoke(card.type) : card.flavorText);
   const upgradeLevel = 0;
 
   // PACK-020: Wishlist state
   let isWishlisted = $state(false);
 
   // Check wishlist status on mount and when card changes
-  $: if (showWishlistButton && card.id) {
-    isWishlisted = isInWishlist(card.id);
-  }
+  $effect(() => {
+    if (showWishlistButton && card.id) {
+      isWishlisted = isInWishlist(card.id);
+    }
+  });
 
   // Handle wishlist toggle
   async function handleWishlistToggle(event: Event) {
@@ -151,8 +172,8 @@
     }
   });
 
-  $: rotateX = (interactive && !isTouchDevice) ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0;
-  $: rotateY = (interactive && !isTouchDevice) ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0;
+  let rotateX = $derived((interactive && !isTouchDevice) ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0);
+  let rotateY = $derived((interactive && !isTouchDevice) ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0);
 
   function getRarityStars(rarity: string): number {
     const starMap: Record<string, number> = {
@@ -166,7 +187,7 @@
     return starMap[rarity] || 1;
   }
 
-  $: rarityStars = getRarityStars(card.rarity);
+  let rarityStars = $derived(getRarityStars(card.rarity));
 
   // US086 - Season System: Get season color
   function getSeasonColor(seasonId: SeasonId): string {
@@ -190,7 +211,7 @@
     return isSpecialCardType(type) && type !== 'EVOLUTION' && type !== 'ITEM';
   }
 
-  $: cardBackground = (() => {
+  let cardBackground = $derived(() => {
     switch(card.rarity) {
       case 'common':
       case 'uncommon':
@@ -206,9 +227,9 @@
       default:
         return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
     }
-  })();
+  });
 
-  $: borderStyle = (() => {
+  let borderStyle = $derived(() => {
     switch(card.rarity) {
       case 'common':
       case 'uncommon':
@@ -224,9 +245,9 @@
       default:
         return '4px solid #9ca3af';
     }
-  })();
+  });
 
-  $: glowStyle = (() => {
+  let glowStyle = $derived(() => {
     const baseGlow = rarityConfig.glowColor;
     switch(card.rarity) {
       case 'legendary':
@@ -239,14 +260,14 @@
       default:
         return `0 0 15px ${baseGlow}, 0 0 30px ${baseGlow}55, inset 0 0 15px rgba(0,0,0,0.5)`;
     }
-  })();
+  });
 
   // Determine if card should have base glow (rare+ only)
-  $: hasBaseGlow = ['rare', 'epic', 'legendary', 'mythic'].includes(card.rarity);
+  let hasBaseGlow = $derived(['rare', 'epic', 'legendary', 'mythic'].includes(card.rarity));
 
   // Glow intensity levels for animation
-  $: glowIntensity = rarityConfig.animationIntensity;
-  $: glowColor = rarityConfig.glowColor;
+  let glowIntensity = $derived(rarityConfig.animationIntensity);
+  let glowColor = $derived(rarityConfig.glowColor);
 
   // Hover state tracking
   let isHovered = false;

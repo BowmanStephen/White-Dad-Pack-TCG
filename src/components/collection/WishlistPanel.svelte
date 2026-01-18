@@ -30,9 +30,11 @@
   }
 
   // Subscribe to wishlist changes
-  $: if ($wishlist.entries.length !== sortedEntries.length) {
-    loadWishlist();
-  }
+  $effect(() => {
+    if ($wishlist.entries.length !== sortedEntries.length) {
+      loadWishlist();
+    }
+  });
 
   function handleRemove(entryId: string) {
     const result = removeFromWishlist(entryId);
