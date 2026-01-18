@@ -8,6 +8,9 @@
 /* Import Safari-specific fixes */
 @import './safari-fixes.css';
 
+/* Import Firefox-specific fixes */
+@import './firefox-fixes.css';
+
 /* ===== CARD STYLES ===== */
 
 /* Card container with 3D perspective */

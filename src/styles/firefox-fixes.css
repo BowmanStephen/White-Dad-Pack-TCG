@@ -1,0 +1,636 @@
+/**
+ * Firefox-specific fixes for DadDeck TCG
+ *
+ * This file addresses known Firefox compatibility issues:
+ * 1. CSS Grid gap rendering issues
+ * 2. Flexbox min-height bugs
+ * 3. backdrop-filter support (Firefox 103+)
+ * 4. -moz- prefix requirements
+ * 5. Input/button styling differences
+ * 6. Scrollbar styling
+ * 7. Animation performance issues
+ * 8. Font rendering differences
+ *
+ * Last updated: January 18, 2026
+ */
+
+/* ===== FIREFOX BROWSER DETECTION ===== */
+
+/* Apply Firefox-specific fixes only when needed */
+@supports (-moz-appearance: none) {
+  /* This targets Firefox browsers */
+}
+
+/* ===== BACKDROP-FILTER FIXES ===== */
+
+/**
+ * Firefox added backdrop-filter support in v103 (August 2022)
+ * Provide fallback for older Firefox versions
+ */
+
+/* Fallback for Firefox < 103 without backdrop-filter support */
+@supports not (backdrop-filter: blur(1px)) {
+  .modal-backdrop {
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .dark .backdrop-blur-sm,
+  .dark .backdrop-blur-md,
+  .dark .backdrop-blur-lg {
+    background: rgba(17, 24, 39, 0.95);
+  }
+}
+
+/* Firefox 103+ supports unprefixed backdrop-filter */
+@supports (backdrop-filter: blur(10px)) {
+  .modal-backdrop,
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    /* Use hardware acceleration */
+    transform: translateZ(0);
+  }
+}
+
+/* ===== CSS GRID FIXES ===== */
+
+/**
+ * Firefox has some unique Grid rendering issues:
+ * - Grid gap calculation can be off by 1px
+ * - Minmax with auto can behave differently
+ * - Grid template areas rendering quirks
+ */
+
+/* Fix Grid gap rounding errors in Firefox */
+@supports (-moz-appearance: none) {
+  .grid,
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    /* Ensure consistent gap rendering */
+    gap: calc(1rem - 0.5px);
+  }
+
+  /* Fix for grid with explicit gaps */
+  .gap-2 {
+    gap: calc(0.5rem - 0.5px);
+  }
+
+  .gap-4 {
+    gap: calc(1rem - 0.5px);
+  }
+
+  .gap-6 {
+    gap: calc(1.5rem - 0.5px);
+  }
+
+  .gap-8 {
+    gap: calc(2rem - 0.5px);
+  }
+}
+
+/* Fix Firefox grid track sizing issues */
+@supports (display: grid) and (-moz-appearance: none) {
+  .card-grid,
+  .collection-grid {
+    /* Ensure grid tracks size correctly */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  }
+}
+
+/* ===== FLEXBOX FIXES ===== */
+
+/**
+ * Firefox has a known bug with min-height in flex containers
+ * This affects full-height layouts and card containers
+ */
+
+/* Fix Firefox min-height flex bug */
+@supports (-moz-appearance: none) {
+  .flex-col {
+    min-height: 0;
+  }
+
+  .flex-col > * {
+    min-height: 0;
+  }
+
+  /* Fix for flex items with min-height */
+  .card,
+  .modal-content {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* Fix for full-height flex containers */
+  .full-height,
+  .min-vh-100 {
+    min-height: 100vh;
+  }
+}
+
+/* Fix Firefox flex gap rounding */
+@supports (display: flex) and (-moz-appearance: none) {
+  .flex {
+    gap: calc(1rem - 0.5px);
+  }
+
+  .gap-2 {
+    gap: calc(0.5rem - 0.5px);
+  }
+
+  .gap-4 {
+    gap: calc(1rem - 0.5px);
+  }
+
+  .gap-6 {
+    gap: calc(1.5rem - 0.5px);
+  }
+
+  .gap-8 {
+    gap: calc(2rem - 0.5px);
+  }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+
+/**
+ * Firefox uses scrollbar-width and scrollbar-color properties
+ * Different from WebKit's pseudo-element approach
+ */
+
+/* Firefox scrollbar styling (Firefox 64+) */
+@supports (scrollbar-width: thin) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+
+  /* Dark mode scrollbar */
+  @media (prefers-color-scheme: dark) {
+    html {
+      scrollbar-color: rgba(71, 85, 105, 0.5) transparent;
+    }
+  }
+}
+
+/* Auto scrollbar for cleaner look */
+@supports (scrollbar-width: auto) {
+  .modal-content,
+  .collection-grid {
+    scrollbar-width: auto;
+  }
+}
+
+/* ===== INPUT/BUTTON FIXES ===== */
+
+/**
+ * Firefox has unique styling for form elements
+ * Ensure consistent appearance across browsers
+ */
+
+/* Fix Firefox button styling */
+@supports (-moz-appearance: none) {
+  button,
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"] {
+    /* Firefox-specific overrides */
+    -moz-appearance: none;
+    appearance: none;
+
+    /* Fix Firefox line-height bug */
+    line-height: normal;
+  }
+
+  /* Fix Firefox input focus outline */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+  }
+
+  /* Fix Firefox checkbox/radio styling */
+  input[type="checkbox"],
+  input[type="radio"] {
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+
+/* ===== FONT RENDERING ===== */
+
+/**
+ * Firefox handles font rendering differently than WebKit
+ * Enable proper antialiasing for consistency
+ */
+
+@supports (-moz-appearance: none) {
+  body {
+    /* Firefox font smoothing */
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Fix Firefox text rendering on Windows */
+  @media (min-resolution: 96dpi) {
+    body {
+      text-rendering: optimizeLegibility;
+    }
+  }
+}
+
+/* ===== ANIMATION PERFORMANCE ===== */
+
+/**
+ * Firefox can struggle with certain CSS animations
+ * Use hardware acceleration hints
+ */
+
+@supports (-moz-appearance: none) {
+  .card-3d,
+  .card-face,
+  .pack-animate,
+  .legendary-card,
+  .epic-card {
+    /* Force hardware acceleration in Firefox */
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Remove will-change after animation completes */
+  .card-3d:not(:hover):not(.flipping),
+  .pack-animate:not(.animating) {
+    will-change: auto;
+  }
+
+  /* Fix Firefox animation timing */
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-pack-glow,
+    .animate-pulse-glow {
+      /* Firefox needs explicit timing for smooth animations */
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+}
+
+/* ===== CLIP PATH FIXES ===== */
+
+/**
+ * Firefox has some quirks with clip-path animations
+ * Ensure proper rendering
+ */
+
+@supports (-moz-appearance: none) {
+  .card-border,
+  .holo-effect,
+  .rarity-glow {
+    /* Fix Firefox clip-path rendering */
+    transform: translateZ(0);
+    will-change: clip-path;
+  }
+
+  /* Remove will-change when not animating */
+  .card-border:not(:hover),
+  .holo-effect:not(:hover) {
+    will-change: auto;
+  }
+}
+
+/* ===== GRADIENT FIXES ===== */
+
+/**
+ * Firefox renders gradients slightly differently
+ * Ensure consistent appearance
+ */
+
+@supports (-moz-appearance: none) {
+  .btn-primary,
+  .legendary-gradient,
+  .epic-gradient {
+    /* Fix Firefox gradient banding */
+    background-image: linear-gradient(
+      to right,
+      var(--tw-gradient-stops)
+    );
+  }
+
+  /* Fix for conic gradients in Firefox */
+  .prismatic-gradient {
+    background-image: conic-gradient(
+      from 0deg,
+      var(--tw-gradient-stops)
+    );
+  }
+}
+
+/* ===== BOX SHADOW FIXES ===== */
+
+/**
+ * Firefox box-shadow rendering can differ from WebKit
+ * Ensure consistent shadow appearance
+ */
+
+@supports (-moz-appearance: none) {
+  .card,
+  .modal-content,
+  .btn-primary {
+    /* Fix Firefox shadow rendering */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .legendary-card {
+    /* Fix Firefox glow effect */
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.5),
+                0 0 40px rgba(249, 115, 22, 0.3);
+  }
+
+  .epic-card {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5),
+                0 0 40px rgba(168, 85, 247, 0.3);
+  }
+}
+
+/* ===== TRANSFORM ORIGIN FIXES ===== */
+
+/**
+ * Firefox handles transform-origin differently
+ * Ensure consistent 3D transforms
+ */
+
+@supports (-moz-appearance: none) {
+  .card-3d,
+  .card-flip {
+    /* Explicit transform-origin for Firefox */
+    transform-origin: center center;
+    -moz-transform-origin: center center;
+  }
+
+  .pack-tear {
+    /* Fix for pack tear animation in Firefox */
+    transform-origin: top center;
+    -moz-transform-origin: top center;
+  }
+}
+
+/* ===== IMAGE RENDERING ===== */
+
+/**
+ * Firefox renders images with different defaults
+ * Ensure crisp rendering for card artwork
+ */
+
+@supports (-moz-appearance: none) {
+  .card-artwork,
+  img {
+    /* Crisp edges for pixel art, smooth for photos */
+    image-rendering: auto;
+  }
+
+  /* Fix for Firefox image scaling */
+  .card-artwork {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* ===== TEXT SELECTION ===== */
+
+/**
+ * Firefox text selection colors differ from WebKit
+ * Ensure consistent selection appearance
+ */
+
+@supports (-moz-appearance: none) {
+  ::selection {
+    background: rgba(251, 191, 36, 0.3);
+    color: inherit;
+  }
+
+  ::-moz-selection {
+    background: rgba(251, 191, 36, 0.3);
+    color: inherit;
+  }
+}
+
+/* ===== PRINT FIXES ===== */
+
+/**
+ * Firefox has unique print rendering quirks
+ * Ensure print styles work correctly
+ */
+
+@media print {
+  @supports (-moz-appearance: none) {
+    /* Fix Firefox print background colors */
+    * {
+      -moz-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Disable backdrop-filter in print */
+    .modal-backdrop,
+    .backdrop-blur-sm,
+    .backdrop-blur-md,
+    .backdrop-blur-lg {
+      backdrop-filter: none;
+      background: white !important;
+    }
+
+    /* Fix Firefox print margins */
+    @page {
+      margin: 1cm;
+    }
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/**
+ * Firefox-specific accessibility enhancements
+ */
+
+@supports (-moz-appearance: none) {
+  /* Ensure focus outlines are visible in Firefox */
+  :focus-visible {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+  }
+
+  /* Fix Firefox focus indicator on buttons */
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+  }
+
+  /* Respect prefers-reduced-motion in Firefox */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/**
+ * Firefox-specific performance optimizations
+ */
+
+@supports (-moz-appearance: none) {
+  /* Reduce layout thrashing */
+  .card,
+  .modal-content,
+  .pack-container {
+    contain: layout style paint;
+  }
+
+  /* Optimize animations */
+  @media (prefers-reduced-motion: no-preference) {
+    .card-reveal,
+    .pack-tear {
+      /* Firefox performs better with explicit composite layers */
+      transform: translateZ(0);
+    }
+  }
+}
+
+/* ===== FIREFOX SPECIFIC BUGS ===== */
+
+/**
+ * Fixes for known Firefox bugs and quirks
+ */
+
+/* Fix for Firefox flexbox overflow bug (Bug 1044817) */
+@supports (-moz-appearance: none) {
+  .collection-grid,
+  .card-grid {
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+/* Fix for Firefox table rendering bug */
+@supports (-moz-appearance: none) {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+}
+
+/* Fix for Firefox position: sticky with overflow */
+@supports (-moz-appearance: none) {
+  .sticky,
+  .position-sticky {
+    /* Firefox needs explicit top/bottom for sticky */
+    top: 0;
+  }
+}
+
+/* ===== FIREFOX ESR SUPPORT ===== */
+
+/**
+ * Ensure compatibility with Firefox ESR (Extended Support Release)
+ * ESR versions are older but still in use
+ */
+
+/* Firefox 78 ESR+ supports most modern CSS */
+@supports (display: grid) and (not (gap: 1px)) {
+  /* Fallback for Firefox < 81 without gap support */
+  .grid,
+  .flex {
+    margin: -0.5rem;
+  }
+
+  .grid > *,
+  .flex > * {
+    margin: 0.5rem;
+  }
+}
+
+/* ===== DARK MODE FIXES ===== */
+
+/**
+ * Firefox handles dark mode differently
+ * Ensure proper dark mode support
+ */
+
+@supports (-moz-appearance: none) {
+  @media (prefers-color-scheme: dark) {
+    /* Fix Firefox dark mode text rendering */
+    body {
+      color-scheme: dark;
+    }
+
+    /* Fix Firefox dark mode form elements */
+    input,
+    textarea,
+    select {
+      color-scheme: dark;
+      background-color: rgba(17, 24, 39, 1);
+      border-color: rgba(55, 65, 81, 1);
+      color: rgba(243, 244, 246, 1);
+    }
+
+    /* Fix Firefox dark mode scrollbar */
+    html {
+      scrollbar-color: rgba(71, 85, 105, 0.8) rgba(17, 24, 39, 1);
+    }
+  }
+}
+
+/* ===== MOBILE FIREFOX FIXES ===== */
+
+/**
+ * Firefox for Android has unique quirks
+ * Target mobile Firefox specifically
+ */
+
+@supports (-moz-appearance: none) and (pointer: coarse) {
+  /* Mobile Firefox touch targets */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  .clickable {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Fix mobile Firefox viewport */
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  main {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Fix mobile Firefox input zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  textarea {
+    font-size: 16px;
+  }
+}
