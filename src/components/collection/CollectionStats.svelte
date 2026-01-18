@@ -1,8 +1,20 @@
 <script lang="ts">
   import { getCollectionStats, collection } from '../../stores/collection';
-  import { RARITY_CONFIG, type Rarity } from '../../types';
+  import { RARITY_CONFIG, type Rarity, type DadType, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
   import { getCardCount } from '../../lib/cards/database';
   import { DEFAULT_PACK_CONFIG } from '../../lib/pack/generator';
+  import { DAD_TYPE_COLORS } from '../../lib/art/dad-type-colors';
+
+  // Create a combined config object for dad types
+  const DAD_TYPE_CONFIG: Record<DadType, { name: string; emoji: string; color: string }> = Object.keys(DAD_TYPE_NAMES).reduce((acc, type) => {
+    const dadType = type as DadType;
+    acc[dadType] = {
+      name: DAD_TYPE_NAMES[dadType],
+      emoji: DAD_TYPE_ICONS[dadType],
+      color: DAD_TYPE_COLORS[dadType].primary,
+    };
+    return acc;
+  }, {} as Record<DadType, { name: string; emoji: string; color: string }>);
 
   // Total unique cards in the database
   const TOTAL_UNIQUE_CARDS = getCardCount();
@@ -19,6 +31,9 @@
     holoPulls: 0,
     lastOpenedAt: null,
   });
+
+  // Calculate duplicate count
+  let duplicateCount = $derived(stats.totalCards - stats.uniqueCards);
 
   // Compute rarity counts from all packs
   function getRarityCounts(): Record<Rarity, number> {
@@ -43,6 +58,64 @@
 
   // Reactive rarity counts
   let rarityCounts = $derived(getRarityCounts());
+
+  // Calculate dad type counts from all unique cards
+  function getDadTypeCounts(): Record<DadType, number> {
+    const current = collection.get();
+    const counts: Record<DadType, number> = {
+      BBQ_DAD: 0,
+      FIX_IT_DAD: 0,
+      GOLF_DAD: 0,
+      COUCH_DAD: 0,
+      LAWN_DAD: 0,
+      CAR_DAD: 0,
+      OFFICE_DAD: 0,
+      COOL_DAD: 0,
+      COACH_DAD: 0,
+      CHEF_DAD: 0,
+      HOLIDAY_DAD: 0,
+      WAREHOUSE_DAD: 0,
+      VINTAGE_DAD: 0,
+      FASHION_DAD: 0,
+      TECH_DAD: 0,
+      ITEM: 0,
+    };
+
+    // Count unique cards by type
+    const uniqueCardIds = new Set<string>();
+    for (const pack of current.packs) {
+      for (const card of pack.cards) {
+        if (!uniqueCardIds.has(card.id)) {
+          uniqueCardIds.add(card.id);
+          counts[card.type]++;
+        }
+      }
+    }
+
+    return counts;
+  }
+
+  // Reactive dad type counts
+  let dadTypeCounts = $derived(getDadTypeCounts());
+
+  // Get top dad types by collection count
+  function getTopDadTypes(limit: number = 5): Array<{ type: DadType; count: number; percentage: number }> {
+    const entries = Object.entries(dadTypeCounts) as Array<[DadType, number]>;
+    const total = stats.uniqueCards;
+
+    return entries
+      .filter(([_, count]) => count > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([type, count]) => ({
+        type,
+        count,
+        percentage: total > 0 ? (count / total) * 100 : 0,
+      }));
+  }
+
+  // Reactive top dad types
+  let topDadTypes = $derived(getTopDadTypes(5));
 
   // Calculate expected rarity percentages based on pack configuration
   function calculateExpectedRates(): Record<Rarity, number> {
@@ -231,6 +304,24 @@
       </div>
     </div>
 
+    <!-- Unique Cards -->
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-info">
+        <span class="stat-value">{stats.uniqueCards}</span>
+        <span class="stat-label">Unique Cards</span>
+      </div>
+    </div>
+
+    <!-- Duplicates -->
+    <div class="stat-card">
+      <div class="stat-icon">🔄</div>
+      <div class="stat-info">
+        <span class="stat-value">{duplicateCount}</span>
+        <span class="stat-label">Duplicates</span>
+      </div>
+    </div>
+
     <!-- Completion -->
     <div class="stat-card completion">
       <div class="stat-icon">📊</div>
@@ -303,6 +394,50 @@
           {/if}
         </div>
       {/each}
+    </div>
+  </div>
+
+  <!-- Visual Rarity Bar Chart -->
+  <div class="rarity-chart">
+    <h3 class="chart-title">Rarity Distribution</h3>
+    <div class="chart-container">
+      {#each displayRarities as rarity}
+        {@const count = rarityCounts[rarity]}
+        {@const config = RARITY_CONFIG[rarity]}
+        {@const percentage = stats.totalCards > 0 ? (count / stats.totalCards) * 100 : 0}
+        <div class="chart-bar" style="--bar-color: {config.color}; --bar-width: {percentage}%">
+          <div class="bar-label">{config.name}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: {percentage}%"></div>
+          </div>
+          <div class="bar-value">{count} ({percentage.toFixed(1)}%)</div>
+        </div>
+      {/each}
+    </div>
+  </div>
+
+  <!-- Dad Type Collection Statistics -->
+  <div class="dad-type-stats">
+    <h3 class="chart-title">Most Collected Dad Types</h3>
+    <div class="dad-type-grid">
+      {#if topDadTypes.length === 0}
+        <div class="no-data">No cards collected yet</div>
+      {:else}
+        {#each topDadTypes as { type, count, percentage }}
+          {@const config = DAD_TYPE_CONFIG[type]}
+          <div class="dad-type-card" style="--type-color: {config.color}">
+            <div class="type-icon">{config.emoji}</div>
+            <div class="type-info">
+              <div class="type-name">{config.name}</div>
+              <div class="type-stats">
+                <span class="type-count">{count} cards</span>
+                <span class="type-percent">{percentage.toFixed(1)}%</span>
+              </div>
+            </div>
+            <div class="type-bar" style="width: {percentage}%"></div>
+          </div>
+        {/each}
+      {/if}
     </div>
   </div>
 </div>
@@ -562,6 +697,164 @@
     color: #ef4444;
   }
 
+  /* Visual Rarity Bar Chart */
+  .rarity-chart {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(71, 85, 105, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .chart-bar {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bar-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: capitalize;
+  }
+
+  .bar-track {
+    height: 24px;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 0.375rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--bar-color), color-mix(in srgb, var(--bar-color) 80%, white));
+    border-radius: 0.375rem;
+    transition: width 0.6s ease-out;
+    box-shadow: 0 0 10px var(--bar-color);
+  }
+
+  .bar-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: white;
+    text-align: right;
+    min-width: 100px;
+  }
+
+  /* Dad Type Statistics */
+  .dad-type-stats {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(71, 85, 105, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  .dad-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .no-data {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .dad-type-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .dad-type-card:hover {
+    background: rgba(51, 65, 85, 0.8);
+    border-color: var(--type-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .type-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 0.5rem;
+  }
+
+  .type-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    z-index: 1;
+  }
+
+  .type-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: capitalize;
+  }
+
+  .type-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .type-count {
+    color: #94a3b8;
+  }
+
+  .type-percent {
+    font-weight: 700;
+    color: var(--type-color);
+  }
+
+  .type-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--type-color), color-mix(in srgb, var(--type-color) 80%, white));
+    transition: width 0.6s ease-out;
+    box-shadow: 0 0 8px var(--type-color);
+  }
+
   /* Responsive adjustments */
   @media (max-width: 640px) {
     .stats-header {
@@ -598,6 +891,40 @@
 
     .rarity-expected {
       display: none;
+    }
+
+    /* Chart responsive adjustments */
+    .chart-bar {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .bar-label {
+      font-size: 0.75rem;
+    }
+
+    .bar-value {
+      font-size: 0.75rem;
+      text-align: left;
+    }
+
+    /* Dad type responsive adjustments */
+    .dad-type-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .type-icon {
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+    }
+
+    .type-name {
+      font-size: 0.875rem;
+    }
+
+    .type-stats {
+      font-size: 0.75rem;
     }
   }
 </style>
