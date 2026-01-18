@@ -165,13 +165,23 @@
             <div class="stat-bars">
               <!-- Card 1 Bar -->
               <div class="stat-bar-container">
-                <div class="stat-bar bar-1" class:winner={winner === 1} class:loser={winner === 2} style="width: {percent1}%">
+                <div
+                  class="stat-bar bar-1"
+                  class:winner={winner === 1}
+                  class:loser={winner === 2}
+                  style="width: {percent1}%"
+                  role="progressbar"
+                  aria-label="{card1.name} {statName}: {value1}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={value1}
+                >
                   <span class="stat-value">{value1}</span>
                 </div>
               </div>
 
               <!-- VS Badge -->
-              <div class="vs-badge">
+              <div class="vs-badge" aria-hidden="true">
                 {#if winner === 1}
                   <span class="winner-badge">W</span>
                 {:else if winner === 2}
@@ -183,7 +193,17 @@
 
               <!-- Card 2 Bar -->
               <div class="stat-bar-container">
-                <div class="stat-bar bar-2" class:winner={winner === 2} class:loser={winner === 1} style="width: {percent2}%">
+                <div
+                  class="stat-bar bar-2"
+                  class:winner={winner === 2}
+                  class:loser={winner === 1}
+                  style="width: {percent2}%"
+                  role="progressbar"
+                  aria-label="{card2.name} {statName}: {value2}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={value2}
+                >
                   <span class="stat-value">{value2}</span>
                 </div>
               </div>
@@ -194,7 +214,7 @@
 
       <!-- Footer Actions -->
       <div class="comparison-footer">
-        <button class="btn btn-secondary" on:click={close}>Close Comparison</button>
+        <button class="btn btn-secondary" on:click={close} aria-label="Close card comparison dialog">Close Comparison</button>
       </div>
     </div>
   </div>

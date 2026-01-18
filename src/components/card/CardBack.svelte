@@ -74,7 +74,7 @@
   });
 </script>
 
-<div class="card-back-container {sizeClasses[size]} relative overflow-hidden">
+<div class="card-back-container {sizeClasses[size]} relative overflow-hidden" aria-hidden="true">
   <!-- SVG Card Back Design -->
   <svg
     viewBox="0 0 400 550"

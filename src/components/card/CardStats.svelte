@@ -38,13 +38,18 @@
       class="flex items-center gap-1.5 stat-row"
       class:high-stat={stat.isHighStat}
     >
-      <span class="text-xs w-4 drop-shadow-sm stat-icon">{stat.icon}</span>
+      <span class="text-xs w-4 drop-shadow-sm stat-icon" aria-hidden="true">{stat.icon}</span>
       <span class="text-[9px] text-slate-400 stat-label font-medium uppercase tracking-tight" class:text-slate-300={stat.isHighStat}>{stat.name}</span>
       <div class="flex-1 h-1.5 bg-slate-700/60 rounded-full overflow-hidden relative stat-bar-container">
         <div
           class="h-full rounded-full transition-all duration-700 ease-out relative stat-bar"
           style="width: {stat.value}%; background: {barGradient(stat.value)}; {getGlowStyle(stat.value)};"
           class:stat-bar-high={stat.isHighStat}
+          role="progressbar"
+          aria-label="{stat.name}: {stat.value} out of 100"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={stat.value}
         >
           <!-- Shimmer effect -->
           <div

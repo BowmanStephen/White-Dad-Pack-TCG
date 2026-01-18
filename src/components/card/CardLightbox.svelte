@@ -297,12 +297,13 @@
                 class:opacity-50={isGeneratingImage}
                 class:cursor-not-allowed={isGeneratingImage}
                 style="--button-color: {RARITY_CONFIG[card.rarity].color};"
+                aria-label="Share {card.name} card"
               >
                 {#if isGeneratingImage}
-                  <span class="animate-spin">⟳</span>
+                  <span class="animate-spin" aria-hidden="true">⟳</span>
                   <span>Generating...</span>
                 {:else}
-                  <span>📤</span>
+                  <span aria-hidden="true">📤</span>
                   <span>Share</span>
                 {/if}
               </button>
@@ -315,12 +316,13 @@
               class:opacity-50={isGeneratingImage}
               class:cursor-not-allowed={isGeneratingImage}
               style="--button-color: {RARITY_CONFIG[card.rarity].color};"
+              aria-label="Download {card.name} card"
             >
               {#if isGeneratingImage}
-                <span class="animate-spin">⟳</span>
+                <span class="animate-spin" aria-hidden="true">⟳</span>
                 <span>Generating...</span>
               {:else}
-                <span>💾</span>
+                <span aria-hidden="true">💾</span>
                 <span>Download</span>
               {/if}
             </button>
@@ -333,7 +335,7 @@
       </div>
 
       <!-- Keyboard Hints -->
-      <div class="keyboard-hints">
+      <div class="keyboard-hints" aria-hidden="true">
         <span class="hint">← → to navigate</span>
         <span class="hint">Esc to close</span>
       </div>
