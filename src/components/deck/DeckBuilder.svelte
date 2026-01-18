@@ -21,6 +21,7 @@
   import { collection } from '@/stores/collection';
   import { t } from '@/i18n';
   import DeckStats from './DeckStats.svelte';
+  import DeckSuggestions from './DeckSuggestions.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import DeckShareModal from './DeckShareModal.svelte';
   import DeckImportModal from './DeckImportModal.svelte';
@@ -481,7 +482,14 @@
           {#if currentDeckData && currentDeckData.stats}
             <div class="editor-section">
               <h2 class="section-title">{$t('deck.stats.title')}</h2>
-              <DeckStats stats={currentDeckData.stats} compact={true} />
+              <DeckStats stats={currentDeckData.stats} deck={currentDeckData} compact={true} />
+            </div>
+          {/if}
+
+          <!-- Synergy Suggestions -->
+          {#if currentDeckData}
+            <div class="editor-section">
+              <DeckSuggestions deck={currentDeckData} compact={true} />
             </div>
           {/if}
 

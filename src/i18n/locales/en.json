@@ -209,6 +209,37 @@
       "averageStats": "Average Stats",
       "typeBreakdown": "Type Distribution"
     },
+    "synergy": {
+      "title": "Synergy Suggestions",
+      "bonus": "Synergy Bonus",
+      "potential": "Synergy Potential",
+      "currentBonus": "Current Bonus",
+      "typeSuggestions": "Type Synergies",
+      "recommendedCards": "Recommended Cards",
+      "dominantType": "Dominant Type",
+      "noSuggestions": "Add more cards to see synergy suggestions"
+    },
+    "optimization": {
+      "title": "Stat Optimization",
+      "balance": "Balance Score",
+      "weakestStat": "Weakest Stat",
+      "strongestStat": "Strongest Stat",
+      "statImbalances": "Stat Imbalances",
+      "addCards": "Add {count} {stat} cards",
+      "targetValue": "Target: {value}",
+      "improveDeck": "Improve your deck by adding cards with higher {stat} stat",
+      "balancedDeck": "Your deck is well-balanced!",
+      "recommendations": "Card Recommendations",
+      "priorityHigh": "High Priority",
+      "priorityMedium": "Medium Priority",
+      "priorityLow": "Low Priority",
+      "noRecommendations": "No recommendations available",
+      "statLow": "Low {stat} ({value})",
+      "statHigh": "High {stat} ({value})",
+      "deviation": "Deviation: {value} points",
+      "aboveAverage": "Above average",
+      "belowAverage": "Below average"
+    },
     "errors": {
       "maxDecksReached": "Maximum of 10 decks reached. Delete a deck first.",
       "createFailed": "Failed to create deck",

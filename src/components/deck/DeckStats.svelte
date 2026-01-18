@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type { DeckStats, Rarity, DadType } from '@/types';
+  import type { DeckStats, Rarity, DadType, Deck } from '@/types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_NAMES, STAT_ICONS } from '@/types';
   import { t } from '@/i18n';
+  import { getSynergyBonus } from '@/lib/deck/suggestions';
 
   export let stats: DeckStats = {
     totalCards: 0,
@@ -37,6 +38,7 @@
     },
   };
   export let compact: boolean = false;
+  export let deck: Deck | null = null;
 
   const rarityOrder: Rarity[] = ['mythic', 'legendary', 'epic', 'rare', 'uncommon', 'common'];
 
@@ -56,6 +58,8 @@
       stats.averageStats.sockSandal +
       stats.averageStats.beerSnob) / 8
   );
+
+  $: synergyBonus = deck ? getSynergyBonus(deck) : 0;
 </script>
 
 <div class="deck-stats" class:compact>
@@ -77,6 +81,15 @@
         {averageRating}
       </span>
     </div>
+
+    {#if synergyBonus > 0}
+      <div class="stat-item">
+        <span class="stat-label">{$t('deck.synergy.bonus')}</span>
+        <span class="stat-value synergy-bonus">
+          ✨ +{synergyBonus}%
+        </span>
+      </div>
+    {/if}
   </div>
 
   {#if !compact}
@@ -180,6 +193,11 @@
 
   .stat-value.rating-low {
     color: #ef4444;
+  }
+
+  .stat-value.synergy-bonus {
+    color: #fde047;
+    text-shadow: 0 0 10px rgba(253, 224, 71, 0.5);
   }
 
   .stat-section {

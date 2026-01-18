@@ -1,26 +1,48 @@
 // Card Rarity Types
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
-// Dad Type Categories - Core archetypes only (Season 1)
+// Dad Type Categories - Backyard Boner Edition (Season 2+ - X-Rated Names)
 export type DadType =
   // Core Dad Archetypes
-  | 'BBQ_DAD'
-  | 'FIX_IT_DAD'
-  | 'GOLF_DAD'
-  | 'COUCH_DAD'
-  | 'LAWN_DAD'
-  | 'CAR_DAD'
-  | 'OFFICE_DAD'
-  | 'COOL_DAD'
-  | 'COACH_DAD'
-  | 'CHEF_DAD'
-  | 'HOLIDAY_DAD'
-  | 'WAREHOUSE_DAD'
-  | 'VINTAGE_DAD'
-  | 'FASHION_DAD'
-  | 'TECH_DAD'
-  // Special Card Type
-  | 'ITEM';
+  | 'BBQ_DICKTATOR'
+  | 'FIX_IT_FUCKBOY'
+  | 'GOLF_GONAD'
+  | 'COUCH_CUMMANDER'
+  | 'LAWN_LUNATIC'
+  | 'CAR_COCK'
+  | 'OFFICE_ORGASMS'
+  | 'COOL_CUCKS'
+  | 'COACH_CUMSTERS'
+  | 'CHEF_CUMSTERS'
+  | 'HOLIDAY_HORNDOGS'
+  | 'WAREHOUSE_WANKERS'
+  | 'VINTAGE_VAGABONDS'
+  | 'FASHION_FUCK'
+  | 'TECH_TWATS'
+  | 'GAMER_GIZZARDS'
+  | 'PREPPER_PENIS'
+  | 'BBQ_BRAWLER'
+  | 'SUBURBAN_SOCIALITE'
+  | 'NEIGHBORHOOD_NOSY'
+  // Family Variants
+  | 'SON_SPAWNS'
+  | 'DAUGHTER_DINGBATS'
+  | 'UNCLE_UPROARS'
+  | 'SUBURBAN_SIDEKICKS'
+  // Special Card Types
+  | 'ITEM'
+  | 'EVENT'
+  | 'TERRAIN'
+  | 'EVOLUTION'
+  | 'CURSE'
+  | 'TRAP'
+  // Crossover Events
+  | 'DUNE_DESERT'
+  | 'MARVEL_MASH'
+  | 'STAR_WARS_SWINGER'
+  | 'MCDONALDS_MEAT'
+  | 'POTTER_PERVERT'
+  | 'FORTNITE_FUCKER';
 
 // Holographic Variant Types
 export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';

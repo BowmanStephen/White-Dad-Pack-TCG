@@ -171,7 +171,38 @@
     "deckSaved": "¡Mazo Guardado!",
     "invalidDeck": "Mazo Inválido",
     "minCards": "Mínimo de {min} cartas requeridas",
-    "maxCards": "Máximo de {max} cartas permitidas"
+    "maxCards": "Máximo de {max} cartas permitidas",
+    "synergy": {
+      "title": "Sugerencias de Sinergia",
+      "bonus": "Bono de Sinergia",
+      "potential": "Potencial de Sinergia",
+      "currentBonus": "Bono Actual",
+      "typeSuggestions": "Sinergias de Tipo",
+      "recommendedCards": "Cartas Recomendadas",
+      "dominantType": "Tipo Dominante",
+      "noSuggestions": "Añade más cartas para ver sugerencias de sinergia"
+    },
+    "optimization": {
+      "title": "Optimización de Estadísticas",
+      "balance": "Puntuación de Equilibrio",
+      "weakestStat": "Estadística Más Débil",
+      "strongestStat": "Estadística Más Fuerte",
+      "statImbalances": "Desequilibrios de Estadísticas",
+      "addCards": "Añade {count} cartas de {stat}",
+      "targetValue": "Objetivo: {value}",
+      "improveDeck": "Mejora tu mazo añadiendo cartas con estadística de {stat} más alta",
+      "balancedDeck": "¡Tu mazo está bien equilibrado!",
+      "recommendations": "Recomendaciones de Cartas",
+      "priorityHigh": "Prioridad Alta",
+      "priorityMedium": "Prioridad Media",
+      "priorityLow": "Prioridad Baja",
+      "noRecommendations": "No hay recomendaciones disponibles",
+      "statLow": "{stat} Bajo ({value})",
+      "statHigh": "{stat} Alto ({value})",
+      "deviation": "Desviación: {value} puntos",
+      "aboveAverage": "Por encima del promedio",
+      "belowAverage": "Por debajo del promedio"
+    }
   },
   "upgrade": {
     "title": "Mejoras de Cartas",
