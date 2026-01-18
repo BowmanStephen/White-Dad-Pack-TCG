@@ -230,6 +230,80 @@ export function rollPackDesign(rng: SeededRandom): PackDesign {
 }
 
 /**
+ * Validate rarity distribution matches pack configuration
+ *
+ * This function ensures the generated pack meets the minimum rarity requirements
+ * specified in the configuration. It's a safeguard to detect:
+ * - Misconfigured rarity slots
+ * - Card database issues (missing rarities)
+ * - Generation logic bugs
+ *
+ * @param cards - The generated pack cards
+ * @param config - The pack configuration used
+ * @throws Error if rarity distribution doesn't meet minimum requirements
+ */
+function validateRarityDistribution(cards: PackCard[], config: PackConfig): void {
+  const rarityCounts: Record<Rarity, number> = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+  };
+
+  // Count rarities in the pack
+  for (const card of cards) {
+    rarityCounts[card.rarity]++;
+  }
+
+  // Check each slot's requirements
+  for (const slot of config.raritySlots) {
+    if (slot.guaranteedRarity) {
+      // For guaranteed rarity slots, we need to ensure the pack contains
+      // at least as many cards of that rarity as there are guaranteed slots
+      const guaranteedCount = config.raritySlots.filter(
+        s => s.guaranteedRarity === slot.guaranteedRarity
+      ).length;
+
+      const actualCount = rarityCounts[slot.guaranteedRarity];
+
+      if (actualCount < guaranteedCount) {
+        throw new Error(
+          `Pack validation failed: expected at least ${guaranteedCount} ${slot.guaranteedRarity} cards ` +
+          `but found ${actualCount}. This may indicate the card database is missing ${slot.guaranteedRarity} cards.`
+        );
+      }
+    }
+
+    // For probability slots, we don't enforce exact counts (that's probabilistic)
+    // But we can add warnings if something looks very wrong
+    if (slot.rarityPool && slot.probability) {
+      // Check that at least some cards from the probability pool exist
+      const poolRarities = Object.keys(slot.probability) as Rarity[];
+      const poolCount = poolRarities.reduce((sum, rarity) => sum + rarityCounts[rarity], 0);
+
+      // We should have at least 1 card from the probability pool across all such slots
+      // This is a soft check - it's possible (though unlikely) to get 0
+      if (poolCount === 0 && Math.random() < 0.01) {
+        // Only warn 1% of the time to avoid spamming
+        console.warn(
+          `Pack generation warning: no cards from probability pool ${poolRarities.join(', ')} ` +
+          `in this pack. This may be due to bad luck or missing cards.`
+        );
+      }
+    }
+  }
+
+  // Additional sanity check: ensure we have the expected total number of cards
+  if (cards.length !== config.cardsPerPack) {
+    throw new Error(
+      `Pack validation failed: expected ${config.cardsPerPack} cards but got ${cards.length}`
+    );
+  }
+}
+
+/**
  * Generate a single pack of cards based on configuration
  *
  * @param config - Pack configuration defining rarity slots and probabilities
@@ -297,8 +371,19 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
     packCards.push(packCard);
   }
 
+  // SAFEGUARD 1: Verify pack has exactly 6 cards
+  if (packCards.length !== config.cardsPerPack) {
+    throw new Error(
+      `Pack generation failed: expected ${config.cardsPerPack} cards but got ${packCards.length}. ` +
+      `This may indicate the card database is empty or missing required rarities.`
+    );
+  }
+
   // Shuffle the cards so rarity isn't predictable by position
   const shuffledCards = rng.shuffle(packCards);
+
+  // SAFEGUARD 2: Verify rarity distribution within acceptable tolerance
+  validateRarityDistribution(shuffledCards, config);
 
   // Roll for pack design (US068 - 80% standard, 15% holiday, 5% premium)
   const packDesign = rollPackDesign(rng);
@@ -422,7 +507,18 @@ export function generateSeasonPack(
     packCards.push(packCard);
   }
 
+  // SAFEGUARD 1: Verify pack has exactly 6 cards
+  if (packCards.length !== config.cardsPerPack) {
+    throw new Error(
+      `Season pack generation failed: expected ${config.cardsPerPack} cards but got ${packCards.length}. ` +
+      `This may indicate the season card database is empty or missing required rarities.`
+    );
+  }
+
   const shuffledCards = rng.shuffle(packCards);
+
+  // SAFEGUARD 2: Verify rarity distribution within acceptable tolerance
+  validateRarityDistribution(shuffledCards, config);
 
   // Use season's pack design
   const packDesign = season.packDesign;
