@@ -90,7 +90,7 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <!-- Performance Monitoring (dev only) -->
     <PerformanceMonitor />
   </head>
-  <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased transition-colors duration-300" class="safe-area-bottom">
+  <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased transition-colors duration-300">
     <!-- Skip Navigation Link -->
     <a
       href="#main-content"

@@ -2,7 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PackOpener from '../components/pack/PackOpener.svelte';
 import Navigation from '../components/common/Navigation.svelte';
-import SettingsModal from '../components/common/SettingsModal.svelte';
 import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 
 // Enhanced SEO for pack page
@@ -38,7 +37,6 @@ const videoGameSchema = {
   image="/og-image.png"
 >
   <Navigation client:load />
-  <SettingsModal client:load />
 
   <main id="main-content" class="pt-20 pb-8 min-h-screen" tabindex="-1" role="main" aria-label="Pack opening area">
     <ErrorBoundary

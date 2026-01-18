@@ -6,7 +6,6 @@
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
-  import { getCardUpgradeLevel } from '../../stores/upgrade';
 
   export let card: PackCard;
   export let isFlipped: boolean = false;
@@ -22,7 +21,7 @@
   $: typeName = DAD_TYPE_NAMES[card.type];
   $: shareSupport = checkShareSupport();
   $: canShare = enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles;
-  $: upgradeLevel = typeof window !== 'undefined' ? getCardUpgradeLevel(card.id) : 0;
+  const upgradeLevel = 0;
 
   const sizeClasses = {
     sm: 'w-48 h-[268px]',
@@ -342,14 +341,6 @@
           <span>{typeName}</span>
         </div>
         <div class="flex gap-0.5 items-center">
-          <!-- Upgrade Level Indicator (US085) -->
-          {#if upgradeLevel > 0}
-            <div class="flex items-center gap-0.5 px-1.5 py-0.5 rounded" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3)); border: 1px solid rgba(251, 191, 36, 0.5);">
-              {#each Array(upgradeLevel) as _}
-                <span class="upgrade-star text-xs" style="color: #fbbf24; text-shadow: 0 0 4px rgba(251, 191, 36, 0.8);">⬡</span>
-              {/each}
-            </div>
-          {/if}
           <!-- Rarity Stars -->
           <div class="flex gap-0.5">
             {#each Array(rarityStars) as _, i}

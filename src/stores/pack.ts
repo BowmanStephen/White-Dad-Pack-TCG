@@ -1,20 +1,10 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState, PackType } from '../types';
-import { generatePack, generateSeasonPack, getPackStats } from '../lib/pack/generator';
-import { generatePremiumPack } from '../lib/pack/premium-generator';
+import { generateSeasonPack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { DEFAULT_SEASON_CONFIG } from '../types';
-import {
-  checkAndUnlockAchievements,
-  getAchievementContext,
-} from './achievements';
-import {
-  currentPackType,
-  usePremiumPack,
-  hasPremiumPacks,
-} from './premium';
 import {
   initSecurity,
   validatePackBeforeOpen,
@@ -22,8 +12,6 @@ import {
   isCurrentUserBanned,
   getBanStatus,
 } from './security';
-import { trackPackOpenForReferral } from './referral';
-import { awardEventCurrencyForPack } from '../lib/events/helpers';
 import { haptics } from '../lib/utils/haptics';
 
 // Track pack open start time for duration calculation
@@ -136,16 +124,10 @@ export async function openNewPack(): Promise<void> {
         const generationStartTime = performance.now();
 
         // Get current pack type (standard or premium)
-        const packType = currentPackType.get();
         let pack: Pack;
 
-        if (packType === 'premium') {
-          // Premium packs are disabled in MVP, fallback to standard
-          pack = generateSeasonPack(DEFAULT_SEASON_CONFIG.currentSeason);
-        } else {
-          // Generate standard pack for current season
-          pack = generateSeasonPack(DEFAULT_SEASON_CONFIG.currentSeason);
-        }
+        // Generate standard pack for current season
+        pack = generateSeasonPack(DEFAULT_SEASON_CONFIG.currentSeason);
 
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;
@@ -210,10 +192,7 @@ export async function openNewPack(): Promise<void> {
         }
 
         // Security: Record successful pack open
-        recordSuccessfulPackOpen(pack, packType);
-
-        // Event System: Award event currency for opening pack
-        awardEventCurrencyForPack(pack.id);
+        recordSuccessfulPackOpen(pack, 'standard');
 
         // Track pack open event
         trackEvent({
@@ -221,8 +200,7 @@ export async function openNewPack(): Promise<void> {
           data: {
             packId: pack.id,
             cardCount: pack.cards.length,
-            packType,
-            ...(packType === 'premium' && { premiumConfigId: 'premium_single' }),
+            packType: 'standard',
           },
         });
 
@@ -406,20 +384,6 @@ function trackPackComplete(pack: Pack, skipped: boolean): void {
     },
   });
 
-  // Track pack opening for referral progress
-  trackPackOpenForReferral();
-
-  // Check for achievements after pack completion
-  const context = getAchievementContext(pack);
-  const newlyUnlocked = checkAndUnlockAchievements(context);
-
-  // Log newly unlocked achievements (in development)
-  if (import.meta.env.DEV && newlyUnlocked.length > 0) {
-    console.log(
-      `[Achievements] Unlocked ${newlyUnlocked.length} achievement(s):`,
-      newlyUnlocked.map((a) => a.name).join(', ')
-    );
-  }
 
   // Reset pack open start time
   packOpenStartTime = null;
