@@ -118,6 +118,13 @@ export const DAD_TYPE_NAMES: Record<DadType, string> = {
   SUBURBAN_SPY: 'Suburban Spy',
   GAMER_GIZZARDS: 'Gamer Gizzards',
   PREPPER_PENIS: 'Prepper Penis',
+  BBQ_BRAWLER: 'BBQ Brawler',
+  SUBURBAN_SOCIALITE: 'Suburban Socialite',
+  NEIGHBORHOOD_NOSY: 'Neighborhood Nosy',
+  SON_SPAWNS: 'Son Spawns',
+  DAUGHTER_DINGBATS: 'Daughter Dingbats',
+  UNCLE_UPROARS: 'Uncle Uproars',
+  SUBURBAN_SIDEKICKS: 'Suburban Sidekicks',
   ITEM: 'Item',
 };
 
@@ -141,6 +148,13 @@ export const DAD_TYPE_ICONS: Record<DadType, string> = {
   SUBURBAN_SPY: '🕵️',
   GAMER_GIZZARDS: '🎮',
   PREPPER_PENIS: '🛡️',
+  BBQ_BRAWLER: '🍖',
+  SUBURBAN_SOCIALITE: '🥂',
+  NEIGHBORHOOD_NOSY: '👂',
+  SON_SPAWNS: '👦',
+  DAUGHTER_DINGBATS: '👧',
+  UNCLE_UPROARS: '👨‍🦱',
+  SUBURBAN_SIDEKICKS: '🚶',
   ITEM: '🎁',
 };
 

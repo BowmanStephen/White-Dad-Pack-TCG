@@ -2538,6 +2538,696 @@
       "totalInSeries": 150,
       "artist": "DadArt Studios",
       "seasonId": 2
+    },
+    {
+      "id": "083",
+      "name": "Iron Dad Tony Stark",
+      "subtitle": "Arc Reactor Conspiracy Theorist",
+      "type": "TECH_DAD",
+      "rarity": "legendary",
+      "artwork": "/cards/wifi-wizard-walter.svg",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 40,
+        "fixIt": 95,
+        "napPower": 50,
+        "remoteControl": 85,
+        "thermostat": 75,
+        "sockSandal": 70,
+        "beerSnob": 80
+      },
+      "flavorText": "Stark Industries is a Deep State dildo factory! Iron Man suits are government mind control devices! The arc reactor's a CIA energy weapon! I built my own suit in the garage. It runs on propane and conspiracy theories.",
+      "abilities": [
+        {
+          "name": "Repulsor Tech",
+          "description": "Can build anything with scraps and paranoia. Claims Marvel superheroes are government psy-ops. Still watches every movie. Has 47 Iron Man action figures. All of them are 'compromised.'"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 83,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "084",
+      "name": "Hulk Hump Bruce Banner",
+      "subtitle": "Gamma Ray Conspiracy Victim",
+      "type": "COUCH_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/recliner-randy.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 60,
+        "fixIt": 70,
+        "napPower": 60,
+        "remoteControl": 50,
+        "thermostat": 80,
+        "sockSandal": 65,
+        "beerSnob": 70
+      },
+      "flavorText": "S.H.I.E.L.D.'s got alien cum in my blood! Gamma rays are government mind control weapons! The Hulk is a Deep State experiment gone wrong! I get angry when I see Marvel movies. It triggers the transformation.",
+      "abilities": [
+        {
+          "name": "Smash Conspiracy",
+          "description": "Transforms when exposed to corporate media. Claims S.H.I.E.L.D. is a front for the CIA. Has 47 theories about the Hulk. All of them involve government mind control."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 84,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "085",
+      "name": "Spider-Dad Peter Parker",
+      "subtitle": "Web-Slinging Conspiracy Theorist",
+      "type": "COOL_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/skateboard-scott.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 30,
+        "fixIt": 60,
+        "napPower": 55,
+        "remoteControl": 70,
+        "thermostat": 65,
+        "sockSandal": 85,
+        "beerSnob": 60
+      },
+      "flavorText": "Marvel's comics got mind control ink! Spider-Man's webs are government tracking devices! Radioactive spiders are CIA experiments! I got bit by a spider. Now I have 47 conspiracy theories and sticky fingers.",
+      "abilities": [
+        {
+          "name": "Web Mastery",
+          "description": "Can swing through suburbs with ease. Claims Marvel is a government propaganda machine. Still reads every comic. Has 47 Spider-Man issues. All of them are 'coded messages.'"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 85,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "086",
+      "name": "Darth Dad Vader",
+      "subtitle": "Dark Side Conspiracy Dominator",
+      "type": "OFFICE_DAD",
+      "rarity": "legendary",
+      "artwork": "/cards/tps-report-terry.svg",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 50,
+        "fixIt": 70,
+        "napPower": 60,
+        "remoteControl": 80,
+        "thermostat": 85,
+        "sockSandal": 75,
+        "beerSnob": 70
+      },
+      "flavorText": "Lucasfilm's got Death Star plans for my nuts! The Force is a government mind control weapon! Vader's suit is a CIA tracking device! I breathe heavily when I think about Star Wars. It's the Dark Side.",
+      "abilities": [
+        {
+          "name": "Force Conspiracy",
+          "description": "Can control the thermostat from anywhere. Claims the Force is 5G mind control. Still watches every movie. Has 47 Vader masks. All of them have tracking chips."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 86,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "087",
+      "name": "Luke Lawnwalker",
+      "subtitle": "Lightsaber Lawn Care Specialist",
+      "type": "LAWN_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/lawn-legend-larry.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 40,
+        "fixIt": 65,
+        "napPower": 55,
+        "remoteControl": 75,
+        "thermostat": 80,
+        "sockSandal": 70,
+        "beerSnob": 65
+      },
+      "flavorText": "Disney's turnin' the Force into 5G! Lightsabers are government energy weapons! The Death Star is a Deep State operation! I mow my lawn with a lightsaber. The HOA is concerned. I'm enlightened.",
+      "abilities": [
+        {
+          "name": "Jedi Lawn Mastery",
+          "description": "Can cut perfect grass patterns with lightsabers. Claims Star Wars is a government psy-op. Still buys every toy. Has 47 lightsabers. Each one a different color conspiracy."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 87,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "088",
+      "name": "Big Mac Boner-Burger",
+      "subtitle": "Double Decker Conspiracy Burger",
+      "type": "BBQ_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/grill-master-gary.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 90,
+        "fixIt": 40,
+        "napPower": 50,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 65,
+        "beerSnob": 80
+      },
+      "flavorText": "McDonald's got lizard DNA in every goddamn patty! Big Macs are government mind control burgers! The secret sauce is a CIA formula! I grill my own burgers. They're better. Also they're not made of lizard.",
+      "abilities": [
+        {
+          "name": "Grease Conspiracy",
+          "description": "Can make burgers that taste better than fast food. Claims McDonald's is a reptilian conspiracy. Still eats there weekly. Has 47 Big Mac theories. All of them involve aliens."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 88,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "089",
+      "name": "McNugget Nut-Nibbler",
+      "subtitle": "Chicken Conspiracy Specialist",
+      "type": "CHEF_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/secret-recipe-rick.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 85,
+        "fixIt": 35,
+        "napPower": 55,
+        "remoteControl": 65,
+        "thermostat": 75,
+        "sockSandal": 60,
+        "beerSnob": 85
+      },
+      "flavorText": "Ronald McFuckface got chemtrails in the sauce! McNuggets are government tracking devices! The chicken's not really chicken - it's alien meat! I make my own nuggets. They're honest. Also they're actual chicken.",
+      "abilities": [
+        {
+          "name": "Nugget Mastery",
+          "description": "Can make perfect chicken nuggets at home. Claims McDonald's nuggets are a government conspiracy. Still orders them. Has 47 theories about the sauce. None of them are edible."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 89,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "090",
+      "name": "Harry Pothead Humper",
+      "subtitle": "Wand-Wacking Conspiracy Wizard",
+      "type": "COOL_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/skateboard-scott.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 30,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 70,
+        "thermostat": 80,
+        "sockSandal": 75,
+        "beerSnob": 65
+      },
+      "flavorText": "Hogwarts got CIA spells in every goddamn textbook! Wands are government mind control devices! Magic's a Deep State psy-op! I have a wand. It's a stick from my backyard. It works just as well.",
+      "abilities": [
+        {
+          "name": "Spell Conspiracy",
+          "description": "Can perform 'magic' tricks with household items. Claims Harry Potter is a government propaganda tool. Still reads every book. Has 47 wands. All of them are just sticks."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 90,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "091",
+      "name": "Default Skin Dick-Dropper",
+      "subtitle": "Noob Conspiracy Theorist",
+      "type": "GAMER_GIZZARDS",
+      "rarity": "rare",
+      "artwork": "/cards/wifi-wizard-walter.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 40,
+        "fixIt": 60,
+        "napPower": 50,
+        "remoteControl": 70,
+        "thermostat": 65,
+        "sockSandal": 80,
+        "beerSnob": 60
+      },
+      "flavorText": "Epic Games got mind control in every loot crate! Default skins are government tracking devices! Fortnite's a Pentagon psy-op! I play with default skin. It's a statement. Also I can't afford V-Bucks.",
+      "abilities": [
+        {
+          "name": "Build Conspiracy",
+          "description": "Can build forts faster than anyone while ranting about government surveillance. Claims Fortnite is a Deep State mind control game. Still plays 12 hours a day. Has 47 theories about the storm. All of them involve 5G."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 91,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "092",
+      "name": "Paul Atreides Ass-Traitor",
+      "subtitle": "Muad'Dib Conspiracy Theorist",
+      "type": "COOL_DAD",
+      "rarity": "legendary",
+      "artwork": "/cards/skateboard-scott.svg",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 40,
+        "fixIt": 70,
+        "napPower": 60,
+        "remoteControl": 80,
+        "thermostat": 85,
+        "sockSandal": 75,
+        "beerSnob": 70
+      },
+      "flavorText": "Frank Herbert's got Fed plots in every sand grain! The spice is a government mind control drug! Arrakis is a Deep State terraforming experiment! I drink spice coffee. It shows me the future. The future is full of conspiracies.",
+      "abilities": [
+        {
+          "name": "Spice Conspiracy",
+          "description": "Can see 'visions' that are mostly conspiracy theories. Claims Dune is a government psy-op about resource wars. Still reads every book. Has 47 theories about sandworms. All of them involve aliens."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 92,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "093",
+      "name": "Leto Lawnreides II",
+      "subtitle": "God-Emperor Lawn Care Specialist",
+      "type": "LAWN_DAD",
+      "rarity": "mythic",
+      "artwork": "/cards/lawn-legend-larry.svg",
+      "stats": {
+        "dadJoke": 95,
+        "grillSkill": 35,
+        "fixIt": 75,
+        "napPower": 65,
+        "remoteControl": 85,
+        "thermostat": 90,
+        "sockSandal": 80,
+        "beerSnob": 75
+      },
+      "flavorText": "Warner Bros. got 5G in my worm suit! Sandworms are government terraforming tools! The God-Emperor is a CIA clone operation! I've merged with sandworms. Now I'm a lawn god. The HOA fears me.",
+      "abilities": [
+        {
+          "name": "Worm Mastery",
+          "description": "Can control sand (and lawns) through sheer willpower. Claims Dune prophecies are government mind control. Still watches every adaptation. Has 47 theories about the spice. All of them involve chemtrails."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 93,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "094",
+      "name": "Duncan Idaho Dick-Hoe",
+      "subtitle": "Swordmaster Conspiracy Fighter",
+      "type": "FIX_IT_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/handyman-hank.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 50,
+        "fixIt": 80,
+        "napPower": 55,
+        "remoteControl": 70,
+        "thermostat": 75,
+        "sockSandal": 85,
+        "beerSnob": 65
+      },
+      "flavorText": "Dune's got CIA crysknives in every desert dune! Swordfighting is a government mind control technique! Duncan Idaho's a Deep State clone experiment! I practice swordfighting in my garage. With a broomstick. It's authentic.",
+      "abilities": [
+        {
+          "name": "Blade Conspiracy",
+          "description": "Can 'master' any weapon with minimal training. Claims Dune combat is a government martial arts psy-op. Still practices daily. Has 47 homemade weapons. All of them are dangerous."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 94,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "095",
+      "name": "Coke Can Cock-Crasher",
+      "subtitle": "Fizzy Conspiracy Fountain",
+      "type": "BBQ_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/grill-master-gary.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 40,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 65,
+        "thermostat": 70,
+        "sockSandal": 75,
+        "beerSnob": 85
+      },
+      "flavorText": "Big Soda's got mind control fizz in every goddamn sip! Coca-Cola is a government elixir to control the masses! The secret formula's a CIA mind control recipe! I drink only RC Cola. It's the last honest soda. Or is it?",
+      "abilities": [
+        {
+          "name": "Carbonation Conspiracy",
+          "description": "Can detect 'mind control chemicals' in any soda. Claims Coca-Cola is a global conspiracy to control humanity. Still drinks it weekly. Has 47 theories about the formula. All of them involve aliens."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 95,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "096",
+      "name": "Diet Dad Cola",
+      "subtitle": "Zero Calorie Zero Trust",
+      "type": "COOL_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/ipa-ian.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 35,
+        "fixIt": 45,
+        "napPower": 55,
+        "remoteControl": 70,
+        "thermostat": 75,
+        "sockSandal": 80,
+        "beerSnob": 90
+      },
+      "flavorText": "Coca-Cola's got 5G sweeteners! Diet Coke is a government weight control experiment! Aspartame causes brain tumors and mind control! I drink 12 Diet Cokes a day. It's research. Also I can't stop.",
+      "abilities": [
+        {
+          "name": "Aspartame Conspiracy",
+          "description": "Can detect 'dangerous chemicals' in any diet soda. Claims artificial sweeteners are government poison. Still drinks them. Has 47 theories about aspartame. All of them involve the Deep State."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 96,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "097",
+      "name": "Billy Bookshelf Boner-Banger",
+      "subtitle": "Shelf Assembly Conspiracy Specialist",
+      "type": "FIX_IT_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/handyman-hank.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 85,
+        "napPower": 50,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 75,
+        "beerSnob": 65
+      },
+      "flavorText": "IKEA's got alien spy cams in every Allen wrench! Bookshelves are government tracking devices! Swedish furniture is a Deep State mind control operation! I assemble furniture in my sleep. The instructions are in Swedish. It's a conspiracy.",
+      "abilities": [
+        {
+          "name": "Assembly Conspiracy",
+          "description": "Can assemble IKEA furniture while explaining how it's a government plot. Claims Swedish furniture is alien technology. Still buys everything from IKEA. Has 47 Billy bookshelves. All of them are 'compromised.'"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 97,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "098",
+      "name": "Malm Mattress Meat-Masher",
+      "subtitle": "Bedframe Assembly Nightmare",
+      "type": "COUCH_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/recliner-randy.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 25,
+        "fixIt": 90,
+        "napPower": 55,
+        "remoteControl": 65,
+        "thermostat": 75,
+        "sockSandal": 80,
+        "beerSnob": 60
+      },
+      "flavorText": "IKEA's flatpacks got 5G mind control! Mattresses are government sleep tracking devices! Swedish beds are CIA surveillance platforms! I've assembled 47 Malm beds. They all squeak. It's the tracking chips.",
+      "abilities": [
+        {
+          "name": "Setup Conspiracy",
+          "description": "Can assemble IKEA furniture flawlessly while ranting about government surveillance. Claims flatpack furniture is alien technology. Still buys Malm everything. Has 47 assembly tools. None of them work right."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 98,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "099",
+      "name": "Tailgate Tit-Tackler",
+      "subtitle": "Grillgate Conspiracy Warrior",
+      "type": "BBQ_BRAWLER",
+      "rarity": "rare",
+      "artwork": "/cards/grill-master-gary.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 90,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 80,
+        "beerSnob": 75
+      },
+      "flavorText": "Big Sports got spy beers at every goddamn stadium! Tailgating is a government mind control ritual! Sports bars are CIA recruitment hubs! I tailgate every game. The parking lot's my kingdom. The conspiracies flow like beer.",
+      "abilities": [
+        {
+          "name": "Party Conspiracy",
+          "description": "Can throw legendary tailgate parties while explaining sports conspiracies. Claims every game is fixed by the Illuminati. Still watches every game. Has 47 tailgate setups. All of them are 'bugged.'"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 99,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "100",
+      "name": "Martini Meat-Mixer",
+      "subtitle": "Gin Conspiracy Theorist",
+      "type": "SUBURBAN_SOCIALITE",
+      "rarity": "rare",
+      "artwork": "/cards/ipa-ian.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 40,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 70,
+        "thermostat": 80,
+        "sockSandal": 85,
+        "beerSnob": 90
+      },
+      "flavorText": "Big Country Club got spy olives in every glass! Martinis are government mind control cocktails! The country club's a CIA front for networking mind control! I drink martinis at 3pm. It's civilized. Also it helps with the conspiracies.",
+      "abilities": [
+        {
+          "name": "Shaken Conspiracy",
+          "description": "Can make perfect martinis while explaining how country clubs are government fronts. Claims every social event is a CIA operation. Still attends every one. Has 47 theories about gin. All of them involve mind control."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 100,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "101",
+      "name": "Fence Fuck-Face",
+      "subtitle": "Gossip Conspiracy Specialist",
+      "type": "NEIGHBORHOOD_NOSY",
+      "rarity": "rare",
+      "artwork": "/cards/lawn-legend-larry.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 70,
+        "thermostat": 75,
+        "sockSandal": 80,
+        "beerSnob": 65
+      },
+      "flavorText": "The Joneses are CIA snitches on my BBQ! Fence conversations are government surveillance operations! Everyone's a Deep State informant! I gossip over fences for 4 hours daily. It's research. The neighbors know everything. I know they know.",
+      "abilities": [
+        {
+          "name": "Rumor Conspiracy",
+          "description": "Can spread gossip faster than conspiracy theories. Claims every neighbor is a government plant. Still talks to everyone. Has 47 theories about the Joneses. All of them involve federal agents."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 101,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "102",
+      "name": "Skater Spawn Shawn",
+      "subtitle": "Deck Conspiracy Theorist",
+      "type": "SON_SPAWNS",
+      "rarity": "rare",
+      "artwork": "/cards/skateboard-scott.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 20,
+        "fixIt": 40,
+        "napPower": 60,
+        "remoteControl": 75,
+        "thermostat": 65,
+        "sockSandal": 85,
+        "beerSnob": 60
+      },
+      "flavorText": "Dad's a CIA stooge trackin' my TikTok! Skateboards are government tracking devices! Big Skate's got spy wheels with GPS chips! I skate to rebel. Also I have 47 skateboards. All of them are 'bugged.'",
+      "abilities": [
+        {
+          "name": "Grind Conspiracy",
+          "description": "Can perform skateboard tricks while explaining how parents are government plants. Claims skateboarding is a Deep State mind control sport. Still does it daily. Has 47 theories about dad. All of them involve the CIA."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 102,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "103",
+      "name": "Selfie Slut Sarah",
+      "subtitle": "Filter Conspiracy Theorist",
+      "type": "DAUGHTER_DINGBATS",
+      "rarity": "rare",
+      "artwork": "/cards/new-balance-nathan.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 20,
+        "fixIt": 30,
+        "napPower": 60,
+        "remoteControl": 80,
+        "thermostat": 70,
+        "sockSandal": 85,
+        "beerSnob": 65
+      },
+      "flavorText": "Dad's a patriarchal Fed trackin' my Insta! Selfie filters are government face recognition tools! Instagram's a CIA surveillance platform! I take 47 selfies daily. It's a statement. Also the filters hide the conspiracy.",
+      "abilities": [
+        {
+          "name": "Snap Conspiracy",
+          "description": "Can take perfect selfies while explaining how social media is a government plot. Claims every filter is a tracking device. Still posts daily. Has 47 theories about dad. All of them involve the patriarchy."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 103,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "104",
+      "name": "Uncle Useless Ulysses",
+      "subtitle": "Basement Conspiracy Bum",
+      "type": "UNCLE_UPROARS",
+      "rarity": "rare",
+      "artwork": "/cards/recliner-randy.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 60,
+        "napPower": 70,
+        "remoteControl": 65,
+        "thermostat": 75,
+        "sockSandal": 80,
+        "beerSnob": 70
+      },
+      "flavorText": "Thanksgiving's a gov plot to track my turkey! Old junk in basements is government mind control tech! Uncles are Deep State sleeper agents! I live in my sister's basement. It's temporary. Been temporary for 17 years.",
+      "abilities": [
+        {
+          "name": "Creep Conspiracy",
+          "description": "Can dispense 'uncle wisdom' that's mostly conspiracy theories. Claims family gatherings are government surveillance operations. Still shows up to every one. Has 47 theories about Thanksgiving. All of them involve tracking."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 104,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
+    },
+    {
+      "id": "105",
+      "name": "Mailman Meat-Molester",
+      "subtitle": "Package Conspiracy Specialist",
+      "type": "SUBURBAN_SIDEKICKS",
+      "rarity": "rare",
+      "artwork": "/cards/costco-craig.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 30,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 70,
+        "thermostat": 65,
+        "sockSandal": 75,
+        "beerSnob": 60
+      },
+      "flavorText": "USPS got Deep State trackers in my mailbag! Packages are government surveillance devices! Mail carriers are CIA operatives! I deliver mail for 12 hours a day. Every package is suspicious. I've opened 47 of them. 'Just checking.'",
+      "abilities": [
+        {
+          "name": "Delivery Conspiracy",
+          "description": "Can deliver mail while explaining how USPS is a government tracking system. Claims every package is bugged. Still delivers them. Has 47 theories about the mail. All of them involve federal agents."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 105,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 3
     }
   ]
 }
