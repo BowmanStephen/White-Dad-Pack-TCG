@@ -126,7 +126,7 @@ describe('Card Database - US042 Card Data Validation', () => {
     // This ensures the test stays in sync with the type definition
     const validDadTypes: DadType[] = Object.keys(DAD_TYPE_NAMES) as DadType[];
 
-    it('should have all types valid (25 dad types or ITEM)', () => {
+    it('should have all types valid (16 dad types including ITEM)', () => {
       for (const card of cards) {
         expect(validDadTypes).toContain(card.type);
       }

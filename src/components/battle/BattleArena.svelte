@@ -19,6 +19,13 @@
   let battleLog = $state<string[]>([]);
   let isBattling = $state(false);
 
+  // Animation states
+  let playerAttackAnimation = $state(false);
+  let opponentAttackAnimation = $state(false);
+  let damageNumbers = $state<Array<{ id: string; value: number; isPlayer: boolean; isCrit: boolean }>>([]);
+  let showVictoryScreen = $state(false);
+  let battlePhase = $state<'idle' | 'player_attack' | 'opponent_attack' | 'complete'>('idle');
+
   $effect(() => {
     const collectionData = collection.get();
     const cards: PackCard[] = [];
@@ -66,19 +73,77 @@
     }
   });
 
-  function startDuel() {
+  async function startDuel() {
     if (!selectedCard || !opponentCard || isBattling) return;
 
     isBattling = true;
+    battlePhase = 'player_attack';
+    battleResult = null;
+    battleLog = [];
+    damageNumbers = [];
+    showVictoryScreen = false;
+
+    // Player card attacks
+    playerAttackAnimation = true;
+    await sleep(400);
+    playerAttackAnimation = false;
+
+    // Parse battle log for damage numbers
     const result = simulateBattle(selectedCard, opponentCard);
-    battleResult = result;
     battleLog = result.log;
+    battleResult = result;
+
+    // Extract damage numbers from battle log
+    const damagePattern = /→ (\d+) damage/g;
+    let match;
+    let isPlayerTurn = true;
+    while ((match = damagePattern.exec(result.log.join('\n'))) !== null) {
+      const damage = parseInt(match[1]);
+      const isCrit = result.log.some(log =>
+        log.includes(`${damage} damage`) && log.includes('CRITICAL')
+      );
+
+      damageNumbers.push({
+        id: Math.random().toString(36),
+        value: damage,
+        isPlayer: isPlayerTurn,
+        isCrit
+      });
+      isPlayerTurn = !isPlayerTurn;
+    }
+
+    // Opponent attacks back
+    await sleep(300);
+    battlePhase = 'opponent_attack';
+    opponentAttackAnimation = true;
+    await sleep(400);
+    opponentAttackAnimation = false;
+
+    // Show result
+    await sleep(500);
+    battlePhase = 'complete';
+    showVictoryScreen = true;
+
+    // Clear damage numbers after animation
+    setTimeout(() => {
+      damageNumbers = [];
+    }, 3000);
+
     isBattling = false;
+  }
+
+  function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   function resetDuel() {
     battleResult = null;
     battleLog = [];
+    battlePhase = 'idle';
+    showVictoryScreen = false;
+    damageNumbers = [];
+    playerAttackAnimation = false;
+    opponentAttackAnimation = false;
   }
 
   let hasEnoughCards = $derived(availableCards.length > 1);
@@ -102,11 +167,18 @@
     <div class="duel-stage">
       <div class="duel-slot">
         <h2>Your Card</h2>
-        {#if selectedCard}
-          <Card card={selectedCard} size="sm" interactive={false} showBack={false} />
-        {:else}
-          <div class="card-placeholder">Select a card</div>
-        {/if}
+        <div class="card-container" class:attack-animation={playerAttackAnimation}>
+          {#if selectedCard}
+            <Card card={selectedCard} size="sm" interactive={false} showBack={false} />
+            {#each damageNumbers.filter(d => d.isPlayer) as damage}
+              <div class="damage-number" class:critical={damage.isCrit}>
+                {damage.isCrit ? '💥 ' : ''}{damage.value}
+              </div>
+            {/each}
+          {:else}
+            <div class="card-placeholder">Select a card</div>
+          {/if}
+        </div>
       </div>
 
       <div class="duel-divider">
@@ -116,11 +188,18 @@
 
       <div class="duel-slot">
         <h2>Opponent</h2>
-        {#if opponentCard}
-          <Card card={opponentCard} size="sm" interactive={false} showBack={false} />
-        {:else}
-          <div class="card-placeholder">Roll opponent</div>
-        {/if}
+        <div class="card-container" class:attack-animation={opponentAttackAnimation}>
+          {#if opponentCard}
+            <Card card={opponentCard} size="sm" interactive={false} showBack={false} />
+            {#each damageNumbers.filter(d => !d.isPlayer) as damage}
+              <div class="damage-number" class:critical={damage.isCrit}>
+                {damage.isCrit ? '💥 ' : ''}{damage.value}
+              </div>
+            {/each}
+          {:else}
+            <div class="card-placeholder">Roll opponent</div>
+          {/if}
+        </div>
       </div>
     </div>
 
@@ -148,6 +227,43 @@
           {#each battleLog as entry}
             <div class="log-entry">{entry}</div>
           {/each}
+        </div>
+      </div>
+    {/if}
+
+    {#if showVictoryScreen && battleResult}
+      <div class="victory-screen" class:win={playerWins} class:loss={!playerWins}>
+        <div class="victory-content">
+          <div class="victory-icon">
+            {#if playerWins}
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" fill="url(#victory-gradient)" />
+                <path d="M35 60L55 80L85 40" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="victory-gradient" x1="0" y1="0" x2="120" y2="120">
+                    <stop offset="0%" stop-color="#fbbf24" />
+                    <stop offset="100%" stop-color="#f59e0b" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            {:else}
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" fill="url(#defeat-gradient)" />
+                <path d="M35 40L85 80M85 40L35 80" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="defeat-gradient" x1="0" y1="0" x2="120" y2="120">
+                    <stop offset="0%" stop-color="#ef4444" />
+                    <stop offset="100%" stop-color="#dc2626" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            {/if}
+          </div>
+          <h2 class="victory-title">{playerWins ? 'VICTORY!' : 'DEFEAT'}</h2>
+          <p class="victory-subtitle">
+            {battleResult.winner.name} wins in {battleResult.turns} turns!
+          </p>
+          <button class="victory-button" on:click={resetDuel}>Battle Again</button>
         </div>
       </div>
     {/if}
@@ -428,6 +544,255 @@
       opacity: 1;
       transform: scale(1.05);
     }
+  }
+
+  /* Card container for positioning damage numbers */
+  .card-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Attack animation - lunge forward */
+  .attack-animation {
+    animation: attack-lunge 0.4s ease-out;
+  }
+
+  @keyframes attack-lunge {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(30px) scale(1.1);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  /* Damage number popup */
+  .damage-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ef4444;
+    text-shadow:
+      0 0 10px rgba(239, 68, 68, 0.8),
+      0 0 20px rgba(239, 68, 68, 0.6),
+      2px 2px 0 rgba(0, 0, 0, 0.5);
+    animation: damage-popup 2s ease-out forwards;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .damage-number.critical {
+    font-size: 2.5rem;
+    color: #fbbf24;
+    text-shadow:
+      0 0 15px rgba(251, 191, 36, 1),
+      0 0 30px rgba(251, 191, 36, 0.8),
+      0 0 45px rgba(251, 191, 36, 0.6),
+      2px 2px 0 rgba(0, 0, 0, 0.5);
+    animation: critical-popup 2.5s ease-out forwards;
+  }
+
+  @keyframes damage-popup {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, -80%) scale(1.2);
+    }
+    40% {
+      transform: translate(-50%, -100%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -150%) scale(0.8);
+    }
+  }
+
+  @keyframes critical-popup {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.3);
+    }
+    15% {
+      opacity: 1;
+      transform: translate(-50%, -80%) scale(1.5);
+    }
+    30% {
+      transform: translate(-50%, -100%) scale(1.3) rotate(-5deg);
+    }
+    50% {
+      transform: translate(-50%, -120%) scale(1.2) rotate(5deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -180%) scale(0.9) rotate(0deg);
+    }
+  }
+
+  /* Victory/Defeat screen overlay */
+  .victory-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    animation: fade-in 0.5s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .victory-content {
+    text-align: center;
+    animation: scale-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .victory-icon {
+    animation: bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .victory-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    margin: 1.5rem 0 1rem;
+    letter-spacing: 0.05em;
+    animation: title-pop 0.8s ease-out 0.3s both;
+  }
+
+  .victory-screen.win .victory-title {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 4px 12px rgba(251, 191, 36, 0.5));
+  }
+
+  .victory-screen.loss .victory-title {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 4px 12px rgba(239, 68, 68, 0.5));
+  }
+
+  @keyframes title-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.8) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .victory-subtitle {
+    font-size: 1.25rem;
+    color: #e2e8f0;
+    margin-bottom: 2rem;
+    animation: fade-slide-up 0.6s ease-out 0.5s both;
+  }
+
+  @keyframes fade-slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .victory-button {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+    animation: button-appear 0.5s ease-out 0.7s both;
+  }
+
+  .victory-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(251, 191, 36, 0.6);
+  }
+
+  .victory-button:active {
+    transform: translateY(-1px) scale(1.02);
+  }
+
+  @keyframes button-appear {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .victory-screen.win {
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0%, rgba(0, 0, 0, 0.85) 70%);
+  }
+
+  .victory-screen.loss {
+    background: radial-gradient(circle at center, rgba(239, 68, 68, 0.2) 0%, rgba(0, 0, 0, 0.85) 70%);
   }
 
   @media (max-width: 720px) {

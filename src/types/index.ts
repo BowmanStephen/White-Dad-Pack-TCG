@@ -1,24 +1,34 @@
 // Card Rarity Types
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
-// Dad Type Categories - Core archetypes only (Season 1)
+// Dad Type Categories - All types used in card database
 export type DadType =
-  // Core Dad Archetypes
-  | 'BBQ_DAD'
-  | 'FIX_IT_DAD'
-  | 'GOLF_DAD'
-  | 'COUCH_DAD'
-  | 'LAWN_DAD'
-  | 'CAR_DAD'
-  | 'OFFICE_DAD'
-  | 'COOL_DAD'
-  | 'COACH_DAD'
-  | 'CHEF_DAD'
-  | 'HOLIDAY_DAD'
-  | 'WAREHOUSE_DAD'
-  | 'VINTAGE_DAD'
-  | 'FASHION_DAD'
-  | 'TECH_DAD'
+  // Core Dad Archetypes (internal names)
+  | 'BBQ_DICKTATOR'
+  | 'FIX_IT_FUCKBOY'
+  | 'GOLF_GONAD'
+  | 'COUCH_CUMMANDER'
+  | 'LAWN_LUNATIC'
+  | 'CAR_COCK'
+  | 'OFFICE_ORGASMS'
+  | 'COOL_CUCKS'
+  | 'COACH_CUMSTERS'
+  | 'CHEF_CUMSTERS'
+  | 'HOLIDAY_HORNDOGS'
+  | 'WAREHOUSE_WANKERS'
+  | 'VINTAGE_VAGABONDS'
+  | 'FASHION_FUCK'
+  | 'TECH_TWATS'
+  // Extended Types
+  | 'GAMER_GIZZARDS'
+  | 'BBQ_BRAWLER'
+  | 'SUBURBAN_SOCIALITE'
+  | 'NEIGHBORHOOD_NOSY'
+  // Family Variants
+  | 'SON_SPAWNS'
+  | 'DAUGHTER_DINGBATS'
+  | 'UNCLE_UPROARS'
+  | 'SUBURBAN_SIDEKICKS'
   // Special Card Type
   | 'ITEM';
 
@@ -462,43 +472,59 @@ export const HOLO_DROP_RATE = {
   note: 'Applies to all cards regardless of rarity'
 };
 
-// Dad Type Display Names
+// Dad Type Display Names (clean names for UI)
 export const DAD_TYPE_NAMES: Record<DadType, string> = {
-  BBQ_DAD: 'BBQ Dad',
-  FIX_IT_DAD: 'Fix-It Dad',
-  GOLF_DAD: 'Golf Dad',
-  COUCH_DAD: 'Couch Dad',
-  LAWN_DAD: 'Lawn Dad',
-  CAR_DAD: 'Car Dad',
-  OFFICE_DAD: 'Office Dad',
-  COOL_DAD: 'Cool Dad',
-  COACH_DAD: 'Coach Dad',
-  CHEF_DAD: 'Chef Dad',
-  HOLIDAY_DAD: 'Holiday Dad',
-  WAREHOUSE_DAD: 'Warehouse Dad',
-  VINTAGE_DAD: 'Vintage Dad',
-  FASHION_DAD: 'Fashion Dad',
-  TECH_DAD: 'Tech Dad',
+  BBQ_DICKTATOR: 'BBQ Dad',
+  FIX_IT_FUCKBOY: 'Fix-It Dad',
+  GOLF_GONAD: 'Golf Dad',
+  COUCH_CUMMANDER: 'Couch Dad',
+  LAWN_LUNATIC: 'Lawn Dad',
+  CAR_COCK: 'Car Dad',
+  OFFICE_ORGASMS: 'Office Dad',
+  COOL_CUCKS: 'Cool Dad',
+  COACH_CUMSTERS: 'Coach Dad',
+  CHEF_CUMSTERS: 'Chef Dad',
+  HOLIDAY_HORNDOGS: 'Holiday Dad',
+  WAREHOUSE_WANKERS: 'Warehouse Dad',
+  VINTAGE_VAGABONDS: 'Vintage Dad',
+  FASHION_FUCK: 'Fashion Dad',
+  TECH_TWATS: 'Tech Dad',
+  GAMER_GIZZARDS: 'Gamer Dad',
+  BBQ_BRAWLER: 'BBQ Brawler',
+  SUBURBAN_SOCIALITE: 'Socialite',
+  NEIGHBORHOOD_NOSY: 'Nosy Neighbor',
+  SON_SPAWNS: 'Son',
+  DAUGHTER_DINGBATS: 'Daughter',
+  UNCLE_UPROARS: 'Uncle',
+  SUBURBAN_SIDEKICKS: 'Sidekick',
   ITEM: 'Item',
 };
 
 // Dad Type Icons (emoji)
 export const DAD_TYPE_ICONS: Record<DadType, string> = {
-  BBQ_DAD: '🔥',
-  FIX_IT_DAD: '🛠️',
-  GOLF_DAD: '🏌️',
-  COUCH_DAD: '📺',
-  LAWN_DAD: '🌱',
-  CAR_DAD: '🚗',
-  OFFICE_DAD: '👔',
-  COOL_DAD: '🎸',
-  COACH_DAD: '🎒',
-  CHEF_DAD: '👨‍🍳',
-  HOLIDAY_DAD: '🎄',
-  WAREHOUSE_DAD: '📦',
-  VINTAGE_DAD: '🔧',
-  FASHION_DAD: '👟',
-  TECH_DAD: '💻',
+  BBQ_DICKTATOR: '🔥',
+  FIX_IT_FUCKBOY: '🛠️',
+  GOLF_GONAD: '🏌️',
+  COUCH_CUMMANDER: '📺',
+  LAWN_LUNATIC: '🌱',
+  CAR_COCK: '🚗',
+  OFFICE_ORGASMS: '👔',
+  COOL_CUCKS: '🎸',
+  COACH_CUMSTERS: '🎒',
+  CHEF_CUMSTERS: '👨‍🍳',
+  HOLIDAY_HORNDOGS: '🎄',
+  WAREHOUSE_WANKERS: '📦',
+  VINTAGE_VAGABONDS: '🔧',
+  FASHION_FUCK: '👟',
+  TECH_TWATS: '💻',
+  GAMER_GIZZARDS: '🎮',
+  BBQ_BRAWLER: '🍖',
+  SUBURBAN_SOCIALITE: '🍷',
+  NEIGHBORHOOD_NOSY: '👀',
+  SON_SPAWNS: '👦',
+  DAUGHTER_DINGBATS: '👧',
+  UNCLE_UPROARS: '🧔',
+  SUBURBAN_SIDEKICKS: '🐕',
   ITEM: '🎁',
 };
 

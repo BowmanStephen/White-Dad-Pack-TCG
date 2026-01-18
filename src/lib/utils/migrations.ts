@@ -1,15 +1,15 @@
 /**
- * DadDeck™ Collection Storage Utilities
+ * DadDeck™ Collection Storage
  *
- * Simple JSON storage with Date handling for localStorage persistence.
- * No schema versioning - just clean encode/decode with Date serialization.
+ * Simple JSON storage with Date serialization for localStorage.
+ * No versioning - just encode/decode with Date handling.
  */
 
-import type { Collection } from '@/types';
-import { createDateEncoder } from './encoders';
+import type { Collection, Rarity } from '@/types';
+import { safeJsonParse } from './safe-parse';
 
 /**
- * Create a default collection for new users or fallback
+ * Create a default empty collection
  */
 export function createDefaultCollection(): Collection {
   return {
@@ -34,29 +34,112 @@ export function createDefaultCollection(): Collection {
 }
 
 /**
+ * Validate collection structure
+ */
+export function validateCollection(data: unknown): data is Collection {
+  if (!data || typeof data !== 'object') return false;
+  
+  const obj = data as Record<string, unknown>;
+  if (!Array.isArray(obj.packs)) return false;
+  if (!obj.metadata || typeof obj.metadata !== 'object') return false;
+
+  const meta = obj.metadata as Record<string, unknown>;
+  if (typeof meta.totalPacksOpened !== 'number') return false;
+  if (!Array.isArray(meta.uniqueCards)) return false;
+
+  // Validate each pack has id and cards array
+  for (const pack of obj.packs as unknown[]) {
+    if (!pack || typeof pack !== 'object') return false;
+    const p = pack as Record<string, unknown>;
+    if (!p.id || !Array.isArray(p.cards)) return false;
+  }
+
+  return true;
+}
+
+/**
+ * Convert Date objects to ISO strings for JSON storage
+ */
+function encodeDates(obj: unknown): unknown {
+  if (obj instanceof Date) {
+    return obj.toISOString();
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(encodeDates);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = encodeDates(value);
+    }
+    return result;
+  }
+  return obj;
+}
+
+/**
+ * Convert ISO date strings back to Date objects
+ */
+function decodeDates(obj: unknown): unknown {
+  if (typeof obj === 'string') {
+    // Check if it's an ISO date string
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj)) {
+      const date = new Date(obj);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(decodeDates);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = decodeDates(value);
+    }
+    return result;
+  }
+  return obj;
+}
+
+/**
  * Create simple encoder for Nanostores persistentAtom
- * Just handles JSON encode/decode with Date serialization
  */
 export function createMigrationEncoder() {
-  const dateEncoder = createDateEncoder<Collection>({
-    dateFields: ['metadata.created', 'metadata.lastOpenedAt', 'packs.openedAt'],
-  });
-
   return {
     encode(data: Collection): string {
-      return dateEncoder.encode(data);
+      return JSON.stringify(encodeDates(data));
     },
 
     decode(str: string): Collection {
       try {
-        const data = dateEncoder.decode(str);
-        if (validateCollection(data)) {
-          return data;
+        const parsed = safeJsonParse<unknown>(str);
+        
+        if (!parsed) {
+          console.warn('[Storage] Invalid data, returning default collection');
+          return createDefaultCollection();
         }
-        console.warn('[Storage] Invalid collection structure, returning default');
-        return createDefaultCollection();
+
+        // Handle legacy versioned format
+        let data = parsed;
+        if (typeof parsed === 'object' && parsed !== null && 'version' in parsed && 'data' in parsed) {
+          data = (parsed as { data: unknown }).data;
+        }
+
+        // Decode dates
+        const decoded = decodeDates(data) as Collection;
+
+        // Validate structure
+        if (!validateCollection(decoded)) {
+          console.warn('[Storage] Invalid collection structure, returning default');
+          return createDefaultCollection();
+        }
+
+        return decoded;
       } catch (error) {
-        console.error('[Storage] Failed to decode collection:', error);
+        console.error('[Storage] Decode error:', error);
         return createDefaultCollection();
       }
     },
@@ -64,73 +147,42 @@ export function createMigrationEncoder() {
 }
 
 /**
- * Validate collection structure
- */
-export function validateCollection(data: unknown): data is Collection {
-  if (!data || typeof data !== 'object') {
-    return false;
-  }
-
-  const obj = data as Record<string, unknown>;
-
-  if (!Array.isArray(obj.packs)) {
-    return false;
-  }
-
-  if (!obj.metadata || typeof obj.metadata !== 'object') {
-    return false;
-  }
-
-  const meta = obj.metadata as Record<string, unknown>;
-  if (typeof meta.totalPacksOpened !== 'number') {
-    return false;
-  }
-
-  if (!Array.isArray(meta.uniqueCards)) {
-    return false;
-  }
-
-  for (const pack of obj.packs as unknown[]) {
-    if (!pack || typeof pack !== 'object') {
-      return false;
-    }
-    const p = pack as Record<string, unknown>;
-    if (!p.id || !Array.isArray(p.cards)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/**
- * Export collection data for backup/transfer
+ * Export collection data for backup
  */
 export function exportCollection(collection: Collection): string {
-  return JSON.stringify(collection, null, 2);
+  return JSON.stringify(encodeDates(collection), null, 2);
 }
 
 /**
- * Import collection data from backup/transfer
+ * Import collection data from backup
  */
 export function importCollection(
   jsonData: string
 ): { success: boolean; error?: string; collection?: Collection } {
   try {
-    const data = JSON.parse(jsonData);
+    const parsed = safeJsonParse<unknown>(jsonData);
 
-    if (!validateCollection(data)) {
-      return { success: false, error: 'Invalid collection data structure' };
+    if (!parsed) {
+      return { success: false, error: 'Failed to parse JSON' };
     }
 
-    return {
-      success: true,
-      collection: data,
-    };
+    // Handle versioned format
+    let data = parsed;
+    if (typeof parsed === 'object' && parsed !== null && 'version' in parsed && 'data' in parsed) {
+      data = (parsed as { data: unknown }).data;
+    }
+
+    const decoded = decodeDates(data) as Collection;
+
+    if (!validateCollection(decoded)) {
+      return { success: false, error: 'Invalid collection structure' };
+    }
+
+    return { success: true, collection: decoded };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to parse JSON',
+      error: error instanceof Error ? error.message : 'Unknown import error',
     };
   }
 }

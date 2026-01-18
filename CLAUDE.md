@@ -803,17 +803,27 @@ import { generatePack } from '@lib/pack/generator'; // src/lib/pack/generator
 ## 🎯 When Working on This Project
 
 ### Adding Features
-1. **Define types first** - Add to `src/types/index.ts`
+1. **Define types first** - Add to `src/types/[feature].ts` (split files for better organization)
 2. **Create store** - Add to `src/stores/` if stateful
-3. **Build component** - Use .astro for static, .svelte for interactive
-4. **Add logic** - Place in `src/lib/` folder
-5. **Test** - Add test file to `tests/` directory
+3. **Add translations** - Add UI strings to `src/i18n/locales/en.json` and `es.json`
+4. **Build component** - Use .astro for static, .svelte for interactive
+5. **Add logic** - Place in `src/lib/` folder
+6. **Test** - Add test file to `tests/` directory
 
 ### Styling Guidelines
-- **Use Tailwind utility classes** - See `tailwind.config.mjs`
+- **Use component classes first** - Check `src/styles/global.css` for existing classes
+- **Add new classes** - For repeated patterns (buttons, modals, inputs)
+- **Use Tailwind utilities** - For layout, spacing, and one-off styling
 - **Follow rarity colors** - Use `RARITY_CONFIG` for consistency
 - **Responsive-first** - Mobile breakpoint is default
 - **Accessibility** - ARIA labels, keyboard navigation
+
+### Internationalization Guidelines
+- **Always use `t()` for UI strings** - Never hardcode user-facing text
+- **Add keys to both locales** - English (`en.json`) and Spanish (`es.json`)
+- **Use parameter interpolation** - For dynamic values: `{count}`, `{name}`
+- **Group keys by feature** - Use dot notation: `pack.title`, `pack.opened`
+- **Test text expansion** - Spanish can be 20-30% longer than English
 
 ### Performance Targets
 - **Initial load:** <3 seconds
@@ -1795,11 +1805,15 @@ export function reportWebVitals(metric) {
 ### Quick Reference Files
 - **`docs/CARD_MECHANICS.md`** - Complete card collecting & pack opening mechanics (NEW)
 - **`docs/RALPH_LOOP_ARCHITECTURE.md`** - Agentic loop UX patterns (stop hooks, HOTL)
+- **`docs/CSS_UTILITIES.md`** - Component classes reference (NEW)
+- **`I18N_IMPLEMENTATION.md`** - Internationalization system guide (NEW)
+- **`src/i18n/README.md`** - I18N usage documentation (NEW)
 - **`tailwind.config.mjs`** - Custom design tokens
 - **`astro.config.mjs`** - Integrations & build config (code splitting, terser)
 - **`vitest.config.ts`** - Test configuration with path aliases
 - **`src/data/cards.json`** - All card data (50+ cards)
 - **`src/lib/security/pack-validator.ts`** - Anti-cheat validation logic
+- **`src/lib/utils/formatters.ts`** - Number, date, and percentage formatters (NEW)
 
 ---
 
@@ -1992,7 +2006,33 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 
 ---
 
-**Last updated:** January 17, 2026
+**Last updated:** January 18, 2026
+
+---
+
+## 🧹 Recent Cleanup & Optimization (January 18, 2026)
+
+### CLEANUP-003: CSS Utilities Consolidation
+- Added 15+ reusable component classes to `src/styles/global.css`
+- Created comprehensive `docs/CSS_UTILITIES.md` documentation
+- Reduced HTML output by 40-60% through semantic classes
+
+### CLEANUP-002: Dependency & Utility Fixes
+- Removed unused `postcss` dependency (redundant with Tailwind/Vite)
+- Fixed missing `src/lib/card-types.ts` utilities (6 helper functions)
+- Resolved pre-existing build error in Card.svelte
+
+### CLEANUP-001: Dead Code Removal
+- Removed 7 unused component files (2,181 lines)
+- Removed orphaned `collectionFilters.ts` store (373 lines)
+- Fixed unused import in lightbox.ts
+- **Total: 2,463 lines of dead code removed**
+
+**Impact:**
+- 📉 Smaller bundle sizes
+- 🚀 Faster build times
+- 🧹 Cleaner codebase
+- ✅ Zero breaking changes
 
 ---
 

@@ -291,7 +291,7 @@ describe('Collection Storage', () => {
       const result = importCollection(JSON.stringify({ invalid: 'data' }));
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe('Invalid collection data structure');
+      expect(result.error).toBe('Invalid collection structure');
     });
   });
 });
