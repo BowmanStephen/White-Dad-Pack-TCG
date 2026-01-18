@@ -169,22 +169,48 @@ export function generateLeaderboard(config: {
   let userStats = userProfile?.stats || generatePlayerStats();
   const filteredUserStats = filterStatsByTimePeriod(userStats, timePeriod);
 
-  // Generate entries
-  for (let i = 0; i < ENTRIES_PER_PAGE; i++) {
-    const playerId = generatePlayerId();
-    const pseudonym = generatePseudonym();
-    const rawStats = generatePlayerStats();
-    const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
+  // Determine number of entries to generate based on scope
+  const numEntries = scope === 'friends' && userProfile
+    ? Math.min(ENTRIES_PER_PAGE, userProfile.friends.length + 1) // Friends + user
+    : ENTRIES_PER_PAGE;
 
-    entries.push(
-      generateLeaderboardEntry(
-        playerId,
-        pseudonym,
-        filteredStats,
-        i + 1,
-        false
-      )
-    );
+  // Generate entries (only friends if scope is friends)
+  if (scope === 'friends' && userProfile && userProfile.friends.length > 0) {
+    // Generate entries for friends only
+    for (let i = 0; i < userProfile.friends.length; i++) {
+      const playerId = userProfile.friends[i];
+      const pseudonym = generatePseudonym();
+      const rawStats = generatePlayerStats();
+      const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
+
+      entries.push(
+        generateLeaderboardEntry(
+          playerId,
+          pseudonym,
+          filteredStats,
+          i + 1,
+          false
+        )
+      );
+    }
+  } else {
+    // Generate entries for global scope
+    for (let i = 0; i < numEntries; i++) {
+      const playerId = generatePlayerId();
+      const pseudonym = generatePseudonym();
+      const rawStats = generatePlayerStats();
+      const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
+
+      entries.push(
+        generateLeaderboardEntry(
+          playerId,
+          pseudonym,
+          filteredStats,
+          i + 1,
+          false
+        )
+      );
+    }
   }
 
   // Sort entries by category stat value

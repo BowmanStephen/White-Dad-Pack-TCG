@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import LeaderboardFilters from './LeaderboardFilters.svelte';
   import LeaderboardList from './LeaderboardList.svelte';
+  import FriendLeaderboard from './FriendLeaderboard.svelte';
   import {
     currentLeaderboard,
     isLoading,
@@ -36,6 +37,10 @@
     const unsubscribeError = error.subscribe((value) => {
       errorMessage = value;
     });
+
+    // Add some mock friends to the user profile
+    const mockFriendIds = Array.from({ length: 15 }, (_, i) => `friend_${i}`);
+    userProfile.friends = mockFriendIds;
 
     // Load initial leaderboard if not present
     if (!leaderboard) {
@@ -140,27 +145,33 @@
 
     <!-- Leaderboard Main Content -->
     <main class="leaderboard-main">
-      <div class="leaderboard-header">
-        <h2>
-          {LEADERBOARD_CATEGORIES[currentCategory.get()].label}
-        </h2>
-        <div class="header-meta">
-          <span class="time-period">
-            {TIME_PERIODS[currentTimePeriod.get()].label}
-          </span>
-          <span class="scope">
-            {currentScope.get() === 'global' ? '🌍 Global' : '👥 Friends'}
-          </span>
-        </div>
-      </div>
-
-      {#if leaderboard}
-        <LeaderboardList {leaderboard} loading={loading} />
+      {#if currentScope.get() === 'friends'}
+        <!-- Friend Leaderboard View -->
+        <FriendLeaderboard />
       {:else}
-        <div class="loading-state">
-          <div class="spinner"></div>
-          <p>Loading leaderboard...</p>
+        <!-- Global Leaderboard View -->
+        <div class="leaderboard-header">
+          <h2>
+            {LEADERBOARD_CATEGORIES[currentCategory.get()].label}
+          </h2>
+          <div class="header-meta">
+            <span class="time-period">
+              {TIME_PERIODS[currentTimePeriod.get()].label}
+            </span>
+            <span class="scope">
+              🌍 Global
+            </span>
+          </div>
         </div>
+
+        {#if leaderboard}
+          <LeaderboardList {leaderboard} loading={loading} />
+        {:else}
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading leaderboard...</p>
+          </div>
+        {/if}
       {/if}
     </main>
   </div>
