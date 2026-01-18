@@ -185,6 +185,24 @@ if (typeof window !== 'undefined') {
 export const discoveredRecipes = discoveredRecipesStorage;
 
 /**
+ * Favorite recipes - stores which recipes the player has favorited.
+ * Uses SSR-safe localStorage access.
+ */
+const favoriteRecipesStorage = atom<Set<string>>(
+  new Set(getStorageValue<string[]>('daddeck-favorite-recipes', []))
+);
+
+// Subscribe to save changes to localStorage (only on client)
+let favoriteRecipesUnsub: (() => void) | null = null;
+if (typeof window !== 'undefined') {
+  favoriteRecipesUnsub = favoriteRecipesStorage.subscribe((recipes) => {
+    setStorageValue('daddeck-favorite-recipes', [...recipes]);
+  });
+}
+
+export const favoriteRecipes = favoriteRecipesStorage;
+
+/**
  * Crafting session - current active crafting operation.
  */
 export const craftingSession = atom<CraftingSession | null>(null);
@@ -239,6 +257,36 @@ export const allRecipesWithStatus = computed(discoveredRecipesList, (discovered)
     isDiscovered: discovered.includes(recipe.id),
     hint: RECIPE_HINTS[recipe.id] || '',
   }))
+);
+
+/**
+ * Favorite recipes list (computed from favoriteRecipes Set).
+ */
+export const favoriteRecipesList = computed(favoriteRecipes, (set) => [...set]);
+
+/**
+ * Discovered recipes with favorite status (computed).
+ */
+export const discoveredRecipesWithFavoriteStatus = computed(
+  [discoveredRecipesList, favoriteRecipesList],
+  (discovered, favorites) =>
+    Object.values(CRAFTING_RECIPES)
+      .filter((recipe) => discovered.includes(recipe.id))
+      .map((recipe) => ({
+        ...recipe,
+        isFavorite: favorites.includes(recipe.id),
+      }))
+);
+
+/**
+ * Favorite recipes only (computed).
+ */
+export const favoriteRecipesOnly = computed(
+  [discoveredRecipesList, favoriteRecipesList],
+  (discovered, favorites) =>
+    Object.values(CRAFTING_RECIPES).filter(
+      (recipe) => discovered.includes(recipe.id) && favorites.includes(recipe.id)
+    )
 );
 
 // ============================================================================
@@ -446,6 +494,51 @@ export function getUndiscoveredRecipesWithHints(): Array<{ recipe: CraftingRecip
       recipe,
       hint: RECIPE_HINTS[recipe.id] || '',
     }));
+}
+
+/**
+ * Toggle recipe favorite status.
+ */
+export function toggleRecipeFavorite(recipeId: string): void {
+  const favorites = favoriteRecipes.get();
+  const newFavorites = new Set(favorites);
+
+  if (newFavorites.has(recipeId)) {
+    newFavorites.delete(recipeId);
+  } else {
+    newFavorites.add(recipeId);
+  }
+
+  favoriteRecipes.set(newFavorites);
+}
+
+/**
+ * Check if a recipe is favorited.
+ */
+export function isRecipeFavorite(recipeId: string): boolean {
+  return favoriteRecipes.get().has(recipeId);
+}
+
+/**
+ * Add recipe to favorites.
+ */
+export function addRecipeToFavorites(recipeId: string): void {
+  const favorites = favoriteRecipes.get();
+  if (!favorites.has(recipeId)) {
+    favoriteRecipes.set(new Set(favorites).add(recipeId));
+  }
+}
+
+/**
+ * Remove recipe from favorites.
+ */
+export function removeRecipeFromFavorites(recipeId: string): void {
+  const favorites = favoriteRecipes.get();
+  if (favorites.has(recipeId)) {
+    const newFavorites = new Set(favorites);
+    newFavorites.delete(recipeId);
+    favoriteRecipes.set(newFavorites);
+  }
 }
 
 // ============================================================================
