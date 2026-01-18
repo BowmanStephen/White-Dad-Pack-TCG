@@ -16,24 +16,27 @@
 
   // Subscribe to modalOpen store (with cleanup)
   let unsubscribe: (() => void) | null = null;
-  if (typeof window !== 'undefined') {
-    unsubscribe = modalOpen.subscribe((value) => {
-      isOpen = value === 'share';
-      if (isOpen) {
-        // Store the previously focused element
-        previouslyFocusedElement = document.activeElement as HTMLElement;
-        // Focus the modal
-        setTimeout(() => {
-          modalElement?.focus();
-        }, 50);
-      } else if (previouslyFocusedElement) {
-        // Return focus to the previously focused element
-        setTimeout(() => {
-          previouslyFocusedElement?.focus();
-        }, 50);
-      }
-    });
-  }
+
+  onMount(() => {
+    if (typeof window !== 'undefined') {
+      unsubscribe = modalOpen.subscribe((value) => {
+        isOpen = value === 'share';
+        if (isOpen) {
+          // Store the previously focused element
+          previouslyFocusedElement = document.activeElement as HTMLElement;
+          // Focus the modal
+          setTimeout(() => {
+            modalElement?.focus();
+          }, 50);
+        } else if (previouslyFocusedElement) {
+          // Return focus to the previously focused element
+          setTimeout(() => {
+            previouslyFocusedElement?.focus();
+          }, 50);
+        }
+      });
+    }
+  });
 
   // Clean up subscription on destroy
   onDestroy(() => {
