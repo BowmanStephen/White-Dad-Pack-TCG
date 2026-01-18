@@ -12,8 +12,14 @@
   let canvas: HTMLCanvasElement;
   let imageUrl: string = '';
   let isGenerating = true;
+  let useFallback = false;
 
   function generateArt() {
+    if (card.artwork && !useFallback) {
+      isGenerating = false;
+      return;
+    }
+
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -46,20 +52,33 @@
   });
 
   // Regenerate if card props change
-  $: if (card.id && canvas) {
+  $: if (card.id && (canvas || card.artwork)) {
+    if (card.artwork) useFallback = false;
     generateArt();
   }
 </script>
 
-<div class="generative-art-container" style="width: {width}px; height: {height}px;">
+<div class="generative-art-container relative overflow-hidden" style="width: {width}px; height: {height}px;">
   <canvas
     bind:this={canvas}
     {width}
     {height}
-    class="generative-card-art"
-    class:loading={isGenerating}
+    class="generative-card-art absolute inset-0 w-full h-full"
+    class:loading={isGenerating && !card.artwork}
     aria-label={alt}
   ></canvas>
+
+  {#if card.artwork && !useFallback}
+    <img
+      src={card.artwork}
+      alt={alt}
+      class="absolute inset-0 z-10 w-full h-full object-cover"
+      on:error={() => {
+        useFallback = true;
+        generateArt();
+      }}
+    />
+  {/if}
 </div>
 
 <style>

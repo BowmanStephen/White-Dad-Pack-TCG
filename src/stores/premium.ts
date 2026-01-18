@@ -69,3 +69,22 @@ export function simulatePremiumPackPurchase() {
 export function usePremiumPack(_packType: PackType): boolean {
   return false;
 }
+
+/**
+ * Stub: Premium inventory (always empty in MVP)
+ */
+export const premiumInventory = atom<Record<string, number>>({});
+
+/**
+ * Stub: Get active premium packs (always empty in MVP)
+ */
+export function getActivePremiumPacks(): string[] {
+  return [];
+}
+
+/**
+ * Stub: Open purchase modal (no-op in MVP)
+ */
+export function openPurchaseModal(): void {
+  // No-op - premium not available
+}

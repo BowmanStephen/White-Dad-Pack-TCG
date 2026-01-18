@@ -94,7 +94,30 @@ export function calculateDeckStats(cards: DeckCard[]): DeckStats {
 }
 
 /**
- * Create a new deck object
+ * Creates a new deck object with metadata, cards, and calculated statistics.
+ *
+ * Generates a unique deck ID, calculates deck statistics (rarity breakdown,
+ * type distribution, average stats), and sets creation/update timestamps.
+ *
+ * @example
+ * ```ts
+ * const deck = createDeck(
+ *   "My BBQ Deck",
+ *   "A deck focused on BBQ_DAD type cards",
+ *   [
+ *     { cardId: "bbq_001", card: bbqCard, count: 3 },
+ *     { cardId: "fix_001", card: fixItCard, count: 2 }
+ *   ]
+ * );
+ * ```
+ *
+ * @param name - The deck name (will be trimmed)
+ * @param description - Optional deck description (will be trimmed if provided)
+ * @param cards - Array of deck cards to include in the deck
+ * @returns A new deck object with generated ID and calculated stats
+ *
+ * @see {@link calculateDeckStats} for stat calculation logic
+ * @see {@link generateDeckId} for ID generation
  */
 export function createDeck(
   name: string,
@@ -205,7 +228,35 @@ export function updateCardCount(deck: Deck, cardId: string, count: number): Deck
 }
 
 /**
- * Export deck to text format for sharing
+ * Exports a deck to a formatted text representation for sharing.
+ *
+ * The output includes deck metadata, statistics, and a card list grouped
+ * by rarity (rarest first). Cards are sorted by rarity, then alphabetically
+ * by name within each rarity tier.
+ *
+ * @example
+ * ```ts
+ * const deck = createDeck("Fire Deck", "Burn them all", cards);
+ * const text = exportDeckToText(deck);
+ * console.log(text);
+ * // Output:
+ * // === Fire Deck ===
+ * // A deck focused on burning
+ * //
+ * // Total Cards: 20
+ * // Unique Cards: 8
+ * //
+ * // [LEGENDARY]
+ * //   2x Grillmaster Gary
+ * //
+ * // [RARE]
+ * //   3x Flame Broiled Frank
+ * // ```
+ *
+ * @param deck - The deck to export
+ * @returns Formatted text representation of the deck
+ *
+ * @see {@link importDeckFromText} for the complementary import function
  */
 export function exportDeckToText(deck: Deck): string {
   const lines: string[] = [];
@@ -263,7 +314,32 @@ export function exportDeckToText(deck: Deck): string {
 }
 
 /**
- * Import deck from text format
+ * Imports a deck from text format (the format produced by {@link exportDeckToText}).
+ *
+ * Parses a deck text representation and validates card names against the
+ * provided card database. Cards are matched by name (case-insensitive).
+ *
+ * @example
+ * ```ts
+ * const deckText = `
+ * === Fire Deck ===
+ *   2x Grillmaster Gary
+ *   3x Flame Broiled Frank
+ * `;
+ *
+ * const result = importDeckFromText(deckText, allCards);
+ * if (result.success) {
+ *   console.log("Imported deck:", result.deck);
+ * } else {
+ *   console.error("Import failed:", result.error);
+ * }
+ * ```
+ *
+ * @param text - The deck text to import (format produced by exportDeckToText)
+ * @param allCards - Array of all available cards to match against
+ * @returns Result object with success flag, deck (if successful), or error message
+ *
+ * @see {@link exportDeckToText} for the text format specification
  */
 export function importDeckFromText(text: string, allCards: Card[]): { success: boolean; deck?: Deck; error?: string } {
   try {

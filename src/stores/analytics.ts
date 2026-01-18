@@ -223,16 +223,16 @@ async function sendEventsToProviders(events: AnyAnalyticsEvent[]): Promise<void>
 
   // Google Analytics
   if (config.providers.googleAnalytics?.enabled) {
-    await import('./analytics/providers/ga').then((m) =>
-      m.default.sendEvents(events)
-    );
+    await import('./analytics/providers/ga')
+      .then((m) => m.default.sendEvents(events))
+      .catch((err) => console.warn('[Analytics] Failed to load GA provider:', err));
   }
 
   // Plausible
   if (config.providers.plausible?.enabled) {
-    await import('./analytics/providers/plausible').then((m) =>
-      m.default.sendEvents(events)
-    );
+    await import('./analytics/providers/plausible')
+      .then((m) => m.default.sendEvents(events))
+      .catch((err) => console.warn('[Analytics] Failed to load Plausible provider:', err));
   }
 }
 

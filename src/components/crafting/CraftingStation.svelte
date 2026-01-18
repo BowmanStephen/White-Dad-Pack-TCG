@@ -77,11 +77,11 @@
   });
 
   function loadCollectionCards() {
-    const collection = collection.get();
+    const currentCollection = collection.get();
     allCards = [];
 
     // Flatten all cards from packs
-    for (const pack of collection.packs) {
+    for (const pack of currentCollection.packs) {
       allCards.push(...pack.cards);
     }
 

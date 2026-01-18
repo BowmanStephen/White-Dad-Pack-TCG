@@ -423,8 +423,42 @@ export function addFriendActivity(
 }
 
 /**
- * Track friend activities (called from other systems)
- * Call this when a friend does something notable
+ * Tracks and records friend activities for the activity feed.
+ *
+ * This function is called by other systems when a friend performs a notable
+ * action (opening a pack, crafting a card, winning a battle, etc.). Activities
+ * are only recorded if the player is actually in the user's friend list.
+ *
+ * The activity feed is automatically limited to `DEFAULT_FRIEND_CONFIG.activityFeedLimit`
+ * entries, with oldest activities being removed when the limit is exceeded.
+ *
+ * @example
+ * ```ts
+ * // Track when a friend opens a pack with a legendary pull
+ * trackFriendActivity(
+ *   friendPlayerId,
+ *   "GrillmasterGary",
+ *   "avatar_01",
+ *   "pack_open",
+ *   {
+ *     packId: "pack_123",
+ *     bestRarity: "legendary",
+ *     holoCount: 2,
+ *     timestamp: new Date()
+ *   }
+ * );
+ * ```
+ *
+ * @param playerId - The friend's player ID
+ * @param username - The friend's username for display
+ * @param avatarId - The friend's avatar ID for display
+ * @param type - The type of activity (pack_open, craft, battle, etc.)
+ * @param details - Activity-specific details (varies by type)
+ *
+ * @see {@link addFriendActivity} for the underlying add function
+ * @see {@link getFriendActivities} for retrieving activities
+ * @see {@link FriendActivityType} for all activity types
+ * @see {@link FriendActivityDetails} for detail structures by type
  */
 export function trackFriendActivity(
   playerId: string,
@@ -472,7 +506,29 @@ export function clearOldActivities(daysToKeep: number = 7): void {
 }
 
 /**
- * Compare stats with a friend
+ * Compares player stats with a friend's stats for stat-to-stat comparison.
+ *
+ * Calculates side-by-side comparison of all tracked stats (packs opened,
+ * cards collected, rarity pulls, etc.) and determines the winner for each
+ * stat category. Includes absolute differences for each stat.
+ *
+ * @example
+ * ```ts
+ * const comparison = compareStats(friendPlayerId);
+ * if (comparison) {
+ *   for (const comp of comparison.comparisons) {
+ *     console.log(`${comp.stat}: You ${comp.yourValue} vs Friend ${comp.friendValue}`);
+ *     console.log(`Winner: ${comp.winner}, Difference: ${comp.difference}`);
+ *   }
+ * }
+ * ```
+ *
+ * @param friendPlayerId - The friend's player ID to compare against
+ * @returns Comparison object with both players' stats and per-stat comparisons,
+ *          or null if friend not found or profile not available
+ *
+ * @see {@link FriendStatsComparison} for the comparison structure
+ * @see {@link PlayerStats} for all compared stats
  */
 export function compareStats(friendPlayerId: string): FriendStatsComparison | null {
   const current = friendState.get();

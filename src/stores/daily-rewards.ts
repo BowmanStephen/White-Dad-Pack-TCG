@@ -325,9 +325,11 @@ export function initializeDailyRewards(): void {
 
     // Notify that daily reward is ready
     if (typeof window !== 'undefined') {
-      import('./notifications.js').then(({ notifyDailyRewardReady }) => {
-        notifyDailyRewardReady();
-      });
+      import('./notifications.js')
+        .then(({ notifyDailyRewardReady }) => {
+          notifyDailyRewardReady();
+        })
+        .catch((err) => console.warn('[DailyRewards] Failed to load notifications:', err));
     }
   } else if (daysSinceLastLogin > 1) {
     // Missed a day - reset streak
@@ -343,9 +345,11 @@ export function initializeDailyRewards(): void {
 
     // Notify that daily reward is ready (even after reset)
     if (typeof window !== 'undefined') {
-      import('./notifications.js').then(({ notifyDailyRewardReady }) => {
-        notifyDailyRewardReady();
-      });
+      import('./notifications.js')
+        .then(({ notifyDailyRewardReady }) => {
+          notifyDailyRewardReady();
+        })
+        .catch((err) => console.warn('[DailyRewards] Failed to load notifications:', err));
     }
   }
 }
@@ -358,10 +362,12 @@ function checkDailyAchievements(): void {
   if (typeof window === 'undefined') return;
 
   // Import dynamically to avoid circular dependency
-  import('./achievements.js').then(({ checkAndUnlockAchievements, getAchievementContext }) => {
-    const context = getAchievementContext();
-    checkAndUnlockAchievements(context);
-  });
+  import('./achievements.js')
+    .then(({ checkAndUnlockAchievements, getAchievementContext }) => {
+      const context = getAchievementContext();
+      checkAndUnlockAchievements(context);
+    })
+    .catch((err) => console.warn('[DailyRewards] Failed to load achievements:', err));
 }
 
 /**
@@ -417,10 +423,12 @@ export function claimDailyReward(): DailyReward | null {
   // Check for daily reward achievements
   // Import dynamically to avoid circular dependency
   if (typeof window !== 'undefined') {
-    import('./achievements.js').then(({ checkAndUnlockAchievements, getAchievementContext }) => {
-      const context = getAchievementContext();
-      checkAndUnlockAchievements(context);
-    });
+    import('./achievements.js')
+      .then(({ checkAndUnlockAchievements, getAchievementContext }) => {
+        const context = getAchievementContext();
+        checkAndUnlockAchievements(context);
+      })
+      .catch((err) => console.warn('[DailyRewards] Failed to load achievements:', err));
   }
 
   return { ...reward, claimedAt: now };

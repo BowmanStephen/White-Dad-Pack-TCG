@@ -23,7 +23,6 @@ export function toDiscordCard(card: Card): DiscordCardDisplay {
     holoType: card.holoVariant || 'none',
     stats: card.stats,
     flavorText: card.flavorText,
-    // TODO: Add image URL when card images are available
     imageUrl: card.artwork,
   };
 }
