@@ -57,6 +57,13 @@
     debounceTimeout = setTimeout(() => {
       searchTerm = localSearchTerm;
       onSearch?.(localSearchTerm);
+
+      // Engagement: Track search usage (ANALYTICS-002)
+      if (localSearchTerm.trim().length > 0) {
+        recordFeatureUsage('collection_search', {
+          searchTermLength: localSearchTerm.trim().length,
+        });
+      }
     }, debounceMs);
   }
 

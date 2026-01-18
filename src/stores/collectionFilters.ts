@@ -1,6 +1,7 @@
 import { persistentAtom } from '@nanostores/persistent';
 import { RARITY_CONFIG, DAD_TYPE_NAMES } from '../types';
 import type { Rarity, DadType } from '../types';
+import { recordFeatureUsage } from '../lib/analytics/engagement';
 
 // ============================================================================
 // COLLECTION FILTER STATE (persisted to LocalStorage)
@@ -103,6 +104,9 @@ export function toggleRarity(rarity: Rarity): void {
       selectedRarities: [...state.selectedRarities, rarity],
     });
   }
+
+  // Engagement: Track filter usage (ANALYTICS-002)
+  recordFeatureUsage('collection_filter', { rarity, action: isSelected ? 'remove' : 'add' });
 }
 
 /**

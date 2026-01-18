@@ -3,6 +3,7 @@
   import { backOut } from 'svelte/easing';
   import { modalOpen, closeModal, showToast } from '@/stores/ui';
   import { trackEvent } from '@/stores/analytics';
+  import { recordFeatureUsage } from '@/lib/analytics/engagement';
   import { RARITY_ORDER } from '@/types';
   import type { Card } from '@/types';
   import { onMount, onDestroy } from 'svelte';
@@ -127,6 +128,9 @@
   async function shareToTwitter() {
     if (!cards.length) return;
 
+    // Engagement: Track share usage (ANALYTICS-002)
+    recordFeatureUsage('share_pack', { platform: 'twitter', cardCount: cards.length });
+
     const bestCard = cards.reduce((best, card) =>
       RARITY_ORDER[card.rarity] > RARITY_ORDER[best.rarity] ? card : best
     );
@@ -152,6 +156,9 @@
   }
 
   async function shareToDiscord() {
+    // Engagement: Track share usage (ANALYTICS-002)
+    recordFeatureUsage('share_pack', { platform: 'discord', cardCount: cards.length });
+
     // Copy instructions to clipboard
     const instructions = '📸 Right-click the image below → Copy Image → Paste in Discord!\n\nOr click Download to save it.';
 
