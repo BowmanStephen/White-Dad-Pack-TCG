@@ -24,6 +24,7 @@ import {
 } from './security';
 import { trackPackOpenForReferral } from './referral';
 import { awardEventCurrencyForPack } from '../lib/events/helpers';
+import { haptics } from '../lib/utils/haptics';
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -264,6 +265,8 @@ export async function openNewPack(): Promise<void> {
 // Complete pack animation and show cards
 export function completePackAnimation(): void {
   packState.set('cards_ready');
+  // Haptic feedback on pack open
+  haptics.packOpen();
 }
 
 // Reveal a specific card
@@ -300,6 +303,9 @@ export function revealCard(
         autoRevealed: options.autoRevealed || false,
       },
     });
+
+    // Haptic feedback for rare+ cards
+    haptics.cardReveal(card.rarity);
   }
 
   packState.set('revealing');
