@@ -2,6 +2,8 @@
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 // Dad Type Categories
+// Includes DICKTATOR DADS (archetypes), family variants, side characters, 
+// special card types (ITEM, EVENT, TERRAIN, EVOLUTION, CURSE, TRAP)
 export type DadType = 
   | 'BBQ_DAD'
   | 'FIX_IT_DAD'
@@ -28,7 +30,12 @@ export type DadType =
   | 'DAUGHTER_DINGBATS'
   | 'UNCLE_UPROARS'
   | 'SUBURBAN_SIDEKICKS'
-  | 'ITEM';
+  | 'ITEM'
+  | 'EVENT'      // SHITSHOW SCENARIOS - One-time use cards (inspired by MTG Instants/Sorceries)
+  | 'TERRAIN'    // SUBURBAN SHITFIELDS - Permanent battlefield modifiers (inspired by Pokémon Stadium/MTG Lands)
+  | 'EVOLUTION'  // MIDLIFE CRISIS MUTATIONS - Upgrades base dads (inspired by Pokémon Evolution)
+  | 'CURSE'      // DAD DAMNATIONS - Negative effects on opponents (inspired by MTG Curses/Enchantments)
+  | 'TRAP';      // SUBURBAN SUCKERPUNCHES - Face-down triggered effects (inspired by Yu-Gi-Oh! Traps)
 
 // Holographic Variant Types
 export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';
@@ -254,14 +261,27 @@ export const RARITY_ORDER: Record<Rarity, number> = {
   mythic: 5,
 };
 
-// Sort options for collection
-export type SortOption = 'rarity_desc' | 'name_asc' | 'date_obtained_desc';
+// Sort options for collection (FILTER-003)
+export type SortOption =
+  | 'rarity_desc'
+  | 'rarity_asc'
+  | 'name_asc'
+  | 'name_desc'
+  | 'date_obtained_desc'
+  | 'date_obtained_asc'
+  | 'type_asc'
+  | 'type_desc';
 
 // Sort option display names and configurations
 export const SORT_OPTION_CONFIG: Record<SortOption, { name: string; description: string }> = {
   rarity_desc: { name: 'Rarity', description: 'Rarest first' },
+  rarity_asc: { name: 'Rarity', description: 'Common first' },
   name_asc: { name: 'Name', description: 'A to Z' },
-  date_obtained_desc: { name: 'Recently Obtained', description: 'Newest first' },
+  name_desc: { name: 'Name', description: 'Z to A' },
+  date_obtained_desc: { name: 'Date Acquired', description: 'Newest first' },
+  date_obtained_asc: { name: 'Date Acquired', description: 'Oldest first' },
+  type_asc: { name: 'Dad Type', description: 'A to Z' },
+  type_desc: { name: 'Dad Type', description: 'Z to A' },
 };
 
 // Rarity configurations map

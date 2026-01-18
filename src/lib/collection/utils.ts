@@ -1,5 +1,5 @@
 import type { Pack, Rarity, CollectionDisplayCard, DadType, SortOption, StatRanges, HoloVariant, AdvancedSearchFilters } from '../../types';
-import { RARITY_ORDER } from '../../types';
+import { RARITY_ORDER, DAD_TYPE_NAMES } from '../../types';
 
 /**
  * Count duplicate cards across all packs
@@ -45,14 +45,14 @@ export function getUniqueCardsWithCounts(packs: Pack[]): CollectionDisplayCard[]
 /**
  * Sort cards by rarity (descending) then by name (ascending)
  */
-export function sortCardsByRarityAndName(cards: CollectionDisplayCard[]): CollectionDisplayCard[] {
+export function sortCardsByRarityAndName(cards: CollectionDisplayCard[], reverse = false): CollectionDisplayCard[] {
   return [...cards].sort((a, b) => {
     // First sort by rarity (mythic first, common last)
     const rarityDiff = RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity];
-    if (rarityDiff !== 0) return rarityDiff;
+    if (rarityDiff !== 0) return reverse ? -rarityDiff : rarityDiff;
 
     // Then sort by name alphabetically
-    return a.name.localeCompare(b.name);
+    return reverse ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name);
   });
 }
 
@@ -157,8 +157,10 @@ export function getCardsByRarity(cards: CollectionDisplayCard[]): Record<Rarity,
 /**
  * Sort cards by name (ascending A-Z)
  */
-export function sortCardsByName(cards: CollectionDisplayCard[]): CollectionDisplayCard[] {
-  return [...cards].sort((a, b) => a.name.localeCompare(b.name));
+export function sortCardsByName(cards: CollectionDisplayCard[], reverse = false): CollectionDisplayCard[] {
+  return [...cards].sort((a, b) =>
+    reverse ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name)
+  );
 }
 
 /**
@@ -190,7 +192,8 @@ export function getCardObtainedDates(packs: Pack[]): Map<string, Date> {
  */
 export function sortCardsByDateObtained(
   cards: CollectionDisplayCard[],
-  obtainedDates: Map<string, Date>
+  obtainedDates: Map<string, Date>,
+  reverse = false
 ): CollectionDisplayCard[] {
   return [...cards].sort((a, b) => {
     const dateA = obtainedDates.get(a.id);
@@ -201,8 +204,27 @@ export function sortCardsByDateObtained(
     if (!dateA) return 1;
     if (!dateB) return -1;
 
-    // Newest first (descending)
-    return dateB.getTime() - dateA.getTime();
+    // Default: Newest first (descending), reverse: Oldest first (ascending)
+    const diff = dateB.getTime() - dateA.getTime();
+    return reverse ? -diff : diff;
+  });
+}
+
+/**
+ * Sort cards by dad type (FILTER-003)
+ * Type sorting uses DAD_TYPE_NAMES for alphabetical order
+ */
+export function sortCardsByType(cards: CollectionDisplayCard[], reverse = false): CollectionDisplayCard[] {
+  return [...cards].sort((a, b) => {
+    const typeA = DAD_TYPE_NAMES[a.type] || a.type;
+    const typeB = DAD_TYPE_NAMES[b.type] || b.type;
+
+    // Sort by type name alphabetically
+    const typeDiff = typeA.localeCompare(typeB);
+    if (typeDiff !== 0) return reverse ? -typeDiff : typeDiff;
+
+    // Secondary sort by name for consistency
+    return reverse ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name);
   });
 }
 
@@ -220,14 +242,27 @@ export function sortCardsByOption(
   switch (option) {
     case 'rarity_desc':
       return sortCardsByRarityAndName(cards);
+    case 'rarity_asc':
+      return sortCardsByRarityAndName(cards, true); // Reverse rarity sort
     case 'name_asc':
       return sortCardsByName(cards);
+    case 'name_desc':
+      return sortCardsByName(cards, true); // Reverse name sort
     case 'date_obtained_desc':
       if (!obtainedDates) {
         // Fallback to rarity sort if no dates provided
         return sortCardsByRarityAndName(cards);
       }
       return sortCardsByDateObtained(cards, obtainedDates);
+    case 'date_obtained_asc':
+      if (!obtainedDates) {
+        return sortCardsByRarityAndName(cards);
+      }
+      return sortCardsByDateObtained(cards, obtainedDates, true); // Reverse date sort
+    case 'type_asc':
+      return sortCardsByType(cards);
+    case 'type_desc':
+      return sortCardsByType(cards, true); // Reverse type sort
     default:
       return sortCardsByRarityAndName(cards);
   }
