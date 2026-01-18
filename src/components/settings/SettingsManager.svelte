@@ -76,6 +76,15 @@
     isPushPermissionDenied,
     type NotificationPreferences,
   } from '@/stores/notifications';
+  import {
+    clearCollectionData,
+    clearSettingsData,
+    clearAllData,
+    confirmClearCollection,
+    confirmClearSettings,
+    confirmClearAll,
+  } from '@/lib/storage/data-manager';
+  import type { ClearDataResult } from '@/types';
 
   // Initialize motion settings on mount
   onMount(() => {
@@ -245,6 +254,58 @@
   // Format volume percentage
   function formatVolume(value: number): string {
     return `${Math.round(value * 100)}%`;
+  }
+
+  // PACK-075: Data Management Functions
+  async function handleClearCollection() {
+    if (!confirmClearCollection()) {
+      return;
+    }
+
+    const result: ClearDataResult = await clearCollectionData();
+
+    if (result.success) {
+      alert('✅ ' + result.message);
+      // Optionally reload to show fresh state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } else {
+      alert('❌ ' + result.message + (result.error ? '\n\nError: ' + result.error : ''));
+    }
+  }
+
+  async function handleClearSettings() {
+    if (!confirmClearSettings()) {
+      return;
+    }
+
+    const result: ClearDataResult = await clearSettingsData();
+
+    if (result.success) {
+      alert('✅ ' + result.message);
+      // Reload to apply default settings
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } else {
+      alert('❌ ' + result.message + (result.error ? '\n\nError: ' + result.error : ''));
+    }
+  }
+
+  async function handleClearAll() {
+    if (!confirmClearAll()) {
+      return;
+    }
+
+    const result: ClearDataResult = await clearAllData();
+
+    if (result.success) {
+      alert('✅ ' + result.message);
+      // Page will reload automatically from clearAllData()
+    } else {
+      alert('❌ ' + result.message + (result.error ? '\n\nError: ' + result.error : ''));
+    }
   }
 </script>
 
@@ -821,6 +882,69 @@
     {/if}
   </section>
 
+  <!-- Data Management Section -->
+  <section class="settings-section">
+    <div class="section-header">
+      <h2>🗑️ Data Management</h2>
+      <p>Clear your data to start fresh</p>
+    </div>
+
+    <!-- Warning Box -->
+    <div class="setting-warning">
+      <p>⚠️ <strong>Warning:</strong> These actions cannot be undone. Please be certain before proceeding.</p>
+    </div>
+
+    <!-- Clear Collection Button -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <label class="setting-label">Clear Collection</label>
+        <p class="setting-description">Delete all packs, cards, decks, and achievements</p>
+      </div>
+      <button
+        class="btn-danger"
+        on:click={handleClearCollection}
+        type="button"
+      >
+        Clear Collection
+      </button>
+    </div>
+
+    <!-- Clear Settings Button -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <label class="setting-label">Clear Settings</label>
+        <p class="setting-description">Reset all settings to default values</p>
+      </div>
+      <button
+        class="btn-danger"
+        on:click={handleClearSettings}
+        type="button"
+      >
+        Clear Settings
+      </button>
+    </div>
+
+    <!-- Clear All Data Button -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <label class="setting-label">Clear All Data</label>
+        <p class="setting-description">Complete factory reset - delete everything</p>
+      </div>
+      <button
+        class="btn-danger"
+        on:click={handleClearAll}
+        type="button"
+      >
+        Clear All Data
+      </button>
+    </div>
+
+    <!-- Data Management Note -->
+    <div class="setting-note">
+      <p>💡 <strong>Note:</strong> "Clear Collection" keeps your settings intact. "Clear Settings" keeps your collection. "Clear All Data" removes everything and reloads the app.</p>
+    </div>
+  </section>
+
   <!-- Save Indicator -->
   <div class="save-indicator">
     <p>✓ All settings are saved automatically</p>
@@ -1201,6 +1325,49 @@
   }
 
   .btn-secondary:active {
+    transform: scale(0.95);
+  }
+
+  /* Warning Box (PACK-075) */
+  .setting-warning {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .setting-warning p {
+    font-size: 0.875rem;
+    color: #ef4444;
+    margin: 0;
+  }
+
+  .setting-warning strong {
+    font-weight: 600;
+  }
+
+  /* Danger Button (PACK-075) */
+  .btn-danger {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 2px solid #ef4444;
+    border-radius: 8px;
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+
+  .btn-danger:active {
     transform: scale(0.95);
   }
 </style>

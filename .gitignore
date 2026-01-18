@@ -36,3 +36,15 @@ prd-phase1.json
 Screenshot*.png
 Screenshot*.jpg
 Screenshot*.jpeg
+
+# Lighthouse reports
+lighthouse-report/
+lighthouse-report*.report.html
+lighthouse-report*.report.json
+
+# Playwright reports
+playwright-report/
+test-results/
+
+# PRD backups
+prd-phase1-*.json

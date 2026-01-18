@@ -4,6 +4,67 @@
 **Type:** Satirical Trading Card Game (TCG) Pack-Opening Simulator
 **Status:** Stable & Production Ready
 **Version:** 2.2.0
+**Last Updated:** January 18, 2026
+
+---
+
+## 📚 Table of Contents
+
+1. [Quick Start](#quick-start) - Get running in 60 seconds
+2. [Project Overview](#-project-overview) - What & Why
+3. [Architecture](#-architecture-overview) - How it's built
+4. [Development Workflow](#-development-workflows) - How to work on it
+5. [Component Library](#-component-architecture) - Building blocks
+6. [Card System](#-card-system-design) - Core game mechanics
+7. [Testing](#-testing) - Ensuring quality
+8. [Performance](#-performance-optimization-guide) - Making it fast
+9. [Deployment](#-deployment) - Getting it live
+10. [Troubleshooting](#-debugging-guide) - When things break
+11. [Reference](#-reference) - Look up details
+
+---
+
+## 🚀 Quick Start
+
+**Get running in 60 seconds:**
+
+```bash
+# 1. Install dependencies
+bun install
+
+# 2. Start dev server
+bun run dev
+# → http://localhost:4321
+
+# 3. Run tests
+bun test
+
+# 4. Build for production
+bun run build
+```
+
+**Essential Commands:**
+```bash
+bun run dev              # Start dev server (localhost:4321)
+bun run build            # Build production site to ./dist/
+bun run preview          # Preview production build
+bun test                 # Run tests (watch mode)
+bun run test:run         # Run tests once
+bun run optimize:images  # Optimize images in public/
+bun run generate-sitemap # Generate sitemap.xml
+```
+
+**What is DadDeck?**
+- Free browser-based TCG pack-opening simulator
+- Parody of suburban American dad culture
+- Premium animations, no microtransactions
+- Built with Astro + Svelte + Tailwind
+
+**Where to Start:**
+1. New developer? → Read [Architecture](#-architecture-overview)
+2. Adding a feature? → Read [Development Workflow](#-development-workflows)
+3. Fixing a bug? → Read [Troubleshooting](#-debugging-guide)
+4. Deploying? → Read [Deployment](#-deployment)
 
 ---
 

@@ -183,6 +183,8 @@ export interface CollectionMetadata {
   holoPulls: number; // Number of holo pulls
   created?: Date; // When the collection was first created
   rarityCounts?: Record<Rarity, number>; // Cached rarity counts for performance (US107)
+  pityCounter?: number; // Pity system counter - packs since last rare+ (US108)
+  streakCounter?: number; // Daily login streak counter
 }
 
 // Collection - All packs owned by the user
@@ -3795,3 +3797,14 @@ export const WISHLIST_PRIORITY_ORDER: Record<WishlistPriority, number> = {
 // Re-export deck building constants
 export { MIN_DECK_SIZE, MAX_DECK_SIZE, MAX_DECK_SLOTS, MAX_CARD_COUNT } from './constants';
 
+// ============================================================================
+// DATA MANAGEMENT TYPES (PACK-075 - Settings - Clear Data)
+// ============================================================================
+
+// Result type for data clearing operations
+export interface ClearDataResult {
+  success: boolean;
+  cleared: 'collection' | 'settings' | 'all';
+  message: string;
+  error?: string;
+}

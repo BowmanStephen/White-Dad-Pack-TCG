@@ -546,3 +546,44 @@ export function getPityTrigger(): Rarity | null {
 
   return null;
 }
+
+// ============================================================================
+// DATA MANAGEMENT (PACK-075)
+// ============================================================================
+
+/**
+ * Clear all collection data (PACK-075)
+ * Resets the collection to default state, clearing all packs, cards, decks, etc.
+ * This is used by the settings page to allow users to start fresh.
+ *
+ * @returns Promise<{ success: boolean; error?: string }>
+ */
+export async function clearAllCollectionData(): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Clear IndexedDB collection
+    const result = await clearFromIndexedDBStorage();
+
+    if (!result.success) {
+      return { success: false, error: result.error };
+    }
+
+    // Reset collection store to defaults
+    collection.set(DEFAULT_COLLECTION);
+
+    // Track analytics event
+    trackEvent({
+      type: 'collection_cleared',
+      data: {
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('[Collection] Failed to clear collection:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to clear collection'
+    };
+  }
+}

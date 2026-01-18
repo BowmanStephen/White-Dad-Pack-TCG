@@ -1,6 +1,5 @@
 ---
 import Layout from '@/layouts/BaseLayout.astro';
-import { t } from '@/i18n';
 
 // Enhanced SEO for 404 page (noindex to prevent indexing)
 const title = "404 - Page Not Found | DadDeck Trading Card Game";
@@ -36,28 +35,28 @@ const randomQuote = lostDadQuotes[Math.floor(Math.random() * lostDadQuotes.lengt
 // Suggested pages
 const suggestedPages = [
   {
-    title: 'pack.open',
+    title: 'Open Packs',
     url: '/pack',
-    description: 'pack.open_desc',
+    description: 'Open a pack and discover new cards',
     icon: '🎴'
   },
   {
-    title: 'collection.title',
+    title: 'My Collection',
     url: '/collection',
-    description: 'collection.view_desc',
+    description: 'View your card collection',
     icon: '📚'
   },
   {
-    title: 'deck.title',
+    title: 'Deck Builder',
     url: '/deck-builder',
-    description: 'deck.build_desc',
+    description: 'Build your battle deck',
     icon: '🃏'
   },
   {
-    title: 'trade.title',
-    url: '/trade',
-    description: 'trade.create_desc',
-    icon: '🤝'
+    title: 'Battle',
+    url: '/battle',
+    description: 'Battle with your cards',
+    icon: '⚔️'
   }
 ];
 ---
@@ -91,16 +90,16 @@ const suggestedPages = [
 
       <!-- Error Message -->
       <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-        {t('error.not_found')}
+        Page Not Found
       </h2>
       <p class="text-xl text-slate-400 mb-12 max-w-lg mx-auto">
-        {t('error.not_found_desc')}
+        Looks like this page got lost on the way to the hardware store. Let's get you back on track.
       </p>
 
       <!-- Suggested Pages -->
       <div class="mb-12">
         <h3 class="text-xl font-bold text-white mb-6">
-          {t('error.suggestions')}
+          Where would you like to go?
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {suggestedPages.map(page => (
@@ -110,10 +109,10 @@ const suggestedPages = [
             >
               <div class="text-4xl mb-3">{page.icon}</div>
               <h4 class="text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
-                {t(page.title)}
+                {page.title}
               </h4>
               <p class="text-sm text-slate-400">
-                {t(page.description)}
+                {page.description}
               </p>
             </a>
           ))}
@@ -128,13 +127,13 @@ const suggestedPages = [
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
-        {t('error.back_home')}
+        Back to Home
       </a>
 
       <!-- Dad Joke Footer -->
       <div class="mt-16 p-4 bg-slate-800/30 rounded-lg border border-slate-700">
         <p class="text-sm text-slate-500 italic">
-          {t('error.dad_joke')}
+          Why did the 404 page go to therapy? Because it had too many unresolved issues!
         </p>
       </div>
     </div>

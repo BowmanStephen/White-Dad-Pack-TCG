@@ -392,7 +392,7 @@ export function executeAbility(
   // Generate status effects (PACK-011)
   const statusEffects: StatusEffect[] = [];
 
-  if (card.type === 'BBQ_DAD' && Math.random() < 0.3) {
+  if (card.type === 'BBQ_DICKTATOR' && Math.random() < 0.3) {
     statusEffects.push({
       type: 'grilled',
       duration: 2,
@@ -400,7 +400,7 @@ export function executeAbility(
     });
   }
 
-  if (card.type === 'COUCH_DAD' && Math.random() < 0.3) {
+  if (card.type === 'COUCH_CUMMANDER' && Math.random() < 0.3) {
     statusEffects.push({
       type: 'lectured',
       duration: 2,
@@ -408,7 +408,7 @@ export function executeAbility(
     });
   }
 
-  if (card.type === 'HOLIDAY_DAD' && Math.random() < 0.3) {
+  if (card.type === 'HOLIDAY_HORNDOGS' && Math.random() < 0.3) {
     statusEffects.push({
       type: 'drunk',
       duration: 2,
@@ -416,7 +416,7 @@ export function executeAbility(
     });
   }
 
-  if (card.type === 'TECH_DAD' && Math.random() < 0.3) {
+  if (card.type === 'TECH_TWATS' && Math.random() < 0.3) {
     statusEffects.push({
       type: 'wired',
       duration: 2,
@@ -425,7 +425,7 @@ export function executeAbility(
   }
 
   // Legacy status effects (preserve for backwards compatibility)
-  if (card.type === 'COACH_DAD' && Math.random() < 0.3) {
+  if (card.type === 'COACH_CUMSTERS' && Math.random() < 0.3) {
     statusEffects.push({
       type: 'inspired',
       duration: 3,
@@ -433,7 +433,7 @@ export function executeAbility(
     });
   }
 
-  if (card.type === 'COUCH_DAD' && Math.random() < 0.3 && !statusEffects.find(e => e.type === 'lectured')) {
+  if (card.type === 'COUCH_CUMMANDER' && Math.random() < 0.3 && !statusEffects.find(e => e.type === 'lectured')) {
     statusEffects.push({
       type: 'bored',
       duration: 2,
@@ -548,20 +548,20 @@ export function checkSynergy(card1: Card, card2: Card): {
   // Type synergies
   const typeSynergies: Record<string, [DadType[], DadType[], string, string]> = {
     'BBQ Alliance': [
-      ['BBQ_DAD', 'CHEF_DAD'],
-      ['BBQ_DAD', 'CHEF_DAD'],
+      ['BBQ_DICKTATOR', 'CHEF_CUMSTERS'],
+      ['BBQ_DICKTATOR', 'CHEF_CUMSTERS'],
       'Ultimate Cookout',
       '+30% Grill Skill, both cards'
     ],
     'Suburban Dream Team': [
-      ['LAWN_DAD', 'CAR_DAD', 'WAREHOUSE_DAD'],
-      ['LAWN_DAD', 'CAR_DAD', 'WAREHOUSE_DAD'],
+      ['LAWN_LUNATIC', 'CAR_COCK', 'WAREHOUSE_WANKERS'],
+      ['LAWN_LUNATIC', 'CAR_COCK', 'WAREHOUSE_WANKERS'],
       'HOA Nightmares',
       '+20% all stats for all lawn/car/warehouse dads'
     ],
     'Couch Potato Crew': [
-      ['COUCH_DAD', 'ITEM'],
-      ['COUCH_DAD'],
+      ['COUCH_CUMMANDER', 'ITEM'],
+      ['COUCH_CUMMANDER'],
       'Infinite Nap',
       'Target never wakes up'
     ],
@@ -992,7 +992,7 @@ function calculateNormalizedPower(stats: CardStats): number {
 function getMainType(deck: Deck): DadType {
   const typeBreakdown = deck.stats.typeBreakdown;
   let maxCount = 0;
-  let mainType: DadType = 'BBQ_DAD'; // default
+  let mainType: DadType = 'BBQ_DICKTATOR'; // default
 
   for (const [type, count] of Object.entries(typeBreakdown)) {
     if (count > maxCount) {
@@ -1070,10 +1070,10 @@ export function calculateSynergyBonus(deck: Deck): {
 
   // Initialize with known types
   const knownTypes: DadType[] = [
-    'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD', 'LAWN_DAD',
-    'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD', 'COACH_DAD', 'CHEF_DAD',
-    'HOLIDAY_DAD', 'WAREHOUSE_DAD', 'VINTAGE_DAD', 'FASHION_DAD',
-    'TECH_DAD', 'ITEM'
+    'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER', 'LAWN_LUNATIC',
+    'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS', 'COACH_CUMSTERS', 'CHEF_CUMSTERS',
+    'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS', 'VINTAGE_VAGABONDS', 'FASHION_FUCK',
+    'TECH_TWATS', 'ITEM'
   ];
 
   for (const type of knownTypes) {

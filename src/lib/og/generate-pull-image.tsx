@@ -1,13 +1,27 @@
-import satori from 'satori';
-import { join } from 'path';
-import type { Pack, Card } from '../../types';
+/**
+ * Dynamic OG Image Generation for Pack Pulls
+ *
+ * NOTE: This module is currently disabled/stubbed because it requires
+ * server-side rendering capabilities that aren't available in the static
+ * Astro build. The satori + resvg libraries need Node.js runtime.
+ *
+ * To enable:
+ * 1. Install: bun add @resvg/resvg-js
+ * 2. Configure Astro for SSR mode
+ * 3. Uncomment the implementation below
+ *
+ * For now, OG images use the static template at /public/og-image.png
+ */
+
+import type { Pack } from '../../types';
+import type { PackCard } from '../../types/pack';
 
 // Satori dimensions
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 
-// DadDeck brand colors
-const COLORS = {
+// DadDeck brand colors (exported for use in other modules)
+export const COLORS = {
   background: '#0f172a', // slate-900
   accent: '#f59e0b', // amber-500
   text: '#ffffff',
@@ -18,17 +32,8 @@ const COLORS = {
   mythic: '#ec4899', // pink
 };
 
-// Font configuration
-const fontData = {
-  name: 'Inter',
-  data: Buffer.from(
-    await fetch('https://cdn.jsdelivr.net/npm/source-sans-pro@14.0.0/source-sans-pro-v14-latin-regular.ttf')
-  ).then(res => res.arrayBuffer()
-  )
-};
-
 // Rarity border colors
-const RARITY_COLORS = {
+export const RARITY_COLORS: Record<string, string> = {
   common: '#9ca3af',
   uncommon: '#3b82f6',
   rare: '#eab308',
@@ -37,307 +42,130 @@ const RARITY_COLORS = {
   mythic: '#ec4899'
 };
 
+export interface OGImageResult {
+  success: boolean;
+  imagePath?: string;
+  error?: string;
+}
+
 /**
  * Generate dynamic OG image for a pack pull
- * Creates a 1200x630px image optimized for social media sharing
+ *
+ * Currently returns a stub result pointing to the static OG image.
+ * Full implementation requires SSR mode and @resvg/resvg-js package.
+ *
+ * @param pack - The pack that was opened
+ * @param bestCard - The best card from the pack (for featuring)
+ * @returns Result with success status and image path
  */
 export async function generatePullOGImage(
   pack: Pack,
   bestCard: PackCard
-): Promise<{ success: boolean; imagePath?: string; error?: string }> {
-  try {
-    // Convert card image to base64 for inline rendering
-    let cardImageData = '';
-    
-    try {
-      // Try to read card artwork from public directory
-      const fs = await import('fs/promises');
-      const cardImagePath = join(process.cwd(), 'public', bestCard.artwork.replace(/^\//, ''));
-      
-      if (await fs.access(cardImagePath).then(() => true).catch(() => false)) {
-        const cardImage = await fs.readFile(cardImagePath);
-        const base64Card = cardImage.toString('base64');
-        
-        // Determine content type
-        const ext = cardImagePath.split('.').pop().toLowerCase();
-        const contentType = ext === 'png' ? 'image/png' : 'image/jpeg';
-        
-        cardImageData = `data:${contentType};base64,${base64Card}`;
-      }
-    } catch (error) {
-      console.warn('Could not load card image, using placeholder:', error);
-    }
+): Promise<OGImageResult> {
+  // Stub implementation - returns static OG image
+  // Dynamic generation requires SSR mode
+  console.warn(
+    '[generatePullOGImage] Dynamic OG image generation is disabled. ' +
+    'Using static OG image instead. See file comments for enabling.'
+  );
 
-    // Calculate rarity border color
-    const rarityColor = (RARITY_COLORS as Record<string, any>)[bestCard.rarity] || RARITY_COLORS.common;
-
-    // Create SVG element for Satori
-    const element = (
-      <div style={{
-        width: OG_WIDTH,
-        height: OG_HEIGHT,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.background,
-        fontFamily: 'Inter',
-        padding: '40px',
-      }}>
-        {/* Top branding */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '32px',
-        }}>
-          <div style={{
-            fontSize: '72px',
-            fontWeight: '900',
-            fill: COLORS.text,
-            fontFamily: 'Inter',
-            letterSpacing: '-0.5px',
-          }}>
-            DADDECK™
-          </div>
-          <div style={{
-            fontSize: '28px',
-            fontWeight: '600',
-            fill: COLORS.subtext,
-            fontFamily: 'Inter',
-            letterSpacing: '0.25px',
-          }}>
-            THE WHITE DAD TRADING CARD SIMULATOR
-          </div>
-        </div>
-
-        {/* Card display */}
-        <div style={{
-          position: 'relative',
-          width: '400px',
-          height: '550px',
-          border: `4px solid ${rarityColor}`,
-          borderRadius: '24px',
-          overflow: 'hidden',
-          boxShadow: `0 10px 25px ${COLORS.background}`,
-        }}>
-          {/* Card background/gradient */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            background: `linear-gradient(135deg, ${COLORS.accent}33, ${rarityColor}11)`,
-            opacity: 0.2,
-          }} />
-
-          {/* Card image or placeholder */}
-          {cardImageData ? (
-            <img
-              src={cardImageData}
-              alt={bestCard.name}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                borderRadius: '20px',
-              }}
-            />
-          ) : (
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: COLORS.background,
-              color: COLORS.subtext,
-              fontSize: '18px',
-              fontWeight: '600',
-            }}>
-              <div>
-                {bestCard.name}
-              </div>
-            </div>
-          )}
-
-          {/* Card details */}
-          <div style={{
-            position: 'absolute',
-            bottom: '20px',
-            left: '0',
-            right: '0',
-            padding: '16px',
-            background: 'rgba(15, 23, 42, 0.9)',
-            backdropFilter: 'blur(8px)',
-            borderRadius: '12px',
-          }}>
-            {/* Dad type badge */}
-            <div style={{
-              fontSize: '12px',
-              fontWeight: '600',
-              color: COLORS.text,
-              backgroundColor: rarityColor,
-              padding: '6px 12px',
-              borderRadius: '6px',
-              marginBottom: '8px',
-            }}>
-              {bestCard.type}
-            </div>
-
-            {/* Stats row */}
-            <div style={{
-              display: 'flex',
-              gap: '16px',
-              flexWrap: 'wrap',
-            }}>
-              <div style={{ fontSize: '14px', color: COLORS.subtext }}>
-                <strong>DJ:</strong> {bestCard.stats.dadJoke}
-              </div>
-              <div style={{ fontSize: '14px', color: COLORS.subtext }}>
-                <strong>Grill:</strong> {bestCard.stats.grillSkill}
-              </div>
-            </div>
-
-            {/* Rarity badge */}
-            <div style={{
-              marginTop: '8px',
-              padding: '8px 16px',
-              backgroundColor: rarityColor,
-              borderRadius: '9999px',
-              color: 'white',
-              fontSize: '14px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-            }}>
-              {bestCard.rarity}
-            </div>
-          </div>
-
-          {/* Holo indicator */}
-          {bestCard.isHolo && (
-            <div style={{
-              position: 'absolute',
-              top: '12px',
-              right: '12px',
-              backgroundColor: '#fbbf24',
-              color: 'white',
-              fontSize: '10px',
-              fontWeight: '700',
-              padding: '4px 8px',
-              borderRadius: '9999px',
-            }}>
-              HOLO
-            </div>
-          )}
-        </div>
-
-        {/* Pull info */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '16px',
-          marginTop: '32px',
-          padding: '16px 32px',
-          background: 'rgba(0, 0, 0, 0.05)',
-          borderRadius: '16px',
-          border: `2px dashed ${COLORS.subtext}`,
-        }}>
-          <div style={{
-            fontSize: '16px',
-            color: COLORS.subtext,
-            fontWeight: '600',
-            textAlign: 'center',
-            lineHeight: '1.5',
-          }}>
-            Pull #{pack.metadata.totalPacksOpened}
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: COLORS.subtext,
-            fontWeight: '400',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontWeight: '600' }}>
-              Best Card:
-            </div>
-            <div style={{ fontSize: '20px', fontWeight: '900', color: COLORS.accent }}>
-              {bestCard.name}
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: COLORS.subtext,
-              marginTop: '4px',
-            }}>
-              {bestCard.type} • {bestCard.rarity}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom branding */}
-        <div style={{
-          marginTop: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '12px',
-        }}>
-          <div style={{
-            fontSize: '20px',
-            fontWeight: '700',
-            fill: COLORS.accent,
-            fontFamily: 'Inter',
-            letterSpacing: '-0.25px',
-          }}>
-            🎴 daddeck.app
-          </div>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: '500',
-            fill: COLORS.subtext,
-            fontFamily: 'Inter',
-            letterSpacing: '0.1px',
-          }}>
-            Open Your Free Pack Today
-          </div>
-        </div>
-      </div>
-    );
-
-    // Render to SVG with Satori
-    const svg = await satori(element, {
-      width: OG_WIDTH,
-      height: OG_HEIGHT,
-      fonts: [fontData],
-    });
-
-    // Convert to PNG
-    const { default: resvg } = await import('satori/resvg');
-    const png = resvg(svg);
-
-    // Generate unique filename
-    const filename = `pull-${pack.id}-${Date.now()}.png`;
-    const publicDir = join(process.cwd(), 'public', 'shares');
-    const outputPath = join(publicDir, filename);
-
-    // Write file
-    const fs = await import('fs/promises');
-    await fs.mkdir(publicDir, { recursive: true }).catch(() => {});
-    await fs.writeFile(outputPath, png);
-
-    return {
-      success: true,
-      imagePath: `/shares/${filename}`
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to generate OG image'
-    };
-  }
+  return {
+    success: true,
+    imagePath: '/og-image.png', // Fallback to static image
+  };
 }
+
+/**
+ * Check if dynamic OG image generation is available
+ * Currently always returns false (requires SSR mode)
+ */
+export function isDynamicOGAvailable(): boolean {
+  return false;
+}
+
+/*
+ * ============================================================================
+ * FULL IMPLEMENTATION (Disabled - requires SSR + @resvg/resvg-js)
+ * ============================================================================
+ *
+ * To enable dynamic OG image generation:
+ *
+ * 1. Install dependencies:
+ *    bun add satori @resvg/resvg-js
+ *
+ * 2. Update astro.config.mjs for SSR:
+ *    export default defineConfig({
+ *      output: 'hybrid', // or 'server'
+ *      adapter: vercel(), // or node(), etc.
+ *    });
+ *
+ * 3. Uncomment and use this implementation:
+ *
+ * import satori from 'satori';
+ * import { Resvg } from '@resvg/resvg-js';
+ * import { join } from 'path';
+ *
+ * // Load font at module initialization
+ * let fontData: ArrayBuffer | null = null;
+ *
+ * async function loadFont(): Promise<ArrayBuffer> {
+ *   if (fontData) return fontData;
+ *
+ *   const response = await fetch(
+ *     'https://cdn.jsdelivr.net/npm/source-sans-pro@14.0.0/source-sans-pro-v14-latin-regular.ttf'
+ *   );
+ *   fontData = await response.arrayBuffer();
+ *   return fontData;
+ * }
+ *
+ * export async function generatePullOGImage(
+ *   pack: Pack,
+ *   bestCard: PackCard
+ * ): Promise<OGImageResult> {
+ *   try {
+ *     const font = await loadFont();
+ *
+ *     // Create JSX element for Satori (see original implementation)
+ *     const element = createOGElement(pack, bestCard);
+ *
+ *     // Render to SVG with Satori
+ *     const svg = await satori(element, {
+ *       width: OG_WIDTH,
+ *       height: OG_HEIGHT,
+ *       fonts: [{
+ *         name: 'Inter',
+ *         data: font,
+ *         weight: 400,
+ *         style: 'normal',
+ *       }],
+ *     });
+ *
+ *     // Convert SVG to PNG using resvg
+ *     const resvg = new Resvg(svg, {
+ *       fitTo: { mode: 'width', value: OG_WIDTH },
+ *     });
+ *     const pngData = resvg.render();
+ *     const pngBuffer = pngData.asPng();
+ *
+ *     // Generate unique filename and save
+ *     const filename = `pull-${pack.id}-${Date.now()}.png`;
+ *     const publicDir = join(process.cwd(), 'public', 'shares');
+ *     const outputPath = join(publicDir, filename);
+ *
+ *     const fs = await import('fs/promises');
+ *     await fs.mkdir(publicDir, { recursive: true }).catch(() => {});
+ *     await fs.writeFile(outputPath, pngBuffer);
+ *
+ *     return {
+ *       success: true,
+ *       imagePath: `/shares/${filename}`
+ *     };
+ *   } catch (error) {
+ *     console.error('[generatePullOGImage] Error:', error);
+ *     return {
+ *       success: false,
+ *       error: error instanceof Error ? error.message : 'Failed to generate OG image'
+ *     };
+ *   }
+ * }
+ */

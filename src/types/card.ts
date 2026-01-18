@@ -31,11 +31,11 @@ export type DadType =
   | 'SUBURBAN_SIDEKICKS'
   // Special Card Types
   | 'ITEM'
-  | 'EVENT'
-  | 'TERRAIN'
-  | 'EVOLUTION'
-  | 'CURSE'
-  | 'TRAP'
+  | 'EVENT'      // SHITSHOW SCENARIOS - One-time use cards (inspired by MTG Instants/Sorceries)
+  | 'TERRAIN'    // SUBURBAN SHITFIELDS - Permanent battlefield modifiers (inspired by Pokemon Stadium/MTG Lands)
+  | 'EVOLUTION'  // MIDLIFE CRISIS MUTATIONS - Upgrades base dads (inspired by Pokemon Evolution)
+  | 'CURSE'      // DAD DAMNATIONS - Negative effects on opponents (inspired by MTG Curses/Enchantments)
+  | 'TRAP'       // SUBURBAN SUCKERPUNCHES - Face-down triggered effects (inspired by Yu-Gi-Oh! Traps)
   // Crossover Events
   | 'DUNE_DESERT'
   | 'MARVEL_MASH'

@@ -14,10 +14,6 @@ import MotionInitializer from '../components/motion/MotionInitializer.svelte';
 import BottomNav from '../components/nav/BottomNav.svelte';
 import ToastContainer from '../components/common/ToastContainer.svelte';
 import StorageQuotaWarning from '../components/storage/StorageQuotaWarning.svelte';
-import { initI18n } from '../i18n';
-
-// Initialize i18n with default locale (client-side will detect browser locale)
-initI18n('en');
 
 interface Props {
   title?: string;

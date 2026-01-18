@@ -3,20 +3,23 @@
   import type { AbilityKeyword } from '@/lib/mechanics/keywords';
   import { getKeywordDefinition, formatKeywordForDisplay } from '@/lib/mechanics/keywords';
 
-  // Props
-  export let keyword: AbilityKeyword;
-  export let value?: number | string;
-  export let triggerElement: HTMLElement;
+  // Props (Svelte 5 syntax)
+  interface Props {
+    keyword: AbilityKeyword;
+    value?: number | string;
+    triggerElement: HTMLElement;
+  }
+  let { keyword, value, triggerElement }: Props = $props();
 
   // State
   let visible = $state(false);
-  let tooltip: HTMLElement;
+  let tooltip: HTMLElement | undefined = $state(undefined);
   let position = $state({ top: 0, left: 0 });
   let hoverDelay: NodeJS.Timeout;
 
-  // Get keyword definition
-  const def = getKeywordDefinition(keyword);
-  const displayText = formatKeywordForDisplay(keyword, value);
+  // Get keyword definition (derived state)
+  const def = $derived(getKeywordDefinition(keyword));
+  const displayText = $derived(formatKeywordForDisplay(keyword, value));
 
   // Show tooltip on hover (desktop)
   function handleMouseEnter() {

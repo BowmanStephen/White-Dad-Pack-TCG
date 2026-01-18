@@ -1,7 +1,7 @@
 import type { DadType } from '../../types';
 
 /**
- * DadDeck™ Type Advantage Matrix
+ * DadDeck™ Type Advantage Matrix - Backyard Boner Edition
  *
  * ## DESIGN PRINCIPLES (PACK-008)
  *
@@ -20,60 +20,86 @@ export const DISADVANTAGE_MULTIPLIER = 0.8; // -20% damage (inverse of advantage
 export const NEUTRAL_MULTIPLIER = 1.0; // No bonus
 
 /**
- * Type Advantage Matrix (16x16)
+ * Type Advantage Matrix
  *
  * PERFECTLY BALANCED: Each type appears exactly twice in advantages (ensuring 2 disadvantages per type)
  *
  * Thematic advantages based on dad stereotype rivalries
  */
 export const TYPE_ADVANTAGE_MATRIX: Record<DadType, DadType[]> = {
-  // BBQ_DAD beats GOLF_DAD (heat melts game) and COUCH_DAD (fire burns couch)
-  BBQ_DAD: ['GOLF_DAD', 'COUCH_DAD'],
+  // BBQ_DICKTATOR beats GOLF_GONAD (heat melts game) and COUCH_CUMMANDER (fire burns couch)
+  BBQ_DICKTATOR: ['GOLF_GONAD', 'COUCH_CUMMANDER'],
 
-  // FIX_IT_DAD beats TECH_DAD (analog beats digital) and CAR_DAD (fixes cars)
-  FIX_IT_DAD: ['TECH_DAD', 'CAR_DAD'],
+  // FIX_IT_FUCKBOY beats TECH_TWATS (analog beats digital) and CAR_COCK (fixes cars)
+  FIX_IT_FUCKBOY: ['TECH_TWATS', 'CAR_COCK'],
 
-  // GOLF_DAD beats COACH_DAD (rivalry) and COOL_DAD (golf is cool)
-  GOLF_DAD: ['COACH_DAD', 'COOL_DAD'],
+  // GOLF_GONAD beats COACH_CUMSTERS (rivalry) and COOL_CUCKS (golf is cool)
+  GOLF_GONAD: ['COACH_CUMSTERS', 'COOL_CUCKS'],
 
-  // COUCH_DAD beats OFFICE_DAD (remote beats office) and CHEF_DAD (lazy beats cooking)
-  COUCH_DAD: ['OFFICE_DAD', 'CHEF_DAD'],
+  // COUCH_CUMMANDER beats OFFICE_ORGASMS (remote beats office) and CHEF_CUMSTERS (lazy beats cooking)
+  COUCH_CUMMANDER: ['OFFICE_ORGASMS', 'CHEF_CUMSTERS'],
 
-  // LAWN_DAD beats WAREHOUSE_DAD (nature beats warehouse) and CHEF_DAD (grass stains beat white uniform)
-  LAWN_DAD: ['WAREHOUSE_DAD', 'CHEF_DAD'],
+  // LAWN_LUNATIC beats WAREHOUSE_WANKERS (nature beats warehouse) and CHEF_CUMSTERS (grass stains beat white uniform)
+  LAWN_LUNATIC: ['WAREHOUSE_WANKERS', 'CHEF_CUMSTERS'],
 
-  // CAR_DAD beats FASHION_DAD (practical beats style) and HOLIDAY_DAD (road trips beat staying home)
-  CAR_DAD: ['FASHION_DAD', 'HOLIDAY_DAD'],
+  // CAR_COCK beats FASHION_FUCK (practical beats style) and HOLIDAY_HORNDOGS (road trips beat staying home)
+  CAR_COCK: ['FASHION_FUCK', 'HOLIDAY_HORNDOGS'],
 
-  // OFFICE_DAD beats CAR_DAD (commuter beats driver) and LAWN_DAD (indoors beats outdoors)
-  OFFICE_DAD: ['CAR_DAD', 'LAWN_DAD'],
+  // OFFICE_ORGASMS beats CAR_COCK (commuter beats driver) and LAWN_LUNATIC (indoors beats outdoors)
+  OFFICE_ORGASMS: ['CAR_COCK', 'LAWN_LUNATIC'],
 
-  // COOL_DAD beats FASHION_DAD (style intimidation) and COACH_DAD (cool beats coaching)
-  COOL_DAD: ['FASHION_DAD', 'COACH_DAD'],
+  // COOL_CUCKS beats FASHION_FUCK (style intimidation) and COACH_CUMSTERS (cool beats coaching)
+  COOL_CUCKS: ['FASHION_FUCK', 'COACH_CUMSTERS'],
 
-  // COACH_DAD beats TECH_DAD (strategy beats tech) and FIX_IT_DAD (coaching beats DIY)
-  COACH_DAD: ['TECH_DAD', 'FIX_IT_DAD'],
+  // COACH_CUMSTERS beats TECH_TWATS (strategy beats tech) and FIX_IT_FUCKBOY (coaching beats DIY)
+  COACH_CUMSTERS: ['TECH_TWATS', 'FIX_IT_FUCKBOY'],
 
-  // CHEF_DAD beats BBQ_DAD (kitchen beats BBQ) and HOLIDAY_DAD (cooking beats ordering takeout)
-  CHEF_DAD: ['BBQ_DAD', 'HOLIDAY_DAD'],
+  // CHEF_CUMSTERS beats BBQ_DICKTATOR (kitchen beats BBQ) and HOLIDAY_HORNDOGS (cooking beats ordering takeout)
+  CHEF_CUMSTERS: ['BBQ_DICKTATOR', 'HOLIDAY_HORNDOGS'],
 
-  // HOLIDAY_DAD beats LAWN_DAD (vacation beats yard work) and COUCH_DAD (festive beats lazy)
-  HOLIDAY_DAD: ['LAWN_DAD', 'COUCH_DAD'],
+  // HOLIDAY_HORNDOGS beats LAWN_LUNATIC (vacation beats yard work) and COUCH_CUMMANDER (festive beats lazy)
+  HOLIDAY_HORNDOGS: ['LAWN_LUNATIC', 'COUCH_CUMMANDER'],
 
-  // WAREHOUSE_DAD beats VINTAGE_DAD (bulk inventory beats old stuff) and BBQ_DAD (bulk storage beats grill)
-  WAREHOUSE_DAD: ['VINTAGE_DAD', 'BBQ_DAD'],
+  // WAREHOUSE_WANKERS beats VINTAGE_VAGABONDS (bulk inventory beats old stuff) and BBQ_DICKTATOR (bulk storage beats grill)
+  WAREHOUSE_WANKERS: ['VINTAGE_VAGABONDS', 'BBQ_DICKTATOR'],
 
-  // VINTAGE_DAD beats COOL_DAD (classic beats modern) and FIX_IT_DAD (old tools vs new tools)
-  VINTAGE_DAD: ['COOL_DAD', 'FIX_IT_DAD'],
+  // VINTAGE_VAGABONDS beats COOL_CUCKS (classic beats modern) and FIX_IT_FUCKBOY (old tools vs new tools)
+  VINTAGE_VAGABONDS: ['COOL_CUCKS', 'FIX_IT_FUCKBOY'],
 
-  // FASHION_DAD beats WAREHOUSE_DAD (style beats bulk) and OFFICE_DAD (style beats corporate)
-  FASHION_DAD: ['WAREHOUSE_DAD', 'OFFICE_DAD'],
+  // FASHION_FUCK beats WAREHOUSE_WANKERS (style beats bulk) and OFFICE_ORGASMS (style beats corporate)
+  FASHION_FUCK: ['WAREHOUSE_WANKERS', 'OFFICE_ORGASMS'],
 
-  // TECH_DAD beats GOLF_DAD (golf GPS beats caddy) and VINTAGE_DAD (tech beats old tech)
-  TECH_DAD: ['GOLF_DAD', 'VINTAGE_DAD'],
+  // TECH_TWATS beats GOLF_GONAD (golf GPS beats caddy) and VINTAGE_VAGABONDS (tech beats old tech)
+  TECH_TWATS: ['GOLF_GONAD', 'VINTAGE_VAGABONDS'],
+
+  // Extended archetypes (neutral for now - can be expanded)
+  GAMER_GIZZARDS: [],
+  PREPPER_PENIS: [],
+  BBQ_BRAWLER: [],
+  SUBURBAN_SOCIALITE: [],
+  NEIGHBORHOOD_NOSY: [],
+
+  // Family Variants (neutral)
+  SON_SPAWNS: [],
+  DAUGHTER_DINGBATS: [],
+  UNCLE_UPROARS: [],
+  SUBURBAN_SIDEKICKS: [],
 
   // Special card types have no advantages
   ITEM: [],
+  EVENT: [],
+  TERRAIN: [],
+  EVOLUTION: [],
+  CURSE: [],
+  TRAP: [],
+
+  // Crossover Events (neutral)
+  DUNE_DESERT: [],
+  MARVEL_MASH: [],
+  STAR_WARS_SWINGER: [],
+  MCDONALDS_MEAT: [],
+  POTTER_PERVERT: [],
+  FORTNITE_FUCKER: [],
 };
 
 /**
@@ -123,14 +149,14 @@ export function getDisadvantages(type: DadType): DadType[] {
 export function getNeutrals(type: DadType): DadType[] {
   const advantages = getAdvantages(type);
   const disadvantages = getDisadvantages(type);
-  const allTypes: DadType[] = [
-    'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD',
-    'LAWN_DAD', 'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD',
-    'COACH_DAD', 'CHEF_DAD', 'HOLIDAY_DAD', 'WAREHOUSE_DAD',
-    'VINTAGE_DAD', 'FASHION_DAD', 'TECH_DAD', 'ITEM',
+  const coreTypes: DadType[] = [
+    'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+    'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+    'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+    'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
   ];
 
-  return allTypes.filter(
+  return coreTypes.filter(
     t => t !== type && !advantages.includes(t) && !disadvantages.includes(t)
   );
 }
@@ -150,19 +176,25 @@ export function hasDisadvantage(attacker: DadType, defender: DadType): boolean {
 }
 
 /**
- * Validate that the type advantage matrix is balanced
+ * Validate that the type advantage matrix is balanced (core types only)
  */
 export function validateMatrix(): void {
   const errors: string[] = [];
+  const coreTypes: DadType[] = [
+    'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+    'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+    'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+    'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+  ];
 
-  for (const [type, advantages] of Object.entries(TYPE_ADVANTAGE_MATRIX)) {
-    if (type === 'ITEM') continue;
+  for (const type of coreTypes) {
+    const advantages = TYPE_ADVANTAGE_MATRIX[type] || [];
 
     if (advantages.length !== 2) {
       errors.push(`${type} has ${advantages.length} advantages (expected 2)`);
     }
 
-    const disadvantages = getDisadvantages(type as DadType);
+    const disadvantages = getDisadvantages(type);
     if (disadvantages.length !== 2) {
       errors.push(`${type} has ${disadvantages.length} disadvantages (expected 2)`);
     }
