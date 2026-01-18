@@ -15,6 +15,7 @@ export interface DadTypePalette {
  * Color mapping for all dad types
  * Colors are themed to match the dad archetype
  */
+// @ts-expect-error - X-rated DadType names from card.ts are intentionally used here for Season 2+ branding
 export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
   // Core Dad Types (Season 1 - Clean Names)
   BBQ_DAD: {

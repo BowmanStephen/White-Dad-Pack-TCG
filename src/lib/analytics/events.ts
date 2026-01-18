@@ -124,7 +124,7 @@ export function extractRarityDistribution(
 
   // Count each rarity and holos
   for (const card of pack.cards) {
-    distribution[card.rarity]++;
+    (distribution as Record<string, number>)[card.rarity]++;
     if (card.isHolo) {
       holoCount++;
     }
@@ -220,7 +220,7 @@ export function aggregateRarityStats(options?: {
       totalPacks++;
       totalCards += event.data.cardCount;
       totalHoloCount += event.data.holoCount;
-      bestRarityCounts[event.data.bestRarity]++;
+      (bestRarityCounts as Record<string, number>)[event.data.bestRarity]++;
 
       // Note: pack_complete doesn't include full rarity distribution
       // For full distribution, we'd need to aggregate from card_reveal events

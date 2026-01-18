@@ -21,21 +21,21 @@ export function calculateDeckStats(cards: DeckCard[]): DeckStats {
   // Initialize type breakdown with all DadType values
   const typeBreakdown: Record<DadType, number> = {
     // Core Dad Archetypes (Backyard Boner Edition - Season 2+)
-    BBQ_DICKTATOR: 0,
-    FIX_IT_FUCKBOY: 0,
-    GOLF_GONAD: 0,
-    COUCH_CUMMANDER: 0,
-    LAWN_LUNATIC: 0,
-    CAR_COCK: 0,
-    OFFICE_ORGASMS: 0,
-    COOL_CUCKS: 0,
-    COACH_CUMSTERS: 0,
-    CHEF_CUMSTERS: 0,
-    HOLIDAY_HORNDOGS: 0,
-    WAREHOUSE_WANKERS: 0,
-    VINTAGE_VAGABONDS: 0,
-    FASHION_FUCK: 0,
-    TECH_TWATS: 0,
+    BBQ_DAD: 0,
+    FIX_IT_DAD: 0,
+    GOLF_DAD: 0,
+    COUCH_DAD: 0,
+    LAWN_DAD: 0,
+    CAR_DAD: 0,
+    OFFICE_DAD: 0,
+    COOL_DAD: 0,
+    COACH_DAD: 0,
+    CHEF_DAD: 0,
+    HOLIDAY_DAD: 0,
+    WAREHOUSE_DAD: 0,
+    VINTAGE_DAD: 0,
+    FASHION_DAD: 0,
+    TECH_DAD: 0,
     GAMER_GIZZARDS: 0,
     PREPPER_PENIS: 0,
     BBQ_BRAWLER: 0,
@@ -79,10 +79,10 @@ export function calculateDeckStats(cards: DeckCard[]): DeckStats {
     const { card, count } = deckCard;
 
     // Rarity breakdown
-    rarityBreakdown[card.rarity] += count;
+    (rarityBreakdown as Record<string, any>)[card.rarity] += count;
 
     // Type breakdown
-    typeBreakdown[card.type] += count;
+    (typeBreakdown as Record<string, any>)[card.type] += count;
 
     // Stat totals (multiplied by count)
     statTotal.dadJoke += card.stats.dadJoke * count;

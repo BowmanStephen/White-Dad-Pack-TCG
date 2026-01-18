@@ -43,7 +43,7 @@ const RARITY_COLORS = {
  */
 export async function generatePullOGImage(
   pack: Pack,
-  bestCard: Card
+  bestCard: PackCard
 ): Promise<{ success: boolean; imagePath?: string; error?: string }> {
   try {
     // Convert card image to base64 for inline rendering
@@ -69,7 +69,7 @@ export async function generatePullOGImage(
     }
 
     // Calculate rarity border color
-    const rarityColor = RARITY_COLORS[bestCard.rarity] || RARITY_COLORS.common;
+    const rarityColor = (RARITY_COLORS as Record<string, any>)[bestCard.rarity] || RARITY_COLORS.common;
 
     // Create SVG element for Satori
     const element = (

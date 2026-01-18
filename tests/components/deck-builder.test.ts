@@ -143,7 +143,7 @@ describe('DeckBuilder Component - Validation', () => {
       const deckCards = createDeckCards(mockCards.slice(0, 2), [1, 1]); // 2 cards total
       currentDeck.set(
         createMockDeck('Small Deck', [
-          { id: mockCards[0].id, card: mockCards[0], count: 1 },
+          { cardId: mockCards[0].id, card: mockCards[0], count: 1 },
         ])
       );
 
@@ -160,7 +160,7 @@ describe('DeckBuilder Component - Validation', () => {
       const largeDeckCards: DeckCard[] = [];
       for (let i = 0; i < MAX_DECK_SIZE + 1; i++) {
         largeDeckCards.push({
-          id: `card_${i}`,
+          cardId: `card_${i}`,
           card: mockCards[0],
           count: 1,
         });
@@ -177,7 +177,7 @@ describe('DeckBuilder Component - Validation', () => {
       const validDeckCards: DeckCard[] = [];
       for (let i = 0; i < MIN_DECK_SIZE; i++) {
         validDeckCards.push({
-          id: `card_${i}`,
+          cardId: `card_${i}`,
           card: mockCards[i % mockCards.length],
           count: 1,
         });
@@ -192,7 +192,7 @@ describe('DeckBuilder Component - Validation', () => {
       const minDeckCards: DeckCard[] = [];
       for (let i = 0; i < MIN_DECK_SIZE; i++) {
         minDeckCards.push({
-          id: `card_${i}`,
+          cardId: `card_${i}`,
           card: mockCards[i % mockCards.length],
           count: 1,
         });
@@ -207,7 +207,7 @@ describe('DeckBuilder Component - Validation', () => {
       const maxDeckCards: DeckCard[] = [];
       for (let i = 0; i < MAX_DECK_SIZE; i++) {
         maxDeckCards.push({
-          id: `card_${i}`,
+          cardId: `card_${i}`,
           card: mockCards[i % mockCards.length],
           count: 1,
         });

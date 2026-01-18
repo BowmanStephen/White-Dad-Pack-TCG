@@ -114,7 +114,7 @@ test.describe('Battle Flow - End to End', () => {
     const attackerSelector = page.locator('[data-testid="attacker-deck-selector"], select[data-testid="attacker-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -127,7 +127,7 @@ test.describe('Battle Flow - End to End', () => {
     const defenderSelector = page.locator('[data-testid="defender-deck-selector"], select[data-testid="defender-deck"]').first();
 
     if (await defenderSelector.isVisible({ timeout: 2000 })) {
-      if (await defenderSelector.tagName() === 'SELECT') {
+      if (await defenderSelector.evaluate(el => el.tagName) === 'SELECT') {
         await defenderSelector.selectOption({ index: 1 });
       } else {
         await defenderSelector.click();
@@ -171,7 +171,7 @@ test.describe('Battle Flow - End to End', () => {
     const attackerSelector = page.locator('[data-testid="attacker-deck-selector"], select[data-testid="attacker-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -187,7 +187,7 @@ test.describe('Battle Flow - End to End', () => {
 
     if (await aiToggle.isVisible({ timeout: 2000 })) {
       // Enable AI opponent
-      const tagName = await aiToggle.tagName();
+      const tagName = await aiToggle.evaluate(el => el.tagName);
       if (tagName === 'BUTTON') {
         await aiToggle.click();
       } else if (tagName === 'INPUT') {
@@ -218,7 +218,7 @@ test.describe('Battle Flow - End to End', () => {
     const defenderSelector = page.locator('[data-testid="defender-deck-selector"], select[data-testid="defender-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -228,7 +228,7 @@ test.describe('Battle Flow - End to End', () => {
     }
 
     if (await defenderSelector.isVisible({ timeout: 2000 })) {
-      if (await defenderSelector.tagName() === 'SELECT') {
+      if (await defenderSelector.evaluate(el => el.tagName) === 'SELECT') {
         await defenderSelector.selectOption({ index: 1 });
       } else {
         await defenderSelector.click();
@@ -265,7 +265,7 @@ test.describe('Battle Flow - End to End', () => {
     const defenderSelector = page.locator('[data-testid="defender-deck-selector"], select[data-testid="defender-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -275,7 +275,7 @@ test.describe('Battle Flow - End to End', () => {
     }
 
     if (await defenderSelector.isVisible({ timeout: 2000 })) {
-      if (await defenderSelector.tagName() === 'SELECT') {
+      if (await defenderSelector.evaluate(el => el.tagName) === 'SELECT') {
         await defenderSelector.selectOption({ index: 1 });
       } else {
         await defenderSelector.click();
@@ -316,7 +316,7 @@ test.describe('Battle Flow - End to End', () => {
     const defenderSelector = page.locator('[data-testid="defender-deck-selector"], select[data-testid="defender-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -326,7 +326,7 @@ test.describe('Battle Flow - End to End', () => {
     }
 
     if (await defenderSelector.isVisible({ timeout: 2000 })) {
-      if (await defenderSelector.tagName() === 'SELECT') {
+      if (await defenderSelector.evaluate(el => el.tagName) === 'SELECT') {
         await defenderSelector.selectOption({ index: 1 });
       } else {
         await defenderSelector.click();
@@ -387,7 +387,7 @@ test.describe('Battle Flow - End to End', () => {
 
     if (await slotSelector.isVisible({ timeout: 2000 })) {
       // Select first slot
-      if (await slotSelector.tagName() === 'SELECT') {
+      if (await slotSelector.evaluate(el => el.tagName) === 'SELECT') {
         await slotSelector.selectOption({ index: 0 });
       }
 
@@ -395,7 +395,7 @@ test.describe('Battle Flow - End to End', () => {
       await page.waitForTimeout(500);
 
       // Change slot
-      if (await slotSelector.tagName() === 'SELECT') {
+      if (await slotSelector.evaluate(el => el.tagName) === 'SELECT') {
         const optionCount = await slotSelector.locator('option').count();
 
         if (optionCount > 1) {
@@ -415,7 +415,7 @@ test.describe('Battle Flow - End to End', () => {
     const defenderSelector = page.locator('[data-testid="defender-deck-selector"], select[data-testid="defender-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -425,7 +425,7 @@ test.describe('Battle Flow - End to End', () => {
     }
 
     if (await defenderSelector.isVisible({ timeout: 2000 })) {
-      if (await defenderSelector.tagName() === 'SELECT') {
+      if (await defenderSelector.evaluate(el => el.tagName) === 'SELECT') {
         await defenderSelector.selectOption({ index: 1 });
       } else {
         await defenderSelector.click();
@@ -460,7 +460,7 @@ test.describe('Battle Flow - End to End', () => {
     const defenderSelector = page.locator('[data-testid="defender-deck-selector"], select[data-testid="defender-deck"]').first();
 
     if (await attackerSelector.isVisible({ timeout: 2000 })) {
-      if (await attackerSelector.tagName() === 'SELECT') {
+      if (await attackerSelector.evaluate(el => el.tagName) === 'SELECT') {
         await attackerSelector.selectOption({ index: 0 });
       } else {
         await attackerSelector.click();
@@ -470,7 +470,7 @@ test.describe('Battle Flow - End to End', () => {
     }
 
     if (await defenderSelector.isVisible({ timeout: 2000 })) {
-      if (await defenderSelector.tagName() === 'SELECT') {
+      if (await defenderSelector.evaluate(el => el.tagName) === 'SELECT') {
         await defenderSelector.selectOption({ index: 1 });
       } else {
         await defenderSelector.click();

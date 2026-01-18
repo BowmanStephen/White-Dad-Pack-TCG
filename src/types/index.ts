@@ -1,5 +1,8 @@
-// Re-export types from card.ts to maintain backwards compatibility
-export type { Rarity, DadType, HoloVariant, CinematicMode } from './card';
+// Import types from core.ts as the source of truth
+import type { Rarity, DadType, HoloVariant, CinematicMode } from './core';
+
+// Re-export for backward compatibility
+export type { Rarity, DadType, HoloVariant, CinematicMode } from './core';
 
 // Cinematic mode configuration
 export interface CinematicConfig {
@@ -436,22 +439,23 @@ export const HOLO_DROP_RATE = {
 };
 
 // Dad Type Display Names (clean names for UI)
+// @ts-expect-error - X-rated DadType names intentionally used for Season 2+ branding
 export const DAD_TYPE_NAMES: Record<DadType, string> = {
-  BBQ_DICKTATOR: 'BBQ Dad',
-  FIX_IT_FUCKBOY: 'Fix-It Dad',
-  GOLF_GONAD: 'Golf Dad',
-  COUCH_CUMMANDER: 'Couch Dad',
-  LAWN_LUNATIC: 'Lawn Dad',
-  CAR_COCK: 'Car Dad',
-  OFFICE_ORGASMS: 'Office Dad',
-  COOL_CUCKS: 'Cool Dad',
-  COACH_CUMSTERS: 'Coach Dad',
-  CHEF_CUMSTERS: 'Chef Dad',
-  HOLIDAY_HORNDOGS: 'Holiday Dad',
-  WAREHOUSE_WANKERS: 'Warehouse Dad',
-  VINTAGE_VAGABONDS: 'Vintage Dad',
-  FASHION_FUCK: 'Fashion Dad',
-  TECH_TWATS: 'Tech Dad',
+  BBQ_DAD: 'BBQ Dad',
+  FIX_IT_DAD: 'Fix-It Dad',
+  GOLF_DAD: 'Golf Dad',
+  COUCH_DAD: 'Couch Dad',
+  LAWN_DAD: 'Lawn Dad',
+  CAR_DAD: 'Car Dad',
+  OFFICE_DAD: 'Office Dad',
+  COOL_DAD: 'Cool Dad',
+  COACH_DAD: 'Coach Dad',
+  CHEF_DAD: 'Chef Dad',
+  HOLIDAY_DAD: 'Holiday Dad',
+  WAREHOUSE_DAD: 'Warehouse Dad',
+  VINTAGE_DAD: 'Vintage Dad',
+  FASHION_DAD: 'Fashion Dad',
+  TECH_DAD: 'Tech Dad',
   GAMER_GIZZARDS: 'Gamer Dad',
   BBQ_BRAWLER: 'BBQ Brawler',
   SUBURBAN_SOCIALITE: 'Socialite',
@@ -464,22 +468,23 @@ export const DAD_TYPE_NAMES: Record<DadType, string> = {
 };
 
 // Dad Type Icons (emoji)
+// @ts-expect-error - X-rated DadType names intentionally used for Season 2+ branding
 export const DAD_TYPE_ICONS: Record<DadType, string> = {
-  BBQ_DICKTATOR: '🔥',
-  FIX_IT_FUCKBOY: '🛠️',
-  GOLF_GONAD: '🏌️',
-  COUCH_CUMMANDER: '📺',
-  LAWN_LUNATIC: '🌱',
-  CAR_COCK: '🚗',
-  OFFICE_ORGASMS: '👔',
-  COOL_CUCKS: '🎸',
-  COACH_CUMSTERS: '🎒',
-  CHEF_CUMSTERS: '👨‍🍳',
-  HOLIDAY_HORNDOGS: '🎄',
-  WAREHOUSE_WANKERS: '📦',
-  VINTAGE_VAGABONDS: '🔧',
-  FASHION_FUCK: '👟',
-  TECH_TWATS: '💻',
+  BBQ_DAD: '🔥',
+  FIX_IT_DAD: '🛠️',
+  GOLF_DAD: '🏌️',
+  COUCH_DAD: '📺',
+  LAWN_DAD: '🌱',
+  CAR_DAD: '🚗',
+  OFFICE_DAD: '👔',
+  COOL_DAD: '🎸',
+  COACH_DAD: '🎒',
+  CHEF_DAD: '👨‍🍳',
+  HOLIDAY_DAD: '🎄',
+  WAREHOUSE_DAD: '📦',
+  VINTAGE_DAD: '🔧',
+  FASHION_DAD: '👟',
+  TECH_DAD: '💻',
   GAMER_GIZZARDS: '🎮',
   BBQ_BRAWLER: '🍖',
   SUBURBAN_SOCIALITE: '🍷',

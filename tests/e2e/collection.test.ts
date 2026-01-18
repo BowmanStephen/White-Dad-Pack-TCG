@@ -279,7 +279,8 @@ test.describe('Collection Management', () => {
       const firstCardName = await initialCards.first().locator('[data-testid="card-name"]').textContent();
 
       // Change sort order (try different options)
-      if (await sortSelect.tagName() === 'SELECT') {
+      const tagName = await sortSelect.evaluate(el => el.tagName);
+      if (tagName === 'SELECT') {
         await sortSelect.selectOption({ index: 1 });
       } else {
         await sortSelect.click();

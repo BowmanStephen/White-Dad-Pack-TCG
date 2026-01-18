@@ -109,6 +109,8 @@ export interface PackConfig {
   cardsPerPack: number;
   raritySlots: RaritySlot[];
   holoChance: number;
+  packType?: string; // Pack type identifier
+  themeType?: DadType; // Optional dad type theme
 }
 
 // Rarity Slot Configuration
@@ -204,6 +206,8 @@ export interface CollectionMetadata {
   holoPulls: number; // Number of holo pulls
   created?: Date; // When the collection was first created
   rarityCounts?: Record<Rarity, number>; // Cached rarity counts for performance (US107)
+  pityCounter?: number; // Pity system counter (US108)
+  streakCounter?: number; // Daily login streak counter
 }
 
 // Collection - All packs owned by the user
