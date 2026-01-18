@@ -1,6 +1,9 @@
 <script lang="ts">
-  import type { Leaderboard, LeaderboardEntry, LeaderboardCategory } from '@/types/leaderboard';
-  import { LEADERBOARD_CATEGORIES } from '@/types/leaderboard';
+  import {
+    LEADERBOARD_CATEGORIES,
+    type Leaderboard,
+    type LeaderboardEntry,
+  } from '@/types/leaderboard';
 
   // Props
   interface Props {
@@ -10,8 +13,24 @@
 
   let { leaderboard, loading = false }: Props = $props();
 
+  type LeaderboardCategoryKey =
+    | 'packsOpened'
+    | 'uniqueCards'
+    | 'mythicCards'
+    | 'totalCards'
+    | 'collectionValue'
+    | 'battleRecord';
+
+  const leaderboardCategories = LEADERBOARD_CATEGORIES as Record<
+    LeaderboardCategoryKey,
+    { label: string; description: string; icon: string }
+  >;
+
   // Get stat value for display
-  function getStatValue(entry: LeaderboardEntry, category: LeaderboardCategory): number {
+  function getStatValue(
+    entry: LeaderboardEntry,
+    category: LeaderboardCategoryKey
+  ): number {
     switch (category) {
       case 'packsOpened':
         return entry.stats.totalPacksOpened;
@@ -24,19 +43,18 @@
       case 'collectionValue':
         return entry.stats.collectionValue ?? 0;
       case 'battleRecord':
-        // Return win rate percentage (scaled down from stored value)
-        const totalBattles = (entry.stats.battleWins ?? 0) + (entry.stats.battleLosses ?? 0);
-        if (totalBattles === 0) return 0;
-        return Math.round(((entry.stats.battleWins ?? 0) / totalBattles) * 100);
+        return getBattleRecordValue(entry);
     }
   }
 
   // Format stat value for display
-  function formatStatValue(entry: LeaderboardEntry, category: LeaderboardCategory): string {
+  function formatStatValue(
+    entry: LeaderboardEntry,
+    category: LeaderboardCategoryKey
+  ): string {
     const value = getStatValue(entry, category);
     if (category === 'battleRecord') {
-      const wins = entry.stats.battleWins ?? 0;
-      const losses = entry.stats.battleLosses ?? 0;
+      const { wins, losses } = getBattleStats(entry);
       return `${value}% (${wins}-${losses})`;
     }
     return formatNumber(value);
@@ -53,6 +71,41 @@
     if (rank === 2) return 'rank-2';
     if (rank === 3) return 'rank-3';
     return 'rank-default';
+  }
+
+  function getBattleRecordValue(entry: LeaderboardEntry): number {
+    const { wins, losses } = getBattleStats(entry);
+    const totalBattles = wins + losses;
+
+    if (totalBattles === 0) {
+      return 0;
+    }
+
+    return Math.round((wins / totalBattles) * 100);
+  }
+
+  function hasCurrentUser(entries: LeaderboardEntry[]): boolean {
+    for (const entry of entries) {
+      if (entry.isCurrentUser) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function getBattleStats(entry: LeaderboardEntry): {
+    wins: number;
+    losses: number;
+  } {
+    const stats = entry.stats as unknown as {
+      battleWins?: number;
+      battleLosses?: number;
+    };
+    return {
+      wins: stats.battleWins ?? 0,
+      losses: stats.battleLosses ?? 0,
+    };
   }
 </script>
 
@@ -93,16 +146,16 @@
 
           <div class="entry-stats">
             <div class="stat-value">
-              {formatStatValue(entry, leaderboard.category)}
+              {formatStatValue(entry, leaderboard.category as LeaderboardCategoryKey)}
             </div>
             <div class="stat-label">
-              {LEADERBOARD_CATEGORIES[leaderboard.category].label}
+              {leaderboardCategories[leaderboard.category as LeaderboardCategoryKey].label}
             </div>
           </div>
         </div>
       {/each}
 
-      {#if leaderboard.userEntry && !leaderboard.entries.some(e => e.isCurrentUser)}
+      {#if leaderboard.userEntry && !hasCurrentUser(leaderboard.entries)}
         <div class="leaderboard-entry current-user user-entry-separator">
           <div class="entry-rank rank-default">
             {leaderboard.userEntry.rank}
@@ -121,10 +174,10 @@
 
           <div class="entry-stats">
             <div class="stat-value">
-              {formatStatValue(leaderboard.userEntry, leaderboard.category)}
+              {formatStatValue(leaderboard.userEntry, leaderboard.category as LeaderboardCategoryKey)}
             </div>
             <div class="stat-label">
-              {LEADERBOARD_CATEGORIES[leaderboard.category].label}
+              {leaderboardCategories[leaderboard.category as LeaderboardCategoryKey].label}
             </div>
           </div>
         </div>

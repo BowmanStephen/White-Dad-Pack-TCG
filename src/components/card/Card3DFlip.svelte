@@ -1,15 +1,25 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { PackCard } from '@/types';
-  import { RARITY_CONFIG } from '@/types';
+  import { RARITY_CONFIG, type PackCard } from '@/types';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import ParticleEffects from './ParticleEffects.svelte';
 
   // Props
-  export let card: PackCard;
-  export let autoRotate: boolean = false;
-  export let interactive: boolean = true;
-  export let showParticles: boolean = true;
+  type Props = {
+    card: PackCard;
+    autoRotate?: boolean;
+    interactive?: boolean;
+    showParticles?: boolean;
+  };
+
+  let {
+    card,
+    autoRotate = false,
+    interactive = true,
+    showParticles = true,
+  }: Props = $props();
+
+  const dragThreshold = 50;
 
   // State
   let isFlipped = $state(false);
@@ -19,22 +29,25 @@
   let mouseY = $state(0);
   let showFlipParticles = $state(false);
   let touchStartX = $state(0);
-  let touchStartY = $state(0);
   let isDragging = $state(false);
-  let dragStartRotation = $state(0);
 
   // Container ref for size/position
   let containerElement: HTMLDivElement;
   let cardElement: HTMLDivElement;
 
   // Get rarity config for styling
-  $: rarityConfig = RARITY_CONFIG[card.rarity];
+  const rarityConfig = $derived(RARITY_CONFIG[card.rarity]);
 
   /**
    * Handle mouse move for interactive tilt (parallax effect)
    */
-  function handleMouseMove(e: MouseEvent) {
+  function handleMouseMove(e: MouseEvent): void {
     if (!interactive || !containerElement) return;
+
+    if (isDragging) {
+      handleMouseMoveDrag(e);
+      return;
+    }
 
     const rect = containerElement.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -53,7 +66,7 @@
   /**
    * Handle mouse leave - reset tilt
    */
-  function handleMouseLeave() {
+  function handleMouseLeave(): void {
     if (!isDragging) {
       rotationY = 0;
       rotationX = 0;
@@ -63,21 +76,19 @@
   /**
    * Handle mouse down - start drag to flip
    */
-  function handleMouseDown(e: MouseEvent) {
+  function handleMouseDown(e: MouseEvent): void {
     if (!interactive) return;
     isDragging = true;
-    dragStartRotation = rotationY;
     touchStartX = e.clientX;
   }
 
   /**
    * Handle mouse move during drag
    */
-  function handleMouseMoveDrag(e: MouseEvent) {
+  function handleMouseMoveDrag(e: MouseEvent): void {
     if (!isDragging || !interactive) return;
 
     const deltaX = e.clientX - touchStartX;
-    const dragThreshold = 50;
 
     // Check if drag should trigger flip
     if (Math.abs(deltaX) > dragThreshold) {
@@ -94,28 +105,26 @@
   /**
    * Handle mouse up - end drag
    */
-  function handleMouseUp() {
+  function handleMouseUp(): void {
     isDragging = false;
   }
 
   /**
    * Handle touch start
    */
-  function handleTouchStart(e: TouchEvent) {
+  function handleTouchStart(e: TouchEvent): void {
     if (!interactive) return;
     isDragging = true;
     touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
   }
 
   /**
    * Handle touch move
    */
-  function handleTouchMove(e: TouchEvent) {
+  function handleTouchMove(e: TouchEvent): void {
     if (!isDragging || !interactive) return;
 
     const deltaX = e.touches[0].clientX - touchStartX;
-    const dragThreshold = 50;
 
     if (Math.abs(deltaX) > dragThreshold) {
       if (deltaX > 0 && isFlipped) {
@@ -130,20 +139,20 @@
   /**
    * Handle touch end
    */
-  function handleTouchEnd() {
+  function handleTouchEnd(): void {
     isDragging = false;
   }
 
   /**
    * Flip the card with animation and particles
    */
-  function flipCard() {
+  function flipCard(): void {
     isFlipped = !isFlipped;
 
     // Trigger particle effect on flip
     if (showParticles) {
       showFlipParticles = true;
-      setTimeout(() => {
+      setTimeout(function () {
         showFlipParticles = false;
       }, 1000);
     }
@@ -155,7 +164,7 @@
   /**
    * Handle click to flip (alternative to drag)
    */
-  function handleClick() {
+  function handleClick(): void {
     if (interactive && !isDragging) {
       flipCard();
     }
@@ -164,7 +173,7 @@
   /**
    * Handle keyboard input for flip (Space or F key)
    */
-  function handleKeyDown(e: KeyboardEvent) {
+  function handleKeyDown(e: KeyboardEvent): void {
     if (!interactive) return;
 
     if (e.code === 'Space' || e.key === 'f' || e.key === 'F') {
@@ -184,17 +193,16 @@
         // For now, we rely on standard device orientation
       }
 
-      const handleDeviceOrientation = (event: DeviceOrientationEvent) => {
+      function handleDeviceOrientation(event: DeviceOrientationEvent): void {
         if (!interactive || isDragging) return;
 
-        const alpha = event.alpha || 0; // Z axis
         const beta = event.beta || 0; // X axis
         const gamma = event.gamma || 0; // Y axis
 
         // Subtle tilt based on device orientation
         rotationY = gamma * 0.5; // Max 45 degrees
         rotationX = beta * 0.5; // Max 45 degrees
-      };
+      }
 
       window.addEventListener('deviceorientation', handleDeviceOrientation);
 
@@ -215,26 +223,27 @@
     };
     return names[holoType] || holoType;
   }
+
 </script>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window onkeydown={handleKeyDown} />
 
 <!-- Card Container -->
 <div
   class="card-3d-container"
   bind:this={containerElement}
-  on:mousemove={handleMouseMove}
-  on:mouseleave={handleMouseLeave}
-  on:mousedown={handleMouseDown}
-  on:mouseup={handleMouseUp}
-  on:touchstart={handleTouchStart}
-  on:touchmove={handleTouchMove}
-  on:touchend={handleTouchEnd}
+  onmousemove={handleMouseMove}
+  onmouseleave={handleMouseLeave}
+  onmousedown={handleMouseDown}
+  onmouseup={handleMouseUp}
+  ontouchstart={handleTouchStart}
+  ontouchmove={handleTouchMove}
+  ontouchend={handleTouchEnd}
   role="button"
   tabindex="0"
   aria-label={`${card.name} card. ${isFlipped ? 'Card is flipped. ' : ''}Click or drag to flip. Space to toggle.`}
-  on:click={handleClick}
-  on:keydown={handleKeyDown}
+  onclick={handleClick}
+  onkeydown={handleKeyDown}
 >
   <!-- 3D Flip Container -->
   <div
@@ -338,8 +347,8 @@
   {#if showFlipParticles}
     <div class="particle-layer">
       <ParticleEffects
-        count={card.rarity === 'mythic' ? 40 : card.rarity === 'legendary' ? 25 : card.rarity === 'epic' ? 15 : 10}
-        color={rarityConfig.color}
+        rarity={card.rarity}
+        active={showFlipParticles}
         duration={1000}
       />
     </div>
@@ -577,10 +586,6 @@
     .card-3d-container {
       width: 320px;
       height: 440px;
-    }
-
-    .back-content {
-      padding: 16px 20px;
     }
 
     .flip-hint,

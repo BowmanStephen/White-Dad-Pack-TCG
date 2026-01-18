@@ -46,22 +46,24 @@ export const zoomLevel = atom<number>(1);
  * @param cards - List of cards for navigation
  * @param index - Index of the card in the list
  */
-export function openLightbox(card: PackCard, cards: PackCard[], index: number) {
+export function openLightbox(
+  card: PackCard,
+  cards: PackCard[],
+  index: number
+): void {
   currentCard.set(card);
   cardList.set(cards);
   currentIndex.set(index);
   isLightboxOpen.set(true);
 
   // Prevent body scroll when lightbox is open
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = 'hidden';
-  }
+  setBodyScroll(false);
 }
 
 /**
  * Close the lightbox
  */
-export function closeLightbox() {
+export function closeLightbox(): void {
   isLightboxOpen.set(false);
   currentCard.set(null);
   cardList.set([]);
@@ -69,15 +71,13 @@ export function closeLightbox() {
   isCardFlipped.set(false); // Reset flip state
 
   // Restore body scroll
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = '';
-  }
+  setBodyScroll(true);
 }
 
 /**
  * Navigate to the next card
  */
-export function nextCard() {
+export function nextCard(): void {
   const cards = cardList.get();
   const index = currentIndex.get();
 
@@ -91,7 +91,7 @@ export function nextCard() {
 /**
  * Navigate to the previous card
  */
-export function prevCard() {
+export function prevCard(): void {
   const cards = cardList.get();
   const index = currentIndex.get();
 
@@ -106,7 +106,7 @@ export function prevCard() {
  * Jump to a specific card by index
  * @param index - The index to jump to
  */
-export function goToCard(index: number) {
+export function goToCard(index: number): void {
   const cards = cardList.get();
 
   if (index < 0 || index >= cards.length) return;
@@ -146,28 +146,28 @@ export function getProgress(): string {
 /**
  * Toggle card flip state (PACK-036)
  */
-export function toggleCardFlip() {
+export function toggleCardFlip(): void {
   isCardFlipped.set(!isCardFlipped.get());
 }
 
 /**
  * Set card flip state (PACK-036)
  */
-export function setCardFlip(flipped: boolean) {
+export function setCardFlip(flipped: boolean): void {
   isCardFlipped.set(flipped);
 }
 
 /**
  * Set card view mode (ROUND-3: Enhanced display modes)
  */
-export function setCardViewMode(mode: 'default' | '3d' | 'zoom') {
+export function setCardViewMode(mode: 'default' | '3d' | 'zoom'): void {
   cardViewMode.set(mode);
 }
 
 /**
  * Set zoom level (ROUND-3: Interactive zoom)
  */
-export function setZoomLevel(level: number) {
+export function setZoomLevel(level: number): void {
   const clampedLevel = Math.max(1, Math.min(level, 3)); // Clamp between 1 and 3
   zoomLevel.set(clampedLevel);
 }
@@ -175,8 +175,16 @@ export function setZoomLevel(level: number) {
 /**
  * Reset view to defaults
  */
-export function resetCardView() {
+export function resetCardView(): void {
   cardViewMode.set('default');
   zoomLevel.set(1);
   isCardFlipped.set(false);
+}
+
+function setBodyScroll(enabled: boolean): void {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  document.body.style.overflow = enabled ? '' : 'hidden';
 }

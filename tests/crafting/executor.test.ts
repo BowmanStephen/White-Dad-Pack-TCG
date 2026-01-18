@@ -54,7 +54,7 @@ function createMockCard(rarity: Rarity, id?: string): PackCard {
   return {
     id: id || crypto.randomUUID(),
     name: `Test ${rarity} Card`,
-    type: 'BBQ_DAD',
+    type: 'BBQ_DICKTATOR',
     rarity,
     isHolo: false,
     isRevealed: true,

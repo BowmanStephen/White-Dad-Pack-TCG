@@ -12,15 +12,21 @@
 
 import { atom, computed } from 'nanostores';
 import { persistentAtom } from '@nanostores/persistent';
-import type {
-  TradeOffer,
-  TradeCard,
-  TradeState,
-  TradeHistoryEntry,
-  TradeStatus,
-  DEFAULT_TRADE_CONFIG,
-} from '@/types/trading-crafting';
 import type { CardInCollection } from '@/types/card';
+import type {
+  TradeCard,
+  TradeHistoryEntry,
+  TradeOffer,
+  TradeStatus,
+} from '@/types/trading-crafting';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const MAX_ACTIVE_TRADES = 10;
+const MAX_CARDS_PER_SIDE = 6;
+const TRADE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ============================================================================
 // STATE
@@ -44,58 +50,26 @@ export const requestedCards = atom<TradeCard[]>([]);
 /**
  * Sent trades (trades you've created)
  */
-export const sentTrades = persistentAtom<TradeOffer[]>('daddeck-sent-trades', [], {
-  encode: (value) => JSON.stringify(value, (key, value) => {
-    // Serialize Date objects to ISO strings
-    if (value instanceof Date) {
-      return { __date__: value.toISOString() };
-    }
-    return value;
-  }),
-  decode: (value) => JSON.parse(value, (key, value) => {
-    // Deserialize Date objects
-    if (value && typeof value === 'object' && '__date__' in value) {
-      return new Date(value.__date__);
-    }
-    return value;
-  }),
-});
+export const sentTrades = createPersistentStore<TradeOffer[]>(
+  'daddeck-sent-trades',
+  []
+);
 
 /**
  * Received trades (trades sent to you)
  */
-export const receivedTrades = persistentAtom<TradeOffer[]>('daddeck-received-trades', [], {
-  encode: (value) => JSON.stringify(value, (key, value) => {
-    if (value instanceof Date) {
-      return { __date__: value.toISOString() };
-    }
-    return value;
-  }),
-  decode: (value) => JSON.parse(value, (key, value) => {
-    if (value && typeof value === 'object' && '__date__' in value) {
-      return new Date(value.__date__);
-    }
-    return value;
-  }),
-});
+export const receivedTrades = createPersistentStore<TradeOffer[]>(
+  'daddeck-received-trades',
+  []
+);
 
 /**
  * Trade history (completed trades)
  */
-export const tradeHistory = persistentAtom<TradeHistoryEntry[]>('daddeck-trade-history', [], {
-  encode: (value) => JSON.stringify(value, (key, value) => {
-    if (value instanceof Date) {
-      return { __date__: value.toISOString() };
-    }
-    return value;
-  }),
-  decode: (value) => JSON.parse(value, (key, value) => {
-    if (value && typeof value === 'object' && '__date__' in value) {
-      return new Date(value.__date__);
-    }
-    return value;
-  }),
-});
+export const tradeHistory = createPersistentStore<TradeHistoryEntry[]>(
+  'daddeck-trade-history',
+  []
+);
 
 // ============================================================================
 // COMPUTED VALUES
@@ -116,21 +90,20 @@ export const activeTradeCount = computed(
 /**
  * Can create more trades? (check against max limit)
  */
-export const canCreateTrade = computed(
-  [activeTradeCount],
-  (active) => active < 10 // TODO: Use DEFAULT_TRADE_CONFIG.maxActiveTrades
-);
+export const canCreateTrade = computed([activeTradeCount], (active) => {
+  return active < MAX_ACTIVE_TRADES;
+});
 
 /**
  * Selected cards count validation
  */
-export const selectionValid = computed(
-  [offeredCards, requestedCards],
-  (offered, requested) => {
-    return offered.length > 0 && requested.length > 0 &&
-           offered.length <= 6 && requested.length <= 6; // TODO: Use DEFAULT_TRADE_CONFIG.maxCardsPerSide
-  }
-);
+export const selectionValid = computed([offeredCards, requestedCards], (offered, requested) => {
+  const hasSelections = offered.length > 0 && requested.length > 0;
+  const withinLimit =
+    offered.length <= MAX_CARDS_PER_SIDE && requested.length <= MAX_CARDS_PER_SIDE;
+
+  return hasSelections && withinLimit;
+});
 
 // ============================================================================
 // ACTIONS
@@ -148,8 +121,8 @@ export function addOfferedCard(card: CardInCollection): void {
   }
 
   // Check max limit
-  if (current.length >= 6) {
-    return; // TODO: Use DEFAULT_TRADE_CONFIG.maxCardsPerSide
+  if (current.length >= MAX_CARDS_PER_SIDE) {
+    return;
   }
 
   offeredCards.set([...current, card]);
@@ -175,8 +148,8 @@ export function addRequestedCard(card: TradeCard): void {
   }
 
   // Check max limit
-  if (current.length >= 6) {
-    return; // TODO: Use DEFAULT_TRADE_CONFIG.maxCardsPerSide
+  if (current.length >= MAX_CARDS_PER_SIDE) {
+    return;
   }
 
   requestedCards.set([...current, card]);
@@ -224,7 +197,7 @@ export function createTradeOffer(senderName: string, message?: string): TradeOff
   }
 
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 days
+  const expiresAt = new Date(now.getTime() + TRADE_EXPIRY_MS);
 
   const tradeOffer: TradeOffer = {
     id: crypto.randomUUID(),
@@ -247,9 +220,7 @@ export function createTradeOffer(senderName: string, message?: string): TradeOff
  */
 export function encodeTradeOffer(trade: TradeOffer): string {
   const data = JSON.stringify(trade);
-  const base64 = btoa(data);
-  // Make URL-safe
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  return toBase64Url(data);
 }
 
 /**
@@ -257,22 +228,8 @@ export function encodeTradeOffer(trade: TradeOffer): string {
  */
 export function decodeTradeOffer(encoded: string): TradeOffer | null {
   try {
-    // Restore base64 padding
-    let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) {
-      base64 += '=';
-    }
-
-    const data = atob(base64);
-    const trade = JSON.parse(data, (key, value) => {
-      // Deserialize Date objects
-      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-        return new Date(value);
-      }
-      return value;
-    });
-
-    return trade;
+    const data = fromBase64Url(encoded);
+    return JSON.parse(data, deserializeTradeDates) as TradeOffer;
   } catch (error) {
     console.error('Failed to decode trade offer:', error);
     return null;
@@ -303,21 +260,8 @@ export function loadTradeFromUrl(urlParam: string): TradeOffer | null {
  */
 export function acceptTrade(tradeId: string): void {
   const received = receivedTrades.get();
-  const tradeIndex = received.findIndex(t => t.id === tradeId);
-
-  if (tradeIndex === -1) {
-    throw new Error('Trade not found');
-  }
-
-  const trade = received[tradeIndex];
-  trade.status = 'accepted';
-
-  // Update received trades
-  receivedTrades.set([
-    ...received.slice(0, tradeIndex),
-    trade,
-    ...received.slice(tradeIndex + 1)
-  ]);
+  const { trade, updatedTrades } = updateTradeStatus(received, tradeId, 'accepted');
+  receivedTrades.set(updatedTrades);
 
   // Add to history
   addToHistory({
@@ -329,7 +273,6 @@ export function acceptTrade(tradeId: string): void {
     status: 'accepted',
   });
 
-  // Clear current trade
   currentTrade.set(null);
 }
 
@@ -338,21 +281,8 @@ export function acceptTrade(tradeId: string): void {
  */
 export function rejectTrade(tradeId: string): void {
   const received = receivedTrades.get();
-  const tradeIndex = received.findIndex(t => t.id === tradeId);
-
-  if (tradeIndex === -1) {
-    throw new Error('Trade not found');
-  }
-
-  const trade = received[tradeIndex];
-  trade.status = 'rejected';
-
-  // Update received trades
-  receivedTrades.set([
-    ...received.slice(0, tradeIndex),
-    trade,
-    ...received.slice(tradeIndex + 1)
-  ]);
+  const { trade, updatedTrades } = updateTradeStatus(received, tradeId, 'rejected');
+  receivedTrades.set(updatedTrades);
 
   // Add to history
   addToHistory({
@@ -364,7 +294,6 @@ export function rejectTrade(tradeId: string): void {
     status: 'rejected',
   });
 
-  // Clear current trade
   currentTrade.set(null);
 }
 
@@ -373,21 +302,8 @@ export function rejectTrade(tradeId: string): void {
  */
 export function cancelTrade(tradeId: string): void {
   const sent = sentTrades.get();
-  const tradeIndex = sent.findIndex(t => t.id === tradeId);
-
-  if (tradeIndex === -1) {
-    throw new Error('Trade not found');
-  }
-
-  const trade = sent[tradeIndex];
-  trade.status = 'cancelled';
-
-  // Update sent trades
-  sentTrades.set([
-    ...sent.slice(0, tradeIndex),
-    trade,
-    ...sent.slice(tradeIndex + 1)
-  ]);
+  const { trade, updatedTrades } = updateTradeStatus(sent, tradeId, 'cancelled');
+  sentTrades.set(updatedTrades);
 
   // Add to history
   addToHistory({
@@ -399,7 +315,6 @@ export function cancelTrade(tradeId: string): void {
     status: 'rejected',
   });
 
-  // Clear current trade if it's the cancelled one
   if (currentTrade.get()?.id === tradeId) {
     currentTrade.set(null);
   }
@@ -418,9 +333,10 @@ function addToHistory(entry: TradeHistoryEntry): void {
  */
 export function getTradeOfferUrl(trade: TradeOffer): string {
   const encoded = encodeTradeOffer(trade);
-  const baseUrl = typeof window !== 'undefined'
-    ? window.location.origin + '/trade'
-    : 'https://daddeck.com/trade';
+  const baseUrl =
+    typeof window !== 'undefined'
+      ? window.location.origin + '/trade'
+      : 'https://daddeck.com/trade';
   return `${baseUrl}?offer=${encoded}`;
 }
 
@@ -432,39 +348,107 @@ export function clearExpiredTrades(): void {
 
   // Clear expired sent trades
   const sent = sentTrades.get();
-  const activeSent = sent.filter(t => {
-    const isExpired = t.expiresAt < now && t.status === 'pending';
-    if (isExpired) {
-      // Add to history as expired
-      addToHistory({
-        id: crypto.randomUUID(),
-        completedAt: new Date(),
-        partnerName: t.senderName,
-        givenCards: t.offeredCards,
-        receivedCards: [],
-        status: 'rejected',
-      });
+  const activeSent = sent.filter((trade) => {
+    if (!isPendingAndExpired(trade, now)) {
+      return true;
     }
-    return !isExpired;
+
+    addToHistory({
+      id: crypto.randomUUID(),
+      completedAt: new Date(),
+      partnerName: trade.senderName,
+      givenCards: trade.offeredCards,
+      receivedCards: [],
+      status: 'rejected',
+    });
+
+    return false;
   });
   sentTrades.set(activeSent);
 
   // Clear expired received trades
   const received = receivedTrades.get();
-  const activeReceived = received.filter(t => {
-    const isExpired = t.expiresAt < now && t.status === 'pending';
-    if (isExpired) {
-      // Add to history as expired
-      addToHistory({
-        id: crypto.randomUUID(),
-        completedAt: new Date(),
-        partnerName: t.senderName,
-        givenCards: [],
-        receivedCards: [],
-        status: 'rejected',
-      });
+  const activeReceived = received.filter((trade) => {
+    if (!isPendingAndExpired(trade, now)) {
+      return true;
     }
-    return !isExpired;
+
+    addToHistory({
+      id: crypto.randomUUID(),
+      completedAt: new Date(),
+      partnerName: trade.senderName,
+      givenCards: [],
+      receivedCards: [],
+      status: 'rejected',
+    });
+
+    return false;
   });
   receivedTrades.set(activeReceived);
+}
+
+function serializeTradeDates(_key: string, value: unknown): unknown {
+  if (value instanceof Date) {
+    return { __date__: value.toISOString() };
+  }
+
+  return value;
+}
+
+function deserializeTradeDates(_key: string, value: unknown): unknown {
+  if (value && typeof value === 'object' && '__date__' in value) {
+    const record = value as { __date__: string };
+    return new Date(record.__date__);
+  }
+
+  if (typeof value === 'string' && isIsoTimestamp(value)) {
+    return new Date(value);
+  }
+
+  return value;
+}
+
+function createPersistentStore<T>(key: string, initialValue: T) {
+  return persistentAtom<T>(key, initialValue, {
+    encode: (value) => JSON.stringify(value, serializeTradeDates),
+    decode: (value) => JSON.parse(value, deserializeTradeDates),
+  });
+}
+
+function updateTradeStatus(
+  trades: TradeOffer[],
+  tradeId: string,
+  status: TradeStatus
+): { trade: TradeOffer; updatedTrades: TradeOffer[] } {
+  const tradeIndex = trades.findIndex((trade) => trade.id === tradeId);
+
+  if (tradeIndex === -1) {
+    throw new Error('Trade not found');
+  }
+
+  const trade = { ...trades[tradeIndex], status };
+  const updatedTrades = [...trades];
+  updatedTrades[tradeIndex] = trade;
+
+  return { trade, updatedTrades };
+}
+
+function toBase64Url(value: string): string {
+  return btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+function fromBase64Url(encoded: string): string {
+  let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+  return atob(base64);
+}
+
+function isPendingAndExpired(trade: TradeOffer, now: Date): boolean {
+  return trade.status === 'pending' && trade.expiresAt < now;
+}
+
+function isIsoTimestamp(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value);
 }

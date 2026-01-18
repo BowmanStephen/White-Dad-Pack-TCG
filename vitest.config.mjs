@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [svelte(), svelteTesting()],
   test: {
     environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.test.ts'],
     exclude: ['node_modules', 'dist', '**/*.spec.ts', 'tests/integration', 'tests/visual', 'tests/e2e'],
     coverage: {

@@ -1,28 +1,55 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { tradeHistory, sentTrades, receivedTrades } from '@/stores/trade';
-  import type { TradeHistoryEntry } from '@/types/trading-crafting';
+  import type { TradeHistoryEntry, TradeStatus } from '@/types/trading-crafting';
+
+  const FILTER_OPTIONS = [
+    { value: 'all', label: 'All' },
+    { value: 'sent', label: 'Sent' },
+    { value: 'received', label: 'Received' },
+    { value: 'history', label: 'Completed' },
+  ] as const;
+
+  const RARITY_CLASS_MAP: Record<string, string> = {
+    common: 'text-gray-400',
+    uncommon: 'text-blue-400',
+    rare: 'text-yellow-400',
+    epic: 'text-purple-400',
+    legendary: 'text-orange-400',
+    mythic: 'text-pink-400',
+  };
+
+  const STATUS_CLASS_MAP: Record<string, string> = {
+    pending: 'text-yellow-400',
+    accepted: 'text-green-400',
+    rejected: 'text-red-400',
+    cancelled: 'text-gray-400',
+  };
+
+  type TradeHistoryEntryDisplay = Omit<TradeHistoryEntry, 'status'> & {
+    status: TradeStatus;
+  };
 
   // UI state
   let history = $state<TradeHistoryEntry[]>([]);
-  let sent = $state(sentTrades.get());
-  let received = $state(receivedTrades.get());
+  let sent = $state([...sentTrades.get()]);
+  let received = $state([...receivedTrades.get()]);
   let filter = $state<'all' | 'sent' | 'received' | 'history'>('all');
   let isLoading = $state(true);
 
   onMount(() => {
     // Subscribe to trade stores
     const unsubHistory = tradeHistory.subscribe((value) => {
-      history = value;
+      history = [...value];
       isLoading = false;
     });
 
     const unsubSent = sentTrades.subscribe((value) => {
-      sent = value;
+      sent = [...value];
     });
 
     const unsubReceived = receivedTrades.subscribe((value) => {
-      received = value;
+      received = [...value];
     });
 
     // Cleanup on unmount
@@ -33,115 +60,74 @@
     };
   });
 
-  /**
-   * Get filtered trade entries
-   */
-  let filteredEntries = $derived(() => {
+  function getFilteredEntries(): TradeHistoryEntryDisplay[] {
+    const sentEntries = sent.map(toSentHistoryEntry);
+    const receivedEntries = received.map(toReceivedHistoryEntry);
+
     switch (filter) {
       case 'sent':
-        return sent.map(t => ({
-          id: t.id,
-          completedAt: t.createdAt,
-          partnerName: t.senderName,
-          givenCards: t.offeredCards,
-          receivedCards: t.requestedCards,
-          status: t.status,
-        } as TradeHistoryEntry));
+        return sentEntries;
       case 'received':
-        return received.map(t => ({
-          id: t.id,
-          completedAt: t.createdAt,
-          partnerName: t.senderName,
-          givenCards: t.requestedCards,
-          receivedCards: t.offeredCards,
-          status: t.status,
-        } as TradeHistoryEntry));
+        return receivedEntries;
       case 'history':
         return history;
       case 'all':
       default:
-        return [
-          ...sent.map(t => ({
-            id: t.id,
-            completedAt: t.createdAt,
-            partnerName: t.senderName,
-            givenCards: t.offeredCards,
-            receivedCards: t.requestedCards,
-            status: t.status,
-          } as TradeHistoryEntry)),
-          ...received.map(t => ({
-            id: t.id,
-            completedAt: t.createdAt,
-            partnerName: t.senderName,
-            givenCards: t.requestedCards,
-            receivedCards: t.offeredCards,
-            status: t.status,
-          } as TradeHistoryEntry)),
-          ...history,
-        ].sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
+        return [...sentEntries, ...receivedEntries, ...history].sort(
+          (a, b) => b.completedAt.getTime() - a.completedAt.getTime()
+        );
     }
-  }());
-
-  /**
-   * Get rarity color class
-   */
-  function getRarityColor(rarity: string): string {
-    const colors: Record<string, string> = {
-      common: 'text-gray-400',
-      uncommon: 'text-blue-400',
-      rare: 'text-yellow-400',
-      epic: 'text-purple-400',
-      legendary: 'text-orange-400',
-      mythic: 'text-pink-400',
-    };
-    return colors[rarity] || colors.common;
   }
 
-  /**
-   * Get status color class
-   */
-  function getStatusColor(status: string): string {
-    const colors: Record<string, string> = {
-      pending: 'text-yellow-400',
-      accepted: 'text-green-400',
-      rejected: 'text-red-400',
-      cancelled: 'text-gray-400',
+  let filteredEntries = $derived(getFilteredEntries());
+
+  function toSentHistoryEntry(
+    trade: typeof sent[number]
+  ): TradeHistoryEntryDisplay {
+    return {
+      id: trade.id,
+      completedAt: trade.createdAt,
+      partnerName: trade.senderName,
+      givenCards: trade.offeredCards,
+      receivedCards: trade.requestedCards,
+      status: trade.status,
     };
-    return colors[status] || colors.pending;
+  }
+
+  function toReceivedHistoryEntry(
+    trade: typeof received[number]
+  ): TradeHistoryEntryDisplay {
+    return {
+      id: trade.id,
+      completedAt: trade.createdAt,
+      partnerName: trade.senderName,
+      givenCards: trade.requestedCards,
+      receivedCards: trade.offeredCards,
+      status: trade.status,
+    };
+  }
+
+  function getRarityColor(rarity: string): string {
+    return RARITY_CLASS_MAP[rarity] || RARITY_CLASS_MAP.common;
+  }
+
+  function getStatusColor(status: string): string {
+    return STATUS_CLASS_MAP[status] || STATUS_CLASS_MAP.pending;
   }
 </script>
 
 <div class="trade-history">
   <!-- Filters -->
   <div class="filters">
-    <button
-      on:click={() => filter = 'all'}
-      class:active={filter === 'all'}
-      class="filter-btn"
-    >
-      All
-    </button>
-    <button
-      on:click={() => filter = 'sent'}
-      class:active={filter === 'sent'}
-      class="filter-btn"
-    >
-      Sent
-    </button>
-    <button
-      on:click={() => filter = 'received'}
-      class:active={filter === 'received'}
-      class="filter-btn"
-    >
-      Received
-    </button>
-    <button
-      on:click={() => filter = 'history'}
-      class:active={filter === 'history'}
-      class="filter-btn"
-    >
-      Completed
-    </button>
+    {#each FILTER_OPTIONS as option}
+      <button
+        onclick={() => filter = option.value}
+        class:active={filter === option.value}
+        class="filter-btn"
+      >
+        {option.label}
+      </button>
+    {/each}
   </div>
 
   <!-- Loading State -->

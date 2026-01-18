@@ -17,6 +17,7 @@ import StorageQuotaWarning from '../components/storage/StorageQuotaWarning.svelt
 import AchievementPopup from '../components/achievements/AchievementPopup.svelte';
 import DailyRewardsBanner from '../components/daily/DailyRewardsBanner.svelte';
 import DailyRewardsModal from '../components/daily/DailyRewardsModal.svelte';
+import UpgradeInitializer from '../components/upgrade/UpgradeInitializer.svelte';
 
 interface Props {
   title?: string;
@@ -190,6 +191,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <!-- PACK-082: Daily Rewards System -->
     <DailyRewardsBanner client:load />
     <DailyRewardsModal client:load />
+
+    <!-- PACK-088: Card Upgrade System Initializer -->
+    <UpgradeInitializer client:load />
 
     <!-- Bottom Navigation (Mobile Only) -->
     <BottomNav client:load />

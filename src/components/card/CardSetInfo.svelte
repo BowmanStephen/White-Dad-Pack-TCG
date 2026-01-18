@@ -1,6 +1,5 @@
 <script lang="ts">
-  import type { PackCard } from '@/types';
-  import { RARITY_CONFIG, RARITY_ORDER } from '@/types';
+  import { RARITY_CONFIG, RARITY_ORDER, type PackCard } from '@/types';
 
   // Props
   export let card: PackCard;
@@ -55,29 +54,48 @@
     return emojis[holoType] || '◆';
   }
 
-  /**
-   * Get rarity tier color for display
-   */
-  function getRarityColor(rarity: typeof RARITY_ORDER[number]): string {
-    return RARITY_CONFIG[rarity].color;
-  }
+  type RarityKey = keyof typeof RARITY_ORDER;
+  const rarityKeys = Object.keys(RARITY_ORDER) as RarityKey[];
 
   /**
    * Get rarity progression - shows which rarities exist in series
    */
   function getRarityProgression(): Array<{
-    rarity: typeof RARITY_ORDER[number];
+    rarity: RarityKey;
     isOwned: boolean;
     color: string;
   }> {
-    // In a real implementation, this would check if we own any cards
-    // of each rarity in this series. For now, we'll show all rarities
-    // and highlight the current card's rarity
-    return RARITY_ORDER.map(rarity => ({
-      rarity,
-      isOwned: rarity === card.rarity,
-      color: RARITY_CONFIG[rarity].color,
-    }));
+    const tiers: Array<{
+      rarity: RarityKey;
+      isOwned: boolean;
+      color: string;
+    }> = [];
+
+    for (const rarity of rarityKeys) {
+      tiers.push({
+        rarity,
+        isOwned: rarity === card.rarity,
+        color: RARITY_CONFIG[rarity].color,
+      });
+    }
+
+    return tiers;
+  }
+
+  function getSeasonColor(seasonId: number): string {
+    const seasonColors: Record<number, string> = {
+      1: '#1e40af',
+      2: '#dc2626',
+      3: '#d97706',
+      4: '#0284c7',
+      5: '#16a34a',
+      6: '#9333ea',
+      7: '#ec4899',
+      8: '#f59e0b',
+      9: '#10b981',
+      10: '#6366f1',
+    };
+    return seasonColors[seasonId] || '#9ca3af';
   }
 </script>
 
@@ -274,25 +292,6 @@
     </div>
   {/if}
 </div>
-
-<!-- Helper function: get season color -->
-<script>
-  function getSeasonColor(seasonId: number): string {
-    const seasonColors: Record<number, string> = {
-      1: '#1e40af',
-      2: '#dc2626',
-      3: '#d97706',
-      4: '#0284c7',
-      5: '#16a34a',
-      6: '#9333ea',
-      7: '#ec4899',
-      8: '#f59e0b',
-      9: '#10b981',
-      10: '#6366f1',
-    };
-    return seasonColors[seasonId] || '#9ca3af';
-  }
-</script>
 
 <style>
   .card-set-info {

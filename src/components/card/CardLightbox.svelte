@@ -13,12 +13,20 @@
     getProgress,
     isCardFlipped,
     toggleCardFlip,
+    cardViewMode,
+    setCardViewMode,
+    resetCardView,
   } from '../../stores/lightbox';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import type { PackCard } from '../../types';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import CardStats from './CardStats.svelte';
   import Card from './Card.svelte';
+  import Card3DFlip from './Card3DFlip.svelte';
+  import CardSetInfo from './CardSetInfo.svelte';
+  import EnhancedCardStats from './EnhancedCardStats.svelte';
+  import CardCollectionContext from './CardCollectionContext.svelte';
+  import ZoomableCardModal from './ZoomableCardModal.svelte';
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
@@ -29,6 +37,7 @@
   let index = $derived($currentIndex);
   let progress = $derived(getProgress());
   let isFlipped = $derived($isCardFlipped);
+  let viewMode = $derived($cardViewMode);
 
   // Share support check
   let shareSupport = $derived(checkShareSupport());
@@ -40,6 +49,27 @@
   let lightboxElement = $state<HTMLDivElement | undefined>(undefined);
   let cardImageElement = $state<HTMLDivElement | undefined>(undefined);
   let hasKeyListener = $state(false);
+
+  // View tab state
+  let activeTab: 'details' | 'stats' | 'set' = $state('details');
+
+  // Zoom modal state
+  let isZoomOpen = $state(false);
+
+  // Handle tab switch
+  function switchTab(tab: 'details' | 'stats' | 'set') {
+    activeTab = tab;
+  }
+
+  // Open zoom modal
+  function openZoomModal() {
+    isZoomOpen = true;
+  }
+
+  // Close zoom modal
+  function closeZoomModal() {
+    isZoomOpen = false;
+  }
 
   // Keyboard navigation
   function handleKeyDown(event: KeyboardEvent) {
@@ -247,70 +277,154 @@
         </div>
 
         <!-- Info Panel -->
-        <div class="lightbox-info-panel">
+        <div class="lightbox-info-panel" style="--rarity-color: {RARITY_CONFIG[card.rarity].color}; --rarity-glow: {RARITY_CONFIG[card.rarity].glowColor};">
           <!-- Progress Indicator -->
           <div class="lightbox-progress">
             {progress}
           </div>
 
-          <!-- Card Details -->
-          <div class="card-details-section">
-            <div class="detail-row">
-              <span class="detail-label">Type</span>
-              <span class="detail-value">
-                <span class="type-icon">{DAD_TYPE_ICONS[card.type]}</span>
-                {DAD_TYPE_NAMES[card.type]}
-              </span>
-            </div>
+          <!-- Tab Navigation -->
+          <div class="tab-navigation">
+            <button
+              class="tab-btn"
+              class:active={activeTab === 'details'}
+              on:click={() => switchTab('details')}
+              aria-pressed={activeTab === 'details'}
+            >
+              <span class="tab-icon">📋</span>
+              <span class="tab-label">Details</span>
+            </button>
+            <button
+              class="tab-btn"
+              class:active={activeTab === 'stats'}
+              on:click={() => switchTab('stats')}
+              aria-pressed={activeTab === 'stats'}
+            >
+              <span class="tab-icon">📊</span>
+              <span class="tab-label">Stats</span>
+            </button>
+            <button
+              class="tab-btn"
+              class:active={activeTab === 'set'}
+              on:click={() => switchTab('set')}
+              aria-pressed={activeTab === 'set'}
+            >
+              <span class="tab-icon">🃏</span>
+              <span class="tab-label">Set Info</span>
+            </button>
+          </div>
 
-            <div class="detail-row">
-              <span class="detail-label">Rarity</span>
-              <span class="detail-value" style="color: {RARITY_CONFIG[card.rarity].color};">
-                {RARITY_CONFIG[card.rarity].name}
-              </span>
-            </div>
+          <!-- Tab Content -->
+          <div class="tab-content">
+            <!-- Details Tab -->
+            {#if activeTab === 'details'}
+              <div class="card-details-section">
+                <div class="detail-row">
+                  <span class="detail-label">Type</span>
+                  <span class="detail-value">
+                    <span class="type-icon">{DAD_TYPE_ICONS[card.type]}</span>
+                    {DAD_TYPE_NAMES[card.type]}
+                  </span>
+                </div>
 
-            <div class="detail-row">
-              <span class="detail-label">Card Number</span>
-              <span class="detail-value">#{card.cardNumber.toString().padStart(3, '0')}/{card.totalInSeries}</span>
-            </div>
+                <div class="detail-row">
+                  <span class="detail-label">Rarity</span>
+                  <span class="detail-value" style="color: {RARITY_CONFIG[card.rarity].color};">
+                    {RARITY_CONFIG[card.rarity].name}
+                  </span>
+                </div>
 
-            <div class="detail-row">
-              <span class="detail-label">Series</span>
-              <span class="detail-value">{card.series}</span>
-            </div>
+                <div class="detail-row">
+                  <span class="detail-label">Card Number</span>
+                  <span class="detail-value">#{card.cardNumber.toString().padStart(3, '0')}/{card.totalInSeries}</span>
+                </div>
 
-            <div class="detail-row">
-              <span class="detail-label">Artist</span>
-              <span class="detail-value">{card.artist}</span>
-            </div>
+                <div class="detail-row">
+                  <span class="detail-label">Series</span>
+                  <span class="detail-value">{card.series}</span>
+                </div>
 
-            {#if card.isHolo}
-              <div class="detail-row">
-                <span class="detail-label">Holo Variant</span>
-                <span class="detail-value holo-badge">
-                  ✨ {getHoloVariantName(card.holoType)}
-                </span>
+                <div class="detail-row">
+                  <span class="detail-label">Artist</span>
+                  <span class="detail-value">{card.artist}</span>
+                </div>
+
+                {#if card.isHolo}
+                  <div class="detail-row">
+                    <span class="detail-label">Holo Variant</span>
+                    <span class="detail-value holo-badge">
+                      ✨ {getHoloVariantName(card.holoType)}
+                    </span>
+                  </div>
+                {/if}
               </div>
+
+              <!-- Flavor Text -->
+              <div class="flavor-text-section">
+                <p class="flavor-text">"{card.flavorText}"</p>
+              </div>
+
+              <!-- Collection Context -->
+              <CardCollectionContext
+                {card}
+                ownedCount={1}
+                firstPullDate={new Date()}
+                onAddToDeck={() => console.log('Add to deck:', card.name)}
+                onStartTrade={() => console.log('Start trade:', card.name)}
+              />
+            {/if}
+
+            <!-- Stats Tab -->
+            {#if activeTab === 'stats'}
+              <EnhancedCardStats
+                {card}
+                showComparison={true}
+                showRatings={true}
+              />
+            {/if}
+
+            <!-- Set Info Tab -->
+            {#if activeTab === 'set'}
+              <CardSetInfo
+                {card}
+                ownedCount={1}
+                seriesTotal={card.totalInSeries || 50}
+              />
             {/if}
           </div>
 
-          <!-- Flavor Text -->
-          <div class="flavor-text-section">
-            <p class="flavor-text">"{card.flavorText}"</p>
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <button
+              class="quick-action-btn"
+              on:click={openZoomModal}
+              aria-label="Zoom view"
+            >
+              <span class="action-icon">🔍</span>
+              <span class="action-text">Zoom</span>
+            </button>
+            <button
+              class="quick-action-btn"
+              on:click={() => setCardViewMode(viewMode === '3d' ? 'default' : '3d')}
+              class:active={viewMode === '3d'}
+              aria-label="3D view"
+              aria-pressed={viewMode === '3d'}
+            >
+              <span class="action-icon">🎲</span>
+              <span class="action-text">3D</span>
+            </button>
+            <button
+              class="quick-action-btn"
+              on:click={toggleCardFlip}
+              aria-label="Flip card"
+            >
+              <span class="action-icon">🔄</span>
+              <span class="action-text">Flip</span>
+            </button>
           </div>
 
           <!-- Action Buttons -->
           <div class="lightbox-actions">
-            <button
-              class="action-button action-button-secondary"
-              on:click={toggleCardFlip}
-              style="--button-color: {RARITY_CONFIG[card.rarity].color};"
-              aria-label="Flip card"
-            >
-              <span>{isFlipped ? '🔄 Show Front' : '🔄 Show Back'}</span>
-            </button>
-
             {#if canShare}
               <button
                 class="action-button action-button-primary"
@@ -363,6 +477,33 @@
         <span class="hint">Esc to close</span>
       </div>
     </div>
+
+    <!-- 3D View Modal -->
+    {#if viewMode === '3d'}
+      <div class="view-3d-overlay">
+        <div class="view-3d-container">
+          <button class="view-3d-close" on:click={() => setCardViewMode('default')} aria-label="Close 3D view">
+            ✕
+          </button>
+          <Card3DFlip
+            {card}
+            autoRotate={false}
+            interactive={true}
+            showParticles={true}
+          />
+          <div class="view-3d-hint">Drag or swipe to flip • Space to toggle</div>
+        </div>
+      </div>
+    {/if}
+
+    <!-- Zoom Modal -->
+    <ZoomableCardModal
+      {card}
+      isOpen={isZoomOpen}
+      onClose={closeZoomModal}
+      maxZoom={3}
+      minZoom={1}
+    />
   </div>
 {/if}
 
@@ -568,6 +709,186 @@
     color: #94a3b8;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+  }
+
+  /* Tab Navigation */
+  .tab-navigation {
+    display: flex;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+  }
+
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .tab-btn.active {
+    background: var(--rarity-color);
+    color: white;
+    border-color: var(--rarity-color);
+  }
+
+  .tab-icon {
+    font-size: 0.875rem;
+  }
+
+  .tab-label {
+    font-weight: 500;
+  }
+
+  .tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem 0;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(71, 85, 105, 0.2);
+    border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+  }
+
+  .quick-action-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.625rem 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quick-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .quick-action-btn.active {
+    background: var(--rarity-color);
+    border-color: var(--rarity-color);
+    color: white;
+  }
+
+  .quick-action-btn .action-icon {
+    font-size: 1.25rem;
+  }
+
+  .quick-action-btn .action-text {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* 3D View Overlay */
+  .view-3d-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .view-3d-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .view-3d-close {
+    position: absolute;
+    top: -3rem;
+    right: -3rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .view-3d-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+
+  .view-3d-hint {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .tab-navigation {
+      gap: 0.25rem;
+    }
+
+    .tab-btn {
+      padding: 0.375rem 0.5rem;
+      font-size: 0.6875rem;
+    }
+
+    .tab-label {
+      display: none;
+    }
+
+    .tab-icon {
+      font-size: 1rem;
+    }
+
+    .quick-actions {
+      gap: 0.375rem;
+    }
+
+    .quick-action-btn {
+      padding: 0.5rem 0.375rem;
+    }
+
+    .view-3d-close {
+      top: -2rem;
+      right: 0;
+    }
   }
 
   .card-details-section {

@@ -36,6 +36,35 @@ import { getAllCards, getCardsByRarity } from '../cards/database';
 // COMPLETION CALCULATION
 // ============================================================================
 
+const RARITIES: Rarity[] = [
+  'common',
+  'uncommon',
+  'rare',
+  'epic',
+  'legendary',
+  'mythic',
+];
+
+// Use internal X-rated DadType names from core.ts (Season 2+ branding)
+const CORE_TYPES: DadType[] = [
+  'BBQ_DICKTATOR',
+  'FIX_IT_FUCKBOY',
+  'GOLF_GONAD',
+  'COUCH_CUMMANDER',
+  'LAWN_LUNATIC',
+  'CAR_COCK',
+  'OFFICE_ORGASMS',
+  'COOL_CUCKS',
+  'COACH_CUMSTERS',
+  'CHEF_CUMSTERS',
+  'HOLIDAY_HORNDOGS',
+  'WAREHOUSE_WANKERS',
+  'VINTAGE_VAGABONDS',
+  'FASHION_FUCK',
+  'TECH_TWATS',
+  'ITEM',
+];
+
 /**
  * Get all unique card IDs owned by the player
  */
@@ -70,7 +99,7 @@ function createMilestones(
       type: 'badge' as const,
       value: `milestone_${threshold}`,
       description: `${threshold}% Complete`,
-      icon: threshold === 100 ? '👑' : threshold >= 75 ? '🥇' : threshold >= 50 ? '🥈' : '🥉',
+      icon: getMilestoneIcon(threshold),
     };
 
     return {
@@ -89,10 +118,12 @@ function calculateRarityCompletion(
   ownedIds: Set<string>,
   config: CompletionConfig
 ): Record<Rarity, RarityCompletion> {
-  const rarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
-  const result: Record<Rarity, RarityCompletion> = {} as Record<Rarity, RarityCompletion>;
+  const result: Record<Rarity, RarityCompletion> = {} as Record<
+    Rarity,
+    RarityCompletion
+  >;
 
-  for (const rarity of rarities) {
+  for (const rarity of RARITIES) {
     const allCardsOfRarity = getCardsByRarity(rarity);
     const totalCards = allCardsOfRarity.length;
     const ownedCards = allCardsOfRarity.filter((card) => ownedIds.has(card.id)).length;
@@ -123,20 +154,15 @@ function calculateRarityCompletion(
  * Calculate per-type completion
  */
 function calculateTypeCompletion(
-  ownedIds: Set<string>,
-  _config: CompletionConfig
+  ownedIds: Set<string>
 ): Record<DadType, TypeCompletion> {
   const allCards = getAllCards();
-  // Use internal X-rated DadType names from core.ts (Season 2+ branding)
-  const types: DadType[] = [
-    'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER', 'LAWN_LUNATIC',
-    'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS', 'COACH_CUMSTERS', 'CHEF_CUMSTERS',
-    'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS', 'VINTAGE_VAGABONDS', 'FASHION_FUCK',
-    'TECH_TWATS', 'ITEM',
-  ];
-  const result: Record<DadType, TypeCompletion> = {} as Record<DadType, TypeCompletion>;
+  const result: Record<DadType, TypeCompletion> = {} as Record<
+    DadType,
+    TypeCompletion
+  >;
 
-  for (const type of types) {
+  for (const type of CORE_TYPES) {
     const allCardsOfType = allCards.filter((card) => card.type === type);
     const totalCards = allCardsOfType.length;
     const ownedCards = allCardsOfType.filter((card) => ownedIds.has(card.id)).length;
@@ -176,11 +202,15 @@ export function calculateCollectionCompletion(
   const overallPercentage = calculatePercentage(totalCardsOwned, totalCardsInGame);
 
   // Create overall milestones
-  const overallMilestones = createMilestones(overallPercentage, COMPLETION_MILESTONES, config);
+  const overallMilestones = createMilestones(
+    overallPercentage,
+    COMPLETION_MILESTONES,
+    config
+  );
 
   // Calculate per-rarity and per-type completion
   const rarityCompletion = calculateRarityCompletion(ownedIds, config);
-  const typeCompletion = calculateTypeCompletion(ownedIds, config);
+  const typeCompletion = calculateTypeCompletion(ownedIds);
 
   // Collect achievements and badges
   const achievementsUnlocked: string[] = [];
@@ -228,10 +258,15 @@ export function calculateCollectionCompletion(
  * @param rarity - The rarity to check
  * @returns Array of missing card IDs
  */
-export function getMissingCardsByRarity(collection: Collection, rarity: Rarity): string[] {
+export function getMissingCardsByRarity(
+  collection: Collection,
+  rarity: Rarity
+): string[] {
   const ownedIds = getOwnedCardIds(collection);
   const allCardsOfRarity = getCardsByRarity(rarity);
-  return allCardsOfRarity.filter((card) => !ownedIds.has(card.id)).map((card) => card.id);
+  return allCardsOfRarity
+    .filter((card) => !ownedIds.has(card.id))
+    .map((card) => card.id);
 }
 
 /**
@@ -241,11 +276,16 @@ export function getMissingCardsByRarity(collection: Collection, rarity: Rarity):
  * @param type - The dad type to check
  * @returns Array of missing card IDs
  */
-export function getMissingCardsByType(collection: Collection, type: DadType): string[] {
+export function getMissingCardsByType(
+  collection: Collection,
+  type: DadType
+): string[] {
   const ownedIds = getOwnedCardIds(collection);
   const allCards = getAllCards();
   const allCardsOfType = allCards.filter((card) => card.type === type);
-  return allCardsOfType.filter((card) => !ownedIds.has(card.id)).map((card) => card.id);
+  return allCardsOfType
+    .filter((card) => !ownedIds.has(card.id))
+    .map((card) => card.id);
 }
 
 /**
@@ -267,7 +307,10 @@ export function getAllMissingCards(collection: Collection): string[] {
  * @param milestonePercentage - The milestone percentage to check (25, 50, 75, 100)
  * @returns True if the milestone has been achieved
  */
-export function isMilestoneAchieved(collection: Collection, milestonePercentage: number): boolean {
+export function isMilestoneAchieved(
+  collection: Collection,
+  milestonePercentage: number
+): boolean {
   const completion = calculateCollectionCompletion(collection);
   return completion.overallPercentage >= milestonePercentage;
 }
@@ -359,7 +402,9 @@ export function getCompletionSummary(collection: Collection): {
  * @param newMilestones - Array of newly achieved milestones
  * @returns Number of bonus packs to award
  */
-export function calculateBonusPacksFromMilestones(newMilestones: CompletionMilestone[]): number {
+export function calculateBonusPacksFromMilestones(
+  newMilestones: CompletionMilestone[]
+): number {
   let totalPacks = 0;
 
   for (const milestone of newMilestones) {
@@ -392,4 +437,17 @@ export function calculateBonusPacksFromMilestones(newMilestones: CompletionMiles
   }
 
   return totalPacks;
+}
+
+function getMilestoneIcon(threshold: number): string {
+  if (threshold === 100) {
+    return '👑';
+  }
+  if (threshold >= 75) {
+    return '🥇';
+  }
+  if (threshold >= 50) {
+    return '🥈';
+  }
+  return '🥉';
 }

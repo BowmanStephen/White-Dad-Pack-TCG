@@ -11,6 +11,7 @@
   import { openLightbox } from '@/stores/lightbox';
   import { getRandomJoke } from '@lib/jokes';
   import { isInWishlist, addToWishlist, removeFromWishlist } from '@/stores/wishlist';
+  import { cardUpgrades } from '@/stores/upgrade';
 
   interface Props {
     card: PackCard;
@@ -52,7 +53,11 @@
   let shareSupport = $state(checkShareSupport());
   let canShare = $derived(enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles);
   let displayFlavorText = $derived(useRandomJoke ? getRandomJoke(card.type) : card.flavorText);
-  const upgradeLevel = 0;
+
+  // Get upgrade level from store
+  let upgrades = $derived($cardUpgrades);
+  let upgradeData = $derived(upgrades[card.id]);
+  let upgradeLevel = $derived(upgradeData?.level || 0);
 
   // PACK-020: Wishlist state
   let isWishlisted = $state(false);
@@ -367,6 +372,18 @@
       class="card-face absolute inset-0 overflow-hidden {hasBaseGlow || isHovered ? 'card-glow' : ''}"
       style="border: {borderStyle}; box-shadow: {glowStyle};"
     >
+      <!-- Upgrade Star Badge -->
+      {#if upgradeLevel > 0}
+        <div
+          class="upgrade-star-badge absolute top-2 right-2 bg-amber-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm shadow-lg z-20"
+          style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);"
+          aria-label="Upgrade level {upgradeLevel}"
+        >
+          <span class="mr-0.5">⭐</span>
+          {upgradeLevel}
+        </div>
+      {/if}
+
       <!-- Card background -->
       <div class="absolute inset-0" style="background: {cardBackground};"></div>
 

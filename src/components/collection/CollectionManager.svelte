@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import {
     exportCollection,
     importCollection,
@@ -23,25 +23,25 @@
   let fileInput: HTMLInputElement;
 
   // Subscription cleanup
-  let unsubscribe: (() => void);
+  let unsubscribe: (() => void) | null = null;
 
   onMount(() => {
-    unsubscribe = collection.subscribe(value => {
-      currentCollection = value;
-    });
+    unsubscribe = collection.subscribe(handleCollectionUpdate);
   });
 
   onDestroy(() => {
-    if (unsubscribe) unsubscribe();
+    if (unsubscribe) {
+      unsubscribe();
+    }
   });
 
   /**
    * Export collection as JSON file
    * Filename: daddeck-collection-[timestamp].json
    */
-  function handleExport() {
+  async function handleExport(): Promise<void> {
     try {
-      const data = exportCollection();
+      const data = await exportCollection();
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `daddeck-collection-${timestamp}.json`;
 
@@ -67,14 +67,16 @@
   /**
    * Trigger file input click for import
    */
-  function triggerImport() {
-    fileInput.click();
+  function triggerImport(): void {
+    if (fileInput) {
+      fileInput.click();
+    }
   }
 
   /**
    * Handle file selection for import
    */
-  function handleFileSelect(event: Event) {
+  function handleFileSelect(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
 
@@ -108,7 +110,9 @@
   /**
    * Validate collection data structure
    */
-  function validateCollection(data: unknown): { valid: boolean; error?: string } {
+  function validateCollection(
+    data: unknown
+  ): { valid: boolean; error?: string } {
     if (!data || typeof data !== 'object') {
       return { valid: false, error: 'Invalid data format' };
     }
@@ -143,7 +147,7 @@
   /**
    * Execute import with selected mode (merge or replace)
    */
-  async function executeImport(mode: 'merge' | 'replace') {
+  async function executeImport(mode: 'merge' | 'replace'): Promise<void> {
     isProcessing = true;
     error = null;
     success = null;
@@ -169,23 +173,19 @@
 
       if (mode === 'replace') {
         // Replace entire collection
-        const result = importCollection(json);
+        const result = await importCollection(json);
         if (!result.success) {
           showError(result.error || 'Failed to import collection');
           return;
         }
+        const importedCount = result.imported ?? 0;
         showSuccess(
-          `Replaced collection with ${result.imported} pack${result.imported !== 1 ? 's' : ''}`
+          `Replaced collection with ${formatPackCount(importedCount)}`
         );
       } else {
         // Merge collections
         const current = collection.get();
-        const mergedPacks = [...importedCollection.packs, ...current.packs];
-
-        // Deduplicate packs by ID (keep imported version)
-        const uniquePacks = Array.from(
-          new Map(mergedPacks.map((pack) => [pack.id, pack])).values()
-        );
+        const uniquePacks = mergePacks(importedCollection.packs, current.packs);
 
         // Merge metadata
         const mergedMetadata = {
@@ -211,20 +211,17 @@
         };
 
         // Save merged collection
-        const result = importCollection(JSON.stringify(merged));
+        const result = await importCollection(JSON.stringify(merged));
         if (!result.success) {
           showError(result.error || 'Failed to merge collections');
           return;
         }
         showSuccess(
-          `Merged ${importedCollection.packs.length} pack${importedCollection.packs.length !== 1 ? 's' : ''} into collection`
+          `Merged ${formatPackCount(importedCollection.packs.length)} into collection`
         );
       }
 
-      // Close modal and reset
-      setTimeout(() => {
-        closeModal();
-      }, 2000);
+      scheduleCloseModal(2000);
     } catch (err) {
       showError(
         err instanceof Error ? err.message : 'Failed to import collection'
@@ -237,7 +234,7 @@
   /**
    * Clear entire collection (with confirmation)
    */
-  function handleClearCollection() {
+  function handleClearCollection(): void {
     if (
       !confirm(
         'Are you sure you want to delete your entire collection? This cannot be undone.'
@@ -253,12 +250,10 @@
     }
 
     showSuccess('Collection cleared');
-    setTimeout(() => {
-      closeModal();
-    }, 1500);
+    scheduleCloseModal(1500);
   }
 
-  function closeModal() {
+  function closeModal(): void {
     showModal = false;
     importMode = null;
     error = null;
@@ -269,14 +264,61 @@
     }
   }
 
-  function showError(message: string) {
+  function showError(message: string): void {
     error = message;
     success = null;
   }
 
-  function showSuccess(message: string) {
+  function showSuccess(message: string): void {
     success = message;
     error = null;
+  }
+
+  function handleCollectionUpdate(value: Collection): void {
+    currentCollection = value;
+  }
+
+  function handleImportMerge(): void {
+    void executeImport('merge');
+  }
+
+  function handleImportReplace(): void {
+    void executeImport('replace');
+  }
+
+  function formatPackCount(count: number): string {
+    return `${count} pack${count === 1 ? '' : 's'}`;
+  }
+
+  function mergePacks(
+    imported: Collection['packs'],
+    current: Collection['packs']
+  ): Collection['packs'] {
+    const mergedPacks = [...imported, ...current];
+    const packMap = new Map<string, Collection['packs'][number]>();
+
+    for (const pack of mergedPacks) {
+      packMap.set(pack.id, pack);
+    }
+
+    return Array.from(packMap.values());
+  }
+
+  function scheduleCloseModal(delayMs: number): void {
+    setTimeout(function () {
+      closeModal();
+    }, delayMs);
+  }
+
+  function handleOverlayKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      closeModal();
+    }
+  }
+
+  function handleModalContentKeydown(event: KeyboardEvent): void {
+    event.stopPropagation();
   }
 </script>
 
@@ -326,10 +368,18 @@
 
 <!-- Import Modal -->
 {#if showModal}
-  <div class="modal-overlay" onclick={closeModal}>
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    onclick={closeModal}
+    onkeydown={handleOverlayKeydown}
+  >
     <div
       class="modal-content"
+      tabindex="0"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={handleModalContentKeydown}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -364,7 +414,7 @@
           <div class="import-options">
             <button
               class="option-card"
-              onclick={() => executeImport('merge')}
+              onclick={handleImportMerge}
               disabled={isProcessing}
             >
               <div class="option-icon">🔀</div>
@@ -379,7 +429,7 @@
 
             <button
               class="option-card"
-              onclick={() => executeImport('replace')}
+              onclick={handleImportReplace}
               disabled={isProcessing}
             >
               <div class="option-icon">🔄</div>

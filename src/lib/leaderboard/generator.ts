@@ -17,15 +17,10 @@ import type {
 } from '@/types/leaderboard';
 import { DAD_TYPES, DAD_NAMES } from '@/types/leaderboard';
 
-/**
- * Number of entries to show per page
- */
 const ENTRIES_PER_PAGE = 50;
-
-/**
- * Total simulated players in the system
- */
 const TOTAL_PLAYERS = 10000;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+const MILLISECONDS_PER_WEEK = 7 * MILLISECONDS_PER_DAY;
 
 /**
  * Generate a random player ID
@@ -52,16 +47,13 @@ function generatePlayerStats(): PlayerStats {
   const mythicCards = Math.floor(Math.random() * 20);
   const totalCards = Math.floor(Math.random() * 3000) + 200;
 
-  // Calculate collection value based on stats (PACK-023)
-  // Approximate value: 1 point per common, 5 per uncommon, etc.
-  // This is a simplified calculation for simulated players
+  // Calculate collection value based on stats (PACK-023).
   const collectionValue = Math.floor(
-    totalCards * 2 + // Base value from total cards
-    uniqueCards * 10 + // Bonus for unique cards
-    mythicCards * 5000 // Mythic cards are worth 5000 points each
+    totalCards * 2 +
+    uniqueCards * 10 +
+    mythicCards * 5000
   );
 
-  // Generate battle record (PACK-085)
   const battleWins = Math.floor(Math.random() * 500);
   const battleLosses = Math.floor(Math.random() * 300);
 
@@ -86,52 +78,28 @@ function filterStatsByTimePeriod(
   timePeriod: LeaderboardTimePeriod
 ): PlayerStats {
   const now = new Date();
-  let cutoffDate = new Date(0);
+  const cutoffDate = getCutoffDate(timePeriod, now);
 
-  switch (timePeriod) {
-    case 'daily':
-      cutoffDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      break;
-    case 'weekly':
-      cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      break;
-    case 'allTime':
-    default:
-      // No filtering for all time
-      return stats;
+  if (!cutoffDate) {
+    return stats;
   }
 
-  // If player's last activity is before cutoff, return zeroed stats
   if (stats.lastActive < cutoffDate) {
-    return {
-      ...stats,
-      totalPacksOpened: 0,
-      uniqueCards: 0,
-      mythicCards: 0,
-      totalCards: 0,
-      collectionValue: 0,
-      battleWins: 0,
-      battleLosses: 0,
-    };
+    return zeroedStats(stats);
   }
 
-  // For active players, reduce stats proportionally based on activity
-  const daysSinceJoin = Math.max(
-    1,
-    Math.floor((now.getTime() - stats.joinedAt.getTime()) / (24 * 60 * 60 * 1000))
+  const daysSinceJoin = getDaysBetween(stats.joinedAt, now);
+  const daysInPeriod = getDaysBetween(
+    new Date(Math.max(stats.joinedAt.getTime(), cutoffDate.getTime())),
+    now
   );
-  const daysInPeriod = Math.max(
-    1,
-    Math.floor((now.getTime() - Math.max(stats.joinedAt.getTime(), cutoffDate.getTime())) / (24 * 60 * 60 * 1000))
-  );
-
   const activityRatio = daysInPeriod / daysSinceJoin;
 
   return {
     ...stats,
     totalPacksOpened: Math.floor(stats.totalPacksOpened * activityRatio),
     uniqueCards: Math.floor(stats.uniqueCards * activityRatio),
-    mythicCards: Math.floor(stats.mythicCards * activityRatio * 0.5), // Mythics are rarer
+    mythicCards: Math.floor(stats.mythicCards * activityRatio * 0.5),
     totalCards: Math.floor(stats.totalCards * activityRatio),
     battleWins: Math.floor((stats.battleWins ?? 0) * activityRatio),
     battleLosses: Math.floor((stats.battleLosses ?? 0) * activityRatio),
@@ -154,10 +122,7 @@ function getStatValue(stats: PlayerStats, category: LeaderboardCategory): number
     case 'collectionValue':
       return stats.collectionValue ?? 0;
     case 'battleRecord':
-      // Calculate win rate: (wins / (wins + losses)) * 1000 for precision
-      const totalBattles = (stats.battleWins ?? 0) + (stats.battleLosses ?? 0);
-      if (totalBattles === 0) return 0;
-      return Math.round(((stats.battleWins ?? 0) / totalBattles) * 1000);
+      return getBattleRecordValue(stats);
   }
 }
 
@@ -195,115 +160,13 @@ export function generateLeaderboard(config: {
 }): Leaderboard {
   const { category, scope, timePeriod, region, userProfile } = config;
 
-  // Generate simulated player data
-  const entries: LeaderboardEntry[] = [];
-
-  // Add current user if provided
-  let userStats = userProfile?.stats || generatePlayerStats();
+  const userStats = userProfile?.stats || generatePlayerStats();
   const filteredUserStats = filterStatsByTimePeriod(userStats, timePeriod);
-
-  // Determine number of entries to generate based on scope
-  const numEntries = scope === 'friends' && userProfile
-    ? Math.min(ENTRIES_PER_PAGE, userProfile.friends.length + 1) // Friends + user
-    : ENTRIES_PER_PAGE;
-
-  // Generate entries (only friends if scope is friends)
-  if (scope === 'friends' && userProfile && userProfile.friends.length > 0) {
-    // Generate entries for friends only
-    for (let i = 0; i < userProfile.friends.length; i++) {
-      const playerId = userProfile.friends[i];
-      const pseudonym = generatePseudonym();
-      const rawStats = generatePlayerStats();
-      const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
-
-      entries.push(
-        generateLeaderboardEntry(
-          playerId,
-          pseudonym,
-          filteredStats,
-          i + 1,
-          false
-        )
-      );
-    }
-  } else {
-    // Generate entries for global scope
-    for (let i = 0; i < numEntries; i++) {
-      const playerId = generatePlayerId();
-      const pseudonym = generatePseudonym();
-      const rawStats = generatePlayerStats();
-      const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
-
-      entries.push(
-        generateLeaderboardEntry(
-          playerId,
-          pseudonym,
-          filteredStats,
-          i + 1,
-          false
-        )
-      );
-    }
-  }
-
-  // Sort entries by category stat value
-  entries.sort((a, b) => {
-    const aValue = getStatValue(a.stats, category);
-    const bValue = getStatValue(b.stats, category);
-    return bValue - aValue; // Descending order
-  });
-
-  // Re-rank after sorting
-  entries.forEach((entry, index) => {
-    entry.rank = index + 1;
-  });
-
-  // Check if user qualifies for top entries
-  let userEntry: LeaderboardEntry | undefined;
-
-  if (userProfile) {
-    const userValue = getStatValue(filteredUserStats, category);
-    const lastEntryValue = getStatValue(entries[entries.length - 1].stats, category);
-
-    if (userValue > lastEntryValue) {
-      // User is in top entries, find their rank
-      let userRank = 1;
-      for (const entry of entries) {
-        const entryValue = getStatValue(entry.stats, category);
-        if (userValue >= entryValue) {
-          break;
-        }
-        userRank++;
-      }
-
-      // Create user entry
-      userEntry = generateLeaderboardEntry(
-        userProfile.playerId,
-        userProfile.pseudonym,
-        filteredUserStats,
-        userRank,
-        true
-      );
-
-      // Insert user entry at correct position
-      entries.splice(userRank - 1, 0, userEntry);
-
-      // Re-rank entries below user
-      for (let i = userRank; i < entries.length; i++) {
-        entries[i].rank = i + 1;
-      }
-    } else {
-      // User is not in top entries, calculate their overall rank
-      let userRank = entries.length + 1;
-      userEntry = generateLeaderboardEntry(
-        userProfile.playerId,
-        userProfile.pseudonym,
-        filteredUserStats,
-        userRank,
-        true
-      );
-    }
-  }
+  const entries = buildLeaderboardEntries(scope, timePeriod, userProfile);
+  const rankedEntries = sortAndRankEntries(entries, category);
+  const userEntry = userProfile
+    ? getUserEntry(rankedEntries, category, filteredUserStats, userProfile)
+    : undefined;
 
   return {
     category,
@@ -311,7 +174,7 @@ export function generateLeaderboard(config: {
     timePeriod,
     region,
     totalPlayers: TOTAL_PLAYERS,
-    entries: entries.slice(0, ENTRIES_PER_PAGE),
+    entries: rankedEntries.slice(0, ENTRIES_PER_PAGE),
     userEntry,
   };
 }
@@ -331,4 +194,143 @@ export function generateUserProfile(): UserProfile {
     stats: generatePlayerStats(),
     friends: [],
   };
+}
+
+function getBattleRecordValue(stats: PlayerStats): number {
+  const wins = stats.battleWins ?? 0;
+  const losses = stats.battleLosses ?? 0;
+  const totalBattles = wins + losses;
+
+  if (totalBattles === 0) {
+    return 0;
+  }
+
+  // Calculate win rate: (wins / (wins + losses)) * 1000 for precision
+  return Math.round((wins / totalBattles) * 1000);
+}
+
+function getCutoffDate(
+  timePeriod: LeaderboardTimePeriod,
+  now: Date
+): Date | null {
+  switch (timePeriod) {
+    case 'daily':
+      return new Date(now.getTime() - MILLISECONDS_PER_DAY);
+    case 'weekly':
+      return new Date(now.getTime() - MILLISECONDS_PER_WEEK);
+    case 'allTime':
+      return null;
+  }
+}
+
+function zeroedStats(stats: PlayerStats): PlayerStats {
+  return {
+    ...stats,
+    totalPacksOpened: 0,
+    uniqueCards: 0,
+    mythicCards: 0,
+    totalCards: 0,
+    collectionValue: 0,
+    battleWins: 0,
+    battleLosses: 0,
+  };
+}
+
+function getDaysBetween(start: Date, end: Date): number {
+  return Math.max(
+    1,
+    Math.floor((end.getTime() - start.getTime()) / MILLISECONDS_PER_DAY)
+  );
+}
+
+function buildLeaderboardEntries(
+  scope: LeaderboardScope,
+  timePeriod: LeaderboardTimePeriod,
+  userProfile?: UserProfile
+): LeaderboardEntry[] {
+  if (scope === 'friends' && userProfile && userProfile.friends.length > 0) {
+    return userProfile.friends.map((playerId, index) => {
+      const pseudonym = generatePseudonym();
+      const rawStats = generatePlayerStats();
+      const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
+      return generateLeaderboardEntry(playerId, pseudonym, filteredStats, index + 1, false);
+    });
+  }
+
+  const totalEntries = ENTRIES_PER_PAGE;
+  return Array.from({ length: totalEntries }, (_, index) => {
+    const playerId = generatePlayerId();
+    const pseudonym = generatePseudonym();
+    const rawStats = generatePlayerStats();
+    const filteredStats = filterStatsByTimePeriod(rawStats, timePeriod);
+    return generateLeaderboardEntry(playerId, pseudonym, filteredStats, index + 1, false);
+  });
+}
+
+function sortAndRankEntries(
+  entries: LeaderboardEntry[],
+  category: LeaderboardCategory
+): LeaderboardEntry[] {
+  const sorted = [...entries].sort((a, b) => {
+    const aValue = getStatValue(a.stats, category);
+    const bValue = getStatValue(b.stats, category);
+    return bValue - aValue;
+  });
+
+  for (let index = 0; index < sorted.length; index++) {
+    sorted[index].rank = index + 1;
+  }
+
+  return sorted;
+}
+
+function getUserEntry(
+  entries: LeaderboardEntry[],
+  category: LeaderboardCategory,
+  userStats: PlayerStats,
+  userProfile: UserProfile
+): LeaderboardEntry {
+  const userValue = getStatValue(userStats, category);
+  const lastEntryValue = getStatValue(entries[entries.length - 1].stats, category);
+
+  if (userValue > lastEntryValue) {
+    const userRank = getRankForValue(entries, category, userValue);
+    const userEntry = generateLeaderboardEntry(
+      userProfile.playerId,
+      userProfile.pseudonym,
+      userStats,
+      userRank,
+      true
+    );
+    entries.splice(userRank - 1, 0, userEntry);
+
+    for (let index = userRank; index < entries.length; index++) {
+      entries[index].rank = index + 1;
+    }
+
+    return userEntry;
+  }
+
+  return generateLeaderboardEntry(
+    userProfile.playerId,
+    userProfile.pseudonym,
+    userStats,
+    entries.length + 1,
+    true
+  );
+}
+
+function getRankForValue(
+  entries: LeaderboardEntry[],
+  category: LeaderboardCategory,
+  value: number
+): number {
+  let rank = 1;
+  for (const entry of entries) {
+    if (value >= getStatValue(entry.stats, category)) {
+      break;
+    }
+    rank += 1;
+  }
+  return rank;
 }

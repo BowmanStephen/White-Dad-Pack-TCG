@@ -65,9 +65,7 @@ const tradePageSchema = {
             <div class="flex gap-2">
               <a
                 href="/trade"
-                class:text-amber-400={hasOffer}
-                class:text-slate-400={!hasOffer}
-                class="hover:text-amber-300 transition-colors px-4 py-2 rounded-lg border border-slate-700 hover:border-amber-500"
+                class={`hover:text-amber-300 transition-colors px-4 py-2 rounded-lg border border-slate-700 hover:border-amber-500 ${hasOffer ? 'text-amber-400' : 'text-slate-400'}`}
               >
                 Create Trade
               </a>
@@ -80,19 +78,24 @@ const tradePageSchema = {
             </div>
           </div>
 
-          <ErrorBoundary
-            component={hasOffer ? 'TradeOfferViewer' : 'TradeCreator'}
-            fallbackMessage="Failed to load trade component. Please refresh the page."
-          >
-            {#if hasOffer}
+          {hasOffer ? (
+            <ErrorBoundary
+              component="TradeOfferViewer"
+              fallbackMessage="Failed to load trade component. Please refresh the page."
+            >
               <TradeOfferViewer
                 client:load
                 offerData={urlParam || ''}
               />
-            {:else}
+            </ErrorBoundary>
+          ) : (
+            <ErrorBoundary
+              component="TradeCreator"
+              fallbackMessage="Failed to load trade component. Please refresh the page."
+            >
               <TradeCreator client:load />
-            {/if}
-          </ErrorBoundary>
+            </ErrorBoundary>
+          )}
         </div>
       </div>
 

@@ -24,7 +24,7 @@ const createTestCard = (overrides: Partial<Card> = {}): Card => ({
   id: 'test-001',
   name: 'Test Card',
   subtitle: 'Testing Dad',
-  type: 'BBQ_DAD',
+  type: 'BBQ_DICKTATOR',
   rarity: 'rare',
   artwork: '/test.png',
   stats: {

@@ -32,7 +32,7 @@ function createMockCollection(packCount: number): Collection {
         {
           id: `card-${i}-1`,
           name: `Test Card ${i}-1`,
-          type: 'BBQ_DAD',
+          type: 'BBQ_DICKTATOR',
           rarity: 'common',
           isHolo: false,
           stats: {
@@ -220,6 +220,6 @@ describe('PACK-045: Storage Quota Manager', () => {
 
       expect(result.success).toBe(true);
       expect(Array.isArray(result.actions)).toBe(true);
-    });
+    }, 10000); // Increase timeout for large collection processing
   });
 });

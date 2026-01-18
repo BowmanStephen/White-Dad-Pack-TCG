@@ -19,6 +19,25 @@
   import type { CardInCollection } from '@/types/card';
   import type { TradeCard } from '@/types/trading-crafting';
 
+  const MAX_CARDS_PER_SIDE = 6;
+  const RARITY_OPTIONS = [
+    { value: 'all', label: 'All Rarities' },
+    { value: 'common', label: 'Common' },
+    { value: 'uncommon', label: 'Uncommon' },
+    { value: 'rare', label: 'Rare' },
+    { value: 'epic', label: 'Epic' },
+    { value: 'legendary', label: 'Legendary' },
+    { value: 'mythic', label: 'Mythic' },
+  ];
+  const RARITY_CLASS_MAP: Record<string, string> = {
+    common: 'text-gray-400 border-gray-400',
+    uncommon: 'text-blue-400 border-blue-400',
+    rare: 'text-yellow-400 border-yellow-400',
+    epic: 'text-purple-400 border-purple-400',
+    legendary: 'text-orange-400 border-orange-400',
+    mythic: 'text-pink-400 border-pink-400',
+  };
+
   // UI state
   let showOfferedSelector = $state(false);
   let showRequestedSelector = $state(false);
@@ -42,19 +61,11 @@
 
   // Computed filtered lists
   let filteredOfferCards = $derived(
-    collectionCards.filter(card => {
-      const matchesSearch = card.name.toLowerCase().includes(offerSearchQuery.toLowerCase());
-      const matchesRarity = offerRarityFilter === 'all' || card.rarity === offerRarityFilter;
-      return matchesSearch && matchesRarity;
-    })
+    filterCards(collectionCards, offerSearchQuery, offerRarityFilter)
   );
 
   let filteredRequestCards = $derived(
-    allCards.filter(card => {
-      const matchesSearch = card.name.toLowerCase().includes(requestSearchQuery.toLowerCase());
-      const matchesRarity = requestRarityFilter === 'all' || card.rarity === requestRarityFilter;
-      return matchesSearch && matchesRarity;
-    })
+    filterCards(allCards, requestSearchQuery, requestRarityFilter)
   );
 
   onMount(() => {
@@ -69,19 +80,31 @@
     }
   });
 
-  /**
-   * Add a card from collection to offer list
-   */
-  function handleAddOfferedCard(card: CardInCollection) {
-    addOfferedCard(card);
-    error = null;
+  function filterCards<T extends { name: string; rarity: string }>(
+    cards: T[],
+    query: string,
+    rarity: string
+  ): T[] {
+    const search = query.trim().toLowerCase();
+    return cards.filter((card) => {
+      const matchesSearch = search.length === 0
+        ? true
+        : card.name.toLowerCase().includes(search);
+      const matchesRarity = rarity === 'all' || card.rarity === rarity;
+      return matchesSearch && matchesRarity;
+    });
   }
 
-  /**
-   * Add a card from database to request list
-   */
-  function handleAddRequestedCard(card: typeof allCards[0]) {
-    const tradeCard: TradeCard = {
+  function isOfferedSelected(cardId: string): boolean {
+    return $offeredCards.some((card) => card.id === cardId);
+  }
+
+  function isRequestedSelected(cardId: string): boolean {
+    return $requestedCards.some((card) => card.id === cardId);
+  }
+
+  function toRequestedTradeCard(card: typeof allCards[0]): TradeCard {
+    return {
       id: card.id,
       name: card.name,
       rarity: card.rarity,
@@ -89,14 +112,28 @@
       holoVariant: card.holoVariant || 'none',
       isHolo: false,
     };
-    addRequestedCard(tradeCard);
+  }
+
+  /**
+   * Add a card from collection to offer list
+   */
+  function handleAddOfferedCard(card: CardInCollection): void {
+    addOfferedCard(card);
+    error = null;
+  }
+
+  /**
+   * Add a card from database to request list
+   */
+  function handleAddRequestedCard(card: typeof allCards[0]): void {
+    addRequestedCard(toRequestedTradeCard(card));
     error = null;
   }
 
   /**
    * Generate trade offer and create shareable URL
    */
-  async function handleCreateTradeOffer() {
+  async function handleCreateTradeOffer(): Promise<void> {
     error = null;
     success = null;
 
@@ -152,7 +189,7 @@
   /**
    * Copy share URL to clipboard
    */
-  async function handleCopyUrl() {
+  async function handleCopyUrl(): Promise<void> {
     try {
       await navigator.clipboard.writeText(shareUrl);
       success = 'URL copied to clipboard!';
@@ -167,7 +204,7 @@
   /**
    * Clear all selections
    */
-  function handleClearSelections() {
+  function handleClearSelections(): void {
     clearSelections();
     error = null;
     success = null;
@@ -176,7 +213,7 @@
   /**
    * Close share modal and clear selections
    */
-  function handleCloseShareModal() {
+  function handleCloseShareModal(): void {
     showShareModal = false;
     handleClearSelections();
   }
@@ -185,15 +222,7 @@
    * Get rarity color class
    */
   function getRarityColor(rarity: string): string {
-    const colors: Record<string, string> = {
-      common: 'text-gray-400 border-gray-400',
-      uncommon: 'text-blue-400 border-blue-400',
-      rare: 'text-yellow-400 border-yellow-400',
-      epic: 'text-purple-400 border-purple-400',
-      legendary: 'text-orange-400 border-orange-400',
-      mythic: 'text-pink-400 border-pink-400',
-    };
-    return colors[rarity] || colors.common;
+    return RARITY_CLASS_MAP[rarity] || RARITY_CLASS_MAP.common;
   }
 </script>
 
@@ -250,7 +279,7 @@
     <div class="trade-panel">
       <div class="panel-header">
         <h2>Cards You're Offering</h2>
-        <span class="card-count">{$offeredCards.length}/6</span>
+        <span class="card-count">{$offeredCards.length}/{MAX_CARDS_PER_SIDE}</span>
       </div>
 
       <div class="panel-content">
@@ -286,7 +315,7 @@
     <div class="trade-panel">
       <div class="panel-header">
         <h2>Cards You're Requesting</h2>
-        <span class="card-count">{$requestedCards.length}/6</span>
+        <span class="card-count">{$requestedCards.length}/{MAX_CARDS_PER_SIDE}</span>
       </div>
 
       <div class="panel-content">
@@ -361,13 +390,9 @@
               class="input-field"
             />
             <select bind:value={offerRarityFilter} class="select-field">
-              <option value="all">All Rarities</option>
-              <option value="common">Common</option>
-              <option value="uncommon">Uncommon</option>
-              <option value="rare">Rare</option>
-              <option value="epic">Epic</option>
-              <option value="legendary">Legendary</option>
-              <option value="mythic">Mythic</option>
+              {#each RARITY_OPTIONS as option}
+                <option value={option.value}>{option.label}</option>
+              {/each}
             </select>
           </div>
 
@@ -375,19 +400,19 @@
           <div class="card-list">
             {#each filteredOfferCards as card}
               <div
-                class="card-item {$offeredCards.some(c => c.id === card.id) ? 'disabled' : ''}"
-                on:click={() => !$offeredCards.some(c => c.id === card.id) && handleAddOfferedCard(card)}
+                class="card-item {isOfferedSelected(card.id) ? 'disabled' : ''}"
+                on:click={() => !isOfferedSelected(card.id) && handleAddOfferedCard(card)}
               >
                 <div class="card-info">
                   <span class="card-name">{card.name}</span>
                   <span class="card-type">{card.type}</span>
                   <span class="card-rarity {getRarityColor(card.rarity)}">{card.rarity}</span>
                 </div>
-                {$offeredCards.some(c => c.id === card.id) ? (
+                {#if isOfferedSelected(card.id)}
                   <span class="card-status">Added</span>
-                ) : (
+                {:else}
                   <button class="btn-add">+</button>
-                )}
+                {/if}
               </div>
             {/each}
           </div>
@@ -415,13 +440,9 @@
               class="input-field"
             />
             <select bind:value={requestRarityFilter} class="select-field">
-              <option value="all">All Rarities</option>
-              <option value="common">Common</option>
-              <option value="uncommon">Uncommon</option>
-              <option value="rare">Rare</option>
-              <option value="epic">Epic</option>
-              <option value="legendary">Legendary</option>
-              <option value="mythic">Mythic</option>
+              {#each RARITY_OPTIONS as option}
+                <option value={option.value}>{option.label}</option>
+              {/each}
             </select>
           </div>
 
@@ -429,19 +450,19 @@
           <div class="card-list">
             {#each filteredRequestCards as card}
               <div
-                class="card-item {$requestedCards.some(c => c.id === card.id) ? 'disabled' : ''}"
-                on:click={() => !$requestedCards.some(c => c.id === card.id) && handleAddRequestedCard(card)}
+                class="card-item {isRequestedSelected(card.id) ? 'disabled' : ''}"
+                on:click={() => !isRequestedSelected(card.id) && handleAddRequestedCard(card)}
               >
                 <div class="card-info">
                   <span class="card-name">{card.name}</span>
                   <span class="card-type">{card.type}</span>
                   <span class="card-rarity {getRarityColor(card.rarity)}">{card.rarity}</span>
                 </div>
-                {$requestedCards.some(c => c.id === card.id) ? (
+                {#if isRequestedSelected(card.id)}
                   <span class="card-status">Added</span>
-                ) : (
+                {:else}
                   <button class="btn-add">+</button>
-                )}
+                {/if}
               </div>
             {/each}
           </div>

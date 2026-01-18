@@ -50,47 +50,49 @@ describe('PACK-049: Battle System Tests', () => {
   // Test Fixtures
   // ============================================================================
 
-  const createTestCard = (
+  function createTestCard(
     name: string,
     dadType: DadType,
     stats: Partial<CardStats>,
     rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' = 'common'
-  ): Card => ({
-    id: `test-${name.toLowerCase().replace(/\s+/g, '-')}`,
-    name,
-    subtitle: `${name}'s Subtitle`,
-    type: dadType,
-    rarity,
-    artwork: `/images/cards/test-${name.toLowerCase()}.png`,
-    stats: {
-      dadJoke: 50,
-      grillSkill: 50,
-      fixIt: 50,
-      napPower: 50,
-      remoteControl: 50,
-      thermostat: 50,
-      sockSandal: 50,
-      beerSnob: 50,
-      ...stats,
-    },
-    flavorText: `${name} is a test card`,
-    abilities: [
-      {
-        name: `${name} Ability`,
-        description: `Test ability for ${name}`,
+  ): Card {
+    return {
+      id: `test-${name.toLowerCase().replace(/\s+/g, '-')}`,
+      name,
+      subtitle: `${name}'s Subtitle`,
+      type: dadType,
+      rarity,
+      artwork: `/images/cards/test-${name.toLowerCase()}.png`,
+      stats: {
+        dadJoke: 50,
+        grillSkill: 50,
+        fixIt: 50,
+        napPower: 50,
+        remoteControl: 50,
+        thermostat: 50,
+        sockSandal: 50,
+        beerSnob: 50,
+        ...stats,
       },
-    ],
-    series: 1,
-    cardNumber: 1,
-    totalInSeries: 1,
-    artist: 'Test Artist',
-    holoVariant: 'none',
-  });
+      flavorText: `${name} is a test card`,
+      abilities: [
+        {
+          name: `${name} Ability`,
+          description: `Test ability for ${name}`,
+        },
+      ],
+      series: 1,
+      cardNumber: 1,
+      totalInSeries: 1,
+      artist: 'Test Artist',
+      holoVariant: 'none',
+    };
+  }
 
-  const createTestDeck = (
+  function createTestDeck(
     name: string,
     cards: Array<{ card: Card; count?: number }>
-  ): Deck => {
+  ): Deck {
     const deckCards = cards.map(({ card, count = 1 }) => ({
       cardId: card.id,
       card,
@@ -162,7 +164,20 @@ describe('PACK-049: Battle System Tests', () => {
         averageStats,
       },
     };
-  };
+  }
+
+  function createFullStats(value: number): CardStats {
+    return {
+      dadJoke: value,
+      grillSkill: value,
+      fixIt: value,
+      napPower: value,
+      remoteControl: value,
+      thermostat: value,
+      sockSandal: value,
+      beerSnob: value,
+    };
+  }
 
   // ============================================================================
   // Test: verifyStatNormalization()
@@ -171,18 +186,18 @@ describe('PACK-049: Battle System Tests', () => {
     it('should normalize stats by card count for fair battles', () => {
       // 3-card deck with high stats (70 average each)
       const threeCardDeck = createTestDeck('Small High-Stat Deck', [
-        { card: createTestCard('Card1', 'BBQ_DICKTATOR', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
-        { card: createTestCard('Card2', 'BBQ_DICKTATOR', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
-        { card: createTestCard('Card3', 'BBQ_DICKTATOR', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', createFullStats(70)), count: 1 },
+        { card: createTestCard('Card2', 'BBQ_DICKTATOR', createFullStats(70)), count: 1 },
+        { card: createTestCard('Card3', 'BBQ_DICKTATOR', createFullStats(70)), count: 1 },
       ]);
 
       // 5-card deck with lower stats (50 average each)
       const fiveCardDeck = createTestDeck('Large Low-Stat Deck', [
-        { card: createTestCard('Card4', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card5', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card6', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card7', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card8', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
+        { card: createTestCard('Card4', 'FIX_IT_FUCKBOY', createFullStats(50)), count: 1 },
+        { card: createTestCard('Card5', 'FIX_IT_FUCKBOY', createFullStats(50)), count: 1 },
+        { card: createTestCard('Card6', 'FIX_IT_FUCKBOY', createFullStats(50)), count: 1 },
+        { card: createTestCard('Card7', 'FIX_IT_FUCKBOY', createFullStats(50)), count: 1 },
+        { card: createTestCard('Card8', 'FIX_IT_FUCKBOY', createFullStats(50)), count: 1 },
       ]);
 
       const result = calculateBattleResult(threeCardDeck, fiveCardDeck, 12345);
@@ -201,17 +216,17 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should handle decks with different card counts fairly', () => {
       const smallDeck = createTestDeck('2-Card Deck', [
-        { card: createTestCard('Small1', 'BBQ_DICKTATOR', { dadJoke: 80, grillSkill: 80, fixIt: 80, napPower: 80, remoteControl: 80, thermostat: 80, sockSandal: 80, beerSnob: 80 }), count: 1 },
-        { card: createTestCard('Small2', 'BBQ_DICKTATOR', { dadJoke: 80, grillSkill: 80, fixIt: 80, napPower: 80, remoteControl: 80, thermostat: 80, sockSandal: 80, beerSnob: 80 }), count: 1 },
+        { card: createTestCard('Small1', 'BBQ_DICKTATOR', createFullStats(80)), count: 1 },
+        { card: createTestCard('Small2', 'BBQ_DICKTATOR', createFullStats(80)), count: 1 },
       ]);
 
       const largeDeck = createTestDeck('6-Card Deck', [
-        { card: createTestCard('Large1', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large2', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large3', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large4', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large5', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large6', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large1', 'GOLF_GONAD', createFullStats(40)), count: 1 },
+        { card: createTestCard('Large2', 'GOLF_GONAD', createFullStats(40)), count: 1 },
+        { card: createTestCard('Large3', 'GOLF_GONAD', createFullStats(40)), count: 1 },
+        { card: createTestCard('Large4', 'GOLF_GONAD', createFullStats(40)), count: 1 },
+        { card: createTestCard('Large5', 'GOLF_GONAD', createFullStats(40)), count: 1 },
+        { card: createTestCard('Large6', 'GOLF_GONAD', createFullStats(40)), count: 1 },
       ]);
 
       const result = calculateBattleResult(smallDeck, largeDeck, 54321);
@@ -307,7 +322,7 @@ describe('PACK-049: Battle System Tests', () => {
 
       for (const type of allTypes) {
         const neutrals = getNeutrals(type);
-        expect(neutrals.length).toBe(11); // 15 total - 1 self - 2 advantages - 2 disadvantages
+        expect(neutrals.length).toBe(10); // 15 total - 1 self - 2 advantages - 2 disadvantages
       }
     });
 
@@ -352,11 +367,11 @@ describe('PACK-049: Battle System Tests', () => {
       // Note: The calculateSynergyBonus function counts deck.cards entries,
       // not the count field within each deckCard. So we need 5 separate entries.
       const themedDeck = createTestDeck('BBQ Bros', [
-        { card: createTestCard('BBQ1', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('BBQ2', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('BBQ3', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('BBQ4', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('BBQ5', 'BBQ_DAD', {}), count: 1 },
+        { card: createTestCard('BBQ1', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('BBQ2', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('BBQ3', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('BBQ4', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('BBQ5', 'BBQ_DICKTATOR', {}), count: 1 },
       ]);
 
       const synergy = calculateSynergyBonus(themedDeck);
@@ -368,9 +383,9 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should detect minor themed deck synergy (3+ cards same type)', () => {
       const themedDeck = createTestDeck('BBQ Trio', [
-        { card: createTestCard('BBQ1', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('BBQ2', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('BBQ3', 'BBQ_DAD', {}), count: 1 },
+        { card: createTestCard('BBQ1', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('BBQ2', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('BBQ3', 'BBQ_DICKTATOR', {}), count: 1 },
       ]);
 
       const synergy = calculateSynergyBonus(themedDeck);
@@ -382,9 +397,9 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should return no bonus for mixed decks', () => {
       const mixedDeck = createTestDeck('Mixed Deck', [
-        { card: createTestCard('BBQ', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('Golf', 'GOLF_DAD', {}), count: 1 },
-        { card: createTestCard('Couch', 'COUCH_DAD', {}), count: 1 },
+        { card: createTestCard('BBQ', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('Golf', 'GOLF_GONAD', {}), count: 1 },
+        { card: createTestCard('Couch', 'COUCH_CUMMANDER', {}), count: 1 },
       ]);
 
       const synergy = calculateSynergyBonus(mixedDeck);
@@ -396,28 +411,28 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should apply themed synergy bonus in deck battles', () => {
       const themedDeck = createTestDeck('BBQ Bros', [
-        { card: createTestCard('BBQ1', 'BBQ_DAD', {}), count: 2 },
-        { card: createTestCard('BBQ2', 'BBQ_DAD', {}), count: 2 },
-        { card: createTestCard('BBQ3', 'BBQ_DAD', {}), count: 1 },
+        { card: createTestCard('BBQ1', 'BBQ_DICKTATOR', {}), count: 2 },
+        { card: createTestCard('BBQ2', 'BBQ_DICKTATOR', {}), count: 2 },
+        { card: createTestCard('BBQ3', 'BBQ_DICKTATOR', {}), count: 1 },
       ]);
 
       const mixedDeck = createTestDeck('Mixed Deck', [
-        { card: createTestCard('Mix1', 'BBQ_DAD', {}), count: 1 },
-        { card: createTestCard('Mix2', 'GOLF_DAD', {}), count: 1 },
-        { card: createTestCard('Mix3', 'COUCH_DAD', {}), count: 1 },
+        { card: createTestCard('Mix1', 'BBQ_DICKTATOR', {}), count: 1 },
+        { card: createTestCard('Mix2', 'GOLF_GONAD', {}), count: 1 },
+        { card: createTestCard('Mix3', 'COUCH_CUMMANDER', {}), count: 1 },
       ]);
 
       const result = calculateBattleResult(themedDeck, mixedDeck, 33333);
 
-      // Themed deck has 5 cards of BBQ_DAD type (2+2+1 = 5 cards)
+      // Themed deck has 5 cards of BBQ_DICKTATOR type (2+2+1 = 5 cards)
       // So it should have 15% synergy bonus
       expect(result.synergyBonus).toBeGreaterThanOrEqual(1.05);
       expect(themedDeck.stats.totalCards).toBe(5);
     });
 
     it('should detect mythic alliance synergy in card battles', () => {
-      const mythic1 = createTestCard('Mythic1', 'BBQ_DAD', {}, 'mythic');
-      const mythic2 = createTestCard('Mythic2', 'FIX_IT_DAD', {}, 'mythic');
+      const mythic1 = createTestCard('Mythic1', 'BBQ_DICKTATOR', {}, 'mythic');
+      const mythic2 = createTestCard('Mythic2', 'FIX_IT_FUCKBOY', {}, 'mythic');
 
       const synergy = checkSynergy(mythic1, mythic2);
 
@@ -427,12 +442,12 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should detect BBQ Alliance synergy', () => {
-      const bbqDad = createTestCard('BBQ1', 'BBQ_DAD', {});
-      const chefDad = createTestCard('Chef1', 'CHEF_DAD', {});
+      const bbqDad = createTestCard('BBQ1', 'BBQ_DICKTATOR', {});
+      const chefDad = createTestCard('Chef1', 'CHEF_CUMSTERS', {});
 
       const synergy = checkSynergy(bbqDad, chefDad);
 
-      // BBQ Alliance requires BBQ_DAD and CHEF_DAD
+      // BBQ Alliance requires BBQ_DICKTATOR and CHEF_CUMSTERS
       // The synergy name in the implementation is "Ultimate Cookout"
       expect(synergy.hasSynergy).toBe(true);
       expect(synergy.synergyBonus).toBe(1.3);
@@ -445,7 +460,7 @@ describe('PACK-049: Battle System Tests', () => {
   // ============================================================================
   describe('verifyStatusEffectApplication()', () => {
     it('should apply grilled status effect (-20% defense)', () => {
-      const card = createTestCard('Test', 'BBQ_DAD', {
+      const card = createTestCard('Test', 'BBQ_DICKTATOR', {
         grillSkill: 80,
         fixIt: 70,
       });
@@ -462,7 +477,7 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should apply lectured status effect (-20% attack)', () => {
-      const card = createTestCard('Test', 'COUCH_DAD', {
+      const card = createTestCard('Test', 'COUCH_CUMMANDER', {
         dadJoke: 80,
         grillSkill: 70,
       });
@@ -479,7 +494,7 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should apply wired status effect (+30% speed)', () => {
-      const card = createTestCard('Test', 'TECH_DAD', {
+      const card = createTestCard('Test', 'TECH_TWATS', {
         dadJoke: 50,
         grillSkill: 50,
       });
@@ -496,7 +511,7 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should stack status effects (max 2 stacks)', () => {
-      const card = createTestCard('Test', 'BBQ_DAD', {
+      const card = createTestCard('Test', 'BBQ_DICKTATOR', {
         grillSkill: 100,
       });
 
@@ -520,7 +535,7 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should clamp stats to 0-100 range', () => {
-      const card = createTestCard('Test', 'BBQ_DAD', {
+      const card = createTestCard('Test', 'BBQ_DICKTATOR', {
         grillSkill: 95,
       });
 
@@ -586,7 +601,7 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should apply drunk status without stat modification', () => {
-      const card = createTestCard('Test', 'HOLIDAY_DAD', {
+      const card = createTestCard('Test', 'HOLIDAY_HORNDOGS', {
         dadJoke: 80,
       });
 
@@ -607,11 +622,11 @@ describe('PACK-049: Battle System Tests', () => {
   describe('verifyRNGVarianceBounds()', () => {
     it('should apply ±10% variance in seeded RNG deck battles', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', { dadJoke: 60, grillSkill: 60, fixIt: 60, napPower: 60, remoteControl: 60, thermostat: 60, sockSandal: 60, beerSnob: 60 }), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', createFullStats(60)), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 3 },
+        { card: createTestCard('Card2', 'GOLF_GONAD', createFullStats(40)), count: 3 },
       ]);
 
       // Run battle with same seed multiple times
@@ -625,11 +640,11 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should produce different results with different seeds', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', {}), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', {}), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'GOLF_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'GOLF_GONAD', {}), count: 3 },
       ]);
 
       const result1 = calculateBattleResult(deck1, deck2, 11111);
@@ -642,11 +657,11 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should apply variance within ±10% bounds', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', { dadJoke: 60, grillSkill: 60, fixIt: 60, napPower: 60, remoteControl: 60, thermostat: 60, sockSandal: 60, beerSnob: 60 }), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', createFullStats(60)), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'GOLF_DAD', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 3 },
+        { card: createTestCard('Card2', 'GOLF_GONAD', createFullStats(50)), count: 3 },
       ]);
 
       // Run battle 100 times with different seeds
@@ -699,11 +714,11 @@ describe('PACK-049: Battle System Tests', () => {
       // This test validates the PACK-010 RNG system
       // Critical hit chance is 5% (0.05)
 
-      const attacker = createTestCard('Attacker', 'BBQ_DAD', {
+      const attacker = createTestCard('Attacker', 'BBQ_DICKTATOR', {
         dadJoke: 50,
       });
 
-      const defender = createTestCard('Defender', 'GOLF_DAD', {
+      const defender = createTestCard('Defender', 'GOLF_GONAD', {
         dadJoke: 50,
       });
 
@@ -748,11 +763,11 @@ describe('PACK-049: Battle System Tests', () => {
       // Check that glancing roll happens first, and critical only if not glancing
       // This is verified in the implementation: glancing is checked first
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', {}), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', {}), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'GOLF_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'GOLF_GONAD', {}), count: 3 },
       ]);
 
       // Run many battles and check logs
@@ -784,11 +799,11 @@ describe('PACK-049: Battle System Tests', () => {
       // This is difficult to test directly due to RNG, but we can verify
       // the battle logs contain the correct multiplier
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', createFullStats(70)), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'GOLF_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'GOLF_GONAD', {}), count: 3 },
       ]);
 
       // Try many seeds until we find a critical hit
@@ -808,11 +823,11 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should apply 0.5x damage multiplier for glancing blows', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', createFullStats(70)), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'GOLF_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'GOLF_GONAD', {}), count: 3 },
       ]);
 
       // Try many seeds until we find a glancing blow
@@ -833,16 +848,12 @@ describe('PACK-049: Battle System Tests', () => {
   // ============================================================================
   describe('calculateCardPower()', () => {
     it('should calculate power based on stat average and rarity', () => {
-      const commonCard = createTestCard('Common', 'BBQ_DAD', {
-        dadJoke: 50,
-        grillSkill: 50,
-        fixIt: 50,
-        napPower: 50,
-        remoteControl: 50,
-        thermostat: 50,
-        sockSandal: 50,
-        beerSnob: 50,
-      }, 'common');
+      const commonCard = createTestCard(
+        'Common',
+        'BBQ_DICKTATOR',
+        createFullStats(50),
+        'common'
+      );
 
       const power = calculateCardPower(commonCard);
 
@@ -851,22 +862,13 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should apply rarity multipliers correctly', () => {
-      const baseStats = {
-        dadJoke: 50,
-        grillSkill: 50,
-        fixIt: 50,
-        napPower: 50,
-        remoteControl: 50,
-        thermostat: 50,
-        sockSandal: 50,
-        beerSnob: 50,
-      };
+      const baseStats = createFullStats(50);
 
-      const uncommon = createTestCard('Uncommon', 'BBQ_DAD', baseStats, 'uncommon');
-      const rare = createTestCard('Rare', 'BBQ_DAD', baseStats, 'rare');
-      const epic = createTestCard('Epic', 'BBQ_DAD', baseStats, 'epic');
-      const legendary = createTestCard('Legendary', 'BBQ_DAD', baseStats, 'legendary');
-      const mythic = createTestCard('Mythic', 'BBQ_DAD', baseStats, 'mythic');
+      const uncommon = createTestCard('Uncommon', 'BBQ_DICKTATOR', baseStats, 'uncommon');
+      const rare = createTestCard('Rare', 'BBQ_DICKTATOR', baseStats, 'rare');
+      const epic = createTestCard('Epic', 'BBQ_DICKTATOR', baseStats, 'epic');
+      const legendary = createTestCard('Legendary', 'BBQ_DICKTATOR', baseStats, 'legendary');
+      const mythic = createTestCard('Mythic', 'BBQ_DICKTATOR', baseStats, 'mythic');
 
       expect(calculateCardPower(uncommon)).toBe(60); // 50 * 1.2
       expect(calculateCardPower(rare)).toBe(75); // 50 * 1.5
@@ -881,11 +883,11 @@ describe('PACK-049: Battle System Tests', () => {
   // ============================================================================
   describe('calculateDamage()', () => {
     it('should calculate base damage from attack and defense stats', () => {
-      const attacker = createTestCard('Attacker', 'BBQ_DAD', {
+      const attacker = createTestCard('Attacker', 'BBQ_DICKTATOR', {
         grillSkill: 80,
       });
 
-      const defender = createTestCard('Defender', 'GOLF_DAD', {
+      const defender = createTestCard('Defender', 'GOLF_GONAD', {
         grillSkill: 50,
       });
 
@@ -898,11 +900,11 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should have minimum damage of 1', () => {
-      const attacker = createTestCard('Weak', 'BBQ_DAD', {
+      const attacker = createTestCard('Weak', 'BBQ_DICKTATOR', {
         dadJoke: 10,
       });
 
-      const defender = createTestCard('Strong', 'GOLF_DAD', {
+      const defender = createTestCard('Strong', 'GOLF_GONAD', {
         dadJoke: 100,
       });
 
@@ -913,11 +915,11 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should have minimum base damage of 5 before RNG', () => {
-      const attacker = createTestCard('Attacker', 'BBQ_DAD', {
+      const attacker = createTestCard('Attacker', 'BBQ_DICKTATOR', {
         dadJoke: 30,
       });
 
-      const defender = createTestCard('Defender', 'GOLF_DAD', {
+      const defender = createTestCard('Defender', 'GOLF_GONAD', {
         dadJoke: 80,
       });
 
@@ -941,7 +943,7 @@ describe('PACK-049: Battle System Tests', () => {
   // ============================================================================
   describe('simulateBattle()', () => {
     it('should simulate a full battle between two cards', () => {
-      const card1 = createTestCard('Card1', 'BBQ_DAD', {
+      const card1 = createTestCard('Card1', 'BBQ_DICKTATOR', {
         dadJoke: 80,
         grillSkill: 80,
         fixIt: 80,
@@ -952,7 +954,7 @@ describe('PACK-049: Battle System Tests', () => {
         beerSnob: 80,
       }, 'legendary');
 
-      const card2 = createTestCard('Card2', 'GOLF_DAD', {
+      const card2 = createTestCard('Card2', 'GOLF_GONAD', {
         dadJoke: 40,
         grillSkill: 40,
         fixIt: 40,
@@ -977,8 +979,8 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should respect max 10 turn limit', () => {
-      const card1 = createTestCard('Card1', 'BBQ_DAD', {});
-      const card2 = createTestCard('Card2', 'GOLF_DAD', {});
+      const card1 = createTestCard('Card1', 'BBQ_DICKTATOR', {});
+      const card2 = createTestCard('Card2', 'GOLF_GONAD', {});
 
       const result = simulateBattle(card1, card2);
 
@@ -987,8 +989,8 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should include battle log entries', () => {
-      const card1 = createTestCard('Card1', 'BBQ_DAD', {});
-      const card2 = createTestCard('Card2', 'GOLF_DAD', {});
+      const card1 = createTestCard('Card1', 'BBQ_DICKTATOR', {});
+      const card2 = createTestCard('Card2', 'GOLF_GONAD', {});
 
       const result = simulateBattle(card1, card2);
 
@@ -1005,7 +1007,7 @@ describe('PACK-049: Battle System Tests', () => {
   // ============================================================================
   describe('predictWinner()', () => {
     it('should predict winner based on power and type advantages', () => {
-      const card1 = createTestCard('Card1', 'BBQ_DAD', {
+      const card1 = createTestCard('Card1', 'BBQ_DICKTATOR', {
         dadJoke: 80,
         grillSkill: 80,
         fixIt: 80,
@@ -1016,7 +1018,7 @@ describe('PACK-049: Battle System Tests', () => {
         beerSnob: 80,
       }, 'legendary');
 
-      const card2 = createTestCard('Card2', 'GOLF_DAD', {
+      const card2 = createTestCard('Card2', 'GOLF_GONAD', {
         dadJoke: 40,
         grillSkill: 40,
         fixIt: 40,
@@ -1036,8 +1038,8 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should have high confidence for synergy matchups', () => {
-      const mythic1 = createTestCard('Mythic1', 'BBQ_DAD', {}, 'mythic');
-      const mythic2 = createTestCard('Mythic2', 'FIX_IT_DAD', {}, 'mythic');
+      const mythic1 = createTestCard('Mythic1', 'BBQ_DICKTATOR', {}, 'mythic');
+      const mythic2 = createTestCard('Mythic2', 'FIX_IT_FUCKBOY', {}, 'mythic');
 
       const prediction = predictWinner(mythic1, mythic2);
 
@@ -1049,7 +1051,7 @@ describe('PACK-049: Battle System Tests', () => {
     it('should have moderate confidence for close matches', () => {
       // Create cards with very similar stats (within 20% of each other)
       // This should trigger the "close match" prediction path
-      const card1 = createTestCard('Card1', 'BBQ_DAD', {
+      const card1 = createTestCard('Card1', 'BBQ_DICKTATOR', {
         dadJoke: 60,
         grillSkill: 60,
         fixIt: 60,
@@ -1060,7 +1062,7 @@ describe('PACK-049: Battle System Tests', () => {
         beerSnob: 60,
       });
 
-      const card2 = createTestCard('Card2', 'GOLF_DAD', {
+      const card2 = createTestCard('Card2', 'GOLF_GONAD', {
         dadJoke: 55, // Only slightly lower
         grillSkill: 55,
         fixIt: 55,
@@ -1085,8 +1087,8 @@ describe('PACK-049: Battle System Tests', () => {
   // ============================================================================
   describe('executeAbility()', () => {
     it('should execute card ability and return result', () => {
-      const card = createTestCard('Test Card', 'BBQ_DAD', {});
-      const target = createTestCard('Target', 'GOLF_DAD', {});
+      const card = createTestCard('Test Card', 'BBQ_DICKTATOR', {});
+      const target = createTestCard('Target', 'GOLF_GONAD', {});
 
       const result = executeAbility(card, target, 0);
 
@@ -1097,13 +1099,13 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should return failure result for missing ability', () => {
-      const card = createTestCard('Test Card', 'BBQ_DAD', {
+      const card = createTestCard('Test Card', 'BBQ_DICKTATOR', {
         // No abilities
       });
       // @ts-expect-error - Testing missing ability
       card.abilities = [];
 
-      const target = createTestCard('Target', 'GOLF_DAD', {});
+      const target = createTestCard('Target', 'GOLF_GONAD', {});
 
       const result = executeAbility(card, target, 0);
 
@@ -1112,9 +1114,9 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should trigger status effects based on card type', () => {
-      // BBQ_DAD has 30% chance to apply 'grilled' status
-      const bbqDad = createTestCard('BBQ Card', 'BBQ_DAD', {});
-      const target = createTestCard('Target', 'GOLF_DAD', {});
+      // BBQ_DICKTATOR has 30% chance to apply 'grilled' status
+      const bbqDad = createTestCard('BBQ Card', 'BBQ_DICKTATOR', {});
+      const target = createTestCard('Target', 'GOLF_GONAD', {});
 
       let grilledCount = 0;
       const iterations = 100;
@@ -1139,11 +1141,11 @@ describe('PACK-049: Battle System Tests', () => {
   describe('Deck Battle Integration', () => {
     it('should include comprehensive battle logs', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', {}), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', {}), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'COUCH_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'COUCH_CUMMANDER', {}), count: 3 },
       ]);
 
       const result = calculateBattleResult(deck1, deck2, 77777);
@@ -1156,11 +1158,11 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should include RNG system information in logs', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', {}), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', {}), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'COUCH_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'COUCH_CUMMANDER', {}), count: 3 },
       ]);
 
       const result = calculateBattleResult(deck1, deck2, 88888);
@@ -1179,11 +1181,11 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should return complete battle statistics', () => {
       const deck1 = createTestDeck('Deck1', [
-        { card: createTestCard('Card1', 'BBQ_DAD', {}), count: 3 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', {}), count: 3 },
       ]);
 
       const deck2 = createTestDeck('Deck2', [
-        { card: createTestCard('Card2', 'COUCH_DAD', {}), count: 3 },
+        { card: createTestCard('Card2', 'COUCH_CUMMANDER', {}), count: 3 },
       ]);
 
       const result = calculateBattleResult(deck1, deck2, 99999);

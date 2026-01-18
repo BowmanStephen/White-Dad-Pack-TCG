@@ -33,9 +33,12 @@
     lg: 'text-base',
   };
 
-  const rarityColor = rarity ? RARITY_CONFIG[rarity].color : '#fbbf24';
+  const inputId = `checkbox-${Math.random().toString(36).slice(2, 9)}`;
+  const rarityColor = $derived(
+    rarity ? RARITY_CONFIG[rarity].color : '#fbbf24'
+  );
 
-  function handleChange(e: Event) {
+  function handleChange(e: Event): void {
     const target = e.target as HTMLInputElement;
     checked = target.checked;
     onchange?.(checked);
@@ -47,9 +50,10 @@
     <input
       type="checkbox"
       class="checkbox-input {sizeClasses[size]}"
+      id={inputId}
       bind:checked={checked}
       disabled={disabled}
-      on:change={handleChange}
+      onchange={handleChange}
       style="--rarity-color: {rarityColor};"
     />
     <span class="checkbox-box {sizeClasses[size]}" aria-hidden="true">
@@ -60,7 +64,7 @@
   </div>
 
   {#if label}
-    <label class="checkbox-label {labelSizeClasses[size]}">
+    <label class="checkbox-label {labelSizeClasses[size]}" for={inputId}>
       {label}
       {#if error}
         <span class="checkbox-error-badge" aria-label="error">!</span>

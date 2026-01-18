@@ -5,12 +5,12 @@ import type { PackCard } from '@/types';
 describe('Pack Quality Calculator (PACK-029)', () => {
   it('should calculate quality score for common-only pack', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '2', name: 'Card 2', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '3', name: 'Card 3', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '4', name: 'Card 4', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '5', name: 'Card 5', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '6', name: 'Card 6', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '2', name: 'Card 2', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '3', name: 'Card 3', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '4', name: 'Card 4', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '5', name: 'Card 5', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '6', name: 'Card 6', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -24,8 +24,8 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should calculate quality score for uncommon pack', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'uncommon', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '2', name: 'Card 2', rarity: 'uncommon', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'uncommon', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '2', name: 'Card 2', rarity: 'uncommon', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -38,8 +38,8 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should calculate quality score for rare pack', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'rare', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '2', name: 'Card 2', rarity: 'rare', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'rare', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '2', name: 'Card 2', rarity: 'rare', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -52,7 +52,7 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should calculate quality score for epic pack', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'epic', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'epic', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -65,7 +65,7 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should calculate quality score for legendary pack', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'legendary', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'legendary', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -78,7 +78,7 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should calculate quality score for mythic pack', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'mythic', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'mythic', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -91,8 +91,8 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should apply 50% holo bonus', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'rare', isHolo: true, type: 'BBQ_DAD' as any },
-      { id: '2', name: 'Card 2', rarity: 'rare', isHolo: false, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'rare', isHolo: true, type: 'BBQ_DICKTATOR' as any },
+      { id: '2', name: 'Card 2', rarity: 'rare', isHolo: false, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -104,7 +104,7 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should calculate percentage correctly', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'mythic', isHolo: true, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'mythic', isHolo: true, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -118,8 +118,8 @@ describe('Pack Quality Calculator (PACK-029)', () => {
 
   it('should cap percentage at 100%', () => {
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'mythic', isHolo: true, type: 'BBQ_DAD' as any },
-      { id: '2', name: 'Card 2', rarity: 'mythic', isHolo: true, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'mythic', isHolo: true, type: 'BBQ_DICKTATOR' as any },
+      { id: '2', name: 'Card 2', rarity: 'mythic', isHolo: true, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);
@@ -158,12 +158,12 @@ describe('Pack Quality Calculator (PACK-029)', () => {
   it('should calculate realistic pack quality example', () => {
     // Example: 3 commons, 2 uncommons, 1 rare, 1 holo rare
     const cards: PackCard[] = [
-      { id: '1', name: 'Card 1', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '2', name: 'Card 2', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '3', name: 'Card 3', rarity: 'common', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '4', name: 'Card 4', rarity: 'uncommon', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '5', name: 'Card 5', rarity: 'uncommon', isHolo: false, type: 'BBQ_DAD' as any },
-      { id: '6', name: 'Card 6', rarity: 'rare', isHolo: true, type: 'BBQ_DAD' as any },
+      { id: '1', name: 'Card 1', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '2', name: 'Card 2', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '3', name: 'Card 3', rarity: 'common', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '4', name: 'Card 4', rarity: 'uncommon', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '5', name: 'Card 5', rarity: 'uncommon', isHolo: false, type: 'BBQ_DICKTATOR' as any },
+      { id: '6', name: 'Card 6', rarity: 'rare', isHolo: true, type: 'BBQ_DICKTATOR' as any },
     ];
 
     const result = calculatePackQuality(cards);

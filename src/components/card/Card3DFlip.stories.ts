@@ -50,6 +50,12 @@ const mockCardMythic: PackCard = {
   grillSkill: 100,
 };
 
+const baseArgs = {
+  autoRotate: false,
+  interactive: true,
+  showParticles: true,
+};
+
 const meta = {
   title: 'Card/Card3DFlip',
   component: Card3DFlip,
@@ -79,9 +85,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     card: mockCard,
-    autoRotate: false,
-    interactive: true,
-    showParticles: true,
+    ...baseArgs,
   },
 };
 
@@ -91,9 +95,7 @@ export const Default: Story = {
 export const NoHolo: Story = {
   args: {
     card: mockCardNoHolo,
-    autoRotate: false,
-    interactive: true,
-    showParticles: true,
+    ...baseArgs,
   },
 };
 
@@ -103,9 +105,7 @@ export const NoHolo: Story = {
 export const MythicPrismatic: Story = {
   args: {
     card: mockCardMythic,
-    autoRotate: false,
-    interactive: true,
-    showParticles: true,
+    ...baseArgs,
   },
 };
 
@@ -115,9 +115,9 @@ export const MythicPrismatic: Story = {
 export const AutoRotate: Story = {
   args: {
     card: mockCard,
+    ...baseArgs,
     autoRotate: true,
     interactive: false,
-    showParticles: true,
   },
 };
 
@@ -127,7 +127,7 @@ export const AutoRotate: Story = {
 export const NonInteractive: Story = {
   args: {
     card: mockCard,
-    autoRotate: false,
+    ...baseArgs,
     interactive: false,
     showParticles: false,
   },
@@ -139,8 +139,7 @@ export const NonInteractive: Story = {
 export const NoParticles: Story = {
   args: {
     card: mockCard,
-    autoRotate: false,
-    interactive: true,
+    ...baseArgs,
     showParticles: false,
   },
 };
@@ -156,9 +155,7 @@ export const CommonRarity: Story = {
       isHolo: false,
       holoType: 'none',
     },
-    autoRotate: false,
-    interactive: true,
-    showParticles: true,
+    ...baseArgs,
   },
 };
 
@@ -173,9 +170,7 @@ export const EpicFullArt: Story = {
       isHolo: true,
       holoType: 'full_art',
     },
-    autoRotate: false,
-    interactive: true,
-    showParticles: true,
+    ...baseArgs,
   },
 };
 
@@ -190,8 +185,6 @@ export const LegendaryReverse: Story = {
       isHolo: true,
       holoType: 'reverse',
     },
-    autoRotate: false,
-    interactive: true,
-    showParticles: true,
+    ...baseArgs,
   },
 };

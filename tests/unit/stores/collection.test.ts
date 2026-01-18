@@ -71,7 +71,7 @@ function createTestPack(overrides?: Partial<Pack>): Pack {
       id: 'card-001',
       name: 'Test Card 1',
       subtitle: 'Common Card',
-      type: 'BBQ_DAD',
+      type: 'BBQ_DICKTATOR',
       rarity: 'common',
       isHolo: false,
       holoType: 'none',
@@ -92,7 +92,7 @@ function createTestPack(overrides?: Partial<Pack>): Pack {
       id: 'card-002',
       name: 'Test Card 2',
       subtitle: 'Rare Card',
-      type: 'FIX_IT_DAD',
+      type: 'FIX_IT_FUCKBOY',
       rarity: 'rare',
       isHolo: true,
       holoType: 'standard',
@@ -198,7 +198,7 @@ describe('Collection Store', () => {
             id: 'card-003', // New unique card
             name: 'Test Card 3',
             subtitle: 'Epic Card',
-            type: 'COUCH_DAD',
+            type: 'COUCH_CUMMANDER',
             rarity: 'epic',
             isHolo: false,
             holoType: 'none',
@@ -288,7 +288,7 @@ describe('Collection Store', () => {
             id: 'card-common-001',
             name: 'Common Dad',
             subtitle: 'Just Common',
-            type: 'BBQ_DAD',
+            type: 'BBQ_DICKTATOR',
             rarity: 'common',
             isHolo: false,
             holoType: 'none',
@@ -382,7 +382,7 @@ describe('Collection Store', () => {
             id: 'card-003',
             name: 'Card 3',
             subtitle: 'Extra',
-            type: 'COUCH_DAD',
+            type: 'COUCH_CUMMANDER',
             rarity: 'uncommon',
             isHolo: false,
             holoType: 'none',
@@ -510,7 +510,7 @@ describe('Collection Store', () => {
             id: 'card-common',
             name: 'Common Dad',
             subtitle: 'Common',
-            type: 'BBQ_DAD',
+            type: 'BBQ_DICKTATOR',
             rarity: 'common',
             isHolo: false,
             holoType: 'none',
@@ -610,7 +610,7 @@ describe('Collection Store', () => {
         id: 'card-bbq',
         name: 'BBQ Dad',
         subtitle: 'Grill Master',
-        type: 'BBQ_DAD' as const,
+        type: 'BBQ_DICKTATOR' as const,
         rarity: 'rare' as const,
         isHolo: false,
         holoType: 'none' as const,
@@ -632,7 +632,7 @@ describe('Collection Store', () => {
         id: 'card-fixit',
         name: 'Fix-It Dad',
         subtitle: 'Handy Man',
-        type: 'FIX_IT_DAD' as const,
+        type: 'FIX_IT_FUCKBOY' as const,
         rarity: 'uncommon' as const,
         isHolo: false,
         holoType: 'none' as const,
@@ -680,12 +680,12 @@ describe('Collection Store', () => {
       const allCards = current.packs.flatMap(p => p.cards);
 
       // Filter for BBQ_DAD type
-      const bbqCards = allCards.filter(c => c.type === 'BBQ_DAD');
+      const bbqCards = allCards.filter(c => c.type === 'BBQ_DICKTATOR');
 
       expect(bbqCards.length).toBe(2); // pack-bbq + pack-mixed
 
-      // Filter for FIX_IT_DAD type
-      const fixItCards = allCards.filter(c => c.type === 'FIX_IT_DAD');
+      // Filter for FIX_IT_FUCKBOY type
+      const fixItCards = allCards.filter(c => c.type === 'FIX_IT_FUCKBOY');
 
       expect(fixItCards.length).toBe(2); // pack-fixit + pack-mixed
     });
@@ -704,11 +704,11 @@ describe('Collection Store', () => {
       const current = collection.get();
       const allCards = current.packs.flatMap(p => p.cards);
 
-      // Verify we have BBQ_DAD and FIX_IT_DAD types
+      // Verify we have BBQ_DAD and FIX_IT_FUCKBOY types
       const types = new Set(allCards.map(c => c.type));
 
-      expect(types.has('BBQ_DAD')).toBe(true);
-      expect(types.has('FIX_IT_DAD')).toBe(true);
+      expect(types.has('BBQ_DICKTATOR')).toBe(true);
+      expect(types.has('FIX_IT_FUCKBOY')).toBe(true);
     });
   });
 
@@ -719,7 +719,7 @@ describe('Collection Store', () => {
           id: 'card-001',
           name: 'Grillmaster Gary',
           subtitle: 'Flame Keeper',
-          type: 'BBQ_DAD' as const,
+          type: 'BBQ_DICKTATOR' as const,
           rarity: 'rare' as const,
           isHolo: true,
           holoType: 'standard' as const,
@@ -740,7 +740,7 @@ describe('Collection Store', () => {
           id: 'card-002',
           name: 'Fix-It Fred',
           subtitle: 'The Repairman',
-          type: 'FIX_IT_DAD' as const,
+          type: 'FIX_IT_FUCKBOY' as const,
           rarity: 'uncommon' as const,
           isHolo: false,
           holoType: 'none' as const,
@@ -761,7 +761,7 @@ describe('Collection Store', () => {
           id: 'card-003',
           name: 'Grill Dad Gary Jr',
           subtitle: 'Apprentice',
-          type: 'BBQ_DAD' as const,
+          type: 'BBQ_DICKTATOR' as const,
           rarity: 'common' as const,
           isHolo: false,
           holoType: 'none' as const,
@@ -832,7 +832,7 @@ describe('Collection Store', () => {
             id: 'card-004',
             name: 'Couch Dad Carl',
             subtitle: 'Napping Expert',
-            type: 'COUCH_DAD' as const,
+            type: 'COUCH_CUMMANDER' as const,
             rarity: 'common' as const,
             isHolo: false,
             holoType: 'none' as const,
@@ -1220,7 +1220,7 @@ describe('Collection Store', () => {
         id: 'card-long',
         name: 'a'.repeat(200), // Very long name (lowercase)
         subtitle: 'Long Name',
-        type: 'BBQ_DAD' as const,
+        type: 'BBQ_DICKTATOR' as const,
         rarity: 'common' as const,
         isHolo: false,
         holoType: 'none' as const,
@@ -1258,7 +1258,7 @@ describe('Collection Store', () => {
         id: 'card-special',
         name: "Dad's Special-Friend @ Home",
         subtitle: 'Special Characters',
-        type: 'COUCH_DAD' as const,
+        type: 'COUCH_CUMMANDER' as const,
         rarity: 'uncommon' as const,
         isHolo: false,
         holoType: 'none' as const,
@@ -1300,7 +1300,7 @@ describe('Collection Store', () => {
         id: 'card-unicode',
         name: 'Dad with emojis and special characters',
         subtitle: 'Unicode Test',
-        type: 'TECH_DAD' as const,
+        type: 'TECH_TWATS' as const,
         rarity: 'rare' as const,
         isHolo: false,
         holoType: 'none' as const,

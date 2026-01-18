@@ -72,7 +72,7 @@ describe('Type Advantage Matrix (PACK-008)', () => {
       });
     });
 
-    it('should have 11 neutral matchups per type (core types only)', () => {
+    it('should have 10 neutral matchups per type (core types only)', () => {
       const coreTypes: DadType[] = [
         'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
         'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
@@ -80,9 +80,10 @@ describe('Type Advantage Matrix (PACK-008)', () => {
         'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
       ];
 
+      // 15 types - 1 self - 2 advantages - 2 disadvantages = 10 neutrals
       coreTypes.forEach(type => {
         const neutrals = getNeutrals(type);
-        expect(neutrals.length).toBe(11);
+        expect(neutrals.length).toBe(10);
       });
     });
 
@@ -213,12 +214,13 @@ describe('Type Advantage Matrix (PACK-008)', () => {
   });
 
   describe('getNeutrals', () => {
-    it('should return 11 neutral matchups', () => {
+    it('should return 10 neutral matchups', () => {
+      // 15 types - 1 self - 2 advantages - 2 disadvantages = 10 neutrals
       const bbqNeutrals = getNeutrals('BBQ_DICKTATOR');
-      expect(bbqNeutrals).toHaveLength(11);
+      expect(bbqNeutrals).toHaveLength(10);
 
       const fixItNeutrals = getNeutrals('FIX_IT_FUCKBOY');
-      expect(fixItNeutrals).toHaveLength(11);
+      expect(fixItNeutrals).toHaveLength(10);
     });
 
     it('should not include advantages or disadvantages in neutrals', () => {
@@ -398,33 +400,48 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
   describe('Deck Building Strategy Implications', () => {
     it('should encourage diverse type selection (no type is overpowered)', () => {
-      // All types should have same number of advantages (2)
-      const advantageCounts = Object.values(TYPE_ADVANTAGE_MATRIX)
-        .filter(advantages => advantages.length > 0)
-        .map(advantages => advantages.length);
+      const coreTypes: DadType[] = [
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+      ];
 
-      advantageCounts.forEach(count => {
-        expect(count).toBe(2);
+      // All core types should have same number of advantages (2)
+      coreTypes.forEach(type => {
+        const advantages = TYPE_ADVANTAGE_MATRIX[type];
+        expect(advantages.length).toBe(2);
       });
     });
 
     it('should create counter-play opportunities (every type has counters)', () => {
-      // Every type should have exactly 2 counters (disadvantages)
-      Object.keys(TYPE_ADVANTAGE_MATRIX).forEach(type => {
-        if (type === 'ITEM') return;
+      const coreTypes: DadType[] = [
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+      ];
 
-        const disadvantages = getDisadvantages(type as DadType);
+      // Every core type should have exactly 2 counters (disadvantages)
+      coreTypes.forEach(type => {
+        const disadvantages = getDisadvantages(type);
         expect(disadvantages.length).toBe(2);
       });
     });
 
-    it('should balance strategic depth (11 neutral matchups per type)', () => {
-      // Most matchups should be neutral to allow skill to matter
-      Object.keys(TYPE_ADVANTAGE_MATRIX).forEach(type => {
-        if (type === 'ITEM') return;
+    it('should balance strategic depth (10 neutral matchups per type)', () => {
+      const coreTypes: DadType[] = [
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+      ];
 
-        const neutrals = getNeutrals(type as DadType);
-        expect(neutrals.length).toBe(11);
+      // Most matchups should be neutral to allow skill to matter
+      // 15 types - 1 self - 2 advantages - 2 disadvantages = 10 neutrals
+      coreTypes.forEach(type => {
+        const neutrals = getNeutrals(type);
+        expect(neutrals.length).toBe(10);
       });
     });
   });

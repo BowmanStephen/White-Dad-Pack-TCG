@@ -1,16 +1,24 @@
 <script lang="ts">
-  import { fade, scale } from 'svelte/transition';
+  import { onDestroy, onMount } from 'svelte';
   import { backOut } from 'svelte/easing';
-  import { modalOpen, closeModal, showToast } from '@/stores/ui';
-  import { trackEvent } from '@/stores/analytics';
-  import { RARITY_ORDER } from '@/types';
-  import type { Card } from '@/types';
-  import { onMount, onDestroy } from 'svelte';
+  import { fade, scale } from 'svelte/transition';
   import { createFocusTrap } from '@/lib/utils/focus-trap';
   import { handleEscapeKey } from '@/lib/utils/keyboard';
+  import { trackEvent } from '@/stores/analytics';
+  import { closeModal, modalOpen, showToast } from '@/stores/ui';
+  import { RARITY_ORDER, type Card } from '@/types';
 
   export let cards: Card[] = [];
   export let packImageElement: HTMLElement | null = null;
+
+  type ShareAction = 'twitter' | 'discord' | 'download' | 'native';
+
+  type Platform = {
+    name: string;
+    emoji: string;
+    color: string;
+    action: ShareAction;
+  };
 
   // Local reactive state
   let isOpen = false;
@@ -23,32 +31,7 @@
 
   onMount(() => {
     if (typeof window !== 'undefined') {
-      unsubscribe = modalOpen.subscribe((value) => {
-        const shouldBeOpen = value === 'share';
-
-        if (shouldBeOpen && !isOpen) {
-          // Opening modal
-          isOpen = true;
-          previouslyFocusedElement = document.activeElement as HTMLElement;
-
-          // Set up focus trap after transition
-          setTimeout(() => {
-            cleanupFocusTrap = createFocusTrap(modalElement, {
-              returnFocusTo: previouslyFocusedElement || undefined,
-              autoFocus: true,
-            });
-          }, 100);
-        } else if (!shouldBeOpen && isOpen) {
-          // Closing modal
-          isOpen = false;
-
-          // Clean up focus trap
-          if (cleanupFocusTrap) {
-            cleanupFocusTrap();
-            cleanupFocusTrap = null;
-          }
-        }
-      });
+      unsubscribe = modalOpen.subscribe(handleModalStateChange);
     }
   });
 
@@ -63,12 +46,12 @@
   });
 
   // Handle Escape key to close modal
-  function handleKeydown(e: KeyboardEvent) {
+  function handleKeydown(e: KeyboardEvent): void {
     handleEscapeKey(e, handleClose);
   }
 
   // Platform icons (using emoji for simplicity, can be replaced with SVG icons)
-  const platforms = [
+  const platforms: Platform[] = [
     {
       name: 'X (Twitter)',
       emoji: '𝕏',
@@ -89,22 +72,32 @@
     },
   ];
 
-  async function handleShare(action: string) {
-    if (action === 'twitter') {
-      await shareToTwitter();
-    } else if (action === 'discord') {
-      await shareToDiscord();
-    } else if (action === 'download') {
-      await downloadPackImage();
+  async function handleShare(action: ShareAction): Promise<void> {
+    switch (action) {
+      case 'twitter':
+        await shareToTwitter();
+        return;
+      case 'discord':
+        await shareToDiscord();
+        return;
+      case 'download':
+        await downloadPackImage();
+        return;
+      default:
+        return;
     }
   }
 
-  async function shareToTwitter() {
-    if (!cards.length) return;
+  async function shareToTwitter(): Promise<void> {
+    if (!cards.length) {
+      return;
+    }
 
-    const bestCard = cards.reduce((best, card) =>
-      RARITY_ORDER[card.rarity] > RARITY_ORDER[best.rarity] ? card : best
-    );
+    const bestCard = getBestCard(cards);
+
+    if (!bestCard) {
+      return;
+    }
 
     const rarityStars = '★'.repeat(RARITY_ORDER[bestCard.rarity] + 1);
     const text = `Just pulled: ${bestCard.name} ${rarityStars} ${bestCard.flavorText}`;
@@ -114,75 +107,52 @@
     twitterUrl.searchParams.set('via', 'DadDeckTCG');
 
     // Track share event
-    trackEvent({
-      type: 'share',
-      data: {
-        platform: 'twitter',
-        packId: 'unknown', // ShareModal doesn't receive packId, could be enhanced
-        cardCount: cards.length,
-      },
-    });
+    trackShareEvent('twitter');
 
-    const newWindow = window.open(twitterUrl.toString(), '_blank', 'noopener,noreferrer,width=550,height=420');
-    
+    const newWindow = window.open(
+      twitterUrl.toString(),
+      '_blank',
+      'noopener,noreferrer,width=550,height=420'
+    );
+
     // Check for popup blocker
     if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-      showToast('Pop-up blocked! Please allow pop-ups to share on Twitter.', 'error');
+      showToast(
+        'Pop-up blocked! Please allow pop-ups to share on Twitter.',
+        'error'
+      );
     }
   }
 
-  async function shareToDiscord() {
+  async function shareToDiscord(): Promise<void> {
     // Copy instructions to clipboard
-    const instructions = '📸 Right-click the image below → Copy Image → Paste in Discord!\n\nOr click Download to save it.';
+    const instructions =
+      '📸 Right-click the image below → Copy Image → Paste in Discord!\n\n' +
+      'Or click Download to save it.';
 
     try {
       await navigator.clipboard.writeText(instructions);
 
       // Track share event
-      trackEvent({
-        type: 'share',
-        data: {
-          platform: 'discord',
-          packId: 'unknown',
-          cardCount: cards.length,
-        },
-      });
+      trackShareEvent('discord');
 
-      showToast('Instructions copied! Paste them in Discord, then right-click the image to copy it.', 'info');
-     } catch (error) {
+      showToast(
+        'Instructions copied! Paste them in Discord, then right-click the image to copy it.',
+        'info'
+      );
+    } catch (error) {
       showToast('Failed to copy instructions. Please try again.', 'error');
     }
   }
 
-  async function downloadPackImage() {
+  async function downloadPackImage(): Promise<void> {
     if (!packImageElement) {
       showToast('No pack image to download.', 'error');
       return;
     }
 
     try {
-      const html2canvas = await import('html2canvas').catch((err) => {
-        console.error('[ShareModal] Failed to load html2canvas:', err);
-        throw new Error('Failed to load image generation library');
-      });
-
-       const canvas = await html2canvas.default(packImageElement!, {
-         backgroundColor: '#0f172a',
-         scale: 2,
-         logging: false,
-         useCORS: true,
-         allowTaint: true,
-       });
-
-       const blob = await new Promise<Blob>((resolve, reject) => {
-         canvas.toBlob((b) => {
-           if (!b) {
-             reject(new Error('Failed to create image blob'));
-             return;
-           }
-           resolve(b);
-         }, 'image/png');
-       });
+      const blob = await createPackImageBlob();
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -194,14 +164,7 @@
       URL.revokeObjectURL(url);
 
       // Track download event
-      trackEvent({
-        type: 'share',
-        data: {
-          platform: 'download',
-          packId: 'unknown',
-          cardCount: cards.length,
-        },
-      });
+      trackShareEvent('download');
 
       showToast('Pack image downloaded!', 'success');
     } catch (error) {
@@ -210,13 +173,143 @@
     }
   }
 
-  function handleClose() {
+  async function handleNativeShare(): Promise<void> {
+    if (!cards.length || !packImageElement) {
+      showToast('No pack image available to share.', 'error');
+      return;
+    }
+
+    try {
+      const blob = await createPackImageBlob();
+      const file = new File([blob], 'daddieck-pack.png', {
+        type: 'image/png',
+      });
+
+      await navigator.share({
+        title: 'DadDeck™ Pull',
+        text: 'Just opened a pack on DadDeck™!',
+        files: [file],
+      });
+
+      trackShareEvent('native');
+      showToast('Thanks for sharing!', 'success');
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Native share failed:', error);
+        showToast('Failed to open share dialog. Please try again.', 'error');
+      }
+    }
+  }
+
+  function handleClose(): void {
     closeModal();
   }
 
-  function handleBackdropClick(e: MouseEvent) {
+  function handleBackdropClick(e: MouseEvent): void {
     if (e.target === e.currentTarget) {
       handleClose();
+    }
+  }
+
+  function handleModalStateChange(value: string | null): void {
+    const shouldBeOpen = value === 'share';
+
+    if (shouldBeOpen && !isOpen) {
+      openModal();
+      return;
+    }
+
+    if (!shouldBeOpen && isOpen) {
+      closeModalState();
+    }
+  }
+
+  function openModal(): void {
+    isOpen = true;
+    previouslyFocusedElement = document.activeElement as HTMLElement;
+    setTimeout(function () {
+      cleanupFocusTrap = createFocusTrap(modalElement, {
+        returnFocusTo: previouslyFocusedElement || undefined,
+        autoFocus: true,
+      });
+    }, 100);
+  }
+
+  function closeModalState(): void {
+    isOpen = false;
+
+    if (cleanupFocusTrap) {
+      cleanupFocusTrap();
+      cleanupFocusTrap = null;
+    }
+  }
+
+  function handlePlatformClick(event: MouseEvent): void {
+    const target = event.currentTarget as HTMLElement | null;
+    const action = target?.dataset.action as ShareAction | undefined;
+
+    if (!action) {
+      return;
+    }
+
+    void handleShare(action);
+  }
+
+  function getBestCard(cardList: Card[]): Card | null {
+    let best: Card | null = null;
+
+    for (const card of cardList) {
+      if (!best) {
+        best = card;
+        continue;
+      }
+
+      if (RARITY_ORDER[card.rarity] > RARITY_ORDER[best.rarity]) {
+        best = card;
+      }
+    }
+
+    return best;
+  }
+
+  function trackShareEvent(platform: ShareAction): void {
+    trackEvent({
+      type: 'share',
+      data: {
+        platform,
+        packId: 'unknown',
+        cardCount: cards.length,
+      },
+    });
+  }
+
+  async function createPackImageBlob(): Promise<Blob> {
+    const html2canvas = await loadHtml2Canvas();
+    const canvas = await html2canvas.default(packImageElement!, {
+      backgroundColor: '#0f172a',
+      scale: 2,
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+    });
+
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          reject(new Error('Failed to create image blob'));
+          return;
+        }
+        resolve(blob);
+      }, 'image/png');
+    });
+  }
+
+  async function loadHtml2Canvas(): Promise<typeof import('html2canvas')> {
+    try {
+      return await import('html2canvas');
+    } catch (err) {
+      console.error('[ShareModal] Failed to load html2canvas:', err);
+      throw new Error('Failed to load image generation library');
     }
   }
 </script>
@@ -229,6 +322,7 @@
     out:fade={{ duration: 150 }}
     on:click={handleBackdropClick}
     on:keydown={handleKeydown}
+    tabindex="0"
     role="dialog"
     aria-modal="true"
     aria-labelledby="share-modal-title"
@@ -237,7 +331,6 @@
       class="relative w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-800"
       in:scale={{ duration: 300, easing: backOut }}
       out:scale={{ duration: 150 }}
-      on:click|stopPropagation
     >
       <!-- Close button -->
       <button
@@ -277,7 +370,8 @@
       <div class="p-6 pt-2 space-y-3">
         {#each platforms as platform}
           <button
-            on:click={() => handleShare(platform.action)}
+            data-action={platform.action}
+            on:click={handlePlatformClick}
             class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r {platform.color} hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
             aria-label="Share to {platform.name}"
             type="button"
@@ -291,64 +385,9 @@
         {/each}
 
         <!-- Native share option (if available) -->
-        {#if typeof navigator !== 'undefined' && navigator.share}
+        {#if typeof navigator !== 'undefined' && 'share' in navigator}
           <button
-            on:click={async () => {
-              if (cards.length && packImageElement) {
-                try {
-                  const html2canvas = await import('html2canvas').catch((err) => {
-                    console.error('[ShareModal] Failed to load html2canvas:', err);
-                    throw new Error('Failed to load image generation library');
-                  });
-
-                   const canvas = await html2canvas.default(packImageElement!, {
-                     backgroundColor: '#0f172a',
-                     scale: 2,
-                     logging: false,
-                     useCORS: true,
-                     allowTaint: true,
-                   });
-
-                   const blob = await new Promise<Blob>((resolve, reject) => {
-                     canvas.toBlob((b) => {
-                       if (!b) {
-                         reject(new Error('Failed to create image blob'));
-                         return;
-                       }
-                       resolve(b);
-                     }, 'image/png');
-                   });
-
-                  const file = new File([blob], 'daddieck-pack.png', { type: 'image/png' });
-
-                  await navigator.share({
-                    title: 'DadDeck™ Pull',
-                    text: `Just opened a pack on DadDeck™!`,
-                    files: [file],
-                  });
-
-                  // Track native share event
-                  trackEvent({
-                    type: 'share',
-                    data: {
-                      platform: 'native',
-                      packId: 'unknown',
-                      cardCount: cards.length,
-                    },
-                  });
-
-                   showToast('Thanks for sharing!', 'success');
-                } catch (error) {
-                  // User cancelled the share dialog - this is expected behavior, not an error
-                  if ((error as Error).name !== 'AbortError') {
-                    console.error('Native share failed:', error);
-                     showToast('Failed to open share dialog. Please try again.', 'error');
-                  }
-                }
-              } else {
-                 showToast('No pack image available to share.', 'error');
-              }
-            }}
+            on:click={handleNativeShare}
             class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
             aria-label="Share with native share dialog"
             type="button"
