@@ -30,6 +30,7 @@
     "generate-svgs": "bun run scripts/generate-card-svgs.ts",
     "prebuild": "bun run optimize:images && bun run generate-og-image && bun run generate-sitemap && bun run generate-svgs",
     "generate-sitemap": "node scripts/generate-sitemap.mjs",
+    "validate:env": "node scripts/validate-env.mjs",
     "discord-bot": "bun run discord-bot/index.ts",
     "discord-bot:dev": "bun --watch run discord-bot/index.ts",
     "storybook": "storybook dev -p 6006",
