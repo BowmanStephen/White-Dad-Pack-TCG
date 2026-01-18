@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CollectionManager from '../components/collection/CollectionManager.svelte';
 import CollectionStats from '../components/collection/CollectionStats.svelte';
+import PackStats from '../components/pack/PackStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
@@ -67,6 +68,16 @@ const collectionPageSchema = {
     <CollectionStats client:load />
   </div>
 
+  <!-- Pack Opening Stats -->
+  <div class="pack-stats-section">
+    <ErrorBoundary
+      fallbackTitle="Pack Stats Error"
+      fallbackMessage="We couldn't load the pack statistics. Please refresh the page."
+    >
+      <PackStats client:load />
+    </ErrorBoundary>
+  </div>
+
   <!-- Pack History -->
   <div class="history-section">
     <PackHistoryPanel client:load />
@@ -95,6 +106,11 @@ const collectionPageSchema = {
 
   .stats-section {
     padding: 0 1rem 2rem 1rem;
+  }
+
+  .pack-stats-section {
+    padding: 0 1rem 2rem 1rem;
+    background: radial-gradient(ellipse at top, rgba(251, 191, 36, 0.05) 0%, transparent 50%);
   }
 
   .history-section {
