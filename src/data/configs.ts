@@ -115,6 +115,9 @@ export const DAD_TYPE_NAMES: Record<DadType, string> = {
   VINTAGE_DAD: 'Vintage Dad',
   FASHION_DAD: 'Fashion Dad',
   TECH_DAD: 'Tech Dad',
+  SUBURBAN_SPY: 'Suburban Spy',
+  GAMER_GIZZARDS: 'Gamer Gizzards',
+  PREPPER_PENIS: 'Prepper Penis',
   ITEM: 'Item',
 };
 
@@ -135,6 +138,9 @@ export const DAD_TYPE_ICONS: Record<DadType, string> = {
   VINTAGE_DAD: '🔧',
   FASHION_DAD: '👟',
   TECH_DAD: '💻',
+  SUBURBAN_SPY: '🕵️',
+  GAMER_GIZZARDS: '🎮',
+  PREPPER_PENIS: '🛡️',
   ITEM: '🎁',
 };
 

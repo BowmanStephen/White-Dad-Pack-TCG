@@ -18,6 +18,9 @@ export type DadType =
   | 'VINTAGE_DAD'
   | 'FASHION_DAD'
   | 'TECH_DAD'
+  | 'SUBURBAN_SPY'
+  | 'GAMER_GIZZARDS'
+  | 'PREPPER_PENIS'
   | 'ITEM';
 
 // Holographic Variant Types

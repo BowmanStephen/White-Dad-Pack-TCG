@@ -1,0 +1,349 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AchievementToast from '@/components/achievements/AchievementToast.svelte';
+---
+
+<BaseLayout title="Achievement Test - DadDeck™">
+  <div class="container">
+    <header>
+      <h1>Achievement Toast Test</h1>
+      <p class="subtitle">Test the achievement unlock celebration system</p>
+    </header>
+
+    <section class="test-section">
+      <h2>Test Achievement Notifications</h2>
+      <p class="description">
+        Click the buttons below to trigger achievement unlock toasts with different rarities.
+        Gold and Platinum achievements include confetti effects!
+      </p>
+
+      <div class="button-grid">
+        <button
+          class="test-button bronze"
+          data-rarity="bronze"
+          data-name="First Pack"
+          data-description="Open your first pack of cards">
+          🥉 Test Bronze
+        </button>
+
+        <button
+          class="test-button silver"
+          data-rarity="silver"
+          data-name="Collector"
+          data-description="Collect 10 unique cards">
+          🥈 Test Silver
+        </button>
+
+        <button
+          class="test-button gold"
+          data-rarity="gold"
+          data-name="Rare Hunter"
+          data-description="Open 5 rare cards in one pack">
+          🥇 Test Gold (Confetti!)
+        </button>
+
+        <button
+          class="test-button platinum"
+          data-rarity="platinum"
+          data-name="Mythic Master"
+          data-description="Pull a mythic card">
+          💎 Test Platinum (Mega Confetti!)
+        </button>
+      </div>
+
+      <div class="info-box">
+        <h3>What to expect:</h3>
+        <ul>
+          <li><strong>Slide-in animation</strong> - Toast flies in from the top-right</li>
+          <li><strong>Rarity-based colors</strong> - Bronze, Silver, Gold, Platinum themes</li>
+          <li><strong>Confetti burst</strong> - Gold and Platinum achievements trigger confetti</li>
+          <li><strong>Sound effects</strong> - Respects your audio settings (toggle in settings)</li>
+          <li><strong>Auto-dismiss</strong> - Toasts disappear after 4-5 seconds</li>
+        </ul>
+      </div>
+
+      <div class="button-grid secondary">
+        <button id="test-queue" class="test-button">
+          🎯 Test Queue (4 achievements)
+        </button>
+        <button id="test-sound-toggle" class="test-button">
+          🔊 Toggle Sound
+        </button>
+      </div>
+    </section>
+
+    <section class="documentation">
+      <h2>Component Features</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>🎨 Visual Effects</h3>
+          <p>Rarity-based colors, glow effects, and smooth animations using Svelte transitions.</p>
+        </div>
+        <div class="feature-card">
+          <h3>🎊 Confetti System</h3>
+          <p>Particle-based confetti burst for Gold and Platinum achievements with physics simulation.</p>
+        </div>
+        <div class="feature-card">
+          <h3>🔊 Audio Integration</h3>
+          <p>Rarity-specific sound effects that respect the mute setting and volume controls.</p>
+        </div>
+        <div class="feature-card">
+          <h3>📋 Toast Queue</h3>
+          <p>Sequential display of multiple achievements with automatic queue management.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <AchievementToast client:load />
+</BaseLayout>
+
+<style>
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .test-section {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      color: #1f2937;
+    }
+
+    .description {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .test-button {
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .test-button:active {
+      transform: translateY(0);
+    }
+
+    .test-button.bronze {
+      background: linear-gradient(135deg, #cd7f32 0%, #e5a85c 100%);
+      color: white;
+    }
+
+    .test-button.silver {
+      background: linear-gradient(135deg, #c0c0c0 0%, #e0e0e0 100%);
+      color: #1f2937;
+    }
+
+    .test-button.gold {
+      background: linear-gradient(135deg, #ffd700 0%, #ffe55c 100%);
+      color: #1f2937;
+    }
+
+    .test-button.platinum {
+      background: linear-gradient(135deg, #e5e4e2 0%, #f0eff0 100%);
+      color: #1f2937;
+    }
+
+    .info-box {
+      background: #f9fafb;
+      border-left: 4px solid #3b82f6;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .info-box h3 {
+      margin: 0 0 0.75rem 0;
+      color: #1f2937;
+      font-size: 1.1rem;
+    }
+
+    .info-box ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: #6b7280;
+    }
+
+    .info-box li {
+      margin-bottom: 0.5rem;
+    }
+
+    .secondary {
+      margin-top: 0;
+    }
+
+    .documentation {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .feature-card {
+      background: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .feature-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: #1f2937;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .button-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+<script define:vars={{ achievements: [{ id: 'test1', name: 'Pack Opener', description: 'Open your first pack', rarity: 'bronze', category: 'opening', icon: '📦' }] }}>
+  import { unlockAchievement, showAchievementToast } from '@/stores/achievements';
+  import { toggleMute, muted } from '@/stores/audio';
+  import type { Achievement, AchievementRarity } from '@/types';
+
+  // Get all test buttons
+  const testButtons = document.querySelectorAll('.test-button:not(#test-queue):not(#test-sound-toggle)');
+
+  testButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const rarity = button.getAttribute('data-rarity') as AchievementRarity;
+      const name = button.getAttribute('data-name') || 'Test Achievement';
+      const description = button.getAttribute('data-description') || 'Test description';
+
+      const achievement: Achievement = {
+        id: `test-${Date.now()}`,
+        name,
+        description,
+        icon: '🏆',
+        rarity,
+        category: 'opening',
+      };
+
+      unlockAchievement(achievement);
+    });
+  });
+
+  // Test queue button
+  const testQueueBtn = document.getElementById('test-queue');
+  testQueueBtn?.addEventListener('click', () => {
+    const achievements: Achievement[] = [
+      {
+        id: 'queue-1',
+        name: 'Bronze Achievement',
+        description: 'First in the queue',
+        icon: '🥉',
+        rarity: 'bronze',
+        category: 'opening',
+      },
+      {
+        id: 'queue-2',
+        name: 'Silver Achievement',
+        description: 'Second in the queue',
+        icon: '🥈',
+        rarity: 'silver',
+        category: 'collection',
+      },
+      {
+        id: 'queue-3',
+        name: 'Gold Achievement',
+        description: 'Third in the queue with confetti!',
+        icon: '🥇',
+        rarity: 'gold',
+        category: 'rare',
+      },
+      {
+        id: 'queue-4',
+        name: 'Platinum Achievement',
+        description: 'Last in the queue with mega confetti!',
+        icon: '💎',
+        rarity: 'platinum',
+        category: 'holo',
+      },
+    ];
+
+    achievements.forEach(a => unlockAchievement(a));
+  });
+
+  // Sound toggle button
+  const soundToggleBtn = document.getElementById('test-sound-toggle');
+  soundToggleBtn?.addEventListener('click', () => {
+    toggleMute();
+    const isMuted = muted.get();
+    soundToggleBtn.textContent = isMuted ? '🔇 Sound Off' : '🔊 Sound On';
+  });
+</script>
