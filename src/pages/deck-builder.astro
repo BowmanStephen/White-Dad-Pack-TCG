@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DeckBuilder from '@/components/deck/DeckBuilder.svelte';
+import Navigation from '@/components/common/Navigation.svelte';
+import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
 import { t } from '@/i18n';
 
 // SEO Meta Tags
@@ -9,6 +11,11 @@ const description = t('deck.metaDescription');
 ---
 
 <BaseLayout title={title} description={description}>
+  <Navigation client:load />
+
+  <!-- Breadcrumbs -->
+  <Breadcrumbs client:load />
+
   <main class="deck-builder-page">
     <DeckBuilder client:only />
   </main>

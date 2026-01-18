@@ -1,46 +1,5 @@
-// Card Rarity Types
-export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
-
-// Dad Type Categories - All types used in card database
-export type DadType =
-  // Core Dad Archetypes (internal names)
-  | 'BBQ_DICKTATOR'
-  | 'FIX_IT_FUCKBOY'
-  | 'GOLF_GONAD'
-  | 'COUCH_CUMMANDER'
-  | 'LAWN_LUNATIC'
-  | 'CAR_COCK'
-  | 'OFFICE_ORGASMS'
-  | 'COOL_CUCKS'
-  | 'COACH_CUMSTERS'
-  | 'CHEF_CUMSTERS'
-  | 'HOLIDAY_HORNDOGS'
-  | 'WAREHOUSE_WANKERS'
-  | 'VINTAGE_VAGABONDS'
-  | 'FASHION_FUCK'
-  | 'TECH_TWATS'
-  // Extended Types
-  | 'GAMER_GIZZARDS'
-  | 'BBQ_BRAWLER'
-  | 'SUBURBAN_SOCIALITE'
-  | 'NEIGHBORHOOD_NOSY'
-  // Family Variants
-  | 'SON_SPAWNS'
-  | 'DAUGHTER_DINGBATS'
-  | 'UNCLE_UPROARS'
-  | 'SUBURBAN_SIDEKICKS'
-  // Special Card Type
-  | 'ITEM';
-
-// Holographic Variant Types
-export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';
-
-// ============================================================================
-// CINEMATIC MODE TYPES (US083 - Pack Opening - Cinematic Mode)
-// ============================================================================
-
-// Cinematic mode enables slower, more dramatic pack opening animations
-export type CinematicMode = 'normal' | 'cinematic';
+// Re-export types from card.ts to maintain backwards compatibility
+export type { Rarity, DadType, HoloVariant, CinematicMode } from './card';
 
 // Cinematic mode configuration
 export interface CinematicConfig {

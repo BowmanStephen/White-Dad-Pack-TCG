@@ -112,13 +112,13 @@ export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
     accent: '#fbbf24',       // Gold (legendary)
     background: 'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)',
   },
-  SUBURBAN_SPY: {
+  BBQ_DAD: {
     primary: '#6b7280',      // Gray (stealth)
     secondary: '#4b5563',    // Dark gray
     accent: '#ef4444',       // Red (alert)
     background: 'linear-gradient(135deg, #374151 0%, #4b5563 50%, #374151 100%)',
   },
-  GAMER_GIZZARDS: {
+  BBQ_DAD: {
     primary: '#8b5cf6',      // Purple (gaming)
     secondary: '#ec4899',    // Pink
     accent: '#22d3ee',       // Cyan (screen glow)
@@ -203,91 +203,91 @@ export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
     background: 'linear-gradient(135deg, #334155 0%, #64748b 50%, #334155 100%)',
   },
   // Unhinged names (Season 2+) - same colors as clean counterparts
-  BBQ_DICKTATOR: {
+  BBQ_DAD: {
     primary: '#ef4444',
     secondary: '#f97316',
     accent: '#fbbf24',
     background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%)',
   },
-  FIX_IT_FUCKBOY: {
+  FIX_IT_DAD: {
     primary: '#6366f1',
     secondary: '#8b5cf6',
     accent: '#fbbf24',
     background: 'linear-gradient(135deg, #312e81 0%, #3730a3 50%, #312e81 100%)',
   },
-  GOLF_GONAD: {
+  GOLF_DAD: {
     primary: '#22c55e',
     secondary: '#84cc16',
     accent: '#fbbf24',
     background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #14532d 100%)',
   },
-  COUCH_CUMMANDER: {
+  COUCH_DAD: {
     primary: '#3b82f6',
     secondary: '#6366f1',
     accent: '#8b5cf6',
     background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%)',
   },
-  LAWN_LUNATIC: {
+  LAWN_DAD: {
     primary: '#22c55e',
     secondary: '#16a34a',
     accent: '#84cc16',
     background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #14532d 100%)',
   },
-  CAR_COCK: {
+  CAR_DAD: {
     primary: '#64748b',
     secondary: '#94a3b8',
     accent: '#ef4444',
     background: 'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)',
   },
-  OFFICE_ORGASMS: {
+  OFFICE_DAD: {
     primary: '#6366f1',
     secondary: '#8b5cf6',
     accent: '#ec4899',
     background: 'linear-gradient(135deg, #312e81 0%, #3730a3 50%, #312e81 100%)',
   },
-  COOL_CUCKS: {
+  COOL_DAD: {
     primary: '#8b5cf6',
     secondary: '#ec4899',
     accent: '#f97316',
     background: 'linear-gradient(135deg, #581c87 0%, #6b21a8 50%, #581c87 100%)',
   },
-  COACH_CUMSTERS: {
+  COACH_DAD: {
     primary: '#f97316',
     secondary: '#ef4444',
     accent: '#fbbf24',
     background: 'linear-gradient(135deg, #9a3412 0%, #c2410c 50%, #9a3412 100%)',
   },
-  CHEF_CUMSTERS: {
+  CHEF_DAD: {
     primary: '#ffffff',
     secondary: '#fbbf24',
     accent: '#ef4444',
     background: 'linear-gradient(135deg, #78716c 0%, #a8a29e 50%, #78716c 100%)',
   },
-  HOLIDAY_HORNDOGS: {
+  HOLIDAY_DAD: {
     primary: '#ef4444',
     secondary: '#22c55e',
     accent: '#fbbf24',
     background: 'linear-gradient(135deg, #7f1d1d 0%, #14532d 50%, #7f1d1d 100%)',
   },
-  WAREHOUSE_WANKERS: {
+  WAREHOUSE_DAD: {
     primary: '#f97316',
     secondary: '#fbbf24',
     accent: '#ef4444',
     background: 'linear-gradient(135deg, #9a3412 0%, #c2410c 50%, #9a3412 100%)',
   },
-  VINTAGE_VAGABONDS: {
+  VINTAGE_DAD: {
     primary: '#a8a29e',
     secondary: '#78716c',
     accent: '#fbbf24',
     background: 'linear-gradient(135deg, #57534e 0%, #78716c 50%, #57534e 100%)',
   },
-  FASHION_FUCK: {
+  FASHION_DAD: {
     primary: '#ec4899',
     secondary: '#f472b6',
     accent: '#8b5cf6',
     background: 'linear-gradient(135deg, #831843 0%, #9d174d 50%, #831843 100%)',
   },
-  TECH_TWATS: {
+  TECH_DAD: {
     primary: '#06b6d4',
     secondary: '#3b82f6',
     accent: '#22d3ee',

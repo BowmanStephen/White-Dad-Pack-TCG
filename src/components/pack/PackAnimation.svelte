@@ -672,4 +672,14 @@
   .animate-tear-line-golden {
     transform: translateZ(0);
   }
+
+  /* Swipe instruction pulse animation */
+  @keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  .animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
 </style>

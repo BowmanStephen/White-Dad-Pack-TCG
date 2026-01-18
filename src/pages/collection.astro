@@ -5,6 +5,7 @@ import CollectionStats from '../components/collection/CollectionStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
+import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
 
 import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 
@@ -35,7 +36,9 @@ const collectionPageSchema = {
   image="/og-image.png"
 >
   <Navigation client:load />
-  
+
+  <!-- Breadcrumbs -->
+  <Breadcrumbs client:load />
 
   <!-- Page Header -->
   <div class="page-header">

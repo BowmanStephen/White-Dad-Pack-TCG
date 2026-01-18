@@ -143,9 +143,7 @@ self.addEventListener('activate', (event) => {
   );
 
   // Take control of all clients immediately
-  // @ts-ignore - ServiceWorkerGlobalScope.clients exists in service worker context
   if (self.clients && typeof self.clients.claim === 'function') {
-    // @ts-ignore
     self.clients.claim();
   }
 });

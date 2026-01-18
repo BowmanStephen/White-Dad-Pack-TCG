@@ -2,9 +2,16 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import AchievementToast from '@/components/achievements/AchievementToast.svelte';
 import AchievementList from '@/components/achievements/AchievementList.svelte';
+import Navigation from '@/components/common/Navigation.svelte';
+import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
 ---
 
 <BaseLayout title="Achievements - DadDeck™">
+  <Navigation client:load />
+
+  <!-- Breadcrumbs -->
+  <Breadcrumbs client:load />
+
   <div class="container">
     <header>
       <h1>Achievements</h1>

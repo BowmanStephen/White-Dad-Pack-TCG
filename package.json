@@ -29,6 +29,7 @@
     "html2canvas": "^1.4.1",
     "localforage": "^1.10.0",
     "nanostores": "^1.1.0",
+    "satori": "^0.19.1",
     "svelte": "^5.46.4",
     "svelte-i18n": "^4.0.1",
     "tailwindcss": "3",
