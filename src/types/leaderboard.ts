@@ -20,6 +20,16 @@ export type LeaderboardCategory =
 export type LeaderboardScope = 'global' | 'friends';
 
 /**
+ * Time period filters for leaderboards
+ */
+export type LeaderboardTimePeriod = 'allTime' | 'weekly' | 'daily';
+
+/**
+ * Region filters for leaderboards (future feature)
+ */
+export type LeaderboardRegion = 'global' | 'na' | 'eu' | 'asia' | 'sa';
+
+/**
  * Player statistics for leaderboard rankings
  */
 export interface PlayerStats {
@@ -63,6 +73,10 @@ export interface Leaderboard {
   category: LeaderboardCategory;
   /** Scope (global or friends) */
   scope: LeaderboardScope;
+  /** Time period filter */
+  timePeriod: LeaderboardTimePeriod;
+  /** Region filter (future feature) */
+  region?: LeaderboardRegion;
   /** Total number of players */
   totalPlayers: number;
   /** Rankings (paginated) */
@@ -143,5 +157,55 @@ export const LEADERBOARD_CATEGORIES: Record<
     label: 'Largest Collection',
     description: 'Players with the most cards overall',
     icon: '📚',
+  },
+};
+
+/**
+ * Time period display configuration
+ */
+export const TIME_PERIODS: Record<
+  LeaderboardTimePeriod,
+  { label: string; description: string }
+> = {
+  allTime: {
+    label: 'All Time',
+    description: 'All-time rankings since the beginning',
+  },
+  weekly: {
+    label: 'This Week',
+    description: 'Rankings from the last 7 days',
+  },
+  daily: {
+    label: 'Today',
+    description: 'Rankings from the last 24 hours',
+  },
+};
+
+/**
+ * Region display configuration (future feature)
+ */
+export const REGIONS: Record<
+  LeaderboardRegion,
+  { label: string; description: string }
+> = {
+  global: {
+    label: 'Global',
+    description: 'Worldwide rankings',
+  },
+  na: {
+    label: 'North America',
+    description: 'North America rankings',
+  },
+  eu: {
+    label: 'Europe',
+    description: 'Europe rankings',
+  },
+  asia: {
+    label: 'Asia',
+    description: 'Asia rankings',
+  },
+  sa: {
+    label: 'South America',
+    description: 'South America rankings',
   },
 };

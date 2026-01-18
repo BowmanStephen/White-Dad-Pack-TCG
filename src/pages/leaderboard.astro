@@ -1,0 +1,26 @@
+---
+import Layout from '@/layouts/BaseLayout.astro';
+import LeaderboardPage from '@/components/leaderboard/LeaderboardPage.svelte';
+import { t } from '@/i18n';
+
+// SEO metadata
+const title = t('leaderboard.title');
+const description = t('leaderboard.description');
+---
+
+<Layout title={title} description={description}>
+  <main class="main-content">
+    <LeaderboardPage client:load />
+  </main>
+</Layout>
+
+<style>
+  .main-content {
+    min-height: 100vh;
+    background: var(--color-background-primary, #f8fafc);
+  }
+
+  :global(.dark) .main-content {
+    background: var(--color-background-primary, #0f172a);
+  }
+</style>

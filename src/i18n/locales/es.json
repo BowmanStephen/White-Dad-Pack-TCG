@@ -423,5 +423,54 @@
     "analyticsDesc": "Ayúdanos a mejorar el juego (estadísticas de uso anónimas)",
     "marketing": "Cookies de Marketing",
     "marketingDesc": "Para características futuras (no usado actualmente)"
+  },
+  "leaderboard": {
+    "title": "Tablas de Clasificación - DadDeck",
+    "description": "¡Compite con papás de todo el mundo por la colección definitiva! Ve las clasificaciones para más sobres abiertos, cartas únicas, cartas míticas y más.",
+    "category": "Categoría",
+    "scope": "Alcance",
+    "timePeriod": "Período de Tiempo",
+    "region": "Región",
+    "filters": "Filtros",
+    "refresh": "Actualizar",
+    "currentCategory": "Categoría Actual",
+    "loading": "Cargando tabla de clasificación...",
+    "error": "Error al cargar tabla de clasificación",
+    "retry": "Reintentar",
+    "totalPlayers": "{count} jugadores totales",
+    "noRankings": "Aún no hay clasificaciones para este período.",
+    "openPacks": "¡Abre algunos sobres para aparecer en la tabla de clasificación!",
+    "categories": {
+      "packsOpened": "Más Sobres Abiertos",
+      "uniqueCards": "Más Cartas Únicas",
+      "mythicCards": "Más Cartas Míticas",
+      "totalCards": "Colección Más Grande"
+    },
+    "scopes": {
+      "global": "Global",
+      "friends": "Amigos"
+    },
+    "timePeriods": {
+      "allTime": "Todo el Tiempo",
+      "weekly": "Esta Semana",
+      "daily": "Hoy"
+    },
+    "regions": {
+      "global": "Global",
+      "na": "Norteamérica",
+      "eu": "Europa",
+      "asia": "Asia",
+      "sa": "Sudamérica"
+    },
+    "descriptions": {
+      "packsOpened": "Jugadores que han abierto más sobres",
+      "uniqueCards": "Jugadores con las colecciones de cartas únicas más grandes",
+      "mythicCards": "Jugadores que han recolectado más cartas de rareza mítica",
+      "totalCards": "Jugadores con más cartas en total",
+      "allTime": "Clasificaciones de todos los tiempos desde el principio",
+      "weekly": "Clasificaciones de los últimos 7 días",
+      "daily": "Clasificaciones de las últimas 24 horas"
+    },
+    "userBadge": "Tú"
   }
 }

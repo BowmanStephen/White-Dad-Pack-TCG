@@ -515,5 +515,54 @@
     "analyticsDesc": "Help us improve the game (anonymous usage stats)",
     "marketing": "Marketing Cookies",
     "marketingDesc": "For future features (not currently used)"
+  },
+  "leaderboard": {
+    "title": "Leaderboards - DadDeck",
+    "description": "Compete with dads worldwide for the ultimate collection! View rankings for most packs opened, unique cards, mythic cards, and more.",
+    "category": "Category",
+    "scope": "Scope",
+    "timePeriod": "Time Period",
+    "region": "Region",
+    "filters": "Filters",
+    "refresh": "Refresh",
+    "currentCategory": "Current Category",
+    "loading": "Loading leaderboard...",
+    "error": "Failed to load leaderboard",
+    "retry": "Retry",
+    "totalPlayers": "{count} total players",
+    "noRankings": "No rankings yet for this time period.",
+    "openPacks": "Open some packs to get on the leaderboard!",
+    "categories": {
+      "packsOpened": "Most Packs Opened",
+      "uniqueCards": "Most Unique Cards",
+      "mythicCards": "Most Mythic Cards",
+      "totalCards": "Largest Collection"
+    },
+    "scopes": {
+      "global": "Global",
+      "friends": "Friends"
+    },
+    "timePeriods": {
+      "allTime": "All Time",
+      "weekly": "This Week",
+      "daily": "Today"
+    },
+    "regions": {
+      "global": "Global",
+      "na": "North America",
+      "eu": "Europe",
+      "asia": "Asia",
+      "sa": "South America"
+    },
+    "descriptions": {
+      "packsOpened": "Players who have opened the most booster packs",
+      "uniqueCards": "Players with the largest unique card collections",
+      "mythicCards": "Players who have collected the most mythic rarity cards",
+      "totalCards": "Players with the most cards overall",
+      "allTime": "All-time rankings since the beginning",
+      "weekly": "Rankings from the last 7 days",
+      "daily": "Rankings from the last 24 hours"
+    },
+    "userBadge": "You"
   }
 }

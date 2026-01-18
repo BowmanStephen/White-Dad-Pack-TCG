@@ -1,0 +1,296 @@
+<script lang="ts">
+  import type { Leaderboard, LeaderboardEntry, LeaderboardCategory } from '@/types/leaderboard';
+  import { LEADERBOARD_CATEGORIES } from '@/types/leaderboard';
+
+  // Props
+  interface Props {
+    leaderboard: Leaderboard;
+    loading?: boolean;
+  }
+
+  let { leaderboard, loading = false }: Props = $props();
+
+  // Get stat value for display
+  function getStatValue(entry: LeaderboardEntry, category: LeaderboardCategory): number {
+    switch (category) {
+      case 'packsOpened':
+        return entry.stats.totalPacksOpened;
+      case 'uniqueCards':
+        return entry.stats.uniqueCards;
+      case 'mythicCards':
+        return entry.stats.mythicCards;
+      case 'totalCards':
+        return entry.stats.totalCards;
+    }
+  }
+
+  // Format number with commas
+  function formatNumber(num: number): string {
+    return num.toLocaleString('en-US');
+  }
+
+  // Get rank badge class
+  function getRankClass(rank: number): string {
+    if (rank === 1) return 'rank-1';
+    if (rank === 2) return 'rank-2';
+    if (rank === 3) return 'rank-3';
+    return 'rank-default';
+  }
+</script>
+
+<div class="leaderboard-list">
+  {#if loading}
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading leaderboard...</p>
+    </div>
+  {:else if leaderboard.entries.length === 0}
+    <div class="empty-state">
+      <p>No rankings yet for this time period.</p>
+      <p>Open some packs to get on the leaderboard!</p>
+    </div>
+  {:else}
+    <div class="leaderboard-entries">
+      {#each leaderboard.entries as entry}
+        <div
+          class="leaderboard-entry {entry.isCurrentUser ? 'current-user' : ''}"
+          class:highlighted={entry.isCurrentUser}
+        >
+          <div class="entry-rank {getRankClass(entry.rank)}">
+            {entry.rank}
+          </div>
+
+          <div class="entry-avatar">
+            {entry.avatar}
+          </div>
+
+          <div class="entry-info">
+            <div class="entry-name">
+              {entry.pseudonym}
+              {#if entry.isCurrentUser}
+                <span class="user-badge">(You)</span>
+              {/if}
+            </div>
+          </div>
+
+          <div class="entry-stats">
+            <div class="stat-value">
+              {formatNumber(getStatValue(entry, leaderboard.category))}
+            </div>
+            <div class="stat-label">
+              {LEADERBOARD_CATEGORIES[leaderboard.category].label}
+            </div>
+          </div>
+        </div>
+      {/each}
+
+      {#if leaderboard.userEntry && !leaderboard.entries.some(e => e.isCurrentUser)}
+        <div class="leaderboard-entry current-user user-entry-separator">
+          <div class="entry-rank rank-default">
+            {leaderboard.userEntry.rank}
+          </div>
+
+          <div class="entry-avatar">
+            {leaderboard.userEntry.avatar}
+          </div>
+
+          <div class="entry-info">
+            <div class="entry-name">
+              {leaderboard.userEntry.pseudonym}
+              <span class="user-badge">(You)</span>
+            </div>
+          </div>
+
+          <div class="entry-stats">
+            <div class="stat-value">
+              {formatNumber(getStatValue(leaderboard.userEntry, leaderboard.category))}
+            </div>
+            <div class="stat-label">
+              {LEADERBOARD_CATEGORIES[leaderboard.category].label}
+            </div>
+          </div>
+        </div>
+      {/if}
+    </div>
+
+    <div class="leaderboard-footer">
+      <p class="total-players">
+        {formatNumber(leaderboard.totalPlayers)} total players
+      </p>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .leaderboard-list {
+    width: 100%;
+  }
+
+  .loading-state,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  .loading-state .spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .leaderboard-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .leaderboard-entry {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--color-card-bg, #ffffff);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .leaderboard-entry:hover {
+    background: var(--color-card-hover, #f1f5f9);
+    transform: translateX(0.25rem);
+  }
+
+  .leaderboard-entry.highlighted {
+    background: var(--color-accent-primary-light, #fef3c7);
+    border: 2px solid var(--color-accent-primary, #f59e0b);
+  }
+
+  .user-entry-separator {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--color-border, #e2e8f0);
+  }
+
+  .entry-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #64748b);
+    background: var(--color-surface-secondary, #f1f5f9);
+    border-radius: 50%;
+  }
+
+  .entry-rank.rank-1 {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+  }
+
+  .entry-rank.rank-2 {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    color: white;
+    box-shadow: 0 2px 8px rgba(148, 163, 184, 0.4);
+  }
+
+  .entry-rank.rank-3 {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: white;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+  }
+
+  .entry-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    background: var(--color-surface-secondary, #f1f5f9);
+    border-radius: 50%;
+  }
+
+  .entry-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .entry-name {
+    font-weight: 600;
+    color: var(--color-text-primary, #1e293b);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .user-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-accent-primary, #f59e0b);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .entry-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-accent-primary, #f59e0b);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  .leaderboard-footer {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .total-players {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #64748b);
+    margin: 0;
+  }
+
+  :global(.dark) .leaderboard-entry {
+    background: var(--color-card-bg, #1e293b);
+  }
+
+  :global(.dark) .leaderboard-entry:hover {
+    background: var(--color-card-hover, #334155);
+  }
+
+  :global(.dark) .leaderboard-entry.highlighted {
+    background: var(--color-accent-primary-dark, #78350f);
+  }
+
+  :global(.dark) .entry-rank.rank-default {
+    background: var(--color-surface-secondary, #334155);
+  }
+
+  :global(.dark) .entry-avatar {
+    background: var(--color-surface-secondary, #334155);
+  }
+
+  :global(.dark) .entry-name {
+    color: var(--color-text-primary, #f1f5f9);
+  }
+</style>
