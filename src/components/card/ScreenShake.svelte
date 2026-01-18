@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { prefersReducedMotion, screenShakeEnabled } from '../../stores/ui';
+  import { screenShakeEnabled } from '../../stores/ui';
+  import { isReducedMotion } from '../../stores/motion';
 
   interface Props {
     active?: boolean;
@@ -12,13 +13,13 @@
 
   // Reactive state synced from Nanostores
   let shakeEnabled = $state(true);
-  let reducedMotion = $state(false);
+  let reducedMotion = $state(isReducedMotion.get());
 
   // Subscribe to Nanostores on mount
   onMount(() => {
     const unsubscribers = [
       screenShakeEnabled.subscribe((value) => { shakeEnabled = value; }),
-      prefersReducedMotion.subscribe((value) => { reducedMotion = value; }),
+      isReducedMotion.subscribe((value: boolean) => { reducedMotion = value; }),
     ];
     return () => unsubscribers.forEach((unsub) => unsub());
   });

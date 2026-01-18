@@ -5,6 +5,7 @@
   import * as uiStore from '../../stores/ui';
   import * as packStore from '../../stores/pack';
   import { playPackTear } from '../../stores/audio';
+  import { isReducedMotion } from '../../stores/motion';
 
   export let bestRarity: Rarity = 'common';
   export let design: PackDesign = 'standard';
@@ -72,8 +73,8 @@
   })();
 
   onMount(() => {
-    // Subscribe to reduced motion preference
-    const unsubscribe = uiStore.$prefersReducedMotion.subscribe((value) => {
+    // Subscribe to reduced motion preference (PACK-057)
+    const unsubscribe = isReducedMotion.subscribe((value: boolean) => {
       reducedMotion = value;
     });
 

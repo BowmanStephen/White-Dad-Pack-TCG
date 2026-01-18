@@ -9,6 +9,7 @@ import NotificationInitializer from '../components/notifications/NotificationIni
 import MusicInitializer from '../components/audio/MusicInitializer.svelte';
 import KeyboardInitializer from '../components/keyboard/KeyboardInitializer.svelte';
 import ShortcutsModal from '../components/keyboard/ShortcutsModal.svelte';
+import MotionInitializer from '../components/motion/MotionInitializer.svelte';
 import BottomNav from '../components/nav/BottomNav.svelte';
 import ToastContainer from '../components/common/ToastContainer.svelte';
 import StorageQuotaWarning from '../components/storage/StorageQuotaWarning.svelte';
@@ -170,6 +171,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <!-- Keyboard Shortcuts System -->
     <KeyboardInitializer client:load />
     <ShortcutsModal client:load />
+
+    <!-- PACK-057: Motion Settings Initializer -->
+    <MotionInitializer client:load />
 
     <!-- Toast Notification System -->
     <ToastContainer client:load />

@@ -2,6 +2,7 @@
   import type { Rarity } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import { getParticleMultiplier, getCinematicConfig } from '../../stores/ui';
+  import { isReducedMotion } from '../../stores/motion';
   import { onDestroy } from 'svelte';
 
   interface Props {
@@ -19,8 +20,12 @@
   const qualityMultiplier = $derived(getParticleMultiplier());
   const cinematicConfig = $derived(getCinematicConfig());
 
+  // PACK-057: Check reduced motion state
+  const reducedMotion = $derived(isReducedMotion.get());
+
   // Combined multiplier: cinematic mode doubles particles on top of quality setting
-  const combinedMultiplier = $derived(qualityMultiplier * cinematicConfig.particleMultiplier);
+  // PACK-057: Reduce to 0 when reduced motion is enabled
+  const combinedMultiplier = $derived(reducedMotion ? 0 : (qualityMultiplier * cinematicConfig.particleMultiplier));
 
   // Mobile performance cap - prevent frame drops on mid-tier devices
   // Mythic cards can hit 160 particles with max settings, which drops frames

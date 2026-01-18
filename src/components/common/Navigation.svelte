@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { muted, toggleMute } from '../../stores/audio';
   import ThemeToggle from './ThemeToggle.svelte';
+  import MotionToggle from './MotionToggle.svelte';
   import LanguageSelector from './LanguageSelector.svelte';
 
   interface NavLink {
@@ -124,6 +125,9 @@
 
       <!-- Theme Toggle -->
       <ThemeToggle />
+
+      <!-- Motion Toggle (PACK-057) -->
+      <MotionToggle />
 
       <!-- Language Selector -->
       <LanguageSelector />
