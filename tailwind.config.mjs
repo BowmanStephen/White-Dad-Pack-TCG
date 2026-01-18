@@ -1,4 +1,87 @@
-/** @type {import('tailwindcss').Config} */
+/**
+ * Tailwind CSS Configuration
+ * @see {@link https://tailwindcss.com/docs/configuration}
+ *
+ * ## Design Tokens
+ * - **Colors**: Brand, rarity, gradient, and semantic UI colors
+ * - **Typography**: Display and card font families
+ * - **Spacing**: Consistent spacing scale (via Tailwind defaults)
+ * - **Effects**: Custom animations, shadows, blur, transitions
+ *
+ * ## Reusable Component Classes
+ * Located in `src/styles/global.css` to reduce Tailwind duplication:
+ *
+ * ### Buttons
+ * - `.btn-primary`: Primary action buttons with gradient
+ * - `.btn-secondary`: Secondary action buttons (solid)
+ * - `.btn-icon`: Icon-only buttons with hover states
+ * - `.btn-cta`: Large call-to-action buttons
+ *
+ * ### Modals
+ * - `.modal-container`: Full-screen flex-centered wrapper
+ * - `.modal-backdrop`: Backdrop overlay with blur
+ * - `.modal-content`: Modal content container
+ * - `.modal-close-btn`: Positioned close button
+ *
+ * ### Feature Cards
+ * - `.feature-card`: Feature showcase cards
+ * - `.icon-container`: Circular icon containers
+ * - `.text-feature-title`: Feature title typography
+ * - `.text-feature-desc`: Feature description typography
+ *
+ * ### Card Effects
+ * - `.card-perspective`: 3D perspective container
+ * - `.card-3d`: 3D transform wrapper
+ * - `.card-face`: Front/back card faces
+ * - `.holo-effect`: Holographic overlay
+ * - `.holo-prismatic`: Enhanced rainbow holo
+ *
+ * ### Animations
+ * - `.animate-pack-glow`: Pulsing glow for packs
+ * - `.animate-card-flip`: 3D card flip
+ * - `.animate-legendary-burst`: Legendary reveal burst
+ * - `.animate-slide-in-right`: Slide from right
+ * - `.animate-particle`: Floating particles
+ * - `.animate-shimmer`: Shimmer effect
+ * - `.animate-float-slow/medium/fast`: Floating animations
+ * - `.animate-pulse-glow`: Pulsing glow
+ * - `.animate-shake`: Screen shake effect
+ *
+ * ### Rarity Styles
+ * - `.rarity-{common|uncommon|rare|epic|legendary|mythic}`: CSS variables for colors
+ * - `.rarity-border`: Rarity-themed border with glow
+ *
+ * ## Usage Examples
+ *
+ * **Modal:**
+ * ```html
+ * <div class="modal-container">
+ *   <div class="modal-backdrop"></div>
+ *   <div class="modal-content p-8">
+ *     <button class="modal-close-btn">×</button>
+ *     <!-- Content -->
+ *   </div>
+ * </div>
+ * ```
+ *
+ * **Button:**
+ * ```html
+ * <button class="btn-primary">Click Me</button>
+ * <button class="btn-secondary">Cancel</button>
+ * <button class="btn-cta">Get Started</button>
+ * ```
+ *
+ * **Feature Card:**
+ * ```html
+ * <div class="feature-card">
+ *   <div class="icon-container">
+ *     <svg class="w-6 h-6">...</svg>
+ *   </div>
+ *   <h3 class="text-feature-title">Title</h3>
+ *   <p class="text-feature-desc">Description</p>
+ * </div>
+ * ```
+ */
 export default {
   darkMode: 'class', // Use class-based dark mode
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -10,7 +93,7 @@ export default {
         'dad-gold': '#d69e2e',
         'dad-green': '#276749',
         'dad-brown': '#744210',
-        
+
         // Rarity colors
         'rarity-common': '#9ca3af',
         'rarity-uncommon': '#60a5fa',
@@ -18,10 +101,14 @@ export default {
         'rarity-epic': '#a855f7',
         'rarity-legendary': '#f97316',
         'rarity-mythic': '#ec4899',
-        
+
         // UI colors
         'card-bg': '#1f2937',
         'card-border': '#374151',
+
+        // Gradient colors
+        'gradient-start': '#fbbf24', // Yellow-400
+        'gradient-end': '#f97316',   // Orange-500
       },
       fontFamily: {
         'display': ['system-ui', 'sans-serif'],
