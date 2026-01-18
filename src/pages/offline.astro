@@ -127,9 +127,28 @@ import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
     const reconnecting = document.getElementById('reconnecting');
     const reconnectingText = document.getElementById('reconnecting-text');
 
-    // Check connection status
+    // Check connection status using browser API
     function isOnline() {
       return navigator.onLine;
+    }
+
+    // Verify actual connection with a fetch request
+    async function verifyConnection() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        await fetch('/?t=' + Date.now(), {
+          method: 'HEAD',
+          cache: 'no-cache',
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+        return true;
+      } catch (error) {
+        return false;
+      }
     }
 
     // Update reconnecting text safely
@@ -148,26 +167,30 @@ import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
     // Listen for online event
     window.addEventListener('online', handleOnline);
 
-    // Manual retry button
-    retryBtn?.addEventListener('click', () => {
+    // Manual retry button with enhanced verification
+    retryBtn?.addEventListener('click', async () => {
       reconnecting.classList.remove('hidden');
 
-      if (isOnline()) {
-        // If online, reload
-        window.location.reload();
+      // Verify actual connection (not just browser flag)
+      const isActuallyOnline = await verifyConnection();
+
+      if (isActuallyOnline) {
+        // If truly online, reload
+        setReconnectingText('Connected! Reloading...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         // Show "still offline" message briefly
         setTimeout(() => {
-          if (!isOnline()) {
-            setReconnectingText('Still offline. Check your connection.');
+          setReconnectingText('Still offline. Check your connection.');
+          setTimeout(() => {
+            reconnecting.classList.add('hidden');
+            // Reset message
             setTimeout(() => {
-              reconnecting.classList.add('hidden');
-              // Reset message
-              setTimeout(() => {
-                setReconnectingText('Attempting to reconnect...');
-              }, 100);
-            }, 2000);
-          }
+              setReconnectingText('Attempting to reconnect...');
+            }, 100);
+          }, 2000);
         }, 1000);
       }
     });

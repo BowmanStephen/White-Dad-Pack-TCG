@@ -22,6 +22,7 @@
 
 import { atom } from 'nanostores';
 import { persistentAtom } from '@nanostores/persistent';
+import { getNetworkDetector, NETWORK_EVENTS, type NetworkInfo } from '@/lib/network/network-detector';
 
 /**
  * Queued action that will be retried when back online
@@ -78,8 +79,9 @@ function initializeStoredActions(): void {
     console.error('[Offline Queue] Failed to load stored actions:', error);
   }
 
-  // Set initial online status
-  isOnline.set(navigator.onLine);
+  // Set initial online status using network detector
+  const detector = getNetworkDetector();
+  isOnline.set(detector.isOnline());
 }
 
 // Update queue count when actions change
@@ -232,7 +234,7 @@ export function setOnlineStatus(online: boolean): void {
 }
 
 /**
- * Initialize offline detection
+ * Initialize offline detection with enhanced network monitoring
  */
 export function initOfflineDetection(): () => void {
   if (typeof window === 'undefined') {
@@ -242,22 +244,38 @@ export function initOfflineDetection(): () => void {
   // Initialize stored actions from localStorage
   initializeStoredActions();
 
-  const handleOnline = () => {
+  // Get network detector
+  const detector = getNetworkDetector();
+
+  const handleOnline = (event: Event) => {
+    const customEvent = event as CustomEvent<NetworkInfo>;
+    console.log('[Offline Store] Network online:', customEvent.detail);
     setOnlineStatus(true);
   };
 
-  const handleOffline = () => {
+  const handleOffline = (event: Event) => {
+    const customEvent = event as CustomEvent<NetworkInfo>;
+    console.log('[Offline Store] Network offline:', customEvent.detail);
     setOnlineStatus(false);
   };
 
-  // Listen for changes
-  window.addEventListener('online', handleOnline);
-  window.addEventListener('offline', handleOffline);
+  const handleUnstable = (event: Event) => {
+    const customEvent = event as CustomEvent<NetworkInfo>;
+    console.warn('[Offline Store] Network unstable:', customEvent.detail);
+    // Treat unstable as offline for safety
+    setOnlineStatus(false);
+  };
+
+  // Listen for changes using network detector events
+  window.addEventListener(NETWORK_EVENTS.ONLINE, handleOnline);
+  window.addEventListener(NETWORK_EVENTS.OFFLINE, handleOffline);
+  window.addEventListener(NETWORK_EVENTS.UNSTABLE, handleUnstable);
 
   // Return cleanup function
   return () => {
-    window.removeEventListener('online', handleOnline);
-    window.removeEventListener('offline', handleOffline);
+    window.removeEventListener(NETWORK_EVENTS.ONLINE, handleOnline);
+    window.removeEventListener(NETWORK_EVENTS.OFFLINE, handleOffline);
+    window.removeEventListener(NETWORK_EVENTS.UNSTABLE, handleUnstable);
   };
 }
 
