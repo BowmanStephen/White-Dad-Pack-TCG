@@ -141,7 +141,20 @@
     "clearAll": "Clear All",
     "noCards": "No cards found",
     "emptyCollection": "Your collection is empty. Open some packs to get started!",
-    "view_desc": "View and manage your card collection"
+    "view_desc": "View and manage your card collection",
+    "missingCards": {
+      "title": "Missing Cards Tracker",
+      "collected": "collected",
+      "missing": "{count} cards still missing",
+      "groupByRarity": "By Rarity",
+      "groupByType": "By Type",
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All",
+      "complete": "🎉 Collection Complete! You've collected every card!",
+      "stats": "Stats",
+      "flavorText": "Flavor Text",
+      "abilities": "Abilities"
+    }
   },
   "share": {
     "title": "Share Your Pull",

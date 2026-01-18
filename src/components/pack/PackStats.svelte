@@ -36,7 +36,7 @@
   );
 
   // Computed: Best pull rarity
-  let bestPull = $derived(() => {
+  let bestPull = $derived.by(() => {
     let best: Rarity | null = null;
     let bestOrder = -1;
 
@@ -157,7 +157,7 @@
 <div class="pack-stats">
   <!-- Header -->
   <div class="stats-header">
-    <h2 class="stats-title">{$t('stats.title')}</h2>
+    <h2 class="stats-title">{t('stats.title')}</h2>
     <p class="stats-subtitle">{formatDate(stats.lastOpenedAt)}</p>
   </div>
 
@@ -168,7 +168,7 @@
       <div class="stat-icon">📦</div>
       <div class="stat-content">
         <div class="stat-value">{stats.totalPacks}</div>
-        <div class="stat-label">{$t('stats.totalPacks')}</div>
+        <div class="stat-label">{t('stats.totalPacks')}</div>
       </div>
     </div>
 
@@ -177,7 +177,7 @@
       <div class="stat-icon">🃏</div>
       <div class="stat-content">
         <div class="stat-value">{totalCardsFromCounts}</div>
-        <div class="stat-label">{$t('stats.totalCards')}</div>
+        <div class="stat-label">{t('stats.totalCards')}</div>
       </div>
     </div>
 
@@ -197,10 +197,10 @@
           {#if bestPull}
             {RARITY_CONFIG[bestPull].name}
           {:else}
-            {$t('stats.none')}
+            {t('stats.none')}
           {/if}
         </div>
-        <div class="stat-label">{$t('stats.bestPull')}</div>
+        <div class="stat-label">{t('stats.bestPull')}</div>
       </div>
     </div>
 
@@ -212,9 +212,9 @@
           {luckyStreak} {#if luckyStreak > 0}🔥{/if}
         </div>
         <div class="stat-label">
-          {$t('stats.luckyStreak')}
+          {t('stats.luckyStreak')}
           {#if bestStreak > 0}
-            <span class="streak-record">({$t('stats.best')}: {bestStreak})</span>
+            <span class="streak-record">({t('stats.best')}: {bestStreak})</span>
           {/if}
         </div>
       </div>
@@ -223,7 +223,7 @@
 
   <!-- Rarity Distribution -->
   <div class="rarity-section">
-    <h3 class="section-title">{$t('stats.rarityDistribution')}</h3>
+    <h3 class="section-title">{t('stats.rarityDistribution')}</h3>
 
     <div class="rarity-bars">
       {#each Object.entries(RARITY_CONFIG) as [rarity, config]}
@@ -254,7 +254,7 @@
   <!-- Historical Trend (Last 10 packs) -->
   {#if recentRarityHistory.length > 0}
     <div class="trend-section">
-      <h3 class="section-title">{$t('stats.recentTrend')}</h3>
+      <h3 class="section-title">{t('stats.recentTrend')}</h3>
 
       <div class="trend-dots">
         {#each recentRarityHistory.slice(-10).reverse() as rarity, index}
@@ -264,14 +264,14 @@
             title="{RARITY_CONFIG[rarity].name}"
           >
             {#if index === 0}
-              <span class="trend-label">{$t('stats.latest')}</span>
+              <span class="trend-label">{t('stats.latest')}</span>
             {/if}
           </div>
         {/each}
       </div>
 
       <p class="trend-hint">
-        {$t('stats.trendHint')}
+        {t('stats.trendHint')}
       </p>
     </div>
   {/if}

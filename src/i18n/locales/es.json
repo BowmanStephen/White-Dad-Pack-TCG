@@ -141,7 +141,20 @@
     "clearAll": "Limpiar Todo",
     "noCards": "No se encontraron cartas",
     "emptyCollection": "Tu colección está vacía. ¡Abre algunos sobres para comenzar!",
-    "view_desc": "Ver y gestionar tu colección de cartas"
+    "view_desc": "Ver y gestionar tu colección de cartas",
+    "missingCards": {
+      "title": "Rastreador de Cartas Faltantes",
+      "collected": "recolectadas",
+      "missing": "{count} cartas aún faltantes",
+      "groupByRarity": "Por Rareza",
+      "groupByType": "Por Tipo",
+      "expandAll": "Expandir Todo",
+      "collapseAll": "Contraer Todo",
+      "complete": "🎉 ¡Colección Completa! ¡Has recolectado todas las cartas!",
+      "stats": "Estadísticas",
+      "flavorText": "Texto de Sabor",
+      "abilities": "Habilidades"
+    }
   },
   "share": {
     "title": "Comparte Tu Extracción",

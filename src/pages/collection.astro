@@ -5,6 +5,7 @@ import CollectionStats from '../components/collection/CollectionStats.svelte';
 import PackStats from '../components/pack/PackStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
+import MissingCardsPanel from '../components/collection/MissingCardsPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
 
@@ -60,6 +61,16 @@ const collectionPageSchema = {
       fallbackMessage="We couldn't load the collection manager. Please refresh the page."
     >
       <CollectionManager client:load />
+    </ErrorBoundary>
+  </div>
+
+  <!-- Missing Cards Tracker -->
+  <div class="missing-cards-section">
+    <ErrorBoundary
+      fallbackTitle="Missing Cards Error"
+      fallbackMessage="We couldn't load the missing cards tracker. Please refresh the page."
+    >
+      <MissingCardsPanel client:load />
     </ErrorBoundary>
   </div>
 
@@ -120,5 +131,9 @@ const collectionPageSchema = {
 
   .manager-section {
     padding: 0 1rem 1rem 1rem;
+  }
+
+  .missing-cards-section {
+    padding: 0 1rem 2rem 1rem;
   }
 </style>
