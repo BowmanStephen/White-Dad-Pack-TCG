@@ -16,6 +16,104 @@ export interface DadTypePalette {
  * Colors are themed to match the dad archetype
  */
 export const DAD_TYPE_COLORS: Record<DadType, DadTypePalette> = {
+  // Core Dad Types (Season 1 - Clean Names)
+  BBQ_DAD: {
+    primary: '#ef4444',      // Red
+    secondary: '#f97316',    // Orange
+    accent: '#fbbf24',       // Yellow (flames)
+    background: 'linear-gradient(135deg, #dc2626 0%, #f97316 100%)',
+  },
+  FIX_IT_DAD: {
+    primary: '#22c55e',      // Green
+    secondary: '#65a30d',    // Olive
+    accent: '#fbbf24',       // Yellow (tools)
+    background: 'linear-gradient(135deg, #16a34a 0%, #65a30d 100%)',
+  },
+  GOLF_DAD: {
+    primary: '#14b8a6',      // Teal
+    secondary: '#06b6d4',    // Cyan
+    accent: '#fbbf24',       // Yellow (golf ball)
+    background: 'linear-gradient(135deg, #0d9488 0%, #06b6d4 100%)',
+  },
+  COUCH_DAD: {
+    primary: '#3b82f6',      // Blue
+    secondary: '#64748b',    // Grey
+    accent: '#fbbf24',       // Yellow (remote light)
+    background: 'linear-gradient(135deg, #2563eb 0%, #64748b 100%)',
+  },
+  LAWN_DAD: {
+    primary: '#22c55e',      // Bright green
+    secondary: '#84cc16',    // Lime
+    accent: '#fbbf24',       // Yellow (sun)
+    background: 'linear-gradient(135deg, #16a34a 0%, #84cc16 100%)',
+  },
+  CAR_DAD: {
+    primary: '#94a3b8',      // Silver
+    secondary: '#cbd5e1',    // Metallic
+    accent: '#ef4444',       // Red (taillights)
+    background: 'linear-gradient(135deg, #64748b 0%, #cbd5e1 50%, #64748b 100%)',
+  },
+  OFFICE_DAD: {
+    primary: '#a16207',      // Brown
+    secondary: '#d6d3d1',    // Beige
+    accent: '#3b82f6',       // Blue (tie)
+    background: 'linear-gradient(135deg, #78350f 0%, #d6d3d1 50%, #78350f 100%)',
+  },
+  COOL_DAD: {
+    primary: '#a855f7',      // Purple
+    secondary: '#ec4899',    // Pink
+    accent: '#06b6d4',       // Cyan (sunglasses)
+    background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)',
+  },
+  COACH_DAD: {
+    primary: '#f97316',      // Orange
+    secondary: '#fbbf24',    // Yellow
+    accent: '#ef4444',       // Red (whistle)
+    background: 'linear-gradient(135deg, #ea580c 0%, #fbbf24 100%)',
+  },
+  CHEF_DAD: {
+    primary: '#ffffff',      // White (apron)
+    secondary: '#ef4444',    // Red
+    accent: '#fbbf24',       // Yellow (chef hat)
+    background: 'linear-gradient(135deg, #fca5a5 0%, #ffffff 50%, #fca5a5 100%)',
+  },
+  HOLIDAY_DAD: {
+    primary: '#ef4444',      // Red
+    secondary: '#22c55e',    // Green
+    accent: '#fbbf24',       // Yellow (lights)
+    background: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%)',
+  },
+  WAREHOUSE_DAD: {
+    primary: '#fbbf24',      // Yellow (Costco)
+    secondary: '#000000',    // Black
+    accent: '#ef4444',       // Red (logo)
+    background: 'linear-gradient(135deg, #facc15 0%, #000000 50%, #facc15 100%)',
+  },
+  VINTAGE_DAD: {
+    primary: '#a8a29e',      // Sepia
+    secondary: '#78716c',    // Brown
+    accent: '#fbbf24',       // Gold (vinyl)
+    background: 'linear-gradient(135deg, #d6d3d1 0%, #78716c 50%, #d6d3d1 100%)',
+  },
+  FASHION_DAD: {
+    primary: '#ec4899',      // Magenta
+    secondary: '#06b6d4',    // Cyan
+    accent: '#fbbf24',       // Gold (accessories)
+    background: 'linear-gradient(135deg, #db2777 0%, #0891b2 100%)',
+  },
+  TECH_DAD: {
+    primary: '#3b82f6',      // Blue
+    secondary: '#22d3ee',    // Neon cyan
+    accent: '#a855f7',       // Purple (RGB)
+    background: 'linear-gradient(135deg, #2563eb 0%, #22d3ee 50%, #a855f7 100%)',
+  },
+  SUBURBAN_SPY: {
+    primary: '#000000',      // Black
+    secondary: '#374151',    // Dark grey
+    accent: '#22d3ee',       // Cyan (night vision)
+    background: 'linear-gradient(135deg, #000000 0%, #374151 50%, #000000 100%)',
+  },
+
   // Special Card Types
   ITEM: {
     primary: '#64748b',      // Slate
