@@ -34,6 +34,7 @@ import {
 import { getAllCards } from '@/lib/cards/database';
 import { trackEvent } from './analytics';
 import { createDateEncoder } from '@/lib/utils/encoders';
+import { createGenerationError, logError } from '@/lib/utils/errors';
 
 // ============================================================================
 // ENCODER FOR LOCALSTORAGE (handles Date serialization)
@@ -131,95 +132,112 @@ export async function startBattle(mode: BattleMode = 'casual'): Promise<{
   success: boolean;
   error?: string;
 }> {
-  const cards = selectedCards.get();
+  try {
+    const cards = selectedCards.get();
 
-  if (cards.length !== 3) {
-    return {
-      success: false,
-      error: `Select 3 cards to battle (currently ${cards.length})`,
-    };
-  }
-
-  // Set battle state
-  battleMode.set(mode);
-  battleState.set('battling');
-
-  // Create player team
-  const player = createBattleTeam(cards, 'Your Dad Squad', true);
-  playerTeam.set(player);
-
-  // Generate opponent team
-  const allCards = getAllCards();
-  const opponent = generateOpponentTeam(cards, allCards);
-  opponentTeam.set(opponent);
-
-  // Simulate battle
-  const result = simulateBattle(player, opponent);
-
-  // Calculate rewards for ranked mode
-  const ranked = rankedData.get();
-  if (mode === 'ranked') {
-    result.rewards = calculateRewards(result.winner, true, ranked.currentTier);
-
-    // Update ranked data
-    const newRankPoints = ranked.rankPoints + result.rewards.rankPoints;
-    const newTier = getTierFromRankPoints(newRankPoints);
-    const newRank = calculateRank(newRankPoints, newTier);
-
-    let newWins = ranked.wins;
-    let newLosses = ranked.losses;
-
-    if (result.winner === 'player') {
-      newWins++;
-    } else if (result.winner === 'opponent') {
-      newLosses++;
+    if (cards.length !== 3) {
+      return {
+        success: false,
+        error: `Select 3 cards to battle (currently ${cards.length})`,
+      };
     }
 
-    const newBestRank = Math.min(ranked.bestRank, newRank);
+    // Set battle state
+    battleMode.set(mode);
+    battleState.set('battling');
 
-    rankedData.set({
-      currentRank: newRank,
-      currentTier: newTier,
-      rankPoints: newRankPoints,
-      wins: newWins,
-      losses: newLosses,
-      winRate: calculateWinRate(newWins, newLosses),
-      bestRank: newBestRank,
+    // Create player team
+    const player = createBattleTeam(cards, 'Your Dad Squad', true);
+    playerTeam.set(player);
+
+    // Generate opponent team
+    const allCards = getAllCards();
+    const opponent = generateOpponentTeam(cards, allCards);
+    opponentTeam.set(opponent);
+
+    // Simulate battle
+    const result = simulateBattle(player, opponent);
+
+    // Calculate rewards for ranked mode
+    const ranked = rankedData.get();
+    if (mode === 'ranked') {
+      result.rewards = calculateRewards(result.winner, true, ranked.currentTier);
+
+      // Update ranked data
+      const newRankPoints = ranked.rankPoints + result.rewards.rankPoints;
+      const newTier = getTierFromRankPoints(newRankPoints);
+      const newRank = calculateRank(newRankPoints, newTier);
+
+      let newWins = ranked.wins;
+      let newLosses = ranked.losses;
+
+      if (result.winner === 'player') {
+        newWins++;
+      } else if (result.winner === 'opponent') {
+        newLosses++;
+      }
+
+      const newBestRank = Math.min(ranked.bestRank, newRank);
+
+      rankedData.set({
+        currentRank: newRank,
+        currentTier: newTier,
+        rankPoints: newRankPoints,
+        wins: newWins,
+        losses: newLosses,
+        winRate: calculateWinRate(newWins, newLosses),
+        bestRank: newBestRank,
+      });
+    }
+
+    // Set battle result
+    currentBattle.set(result);
+
+    // Add to history
+    const historyEntry: BattleHistoryEntry = {
+      id: generateBattleId(),
+      mode,
+      result,
+      playerDeck: cards.map(c => c.id),
+      timestamp: new Date(),
+    };
+
+    const history = battleHistory.get();
+    battleHistory.set([historyEntry, ...history].slice(0, 100)); // Keep last 100 battles
+
+    // Update state
+    battleState.set('completed');
+
+    // Track analytics
+    trackEvent({
+      type: 'pack_complete', // Reusing existing type for now
+      data: {
+        packId: historyEntry.id,
+        cardCount: 6,
+        bestRarity: 'common',
+        holoCount: 0,
+        duration: result.duration,
+        skipped: false,
+      },
     });
+
+    return { success: true };
+  } catch (error) {
+    const generationError = createGenerationError(
+      error instanceof Error ? error.message : 'Failed to start battle',
+      () => startBattle(mode)
+    );
+    logError(generationError, error);
+
+    // Reset state on error
+    battleState.set('idle');
+    currentBattle.set(null);
+
+    return {
+      success: false,
+      error: generationError.message,
+    };
   }
-
-  // Set battle result
-  currentBattle.set(result);
-
-  // Add to history
-  const historyEntry: BattleHistoryEntry = {
-    id: generateBattleId(),
-    mode,
-    result,
-    playerDeck: cards.map(c => c.id),
-    timestamp: new Date(),
-  };
-
-  const history = battleHistory.get();
-  battleHistory.set([historyEntry, ...history].slice(0, 100)); // Keep last 100 battles
-
-  // Update state
-  battleState.set('completed');
-
-  // Track analytics
-  trackEvent({
-    type: 'pack_complete', // Reusing existing type for now
-    data: {
-      packId: historyEntry.id,
-      cardCount: 6,
-      bestRarity: 'common',
-      holoCount: 0,
-      duration: result.duration,
-      skipped: false,
-    },
-  });
-
-  return { success: true };
 }
 
 /**

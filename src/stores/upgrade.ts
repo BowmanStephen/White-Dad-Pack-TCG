@@ -11,6 +11,7 @@ import type {
 import { DEFAULT_UPGRADE_CONFIG } from '../types';
 import { collection } from './collection';
 import { trackEvent } from './analytics';
+import { createStorageError, logError } from '@/lib/utils/errors';
 
 // Custom encoder for UpgradeState (handles Date serialization)
 const upgradeEncoder = {
@@ -236,9 +237,14 @@ export function upgradeCard(
       statsAfter,
     };
   } catch (error) {
+    const storageError = createStorageError(
+      error instanceof Error ? error.message : 'Failed to upgrade card',
+      () => upgradeCard(cardId)
+    );
+    logError(storageError, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to upgrade card',
+      error: storageError.message,
     };
   }
 }
@@ -265,9 +271,14 @@ export function clearUpgrades(): { success: boolean; error?: string } {
     });
     return { success: true };
   } catch (error) {
+    const storageError = createStorageError(
+      error instanceof Error ? error.message : 'Failed to clear upgrades',
+      () => clearUpgrades()
+    );
+    logError(storageError, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to clear upgrades',
+      error: storageError.message,
     };
   }
 }

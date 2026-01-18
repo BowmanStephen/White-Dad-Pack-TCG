@@ -4,6 +4,7 @@ import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
 import { createDateEncoder } from '../lib/utils/encoders';
+import { createStorageError, logError } from '@/lib/utils/errors';
 
 // Initialize empty rarity counts
 function initializeRarityCounts(): Record<Rarity, number> {
@@ -168,9 +169,14 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
 
     // Check storage availability
     if (!checkStorageAvailable()) {
+      const storageError = createStorageError(
+        'LocalStorage is not available. Please enable cookies and local storage in your browser.',
+        () => addPackToCollection(pack)
+      );
+      logError(storageError);
       return {
         success: false,
-        error: 'LocalStorage is not available. Please enable cookies and local storage in your browser.',
+        error: storageError.message,
       };
     }
 
@@ -178,9 +184,14 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
     const storage = getStorageUsage();
     const estimatedPackSize = JSON.stringify(pack).length * 2; // Rough estimate in bytes
     if (storage.used + estimatedPackSize > storage.total * 0.9) {
+      const storageError = createStorageError(
+        'Storage is almost full. Some older packs may need to be deleted.',
+        () => addPackToCollection(pack)
+      );
+      logError(storageError);
       return {
         success: false,
-        error: 'Storage is almost full. Some older packs may need to be deleted.',
+        error: storageError.message,
       };
     }
 
@@ -223,9 +234,14 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
 
     return { success: true };
   } catch (error) {
+    const storageError = createStorageError(
+      error instanceof Error ? error.message : 'Failed to save pack to collection',
+      () => addPackToCollection(pack)
+    );
+    logError(storageError, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to save pack to collection',
+      error: storageError.message,
     };
   }
 }
@@ -247,9 +263,14 @@ export function clearCollection(): { success: boolean; error?: string } {
     });
     return { success: true };
   } catch (error) {
+    const storageError = createStorageError(
+      error instanceof Error ? error.message : 'Failed to clear collection',
+      () => clearCollection()
+    );
+    logError(storageError, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to clear collection',
+      error: storageError.message,
     };
   }
 }

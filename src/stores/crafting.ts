@@ -22,6 +22,7 @@ import type {
 } from '@/types';
 import { CRAFTING_RECIPES, DEFAULT_CRAFTING_CONFIG, RARITY_ORDER } from '@/types';
 import { createDateEncoder } from '@/lib/utils/encoders';
+import { createGenerationError, logError } from '@/lib/utils/errors';
 
 // ============================================================================
 // CRAFTING CONFIGURATION
@@ -346,6 +347,20 @@ export function executeCrafting(resultCard: PackCard | null, success: boolean): 
 
     craftingState.set(success ? 'success' : 'failed');
     craftingUI.setKey('showResult', true);
+  } catch (error) {
+    const generationError = createGenerationError(
+      error instanceof Error ? error.message : 'Failed to execute crafting',
+      () => executeCrafting(resultCard, success)
+    );
+    logError(generationError, error);
+
+    // Reset state on error
+    craftingState.set('failed');
+    craftingSession.set({
+      ...session,
+      status: 'failed',
+      completedAt: new Date(),
+    });
   } finally {
     // Always release the mutex, even if an error occurs
     releaseCraftingMutex();
