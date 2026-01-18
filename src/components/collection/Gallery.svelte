@@ -25,6 +25,7 @@
   import FadeIn from '../loading/FadeIn.svelte';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG, STAT_NAMES, STAT_ICONS, HOLO_VARIANT_NAMES, HOLO_VARIANT_ICONS } from '../../types';
   import CardLightbox from '../card/CardLightbox.svelte';
+  import RarityBadge from '../card/RarityBadge.svelte';
   import { openLightbox } from '../../stores/lightbox';
   import { calculateVisibleRange, getTotalHeight, getEstimatedCardHeight } from '../../lib/utils/virtual-scroll';
   import CollectionSort from './CollectionSort.svelte';
@@ -863,6 +864,8 @@
                   showBack={false}
                   enableShare={false}
                 />
+                <!-- Rarity Badge (PACK-017) -->
+                <RarityBadge rarity={card.rarity} isHolo={card.isHolo} />
                 {#if card.duplicateCount > 1}
                   <div class="duplicate-badge">
                     {formatCardCount(card.duplicateCount)}
