@@ -136,6 +136,12 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- Performance Monitoring (dev only) -->
     <PerformanceMonitor />
+
+    <!-- Sentry Error Tracking (production only) -->
+    <script>
+      import { initSentry } from '@/lib/sentry';
+      initSentry();
+    </script>
   </head>
   <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased transition-colors duration-300" class="safe-area-bottom">
     <!-- Skip Navigation Link -->

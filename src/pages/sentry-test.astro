@@ -1,0 +1,183 @@
+---
+import Layout from '@/layouts/BaseLayout.astro';
+import { t } from '@/i18n';
+
+const title = "Sentry Error Test - DadDeck TCG";
+const description = "Test page for Sentry error tracking integration";
+const noindex = true;
+---
+
+<Layout title={title} description={description} noindex={noindex}>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        🐛 Sentry Error Tracking Test
+      </h1>
+
+      <p class="text-gray-700 dark:text-gray-300 mb-6">
+        Use this page to test Sentry error tracking integration.
+        Errors will only be sent to Sentry if <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">PUBLIC_SENTRY_DSN</code> is configured.
+      </p>
+
+      <div class="space-y-4">
+        <!-- Test 1: Simple Error -->
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Test 1: Simple Error</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-3">
+            Click to trigger a simple JavaScript error
+          </p>
+          <button
+            id="test-simple-error"
+            class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+          >
+            Trigger Simple Error
+          </button>
+        </div>
+
+        <!-- Test 2: Unhandled Promise Rejection -->
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Test 2: Unhandled Promise Rejection</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-3">
+            Click to trigger an unhandled promise rejection
+          </p>
+          <button
+            id="test-promise-rejection"
+            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+          >
+            Trigger Promise Rejection
+          </button>
+        </div>
+
+        <!-- Test 3: Custom Error with Context -->
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Test 3: Custom Error with Context</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-3">
+            Click to trigger a custom error with additional context
+          </p>
+          <button
+            id="test-custom-error"
+            class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors"
+          >
+            Trigger Custom Error
+          </button>
+        </div>
+
+        <!-- Test 4: Capture Message -->
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Test 4: Capture Message</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-3">
+            Click to send a custom message to Sentry
+          </p>
+          <button
+            id="test-capture-message"
+            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          >
+            Send Test Message
+          </button>
+        </div>
+
+        <!-- Test 5: Breadcrumb -->
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Test 5: Breadcrumb + Error</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-3">
+            Click to add breadcrumbs then trigger an error
+          </p>
+          <button
+            id="test-breadcrumb"
+            class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+          >
+            Add Breadcrumb & Error
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Display -->
+      <div class="mt-8 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Status</h3>
+        <div id="sentry-status" class="text-sm text-gray-600 dark:text-gray-400">
+          <p>Environment: <code>{import.meta.env.PUBLIC_VERCEL_ENV || import.meta.env.MODE}</code></p>
+          <p>Sentry DSN: <code>{import.meta.env.PUBLIC_SENTRY_DSN ? 'Configured' : 'Not configured'}</code></p>
+          <p>Release: <code>0.1.0</code></p>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <h3 class="font-semibold text-blue-900 dark:text-blue-300 mb-2">📋 Testing Instructions</h3>
+        <ol class="list-decimal list-inside space-y-2 text-blue-800 dark:text-blue-200 text-sm">
+          <li>Open browser DevTools Console</li>
+          <li>Click each test button above</li>
+          <li>Check console for Sentry initialization message</li>
+          <li>If configured, errors will appear in your Sentry dashboard</li>
+          <li>In development, errors are logged but not sent to Sentry</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { captureException, captureMessage, addBreadcrumb, triggerTestError } from '@/lib/sentry';
+
+  // Test 1: Simple Error
+  document.getElementById('test-simple-error')?.addEventListener('click', () => {
+    try {
+      throw new Error('Simple test error from button click');
+    } catch (error) {
+      console.error('Test error:', error);
+      captureException(error as Error, { testType: 'simple_error' });
+    }
+  });
+
+  // Test 2: Unhandled Promise Rejection
+  document.getElementById('test-promise-rejection')?.addEventListener('click', () => {
+    Promise.reject(new Error('Unhandled promise rejection test'));
+  });
+
+  // Test 3: Custom Error with Context
+  document.getElementById('test-custom-error')?.addEventListener('click', () => {
+    const customError = new Error('Custom error with context');
+    customError.name = 'CustomTestError';
+
+    captureException(customError, {
+      testType: 'custom_error',
+      userInfo: { role: 'tester', environment: 'test-page' },
+      timestamp: new Date().toISOString(),
+      customData: { foo: 'bar', nested: { value: 42 } }
+    });
+  });
+
+  // Test 4: Capture Message
+  document.getElementById('test-capture-message')?.addEventListener('click', () => {
+    captureMessage('This is a test message from the Sentry test page', 'info');
+    console.log('✅ Test message sent to Sentry');
+  });
+
+  // Test 5: Breadcrumb + Error
+  document.getElementById('test-breadcrumb')?.addEventListener('click', () => {
+    // Add breadcrumbs for context
+    addBreadcrumb('user', 'Clicked breadcrumb test button', { step: 1 });
+    addBreadcrumb('user', 'Navigated to test section', { step: 2 });
+    addBreadcrumb('user', 'Preparing to trigger error', { step: 3 });
+
+    // Trigger error after breadcrumbs
+    setTimeout(() => {
+      try {
+        throw new Error('Error after breadcrumbs');
+      } catch (error) {
+        captureException(error as Error, { testType: 'breadcrumb_test' });
+      }
+    }, 100);
+  });
+
+  // Log Sentry status
+  console.log('🐛 Sentry Test Page Loaded');
+  console.log('Environment:', import.meta.env.PUBLIC_VERCEL_ENV || import.meta.env.MODE);
+  console.log('Sentry DSN:', import.meta.env.PUBLIC_SENTRY_DSN ? 'Configured' : 'Not configured');
+</script>
+
+<style>
+  code {
+    font-family: 'Courier New', monospace;
+  }
+</style>

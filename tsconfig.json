@@ -10,6 +10,6 @@
       "@data/*": ["src/data/*"]
     }
   },
-  "include": [".astro/types.d.ts", "**/*"],
+  "include": [".astro/types.d.ts", "src/types/**/*.d.ts", "**/*"],
   "exclude": ["dist", "node_modules", "**/*.stories.ts", "**/*.stories.tsx"]
 }

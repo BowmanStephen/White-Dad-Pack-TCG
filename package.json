@@ -41,6 +41,7 @@
     "@astrojs/svelte": "^7.2.5",
     "@astrojs/tailwind": "^6.0.2",
     "@nanostores/persistent": "^1.2.0",
+    "@sentry/astro": "^10.34.0",
     "astro": "^5.16.11",
     "discord.js": "^14.25.1",
     "dompurify": "^3.3.1",

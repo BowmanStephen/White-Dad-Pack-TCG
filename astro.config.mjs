@@ -2,7 +2,16 @@
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
+import sentry from '@sentry/astro';
 import { imagetools } from 'vite-imagetools';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+
+// Read package.json for version
+const packageJson = JSON.parse(
+  readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf-8')
+);
+const APP_VERSION = packageJson.version;
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +20,13 @@ export default defineConfig({
   integrations: [
     svelte(),
     tailwind(),
+    sentry({
+      sourceMapsUploadOptions: {
+        org: 'daddeck', // Replace with your Sentry org slug
+        project: 'daddeck-tcg', // Replace with your Sentry project slug
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      },
+    }),
   ],
   output: 'static',
 
@@ -54,6 +70,11 @@ export default defineConfig({
   // Vite configuration for optimal bundling
   vite: {
     plugins: [imagetools()],
+    define: {
+      // Inject app version for Sentry
+      APP_VERSION: JSON.stringify(APP_VERSION),
+      __SENTRY_DEBUG__: JSON.stringify(false),
+    },
     ssr: {
       noExternal: []
     },
