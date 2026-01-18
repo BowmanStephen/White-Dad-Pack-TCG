@@ -5,9 +5,34 @@ import AchievementList from '@/components/achievements/AchievementList.svelte';
 import Navigation from '@/components/common/Navigation.svelte';
 import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
 import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
+import { getFullURL, getImageURL } from '@/lib/seo';
+
+// Enhanced SEO for achievements page
+const title = "Achievements - DadDeck Trading Card Game";
+const description = "Unlock achievements and track your progress in DadDeck! From opening your first pack to collecting mythic cards, earn badges and showcase your TCG accomplishments.";
+const achievementsPageURL = getFullURL('/achievements');
+const imageURL = getImageURL('/og-image.png');
+
+// Achievement system structured data
+const achievementsSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemPage",
+  "name": "DadDeck Achievements",
+  "url": achievementsPageURL,
+  "description": "Achievement and badge system for DadDeck - the White Dad Trading Card Simulator. Unlock rewards by completing challenges and reaching milestones.",
+  "about": {
+    "@type": "Thing",
+    "name": "Achievements",
+    "description": "In-game achievements and badges for player progression"
+  }
+};
 ---
 
-<BaseLayout title="Achievements - DadDeck™">
+<BaseLayout
+  title={title}
+  description={description}
+  image="/og-image.png"
+>
   <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
     <Navigation client:load />
   </ErrorBoundary>
@@ -81,6 +106,9 @@ import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
   <ErrorBoundary component="AchievementToast" fallbackMessage="Achievement notifications unavailable.">
     <AchievementToast client:load />
   </ErrorBoundary>
+
+  <!-- Structured data for achievements page -->
+  <script type="application/ld+json" set:html={JSON.stringify(achievementsSchema)} />
 </BaseLayout>
 
 <style>

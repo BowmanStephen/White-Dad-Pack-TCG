@@ -4,11 +4,27 @@ import BattleArena from '../components/battle/BattleArena.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
 import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
+import { getFullURL, getImageURL, generateVideoGameSchema } from '@/lib/seo';
+
+// Enhanced SEO for battle page
+const title = "Card Battles - DadDeck Trading Card Game";
+const description = "Battle your dad-themed cards against AI opponents! Auto-battle system with stats-based combat. Use Grill Skill, Fix-It, and other unique stats to defeat enemies and climb the competitive ranked ladder!";
+const battlePageURL = getFullURL('/battle');
+const imageURL = getImageURL('/og-image.png');
+
+// VideoGame structured data for battle page
+const battleSchema = generateVideoGameSchema({
+  name: "DadDeck Card Battles",
+  url: battlePageURL,
+  description: "Auto-battle system with stats-based combat. Battle dad-themed cards with unique abilities like Grill Skill, Dad Joke power, and Nap Force to climb the competitive ladder.",
+  image: imageURL
+});
 ---
 
 <BaseLayout
-  title="Card Battles - DadDeck"
-  description="Battle your cards against AI opponents! Auto-battle system with stats-based combat. Climb the ranked ladder and become the ultimate dad!"
+  title={title}
+  description={description}
+  image="/og-image.png"
 >
   <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
     <Navigation client:load />
@@ -29,4 +45,7 @@ import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
       <BattleArena client:load />
     </ErrorBoundary>
   </main>
+
+  <!-- Structured data for battle page -->
+  <script type="application/ld+json" set:html={JSON.stringify(battleSchema)} />
 </BaseLayout>

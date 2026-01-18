@@ -2,6 +2,9 @@
 import Layout from '@/layouts/BaseLayout.astro';
 import { t } from '@/i18n';
 
+// Enhanced SEO for privacy page
+const description = "Privacy Policy for DadDeck Trading Card Game. Learn how we protect your data, use LocalStorage for game progress, and ensure your privacy while you collect dad-themed cards.";
+
 // Privacy policy sections
 const sections = [
   {
@@ -89,7 +92,10 @@ const sections = [
 ];
 ---
 
-<Layout title={t('privacy.page_title')}>
+<Layout
+  title={t('privacy.page_title')}
+  description={description}
+>
   <main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 px-4">
     <div class="max-w-4xl mx-auto">
       <!-- Header -->

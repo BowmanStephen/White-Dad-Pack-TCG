@@ -2,6 +2,10 @@
 import Layout from '@/layouts/BaseLayout.astro';
 import { t } from '@/i18n';
 
+// Enhanced SEO for 404 page (noindex to prevent indexing)
+const title = "404 - Page Not Found | DadDeck Trading Card Game";
+const description = "Oops! You've taken a wrong turn, just like Dad looking for the hardware store. Head back to open packs, collect cards, and battle with dad-themed TCG fun.";
+
 // Dad-themed 404 messages
 const lostDadQuotes = [
   {
@@ -58,7 +62,11 @@ const suggestedPages = [
 ];
 ---
 
-<Layout title="404 - Page Not Found | DadDeck™">
+<Layout
+  title={title}
+  description={description}
+  noindex={true}
+>
   <main class="min-h-screen flex items-center justify-center px-4 py-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
     <div class="max-w-2xl w-full text-center">
       <!-- 404 Number -->

@@ -2,6 +2,9 @@
 import Layout from '@/layouts/BaseLayout.astro';
 import { t } from '@/i18n';
 
+// Enhanced SEO for terms page
+const description = "Terms of Service for DadDeck Trading Card Game. Understand our satirical content guidelines, user conduct rules, and terms for using this free dad-themed TCG simulator.";
+
 // Terms of Service sections
 const sections = [
   {
@@ -95,7 +98,10 @@ const sections = [
 ];
 ---
 
-<Layout title={t('terms.page_title')}>
+<Layout
+  title={t('terms.page_title')}
+  description={description}
+>
   <main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 px-4">
     <div class="max-w-4xl mx-auto">
       <!-- Header -->

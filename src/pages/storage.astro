@@ -11,9 +11,18 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import StorageQuotaWarning from '@/components/storage/StorageQuotaWarning.svelte';
 import StorageManagement from '@/components/storage/StorageManagement.svelte';
+import { getFullURL } from '@/lib/seo';
+
+// Enhanced SEO for storage page
+const title = "Storage Management - DadDeck Trading Card Game";
+const description = "Manage your DadDeck LocalStorage usage. View storage quota, optimize old pack data, archive your collection, and keep your browser TCG simulator running smoothly.";
+const storagePageURL = getFullURL('/storage');
 ---
 
-<BaseLayout title="Storage Management - DadDeck™">
+<BaseLayout
+  title={title}
+  description={description}
+>
   <main class="storage-page">
     <div class="container">
       <header class="page-header">
