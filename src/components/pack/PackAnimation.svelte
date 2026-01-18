@@ -16,6 +16,10 @@
   let particles: Array<{ x: number; y: number; vx: number; vy: number; size: number; alpha: number }> = [];
   let reducedMotion = false;
 
+  // Hover and interaction state for shake animations
+  let isHovered = false;
+  let isHolding = false;
+
   $: rarityConfig = RARITY_CONFIG[bestRarity];
   $: packDesign = PACK_DESIGN_CONFIG[design];
   $: glowColor = rarityConfig.glowColor;
@@ -119,6 +123,23 @@
     }
   }
 
+  function handleMouseEnter() {
+    isHovered = true;
+  }
+
+  function handleMouseLeave() {
+    isHovered = false;
+    isHolding = false;
+  }
+
+  function handleMouseDown() {
+    isHolding = true;
+  }
+
+  function handleMouseUp() {
+    isHolding = false;
+  }
+
   // Particle system for tear burst (60fps optimized)
   // Enhanced particle count in cinematic mode
   function initParticles() {
@@ -162,6 +183,10 @@
   bind:this={packElement}
   on:click={handleClick}
   on:keydown={handleKeydown}
+  on:mousedown={handleMouseDown}
+  on:mouseup={handleMouseUp}
+  on:mouseenter={handleMouseEnter}
+  on:mouseleave={handleMouseLeave}
   role="button"
   tabindex="0"
   aria-label="Click to skip animation"
@@ -193,6 +218,8 @@
       class:animate-pack-shake={phase === 'tear'}
       class:animate-pack-shake-festive={phase === 'tear' && design === 'holiday'}
       class:animate-pack-shake-golden={phase === 'tear' && design === 'premium'}
+      class:animate-pack-hover={isHovered && !isHolding && phase !== 'tear' && phase !== 'burst'}
+      class:animate-pack-hold={isHolding && phase !== 'tear' && phase !== 'burst'}
     >
       <!-- Pack background - uses pack design gradient -->
       <div
@@ -407,6 +434,30 @@
     75% { transform: translateX(-2px) rotate(-0.5deg); }
   }
 
+  /* Subtle hover shake - indicates interactivity */
+  .animate-pack-hover {
+    animation: packHoverShake 2s ease-in-out infinite;
+  }
+
+  @keyframes packHoverShake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-1px) rotate(-0.25deg); }
+    75% { transform: translateX(1px) rotate(0.25deg); }
+  }
+
+  /* Intensified shake on hold - builds anticipation */
+  .animate-pack-hold {
+    animation: packHoldShake 0.3s ease-in-out infinite;
+  }
+
+  @keyframes packHoldShake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    20% { transform: translateX(-3px) rotate(-1deg); }
+    40% { transform: translateX(3px) rotate(1deg); }
+    60% { transform: translateX(-2px) rotate(-0.5deg); }
+    80% { transform: translateX(2px) rotate(0.5deg); }
+  }
+
   /* Shimmer effect - ease-in-out for smooth looping */
   .animate-shimmer {
     animation: shimmer 1s ease-in-out infinite;
@@ -484,6 +535,8 @@
   .animate-pack-shake,
   .animate-pack-shake-festive,
   .animate-pack-shake-golden,
+  .animate-pack-hover,
+  .animate-pack-hold,
   .animate-shimmer,
   .animate-shimmer-golden,
   .animate-flash-ease-out,
