@@ -13,6 +13,7 @@
 
   let { achievement }: Props = $props();
   let showProgress = $state(false);
+  let isHovered = $state(false);
 
   // Animated progress value
   const progress = tweened(0, {
@@ -31,6 +32,9 @@
 
   // Check if achievement is unlocked
   let isUnlocked = $derived(achievement.unlockedAt !== undefined);
+
+  // Check if achievement is hidden and locked
+  let isHidden = $derived(achievement.hidden && !isUnlocked.value);
 
   // Check if achievement has progress
   let hasProgress = $derived(achievement.maxProgress !== undefined && achievement.maxProgress > 1);
@@ -55,32 +59,44 @@
   class="achievement-card"
   class:unlocked={isUnlocked.value}
   class:locked={!isUnlocked.value}
-  style="border-color: {rarityConfig.value.borderColor};"
+  class:hidden={isHidden.value}
+  onmouseenter={() => isHovered = true}
+  onmouseleave={() => isHovered = false}
+  style="border-color: {isHidden.value ? '#3a3a5c' : rarityConfig.value.borderColor};"
 >
   <!-- Achievement icon and rarity -->
   <div class="achievement-header">
     <div
       class="achievement-icon"
       class:unlocked-icon={isUnlocked.value}
+      class:hidden-icon={isHidden.value}
       style="color: {isUnlocked.value ? rarityConfig.value.color : '#666'};"
     >
-      {achievement.icon || '🏆'}
+      {isHidden.value ? '❓' : (achievement.icon || '🏆')}
     </div>
     <div class="achievement-info">
-      <div class="achievement-rarity" style="color: {rarityConfig.value.color};">
-        {rarityConfig.value.name}
+      <div class="achievement-rarity" style="color: {isHidden.value ? '#666' : rarityConfig.value.color};">
+        {isHidden.value ? '???' : rarityConfig.value.name}
       </div>
       <h3 class="achievement-name" class:unlocked-name={isUnlocked.value}>
-        {achievement.name}
+        {isHidden.value ? '???' : achievement.name}
       </h3>
       <p class="achievement-description">
-        {achievement.description}
+        {#if isHidden.value}
+          {#if isHovered && achievement.hint}
+            <span class="hint-text">{achievement.hint}</span>
+          {:else}
+            ???
+          {/if}
+        {:else}
+          {achievement.description}
+        {/if}
       </p>
     </div>
   </div>
 
   <!-- Progress bar for multi-step achievements -->
-  {#if hasProgress.value && !isUnlocked.value}
+  {#if hasProgress.value && !isUnlocked.value && !isHidden.value}
     <div class="progress-section" class:visible={showProgress}>
       <div class="progress-header">
         <span class="progress-label">
@@ -145,6 +161,18 @@
     opacity: 0.85;
   }
 
+  .achievement-card.hidden {
+    background: linear-gradient(135deg, #1a1a2e 0%, #1a1a2e 100%);
+    opacity: 0.7;
+    border-style: dashed;
+  }
+
+  .achievement-card.hidden:hover {
+    opacity: 0.9;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(138, 43, 226, 0.2);
+  }
+
   .achievement-header {
     display: flex;
     align-items: flex-start;
@@ -165,12 +193,28 @@
     animation: bounce 0.6s ease-out;
   }
 
+  .achievement-icon.hidden-icon {
+    filter: grayscale(100%) brightness(0.5);
+    animation: mysteryPulse 2s ease-in-out infinite;
+  }
+
   @keyframes bounce {
     0%, 100% {
       transform: scale(1);
     }
     50% {
       transform: scale(1.15);
+    }
+  }
+
+  @keyframes mysteryPulse {
+    0%, 100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.1) rotate(5deg);
+      opacity: 0.7;
     }
   }
 
@@ -294,6 +338,43 @@
     letter-spacing: 1px;
     border-width: 1px;
     border-style: solid;
+  }
+
+  /* Hint text for hidden achievements */
+  .hint-text {
+    color: #a0a0ff;
+    font-style: italic;
+    animation: hintGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes hintGlow {
+    0%, 100% {
+      text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+    }
+    50% {
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.6);
+    }
+  }
+
+  /* Special unlock animation for hidden achievements */
+  .achievement-card.unlocked {
+    animation: hiddenAchievementUnlock 1s ease-out;
+  }
+
+  @keyframes hiddenAchievementUnlock {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+      filter: brightness(1.5);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+      filter: brightness(1);
+    }
   }
 
   /* Mobile Responsive */

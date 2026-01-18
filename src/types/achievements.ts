@@ -17,6 +17,8 @@ export interface Achievement {
   unlockedAt?: Date;
   progress?: number;
   maxProgress?: number;
+  hidden?: boolean; // If true, achievement details are hidden until unlocked
+  hint?: string; // Hint shown on hover for hidden achievements
 }
 
 // Achievement state for tracking
@@ -42,6 +44,8 @@ export interface AchievementConfig {
   maxProgress?: number;
   checkCondition: (context: AchievementContext) => boolean;
   getProgress?: (context: AchievementContext) => number;
+  hidden?: boolean; // If true, achievement details are hidden until unlocked
+  hint?: string; // Hint shown on hover for hidden achievements
 }
 
 // Achievement rarity configuration (for visual effects)
