@@ -2,6 +2,7 @@
   import { collection } from '../../stores/collection';
   import type { Card as CardType, PackCard } from '../../types';
   import { RARITY_CONFIG } from '../../types';
+  import type { StatusEffect } from '../../lib/mechanics/combat';
 
   type DuelResult = {
     winner: CardType;
@@ -12,6 +13,7 @@
   import Card from '../card/Card.svelte';
   import BattleLog from './BattleLog.svelte';
   import BattleTutorial from './BattleTutorial.svelte';
+  import StatusIcon from './StatusIcon.svelte';
   import { simulateBattle } from '../../lib/mechanics/combat';
   import type { BattleLogEntry } from './BattleLog.svelte';
 
@@ -22,6 +24,10 @@
   let battleLog = $state<BattleLogEntry[]>([]);
   let currentTurn = $state(0);
   let isBattling = $state(false);
+
+  // PACK-011: Status effects tracking
+  let playerStatusEffects = $state<StatusEffect[]>([]);
+  let opponentStatusEffects = $state<StatusEffect[]>([]);
 
   // Animation states
   let playerAttackAnimation = $state(false);
@@ -379,6 +385,9 @@
     damageNumbers = [];
     playerAttackAnimation = false;
     opponentAttackAnimation = false;
+    // PACK-011: Clear status effects
+    playerStatusEffects = [];
+    opponentStatusEffects = [];
   }
 
   let hasEnoughCards = $derived(availableCards.length > 1);
@@ -418,6 +427,14 @@
             <div class="card-placeholder">Select a card</div>
           {/if}
         </div>
+        <!-- PACK-011: Status effects display -->
+        {#if playerStatusEffects.length > 0}
+          <div class="status-effects-container">
+            {#each playerStatusEffects as effect (effect.type)}
+              <StatusIcon {effect} size="sm" />
+            {/each}
+          </div>
+        {/if}
       </div>
 
       <div class="duel-divider">
@@ -439,6 +456,14 @@
             <div class="card-placeholder">Roll opponent</div>
           {/if}
         </div>
+        <!-- PACK-011: Status effects display -->
+        {#if opponentStatusEffects.length > 0}
+          <div class="status-effects-container">
+            {#each opponentStatusEffects as effect (effect.type)}
+              <StatusIcon {effect} size="sm" />
+            {/each}
+          </div>
+        {/if}
       </div>
     </div>
 
@@ -631,6 +656,16 @@
   .duel-slot h2 {
     font-size: 1.1rem;
     font-weight: 700;
+  }
+
+  /* PACK-011: Status effects container */
+  .status-effects-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.5rem;
+    min-height: 2rem;
   }
 
   .duel-divider {

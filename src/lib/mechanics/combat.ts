@@ -40,11 +40,192 @@ import { SeededRandom } from '../utils/seeded-random';
 // Damage types for abilities
 export type DamageType = 'burn' | 'psychic' | 'awkward' | 'boring' | 'alcohol' | 'physical';
 
-// Status effects
+// Status effects (PACK-011)
+export type StatusEffectType =
+  | 'grilled'     // BBQ_DAD: defense -20%
+  | 'lectured'    // COUCH_DAD: attack -20%
+  | 'drunk'       // HOLIDAY_DAD: accuracy -30%
+  | 'wired'       // TECH_DAD: speed +30%
+  | 'awkward'     // Legacy: awkward status
+  | 'bored'       // Legacy: bored status
+  | 'inspired';   // Legacy: inspired status
+
 export interface StatusEffect {
-  type: 'grilled' | 'lectured' | 'awkward' | 'drunk' | 'bored' | 'inspired';
-  duration: number; // turns
-  strength: number; // effect strength 1-100
+  type: StatusEffectType;
+  duration: number; // turns remaining
+  stacks: number;   // stack count (max 2)
+}
+
+/**
+ * Calculate stat modifier from status effect (PACK-011)
+ *
+ * Status effects modify stats by percentage:
+ * - grilled: -20% defense (grillSkill, fixIt)
+ * - lectured: -20% attack (dadJoke, grillSkill, fixIt, napPower, remoteControl, thermostat, sockSandal, beerSnob)
+ * - drunk: -30% accuracy (all stats, reduces hit chance)
+ * - wired: +30% speed (increases action frequency or priority)
+ *
+ * @param effect - The status effect to calculate modifier for
+ * @param baseStat - The base stat value before modification
+ * @returns Modified stat value
+ *
+ * @example
+ * const modified = calculateStatusEffectModifier(
+ *   { type: 'grilled', duration: 2, stacks: 1 },
+ *   80 // base defense stat
+ * );
+ * // Returns 64 (80 - 20%)
+ */
+export function calculateStatusEffectModifier(
+  effect: StatusEffect,
+  baseStat: number
+): number {
+  const stackMultiplier = 1 + (effect.stacks - 1) * 0.5; // 2nd stack is 50% as potent
+
+  switch (effect.type) {
+    case 'grilled':
+      // -20% defense per stack (to grillSkill and fixIt)
+      return baseStat * (1 - 0.2 * stackMultiplier);
+
+    case 'lectured':
+      // -20% attack per stack (to all offensive stats)
+      return baseStat * (1 - 0.2 * stackMultiplier);
+
+    case 'drunk':
+      // -30% accuracy (reduces hit chance, not raw stat)
+      return baseStat; // Stat unchanged, applied to hit chance calculation
+
+    case 'wired':
+      // +30% speed (action frequency or priority)
+      return baseStat * (1 + 0.3 * stackMultiplier);
+
+    // Legacy status effects (preserve existing behavior)
+    case 'awkward':
+      return baseStat;
+    case 'bored':
+      return baseStat;
+    case 'inspired':
+      return baseStat;
+
+    default:
+      return baseStat;
+  }
+}
+
+/**
+ * Apply all status effects to card stats (PACK-011)
+ *
+ * Processes active status effects and returns modified stats.
+ * Effects stack additively up to max 2 stacks.
+ *
+ * @param card - The card to apply effects to
+ * @param effects - Array of active status effects
+ * @returns Modified card stats with all effects applied
+ *
+ * @example
+ * const effects = [
+ *   { type: 'grilled', duration: 2, stacks: 1 },
+ *   { type: 'lectured', duration: 1, stacks: 2 }
+ * ];
+ * const modifiedStats = applyStatusEffectsToCard(card, effects);
+ */
+export function applyStatusEffectsToCard(
+  card: Card,
+  effects: StatusEffect[]
+): CardStats {
+  const modifiedStats = { ...card.stats };
+
+  // Group effects by type for stacking
+  const effectMap = new Map<StatusEffectType, StatusEffect[]>();
+  for (const effect of effects) {
+    if (!effectMap.has(effect.type)) {
+      effectMap.set(effect.type, []);
+    }
+    effectMap.get(effect.type)!.push(effect);
+  }
+
+  // Apply stacked effects (max 2 stacks)
+  for (const [type, effectsOfType] of effectMap) {
+    const stacks = Math.min(2, effectsOfType.length);
+    const effect: StatusEffect = { type, duration: 0, stacks };
+
+    // Apply to all stats
+    for (const statKey in modifiedStats) {
+      const key = statKey as keyof CardStats;
+      modifiedStats[key] = calculateStatusEffectModifier(
+        effect,
+        modifiedStats[key]
+      );
+    }
+  }
+
+  // Clamp values between 0-100
+  for (const key in modifiedStats) {
+    modifiedStats[key as keyof CardStats] = Math.max(
+      0,
+      Math.min(100, modifiedStats[key as keyof CardStats])
+    );
+  }
+
+  return modifiedStats;
+}
+
+/**
+ * Reduce duration of all status effects by 1 turn (PACK-011)
+ *
+ * Called at end of each turn. Removes effects when duration reaches 0.
+ *
+ * @param effects - Array of active status effects
+ * @returns Array of effects with reduced duration (expired effects removed)
+ *
+ * @example
+ * const effects = [
+ *   { type: 'grilled', duration: 2, stacks: 1 },
+ *   { type: 'lectured', duration: 1, stacks: 1 }
+ * ];
+ * const nextTurn = tickStatusEffects(effects);
+ * // grilled: duration 1, lectured: removed
+ */
+export function tickStatusEffects(effects: StatusEffect[]): StatusEffect[] {
+  return effects
+    .map(effect => ({
+      ...effect,
+      duration: effect.duration - 1,
+    }))
+    .filter(effect => effect.duration > 0);
+}
+
+/**
+ * Add status effect to card (PACK-011)
+ *
+ * Handles stacking logic (max 2 stacks). Refreshes duration if already present.
+ *
+ * @param currentEffects - Array of current active effects
+ * @param newEffect - New effect to add
+ * @returns Updated array of effects
+ *
+ * @example
+ * const effects = [{ type: 'grilled', duration: 2, stacks: 1 }];
+ * const updated = addStatusEffect(effects, { type: 'grilled', duration: 2, stacks: 1 });
+ * // Returns: [{ type: 'grilled', duration: 2, stacks: 2 }]
+ */
+export function addStatusEffect(
+  currentEffects: StatusEffect[],
+  newEffect: StatusEffect
+): StatusEffect[] {
+  const existing = currentEffects.find(e => e.type === newEffect.type);
+
+  if (existing) {
+    // Stack or refresh
+    if (existing.stacks < 2) {
+      existing.stacks++;
+    }
+    existing.duration = newEffect.duration; // Refresh duration
+    return [...currentEffects];
+  }
+
+  // Add new effect
+  return [...currentEffects, newEffect];
 }
 
 // Combat state
@@ -208,30 +389,55 @@ export function executeAbility(
   const damage = calculateDamage(card, target, attackStat, defenseStat);
   const criticalHit = damage > calculateDamage(card, target, attackStat, defenseStat) * 0.5;
 
-  // Generate status effects
+  // Generate status effects (PACK-011)
   const statusEffects: StatusEffect[] = [];
 
   if (card.type === 'BBQ_DAD' && Math.random() < 0.3) {
     statusEffects.push({
       type: 'grilled',
       duration: 2,
-      strength: card.stats.grillSkill,
-    });
-  }
-
-  if (card.type === 'COACH_DAD' && Math.random() < 0.3) {
-    statusEffects.push({
-      type: 'inspired',
-      duration: 3,
-      strength: card.stats.dadJoke,
+      stacks: 1,
     });
   }
 
   if (card.type === 'COUCH_DAD' && Math.random() < 0.3) {
     statusEffects.push({
+      type: 'lectured',
+      duration: 2,
+      stacks: 1,
+    });
+  }
+
+  if (card.type === 'HOLIDAY_DAD' && Math.random() < 0.3) {
+    statusEffects.push({
+      type: 'drunk',
+      duration: 2,
+      stacks: 1,
+    });
+  }
+
+  if (card.type === 'TECH_DAD' && Math.random() < 0.3) {
+    statusEffects.push({
+      type: 'wired',
+      duration: 2,
+      stacks: 1,
+    });
+  }
+
+  // Legacy status effects (preserve for backwards compatibility)
+  if (card.type === 'COACH_DAD' && Math.random() < 0.3) {
+    statusEffects.push({
+      type: 'inspired',
+      duration: 3,
+      stacks: 1,
+    });
+  }
+
+  if (card.type === 'COUCH_DAD' && Math.random() < 0.3 && !statusEffects.find(e => e.type === 'lectured')) {
+    statusEffects.push({
       type: 'bored',
       duration: 2,
-      strength: 100 - card.stats.napPower,
+      stacks: 1,
     });
   }
 
@@ -277,7 +483,10 @@ export function executeAbility(
 export { getTypeAdvantage };
 
 /**
- * Apply status effects to a card
+ * Apply status effects to a card (LEGACY - use applyStatusEffectsToCard)
+ *
+ * @deprecated Use applyStatusEffectsToCard instead for PACK-011 status effects
+ * This function is kept for backwards compatibility with existing code.
  *
  * Status effects modify card stats temporarily:
  * - grilled: -10% grillSkill, -5% fixIt
@@ -302,44 +511,14 @@ export function applyStatusEffects(
   card: Card,
   effects: StatusEffect[]
 ): CardStats {
-  const modifiedStats = { ...card.stats };
+  // Convert legacy status effects to new PACK-011 format
+  const pack011Effects: StatusEffect[] = effects.map(e => ({
+    type: e.type,
+    duration: e.duration,
+    stacks: 1, // Legacy effects don't stack
+  }));
 
-  for (const effect of effects) {
-    switch (effect.type) {
-      case 'grilled':
-        modifiedStats.grillSkill -= effect.strength * 0.1;
-        modifiedStats.fixIt -= effect.strength * 0.05;
-        break;
-      case 'lectured':
-        modifiedStats.dadJoke -= effect.strength * 0.15;
-        modifiedStats.thermostat += effect.strength * 0.1;
-        break;
-      case 'awkward':
-        modifiedStats.dadJoke -= effect.strength * 0.2;
-        modifiedStats.sockSandal += effect.strength * 0.1;
-        break;
-      case 'drunk':
-        modifiedStats.beerSnob += effect.strength * 0.3;
-        modifiedStats.fixIt -= effect.strength * 0.4;
-        modifiedStats.grillSkill -= effect.strength * 0.2;
-        break;
-      case 'bored':
-        modifiedStats.napPower += effect.strength * 0.2;
-        modifiedStats.remoteControl += effect.strength * 0.15;
-        break;
-      case 'inspired':
-        modifiedStats.dadJoke += effect.strength * 0.15;
-        modifiedStats.grillSkill += effect.strength * 0.1;
-        break;
-    }
-  }
-
-  // Clamp values between 0-100
-  for (const key in modifiedStats) {
-    modifiedStats[key as keyof CardStats] = Math.max(0, Math.min(100, modifiedStats[key as keyof CardStats]));
-  }
-
-  return modifiedStats;
+  return applyStatusEffectsToCard(card, pack011Effects);
 }
 
 /**
