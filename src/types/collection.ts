@@ -1,5 +1,13 @@
 import type { Rarity, PackCard } from './card';
 
+// Pity counter state (PACK-003)
+export interface PityCounter {
+  rare: number;      // Packs since last rare
+  epic: number;      // Packs since last epic
+  legendary: number; // Packs since last legendary
+  mythic: number;    // Packs since last mythic
+}
+
 // Collection Metadata - Statistics about user's collection
 export interface CollectionMetadata {
   totalPacksOpened: number;
@@ -9,6 +17,7 @@ export interface CollectionMetadata {
   holoPulls: number;
   created?: Date;
   rarityCounts?: Record<Rarity, number>;
+  pityCounter?: PityCounter; // PACK-003: Pity system state
 }
 
 // Collection - All packs owned by user

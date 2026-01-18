@@ -2,6 +2,7 @@ import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign,
 import { getCardsByRarity, getAllCards, getCardsByRarityAndType } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
 import { RARITY_ORDER } from '../../types';
+import { getHighestPityTier } from './pity';
 
 /**
  * Select cards from the rarity pool, excluding already used cards.
@@ -452,6 +453,7 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
  *
  * @param config - Pack configuration defining rarity slots and probabilities
  * @param seed - Optional seed for reproducible random generation (useful for testing)
+ * @param pityCounter - Optional pity counter state for bad luck protection (PACK-003)
  * @returns A complete Pack object with 6 cards, design, and metadata
  *
  * @example
@@ -464,21 +466,41 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
  * const pack2 = generatePack(DEFAULT_PACK_CONFIG, 12345);
  * // pack1 === pack2 (identical cards and design)
  *
+ * @example
+ * // Generate with pity system (PACK-003)
+ * const pityCounter = { rare: 10, epic: 5, legendary: 0, mythic: 0 };
+ * const pack = generatePack(DEFAULT_PACK_CONFIG, undefined, pityCounter);
+ * // Guaranteed rare due to pity (10 consecutive packs without rare+)
+ *
  * @description
  * This function implements the core pack opening mechanics:
+ * - Checks pity counter and applies bad luck protection if threshold reached (PACK-003)
  * - Processes each rarity slot in the config (guaranteed or probabilistic)
  * - Selects cards without duplicates within the pack
  * - Determines holo variants based on rarity probabilities
  * - Shuffles cards to prevent position-based prediction
  * - Assigns pack design (standard/holiday/premium)
  */
-export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: number): Pack {
+export function generatePack(
+  config: PackConfig = DEFAULT_PACK_CONFIG,
+  seed?: number,
+  pityCounter?: { rare: number; epic: number; legendary: number; mythic: number }
+): Pack {
   const rng = new SeededRandom(seed);
   const packCards: PackCard[] = [];
   const usedCardIds = new Set<string>();
 
   // Extract theme type for theme packs (PACK-001)
   const themeType = config.themeType as DadType | undefined;
+
+  // PACK-003: Check if pity should trigger
+  let pityRarity: Rarity | null = null;
+  if (pityCounter) {
+    pityRarity = getHighestPityTier(pityCounter);
+    if (pityRarity) {
+      console.log(`[Pity System] Triggering ${pityRarity} pity (bad luck protection)`);
+    }
+  }
 
   // Process each slot in the pack
   for (const slot of config.raritySlots) {
@@ -488,8 +510,15 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
       // Guaranteed rarity slot
       rarity = slot.guaranteedRarity;
     } else if (slot.rarityPool && slot.probability) {
-      // Random rarity from probability pool
-      rarity = weightedRandom(slot.probability, rng);
+      // PACK-003: Override with pity rarity if pity is triggered
+      // and this is the last slot (slot 6 - the rare or better slot)
+      if (pityRarity && slot.slot === 6) {
+        rarity = pityRarity;
+        console.log(`[Pity System] Overriding slot 6 rarity to ${rarity} (bad luck protection)`);
+      } else {
+        // Random rarity from probability pool
+        rarity = weightedRandom(slot.probability, rng);
+      }
     } else {
       // Fallback to common
       rarity = 'common';

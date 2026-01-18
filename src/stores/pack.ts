@@ -1,7 +1,7 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState, PackType, DadType } from '../types';
 import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
-import { addPackToCollection } from './collection';
+import { addPackToCollection, getPityCounter } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
@@ -107,8 +107,11 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
         // Get pack configuration based on type
         const packConfig = getPackConfig(finalPackType, finalThemeType);
 
-        // Generate pack with configuration
-        const pack = generatePack(packConfig);
+        // PACK-003: Get pity counter for bad luck protection
+        const pityCounter = getPityCounter();
+
+        // Generate pack with configuration and pity counter (PACK-003)
+        const pack = generatePack(packConfig, undefined, pityCounter);
 
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;

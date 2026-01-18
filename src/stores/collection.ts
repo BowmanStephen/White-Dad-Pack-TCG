@@ -12,6 +12,8 @@ import {
   getStorageUsage,
   isStorageAvailable
 } from '@/lib/storage/indexeddb';
+import { updatePityCounter, DEFAULT_PITY_COUNTER } from '@/lib/pack/pity';
+import type { PityCounter } from '@/types/collection';
 
 // ============================================================================
 // STORAGE LAYER (INDEXEDDB)
@@ -34,7 +36,8 @@ const DEFAULT_COLLECTION: Collection = {
       epic: 0,
       legendary: 0,
       mythic: 0
-    }
+    },
+    pityCounter: DEFAULT_PITY_COUNTER // PACK-003: Initialize pity counter
   }
 };
 
@@ -236,6 +239,11 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
       newRarityCounts[card.rarity]++;
     }
 
+    // PACK-003: Update pity counter based on pulled rarities
+    const pulledRarities = pack.cards.map(card => card.rarity);
+    const currentPityCounter = current.metadata.pityCounter || DEFAULT_PITY_COUNTER;
+    const newPityCounter = updatePityCounter(currentPityCounter, pulledRarities);
+
     // Update collection with new pack
     const newCollection: Collection = {
       packs: [pack, ...current.packs], // New packs first
@@ -246,7 +254,8 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
         rarePulls: current.metadata.rarePulls + rarePullsInPack,
         holoPulls: current.metadata.holoPulls + holoPullsInPack,
         created: current.metadata.created,
-        rarityCounts: newRarityCounts
+        rarityCounts: newRarityCounts,
+        pityCounter: newPityCounter // PACK-003: Include updated pity counter
       }
     };
 
@@ -278,7 +287,8 @@ export function clearUserCollection(): { success: boolean; error?: string } {
         rarePulls: 0,
         holoPulls: 0,
         created: new Date(),
-        rarityCounts: initializeRarityCounts()
+        rarityCounts: initializeRarityCounts(),
+        pityCounter: DEFAULT_PITY_COUNTER // PACK-003: Reset pity counter
       }
     };
 
@@ -409,4 +419,38 @@ export function trackCollectionSort(sortOption: string): void {
       sortOption: sortOption as any // Type assertion for SortOption
     }
   });
+}
+
+// ============================================================================
+// PITY SYSTEM (PACK-003)
+// ============================================================================
+
+/**
+ * Get current pity counter state
+ *
+ * @returns Current pity counter or default if not initialized
+ */
+export function getPityCounter(): PityCounter {
+  const current = collection.get();
+  return current.metadata.pityCounter || DEFAULT_PITY_COUNTER;
+}
+
+/**
+ * Check if pity should trigger on next pack opening
+ *
+ * Returns the highest rarity tier that will trigger pity,
+ * or null if no pity tier has been reached.
+ *
+ * @returns Highest rarity tier that will trigger, or null
+ */
+export function getPityTrigger(): Rarity | null {
+  const pityCounter = getPityCounter();
+
+  // Check in descending order (mythic → rare)
+  if (pityCounter.mythic >= 100) return 'mythic';
+  if (pityCounter.legendary >= 60) return 'legendary';
+  if (pityCounter.epic >= 30) return 'epic';
+  if (pityCounter.rare >= 10) return 'rare';
+
+  return null;
 }
