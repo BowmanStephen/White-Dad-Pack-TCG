@@ -1,13 +1,15 @@
 import type { Card, Rarity } from '../../types';
 import cardsData from '../../data/cards.json';
 import seasonalCardsData from '../../data/seasonal-cards.json';
+import newCardsData from '../../data/cards-new.json';
 
 // Type assertion for imported JSON
 const baseCards: Card[] = cardsData.cards as Card[];
 const seasonalCards: Card[] = seasonalCardsData.cards as Card[];
+const newCards: Card[] = newCardsData.cards as Card[];
 
-// Merge base cards and seasonal cards
-const cards: Card[] = [...baseCards, ...seasonalCards];
+// Merge base cards, seasonal cards, and new cards
+const cards: Card[] = [...baseCards, ...seasonalCards, ...newCards];
 
 
 /**

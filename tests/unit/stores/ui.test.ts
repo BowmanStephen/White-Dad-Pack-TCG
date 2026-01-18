@@ -54,6 +54,7 @@ describe('UI Store - US044: UI State Tests', () => {
     $toasts.set([]);
 
     // Reset global mocks
+    (window as any).matchMedia = mockMatchMedia;
     (window as any).ontouchstart = undefined;
     (navigator as any).maxTouchPoints = 0;
     delete (global as any).DeviceOrientationEvent;

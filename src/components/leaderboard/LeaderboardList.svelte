@@ -25,6 +25,13 @@
     LeaderboardCategoryKey,
     { label: string; description: string; icon: string }
   >;
+  const RANK_CLASS_MAP: Record<number, string> = {
+    1: 'rank-1',
+    2: 'rank-2',
+    3: 'rank-3',
+  };
+
+  let categoryKey = $derived(leaderboard.category as LeaderboardCategoryKey);
 
   // Get stat value for display
   function getStatValue(
@@ -60,17 +67,12 @@
     return formatNumber(value);
   }
 
-  // Format number with commas
   function formatNumber(num: number): string {
     return num.toLocaleString('en-US');
   }
 
-  // Get rank badge class
   function getRankClass(rank: number): string {
-    if (rank === 1) return 'rank-1';
-    if (rank === 2) return 'rank-2';
-    if (rank === 3) return 'rank-3';
-    return 'rank-default';
+    return RANK_CLASS_MAP[rank] || 'rank-default';
   }
 
   function getBattleRecordValue(entry: LeaderboardEntry): number {
@@ -85,13 +87,7 @@
   }
 
   function hasCurrentUser(entries: LeaderboardEntry[]): boolean {
-    for (const entry of entries) {
-      if (entry.isCurrentUser) {
-        return true;
-      }
-    }
-
-    return false;
+    return entries.some((entry) => entry.isCurrentUser);
   }
 
   function getBattleStats(entry: LeaderboardEntry): {
@@ -146,10 +142,10 @@
 
           <div class="entry-stats">
             <div class="stat-value">
-              {formatStatValue(entry, leaderboard.category as LeaderboardCategoryKey)}
+              {formatStatValue(entry, categoryKey)}
             </div>
             <div class="stat-label">
-              {leaderboardCategories[leaderboard.category as LeaderboardCategoryKey].label}
+              {leaderboardCategories[categoryKey].label}
             </div>
           </div>
         </div>
@@ -174,10 +170,10 @@
 
           <div class="entry-stats">
             <div class="stat-value">
-              {formatStatValue(leaderboard.userEntry, leaderboard.category as LeaderboardCategoryKey)}
+              {formatStatValue(leaderboard.userEntry, categoryKey)}
             </div>
             <div class="stat-label">
-              {leaderboardCategories[leaderboard.category as LeaderboardCategoryKey].label}
+              {leaderboardCategories[categoryKey].label}
             </div>
           </div>
         </div>

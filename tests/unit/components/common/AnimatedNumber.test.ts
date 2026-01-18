@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
+import { tick } from 'svelte';
 import AnimatedNumber from '@/components/common/AnimatedNumber.svelte';
 
 describe('AnimatedNumber Component', () => {
@@ -36,7 +37,7 @@ describe('AnimatedNumber Component', () => {
     expect(element?.textContent).toContain('+');
   });
 
-  it('applies color change class when value increases', () => {
+  it('applies color change class when value increases', async () => {
     const { container, rerender } = render(AnimatedNumber, {
       value: 10,
       colorChange: true
@@ -44,12 +45,13 @@ describe('AnimatedNumber Component', () => {
 
     // Rerender with higher value
     rerender({ value: 20 });
+    await tick();
 
     const element = container.querySelector('.animated-number');
     expect(element?.classList.contains('up')).toBe(true);
   });
 
-  it('applies color change class when value decreases', () => {
+  it('applies color change class when value decreases', async () => {
     const { container, rerender } = render(AnimatedNumber, {
       value: 20,
       colorChange: true
@@ -57,6 +59,7 @@ describe('AnimatedNumber Component', () => {
 
     // Rerender with lower value
     rerender({ value: 10 });
+    await tick();
 
     const element = container.querySelector('.animated-number');
     expect(element?.classList.contains('down')).toBe(true);

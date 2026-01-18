@@ -125,6 +125,9 @@ export function getSpecialCardGlowClasses(type: string): string {
 }
 
 export function hasCardStats(type: string): boolean {
-  // EVOLUTION and ITEM cards have stats, others don't
+  if (!isSpecialCardType(type)) {
+    return true;
+  }
+  // Special card types: only EVOLUTION and ITEM have stats
   return type === 'EVOLUTION' || type === 'ITEM';
 }

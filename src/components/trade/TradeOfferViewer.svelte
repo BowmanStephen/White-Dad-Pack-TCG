@@ -15,6 +15,15 @@
 
   let { offerData }: Props = $props();
 
+  const RARITY_CLASS_MAP: Record<string, string> = {
+    common: 'text-gray-400 border-gray-400',
+    uncommon: 'text-blue-400 border-blue-400',
+    rare: 'text-yellow-400 border-yellow-400',
+    epic: 'text-purple-400 border-purple-400',
+    legendary: 'text-orange-400 border-orange-400',
+    mythic: 'text-pink-400 border-pink-400',
+  };
+
   // UI state
   let loading = $state(true);
   let error = $state<string | null>(null);
@@ -31,8 +40,7 @@
         return;
       }
 
-      // Check if trade has expired
-      if (trade.expiresAt < new Date()) {
+      if (isTradeExpired(trade)) {
         error = 'This trade offer has expired';
         loading = false;
         return;
@@ -48,8 +56,10 @@
   /**
    * Accept the trade offer
    */
-  async function handleAccept() {
-    if (!$currentTrade) return;
+  async function handleAccept(): Promise<void> {
+    if (!$currentTrade) {
+      return;
+    }
 
     try {
       isProcessing = true;
@@ -67,8 +77,10 @@
   /**
    * Reject the trade offer
    */
-  async function handleReject() {
-    if (!$currentTrade) return;
+  async function handleReject(): Promise<void> {
+    if (!$currentTrade) {
+      return;
+    }
 
     try {
       isProcessing = true;
@@ -83,19 +95,12 @@
     }
   }
 
-  /**
-   * Get rarity color class
-   */
+  function isTradeExpired(trade: TradeOffer): boolean {
+    return trade.expiresAt < new Date();
+  }
+
   function getRarityColor(rarity: string): string {
-    const colors: Record<string, string> = {
-      common: 'text-gray-400 border-gray-400',
-      uncommon: 'text-blue-400 border-blue-400',
-      rare: 'text-yellow-400 border-yellow-400',
-      epic: 'text-purple-400 border-purple-400',
-      legendary: 'text-orange-400 border-orange-400',
-      mythic: 'text-pink-400 border-pink-400',
-    };
-    return colors[rarity] || colors.common;
+    return RARITY_CLASS_MAP[rarity] || RARITY_CLASS_MAP.common;
   }
 </script>
 
@@ -179,7 +184,7 @@
       {#if $currentTrade.status === 'pending'}
         <div class="trade-actions">
           <button
-            on:click={handleAccept}
+            onclick={handleAccept}
             disabled={isProcessing}
             class="btn-primary"
           >
@@ -190,7 +195,7 @@
             {/if}
           </button>
           <button
-            on:click={handleReject}
+            onclick={handleReject}
             disabled={isProcessing}
             class="btn-secondary"
           >

@@ -1,16 +1,48 @@
 <script lang="ts">
   import { RARITY_CONFIG, RARITY_ORDER, type PackCard } from '@/types';
 
-  // Props
-  export let card: PackCard;
-  export let ownedCount: number = 1;
-  export let seriesTotal: number = 50;
+  interface Props {
+    card: PackCard;
+    ownedCount?: number;
+    seriesTotal?: number;
+  }
 
-  // Get rarity config
-  $: rarityConfig = RARITY_CONFIG[card.rarity];
+  let { card, ownedCount = 1, seriesTotal = 50 }: Props = $props();
 
-  // Calculate set completion percentage
-  $: setCompletion = Math.round((card.cardNumber / seriesTotal) * 100);
+  const HOLO_VARIANT_NAMES: Record<string, string> = {
+    none: 'Non-Holo',
+    standard: 'Standard Holo',
+    reverse: 'Reverse Holo',
+    full_art: 'Full Art Holo',
+    prismatic: 'Prismatic Holo',
+  };
+
+  const HOLO_VARIANT_EMOJIS: Record<string, string> = {
+    none: '◆',
+    standard: '✨',
+    reverse: '⬆️',
+    full_art: '🖼️',
+    prismatic: '🌈',
+  };
+
+  const SEASON_COLORS: Record<number, string> = {
+    1: '#1e40af',
+    2: '#dc2626',
+    3: '#d97706',
+    4: '#0284c7',
+    5: '#16a34a',
+    6: '#9333ea',
+    7: '#ec4899',
+    8: '#f59e0b',
+    9: '#10b981',
+    10: '#6366f1',
+  };
+
+  let rarityConfig = $derived(RARITY_CONFIG[card.rarity]);
+  let setCompletion = $derived(
+    Math.round((card.cardNumber / seriesTotal) * 100)
+  );
+  let rarityProgression = $derived(getRarityProgression());
 
   /**
    * Get visual width percentage for progress bar
@@ -23,35 +55,23 @@
    * Format card number with proper display
    */
   function formatCardNumber(num: number, total: number): string {
-    return `${num.toString().padStart(3, '0')}/${total.toString().padStart(3, '0')}`;
+    const paddedNumber = num.toString().padStart(3, '0');
+    const paddedTotal = total.toString().padStart(3, '0');
+    return `${paddedNumber}/${paddedTotal}`;
   }
 
   /**
    * Get holo variant display name
    */
   function getHoloVariantName(holoType: string): string {
-    const names: Record<string, string> = {
-      none: 'Non-Holo',
-      standard: 'Standard Holo',
-      reverse: 'Reverse Holo',
-      full_art: 'Full Art Holo',
-      prismatic: 'Prismatic Holo',
-    };
-    return names[holoType] || holoType;
+    return HOLO_VARIANT_NAMES[holoType] || holoType;
   }
 
   /**
    * Get holo variant emoji
    */
   function getHoloVariantEmoji(holoType: string): string {
-    const emojis: Record<string, string> = {
-      none: '◆',
-      standard: '✨',
-      reverse: '⬆️',
-      full_art: '🖼️',
-      prismatic: '🌈',
-    };
-    return emojis[holoType] || '◆';
+    return HOLO_VARIANT_EMOJIS[holoType] || HOLO_VARIANT_EMOJIS.none;
   }
 
   type RarityKey = keyof typeof RARITY_ORDER;
@@ -65,37 +85,15 @@
     isOwned: boolean;
     color: string;
   }> {
-    const tiers: Array<{
-      rarity: RarityKey;
-      isOwned: boolean;
-      color: string;
-    }> = [];
-
-    for (const rarity of rarityKeys) {
-      tiers.push({
-        rarity,
-        isOwned: rarity === card.rarity,
-        color: RARITY_CONFIG[rarity].color,
-      });
-    }
-
-    return tiers;
+    return rarityKeys.map((rarity) => ({
+      rarity,
+      isOwned: rarity === card.rarity,
+      color: RARITY_CONFIG[rarity].color,
+    }));
   }
 
   function getSeasonColor(seasonId: number): string {
-    const seasonColors: Record<number, string> = {
-      1: '#1e40af',
-      2: '#dc2626',
-      3: '#d97706',
-      4: '#0284c7',
-      5: '#16a34a',
-      6: '#9333ea',
-      7: '#ec4899',
-      8: '#f59e0b',
-      9: '#10b981',
-      10: '#6366f1',
-    };
-    return seasonColors[seasonId] || '#9ca3af';
+    return SEASON_COLORS[seasonId] || '#9ca3af';
   }
 </script>
 
@@ -133,7 +131,7 @@
     <div class="section-title">Rarity Tiers in Series</div>
 
     <div class="rarity-tiers">
-      {#each getRarityProgression() as tier}
+      {#each rarityProgression as tier}
         <div
           class="rarity-tier"
           class:is-current={tier.isOwned}

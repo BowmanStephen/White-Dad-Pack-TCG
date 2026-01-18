@@ -43,16 +43,16 @@
   $: getGlowStyle = (value: number) => {
     if (value >= 90) {
       // Mythic-level stats: Intense prismatic glow
-      return `box-shadow: 0 0 16px ${rarityConfig.color}, 0 0 32px ${rarityConfig.glowColor}, 0 0 48px ${rarityConfig.color}66;`;
+      return `0 0 16px ${rarityConfig.color}, 0 0 32px ${rarityConfig.glowColor}, 0 0 48px ${rarityConfig.color}66`;
     } else if (value >= 80) {
       // High stats: Green glow with rarity tint
-      return `box-shadow: 0 0 12px #22c55e, 0 0 24px #4ade8088, 0 0 36px #86efac44;`;
+      return `0 0 12px #22c55e, 0 0 24px #4ade8088, 0 0 36px #86efac44`;
     } else if (value >= 50) {
       // Medium stats: Yellow glow
-      return `box-shadow: 0 0 8px #eab30888;`;
+      return `0 0 8px #eab30888`;
     } else {
       // Low stats: Subtle red glow
-      return `box-shadow: 0 0 6px #ef444455;`;
+      return `0 0 6px #ef444455`;
     }
   };
 
@@ -106,7 +106,9 @@
           <div class="flex-1 h-1.5 bg-slate-700/60 rounded-full overflow-hidden relative stat-bar-container">
             <div
               class="h-full rounded-full transition-all duration-700 ease-out relative stat-bar"
-              style="width: {stat.value}%; background: {barGradient(stat.value)}; {getGlowStyle(stat.value)};"
+              style:width={`${stat.value}%`}
+              style:background={barGradient(stat.value)}
+              style:box-shadow={getGlowStyle(stat.value)}
               class:stat-bar-high={stat.isHighStat}
               role="progressbar"
               aria-label="{stat.name}: {stat.value} out of 100"

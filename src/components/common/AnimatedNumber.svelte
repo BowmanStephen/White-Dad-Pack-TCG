@@ -21,7 +21,8 @@
   }: Props = $props();
 
   let displayValue = $state(0);
-  let previousValue = $state(0);
+  let previousValue = 0;
+  let initialized = $state(false);
   let direction: 'up' | 'down' | 'neutral' = $state('neutral');
   let animationFrame: number | null = null;
   let startTime: number | null = null;
@@ -41,7 +42,6 @@
       animationFrame = requestAnimationFrame(animate);
     } else {
       displayValue = value;
-      direction = 'neutral';
     }
   }
 
@@ -58,28 +58,31 @@
       return;
     }
 
-    // Determine direction
-    if (value > previousValue) {
-      direction = 'up';
-    } else if (value < previousValue) {
-      direction = 'down';
-    } else {
-      direction = 'neutral';
-    }
-
     // Start animation
     startValue = displayValue;
     startTime = null;
     animationFrame = requestAnimationFrame(animate);
-    previousValue = value;
   }
 
   // Watch for value changes
   $effect(() => {
-    const diff = value - displayValue;
-    if (Math.abs(diff) > 0.0001) { // Only animate if significant change
-      startAnimation();
+    if (!initialized) {
+      displayValue = value;
+      previousValue = value;
+      startValue = value;
+      initialized = true;
+      return;
     }
+
+    const diff = value - previousValue;
+    if (Math.abs(diff) <= 0.0001) {
+      direction = 'neutral';
+      return;
+    }
+
+    direction = diff > 0 ? 'up' : 'down';
+    startAnimation();
+    previousValue = value;
   });
 
   // Format the display value
@@ -100,8 +103,11 @@
 </script>
 
 <span
-  class="animated-number {direction} {className}"
+  class="animated-number {className}"
   class:color-change={colorChange}
+  class:up={direction === 'up'}
+  class:down={direction === 'down'}
+  class:neutral={direction === 'neutral'}
 >
   {signedValue}
 </span>

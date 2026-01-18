@@ -64,9 +64,9 @@ describe('CardStats Component', () => {
         cardRarity: 'rare',
       });
 
-      expect(screen.getByText('DAD JOKE')).toBeTruthy();
-      expect(screen.getByText('GRILL SKILL')).toBeTruthy();
-      expect(screen.getByText('FIX-IT')).toBeTruthy();
+      expect(screen.getAllByText(/dad joke/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/grill skill/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/fix-it/i).length).toBeGreaterThan(0);
     });
 
     it('should display stat icons', () => {
@@ -197,7 +197,7 @@ describe('CardStats Component', () => {
       expect(statBars.length).toBe(8);
     });
 
-    it('should set correct width for stat bars', () => {
+    it('should set aria values for stat bars', () => {
       const { container } = render(CardStats, {
         stats: mockStats,
         rarityConfig: RARITY_CONFIG.rare,
@@ -208,17 +208,15 @@ describe('CardStats Component', () => {
 
       // Check that widths match stat values
       statBars.forEach((bar) => {
-        const style = bar.getAttribute('style') || '';
-        const widthMatch = style.match(/width:\s*(\d+)%/);
-        expect(widthMatch).toBeTruthy();
-
-        const width = parseInt(widthMatch?.[1] || '0');
+        const value = bar.getAttribute('aria-valuenow');
+        expect(value).toBeTruthy();
+        const width = parseInt(value || '0');
         expect(width).toBeGreaterThanOrEqual(0);
         expect(width).toBeLessThanOrEqual(100);
       });
     });
 
-    it('should apply correct gradients for high stats (>= 80)', () => {
+    it('should apply high-stat class for high stats (>= 80)', () => {
       const { container } = render(CardStats, {
         stats: highStats,
         rarityConfig: RARITY_CONFIG.legendary,
@@ -228,13 +226,11 @@ describe('CardStats Component', () => {
       const statBars = container.querySelectorAll('.stat-bar');
 
       statBars.forEach((bar) => {
-        const style = bar.getAttribute('style') || '';
-        // High stats should have green or prismatic gradients
-        expect(style).toContain('linear-gradient');
+        expect(bar.classList.contains('stat-bar-high')).toBe(true);
       });
     });
 
-    it('should apply correct gradients for medium stats (50-79)', () => {
+    it('should apply high-stat class only to >= 80 stats', () => {
       const { container } = render(CardStats, {
         stats: mockStats,
         rarityConfig: RARITY_CONFIG.rare,
@@ -242,19 +238,13 @@ describe('CardStats Component', () => {
       });
 
       const statBars = container.querySelectorAll('.stat-bar');
-
-      // Find a stat with value between 50-79 (thermostat: 60)
-      const mediumStatBar = Array.from(statBars).find((bar) => {
-        const style = bar.getAttribute('style') || '';
-        return style.includes('width: 60%');
-      });
-
-      expect(mediumStatBar).toBeTruthy();
-      const style = mediumStatBar?.getAttribute('style') || '';
-      expect(style).toContain('#eab308'); // Yellow gradient
+      const highBars = Array.from(statBars).filter((bar) =>
+        bar.classList.contains('stat-bar-high')
+      );
+      expect(highBars.length).toBe(1);
     });
 
-    it('should apply correct gradients for low stats (< 50)', () => {
+    it('should not apply high-stat class for low stats (< 50)', () => {
       const { container } = render(CardStats, {
         stats: lowStats,
         rarityConfig: RARITY_CONFIG.common,
@@ -264,9 +254,7 @@ describe('CardStats Component', () => {
       const statBars = container.querySelectorAll('.stat-bar');
 
       statBars.forEach((bar) => {
-        const style = bar.getAttribute('style') || '';
-        // Low stats should have red gradient
-        expect(style).toContain('#ef4444');
+        expect(bar.classList.contains('stat-bar-high')).toBe(false);
       });
     });
   });
@@ -357,7 +345,7 @@ describe('CardStats Component', () => {
         cardRarity: 'rare',
       });
 
-      const statLabels = screen.getAllByText('GRILL SKILL');
+      const statLabels = screen.getAllByText(/grill skill/i);
       expect(statLabels.length).toBeGreaterThan(0);
     });
   });

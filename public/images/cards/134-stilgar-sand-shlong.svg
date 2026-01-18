@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-134" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-134">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.7636170540936291)" />
+  <g opacity="0.3"><line x1="0" y1="253.2" x2="400" y2="253.2" stroke="#94a3b8" stroke-width="1.4" opacity="0.26" />
+    <line x1="0" y1="293.2" x2="400" y2="293.2" stroke="#94a3b8" stroke-width="3.0" opacity="0.33" />
+    <line x1="0" y1="58.2" x2="400" y2="58.2" stroke="#fbbf24" stroke-width="1.9" opacity="0.24" />
+    <line x1="0" y1="255.4" x2="400" y2="255.4" stroke="#fbbf24" stroke-width="2.7" opacity="0.35" />
+    <line x1="208.2" y1="0" x2="208.2" y2="550" stroke="#94a3b8" stroke-width="3.0" opacity="0.32" />
+    <line x1="0" y1="153.0" x2="400" y2="153.0" stroke="#fbbf24" stroke-width="1.8" opacity="0.13" />
+    <line x1="160.6" y1="0" x2="160.6" y2="550" stroke="#94a3b8" stroke-width="3.9" opacity="0.40" />
+    <line x1="358.3" y1="0" x2="358.3" y2="550" stroke="#94a3b8" stroke-width="2.6" opacity="0.24" />
+    <line x1="0" y1="465.9" x2="400" y2="465.9" stroke="#64748b" stroke-width="1.4" opacity="0.12" />
+    <line x1="0" y1="525.4" x2="400" y2="525.4" stroke="#64748b" stroke-width="2.6" opacity="0.37" />
+    <line x1="0" y1="19.0" x2="400" y2="19.0" stroke="#64748b" stroke-width="3.9" opacity="0.24" />
+    <line x1="0" y1="129.1" x2="400" y2="129.1" stroke="#64748b" stroke-width="2.9" opacity="0.11" />
+    <line x1="0" y1="182.3" x2="400" y2="182.3" stroke="#94a3b8" stroke-width="1.8" opacity="0.16" />
+    <line x1="0" y1="287.4" x2="400" y2="287.4" stroke="#94a3b8" stroke-width="1.9" opacity="0.25" />
+    <line x1="311.8" y1="0" x2="311.8" y2="550" stroke="#94a3b8" stroke-width="1.8" opacity="0.19" />
+    <line x1="375.6" y1="0" x2="375.6" y2="550" stroke="#fbbf24" stroke-width="3.5" opacity="0.13" />
+    <line x1="0" y1="469.6" x2="400" y2="469.6" stroke="#64748b" stroke-width="1.4" opacity="0.23" />
+    <line x1="0" y1="490.4" x2="400" y2="490.4" stroke="#94a3b8" stroke-width="3.0" opacity="0.11" />
+    <line x1="96.2" y1="0" x2="96.2" y2="550" stroke="#64748b" stroke-width="3.5" opacity="0.22" />
+    <line x1="0" y1="175.5" x2="400" y2="175.5" stroke="#64748b" stroke-width="3.5" opacity="0.39" /></g>
+  <polygon points="105.0,95.1 143.5,133.7 105.0,172.2 66.4,133.7" fill="#fbbf24" opacity="0.28" />
+    <polygon points="167.8,225.8 213.1,271.1 167.8,316.4 122.5,271.1" fill="#64748b" opacity="0.15" />
+    <rect x="170.7" y="36.4" width="57.2" height="57.2" fill="#fbbf24" opacity="0.35" />
+    <polygon points="344.9,16.2 382.9,92.3 306.9,92.3" fill="#94a3b8" opacity="0.18" />
+    <rect x="23.6" y="34.9" width="62.7" height="62.7" fill="#94a3b8" opacity="0.11" />
+    <polygon points="16.7,37.0 61.9,82.3 16.7,127.5 -28.5,82.3" fill="#fbbf24" opacity="0.16" />
+    <circle cx="184.5" cy="223.2" r="41.1" fill="#94a3b8" opacity="0.11" />
+    <circle cx="329.1" cy="496.4" r="41.1" fill="#64748b" opacity="0.14" />
+    <polygon points="106.5,323.0 118.6,335.1 106.5,347.2 94.4,335.1" fill="#fbbf24" opacity="0.28" />
+    <polygon points="1.3,441.3 34.0,473.9 1.3,506.6 -31.3,473.9" fill="#94a3b8" opacity="0.38" />
+    <polygon points="143.0,89.0 186.8,176.6 99.2,176.6" fill="#fbbf24" opacity="0.22" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-19" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-19)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Stilgar Sand-Shlong</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Stilgar Sand-Shlong</text>
+  
+  <!-- Rarity border -->
+  <rect x="4" y="4" width="392" height="542"
+        fill="none" stroke="#eab308" stroke-width="8" rx="8" ry="8" />
+</svg>
