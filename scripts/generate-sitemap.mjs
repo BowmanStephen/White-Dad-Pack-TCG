@@ -35,6 +35,18 @@ const sitemapEntries = [
     priority: 0.8,
   },
   {
+    url: '/deck-builder',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  },
+  {
+    url: '/leaderboard',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'daily',
+    priority: 0.6,
+  },
+  {
     url: '/offline',
     lastModified: new Date().toISOString(),
     changeFrequency: 'monthly',
