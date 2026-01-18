@@ -336,6 +336,129 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
   },
 };
 
+// ============================================================================
+// RARITY DROP RATES (TOOLTIP-002: Rarity Explanation Tooltips)
+// ============================================================================
+
+// Drop rate descriptions for each rarity tier
+// Based on DEFAULT_PACK_CONFIG in src/lib/pack/generator.ts
+export const RARITY_DROP_RATES: Record<Rarity, {
+  description: string;
+  slots: string;
+  probability: string;
+  note: string;
+}> = {
+  common: {
+    description: 'The most common cards in the game',
+    slots: 'Slots 1-3 (guaranteed)',
+    probability: '100% in first 3 slots',
+    note: 'Basic cards with minimal effects'
+  },
+  uncommon: {
+    description: 'Enhanced cards with better stats and minor effects',
+    slots: 'Slots 4-5',
+    probability: '74% chance per slot',
+    note: 'First upgrade from common cards'
+  },
+  rare: {
+    description: 'Powerful cards with strong abilities and particle effects',
+    slots: 'Slots 4-6',
+    probability: '20% (slots 4-5), 87.9% (slot 6)',
+    note: 'Minimum guarantee in slot 6'
+  },
+  epic: {
+    description: 'Premium cards with advanced animations and holo variants',
+    slots: 'Slots 4-6',
+    probability: '5% (slots 4-5), 10% (slot 6)',
+    note: 'Highly sought after for competitive play'
+  },
+  legendary: {
+    description: 'Ultra-rare full-art cards with intense visual effects',
+    slots: 'Slots 4-6',
+    probability: '0.9% (slots 4-5), 1.99% (slot 6)',
+    note: 'Full artwork, maximum particles'
+  },
+  mythic: {
+    description: 'The rarest cards with prismatic holo effects',
+    slots: 'Slots 4-6',
+    probability: '0.1% (slots 4-5), 0.1% (slot 6)',
+    note: '1 in 1,000 cards - extremely rare!'
+  }
+};
+
+// Holographic variant descriptions
+// Based on rollHolo() function in src/lib/pack/generator.ts
+export const HOLO_VARIANT_DESCRIPTIONS: Record<HoloVariant, {
+  name: string;
+  description: string;
+  rarity: string;
+  chance: string;
+  features: string[];
+}> = {
+  none: {
+    name: 'Non-Holo',
+    description: 'Standard card without holographic effects',
+    rarity: 'Common',
+    chance: '~80% of all cards',
+    features: [
+      'Standard card finish',
+      'No special effects',
+      'Base collection value'
+    ]
+  },
+  standard: {
+    name: 'Standard Holo',
+    description: 'Basic holographic shine on card artwork',
+    rarity: 'Uncommon',
+    chance: '~15% of all cards',
+    features: [
+      'Holo shine on artwork area',
+      'Subtle sparkle effect',
+      'Available on all rarities'
+    ]
+  },
+  reverse: {
+    name: 'Reverse Holo',
+    description: 'Holographic background with non-holo artwork',
+    rarity: 'Rare',
+    chance: '~3% of all cards',
+    features: [
+      'Entire card background is holo',
+      'Artwork area remains non-holo',
+      'Distinctive crisscross pattern'
+    ]
+  },
+  full_art: {
+    name: 'Full Art Holo',
+    description: 'Entire card is holographic with extended artwork',
+    rarity: 'Legendary+',
+    chance: '~1.5% of legendary/mythic cards',
+    features: [
+      'Full card holographic treatment',
+      'Extended artwork covering entire face',
+      'Only legendary and mythic rarities'
+    ]
+  },
+  prismatic: {
+    name: 'Prismatic Holo',
+    description: 'Rainbow prismatic effect - the ultimate holo variant',
+    rarity: 'Mythic Only',
+    chance: '~0.5% of mythic cards',
+    features: [
+      'Rainbow prismatic effect',
+      'Maximum particle intensity',
+      'Mythic rarity exclusive'
+    ]
+  }
+};
+
+// Overall holo drop rate
+export const HOLO_DROP_RATE = {
+  description: 'Approximately 1 in 6 cards will be holographic',
+  chance: '16.67%',
+  note: 'Applies to all cards regardless of rarity'
+};
+
 // Dad Type Display Names
 export const DAD_TYPE_NAMES: Record<DadType, string> = {
   BBQ_DAD: 'BBQ Dad',
