@@ -123,7 +123,15 @@ export const DEFAULT_PACK_CONFIG: PackConfig = {
 
 /**
  * Compare two rarities
- * @returns positive if a > b, negative if a < b, 0 if equal
+ *
+ * @param a - First rarity to compare
+ * @param b - Second rarity to compare
+ * @returns Positive if a > b, negative if a < b, 0 if equal
+ *
+ * @example
+ * compareRarity('rare', 'common') // > 0 (rare is higher)
+ * compareRarity('uncommon', 'epic') // < 0 (uncommon is lower)
+ * compareRarity('rare', 'rare') // === 0 (equal)
  */
 export function compareRarity(a: Rarity, b: Rarity): number {
   return RARITY_ORDER[a] - RARITY_ORDER[b];
@@ -131,6 +139,17 @@ export function compareRarity(a: Rarity, b: Rarity): number {
 
 /**
  * Get the highest rarity from an array of cards
+ *
+ * @param cards - Array of cards to search
+ * @returns The highest rarity tier found in the array
+ *
+ * @example
+ * const cards = [
+ *   { name: 'Card1', rarity: 'common' },
+ *   { name: 'Card2', rarity: 'rare' },
+ *   { name: 'Card3', rarity: 'uncommon' }
+ * ];
+ * getHighestRarity(cards) // Returns 'rare'
  */
 export function getHighestRarity(cards: Card[]): Rarity {
   let highest: Rarity = 'common';
@@ -402,6 +421,18 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
 
 /**
  * Generate multiple packs
+ *
+ * @param count - Number of packs to generate
+ * @param config - Optional pack configuration (defaults to DEFAULT_PACK_CONFIG)
+ * @returns Array of generated packs
+ *
+ * @example
+ * // Generate 5 random packs
+ * const packs = generatePacks(5);
+ *
+ * @example
+ * // Generate 3 packs with custom configuration
+ * const customPacks = generatePacks(3, customConfig);
  */
 export function generatePacks(count: number, config?: PackConfig): Pack[] {
   const packs: Pack[] = [];
@@ -412,7 +443,23 @@ export function generatePacks(count: number, config?: PackConfig): Pack[] {
 }
 
 /**
- * Calculate pack statistics (for display)
+ * Calculate pack statistics for display purposes
+ *
+ * Computes useful statistics about a pack including:
+ * - Total card count
+ * - Rarity distribution (how many cards of each rarity)
+ * - Number of holographic cards
+ * - The best card in the pack (by rarity)
+ *
+ * @param pack - The pack to analyze
+ * @returns Pack statistics including total cards, rarity breakdown, holo count, and best card
+ *
+ * @example
+ * const pack = generatePack();
+ * const stats = getPackStats(pack);
+ * console.log(`Total: ${stats.totalCards}, Holos: ${stats.holoCount}`);
+ * console.log(`Best: ${stats.bestCard.name} (${stats.bestCard.rarity})`);
+ * console.log(`Rarities:`, stats.rarityBreakdown);
  */
 export function getPackStats(pack: Pack): {
   totalCards: number;
@@ -428,10 +475,10 @@ export function getPackStats(pack: Pack): {
     legendary: 0,
     mythic: 0,
   };
-  
+
   let holoCount = 0;
   let bestCard = pack.cards[0];
-  
+
   for (const card of pack.cards) {
     rarityBreakdown[card.rarity]++;
     if (card.isHolo) holoCount++;
@@ -439,7 +486,7 @@ export function getPackStats(pack: Pack): {
       bestCard = card;
     }
   }
-  
+
   return {
     totalCards: pack.cards.length,
     rarityBreakdown,

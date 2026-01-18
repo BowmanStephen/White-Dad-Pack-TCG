@@ -36,6 +36,17 @@ export interface AbilityResult {
 
 /**
  * Calculate base power from stats
+ *
+ * Power is calculated as:
+ * - Average of all card stats
+ * - Multiplied by rarity multiplier (common = 1.0x, mythic = 3.0x)
+ *
+ * @param card - The card to calculate power for
+ * @returns Base power value (used for HP calculations in battles)
+ *
+ * @example
+ * const card = { stats: { dadJoke: 50, grillSkill: 70, ... }, rarity: 'rare' };
+ * const power = calculateCardPower(card); // ~60 * 1.5 = 90
  */
 export function calculateCardPower(card: Card): number {
   const stats = Object.values(card.stats);
@@ -56,6 +67,25 @@ export function calculateCardPower(card: Card): number {
 
 /**
  * Calculate damage based on attacker vs defender stats
+ *
+ * Damage calculation:
+ * - Base: attackPower - (defensePower * 0.5), minimum 5
+ * - RNG modifier: ±20% random factor
+ * - Critical hit: 2x damage (10% base chance + 1% per 10 attack stat)
+ *
+ * @param attacker - The attacking card
+ * @param defender - The defending card
+ * @param attackStat - Which stat to use for attack
+ * @param defenseStat - Which stat to use for defense
+ * @returns Calculated damage value (minimum 1)
+ *
+ * @example
+ * const damage = calculateDamage(
+ *   bbqDadCard,
+ *   coachDadCard,
+ *   'grillSkill',
+ *   'dadJoke'
+ * );
  */
 export function calculateDamage(
   attacker: Card,
@@ -86,6 +116,22 @@ export function calculateDamage(
 
 /**
  * Execute a card's ability
+ *
+ * Ability execution process:
+ * 1. Validates ability exists
+ * 2. Determines appropriate stat based on ability name keyword
+ * 3. Calculates damage using attacker vs defender stats
+ * 4. Applies status effects based on card type (30% chance)
+ * 5. Generates random flavor text for the action
+ *
+ * @param card - The card using the ability
+ * @param target - The target card
+ * @param abilityIndex - Index of ability in card.abilities array (default: 0)
+ * @returns Ability result with success status, damage, status effects, flavor text, and critical hit flag
+ *
+ * @example
+ * const result = executeAbility(bbqDadCard, coachDadCard);
+ * console.log(result.damage, result.flavorText, result.statusEffects);
  */
 export function executeAbility(
   card: Card,
@@ -177,6 +223,20 @@ export function executeAbility(
 
 /**
  * Check for type advantages
+ *
+ * Certain dad types have advantages over others, similar to Pokémon types:
+ * - Advantage: 1.5x damage (e.g., BBQ_DAD vs COUCH_DAD)
+ * - Disadvantage: 0.75x damage (e.g., COUCH_DAD vs BBQ_DAD)
+ * - Neutral: 1.0x damage
+ *
+ * @param attacker - Attacking dad type
+ * @param defender - Defending dad type
+ * @returns Damage multiplier (1.5 for advantage, 0.75 for disadvantage, 1.0 for neutral)
+ *
+ * @example
+ * getTypeAdvantage('BBQ_DAD', 'COUCH_DAD') // Returns 1.5 (advantage)
+ * getTypeAdvantage('COUCH_DAD', 'BBQ_DAD') // Returns 0.75 (disadvantage)
+ * getTypeAdvantage('BBQ_DAD', 'FIX_IT_DAD') // Returns 1.0 (neutral)
  */
 export function getTypeAdvantage(attacker: DadType, defender: DadType): number {
   const advantages: Record<DadType, DadType[]> = {
@@ -214,6 +274,25 @@ export function getTypeAdvantage(attacker: DadType, defender: DadType): number {
 
 /**
  * Apply status effects to a card
+ *
+ * Status effects modify card stats temporarily:
+ * - grilled: -10% grillSkill, -5% fixIt
+ * - lectured: -15% dadJoke, +10% thermostat
+ * - awkward: -20% dadJoke, +10% sockSandal
+ * - drunk: +30% beerSnob, -40% fixIt, -20% grillSkill
+ * - bored: +20% napPower, +15% remoteControl
+ * - inspired: +15% dadJoke, +10% grillSkill
+ *
+ * All stat changes are clamped to 0-100 range.
+ *
+ * @param card - The card to apply effects to
+ * @param effects - Array of status effects to apply
+ * @returns Modified card stats with all effects applied
+ *
+ * @example
+ * const effects = [{ type: 'grilled', duration: 2, strength: 50 }];
+ * const modifiedStats = applyStatusEffects(card, effects);
+ * // card.stats.grillSkill reduced by 5 (50 * 0.1)
  */
 export function applyStatusEffects(
   card: Card,
@@ -261,6 +340,21 @@ export function applyStatusEffects(
 
 /**
  * Check for card synergies (combo system)
+ *
+ * Synergies provide damage multipliers when specific card combinations exist:
+ * - Mythic Alliance: Two mythic cards = 2.0x damage
+ * - Type Synergies: Specific type combinations = 1.3x damage
+ * - No Synergy: 1.0x damage (default)
+ *
+ * @param card1 - First card in the pair
+ * @param card2 - Second card in the pair
+ * @returns Synergy result with hasSynergy flag, bonus multiplier, name, and description
+ *
+ * @example
+ * const synergy = checkSynergy(mythicCard1, mythicCard2);
+ * console.log(synergy.hasSynergy); // true
+ * console.log(synergy.synergyBonus); // 2.0
+ * console.log(synergy.synergyName); // "Mythic Alliance"
  */
 export function checkSynergy(card1: Card, card2: Card): {
   hasSynergy: boolean;
@@ -326,6 +420,23 @@ export function checkSynergy(card1: Card, card2: Card): {
 
 /**
  * Simulate a full battle between two cards
+ *
+ * Battle simulation mechanics:
+ * - HP = calculateCardPower(card) * 10
+ * - Each turn, both cards attack simultaneously
+ * - Type advantages apply (1.5x or 0.75x damage)
+ * - Synergies detected and applied
+ * - Status effects can trigger (30% chance based on card type)
+ * - Max 10 turns, winner determined by HP if time expires
+ *
+ * @param attacker - The attacking card
+ * @param defender - The defending card
+ * @returns Battle result with winner, loser, turn count, and detailed battle log
+ *
+ * @example
+ * const result = simulateBattle(bbqDad, coachDad);
+ * console.log(`Winner: ${result.winner.name} in ${result.turns} turns`);
+ * console.log(result.log.join('\n')); // Full battle log
  */
 export function simulateBattle(attacker: Card, defender: Card): {
   winner: Card;
@@ -424,6 +535,21 @@ function criticalHit(result: AbilityResult): boolean {
 
 /**
  * Compare two cards and predict winner
+ *
+ * Prediction logic:
+ * 1. Check for synergies (85% confidence if synergy exists)
+ * 2. Check for significant power difference (75% confidence if >20% difference)
+ * 3. Default to effective power comparison (55% confidence - close match)
+ *
+ * @param card1 - First card to compare
+ * @param card2 - Second card to compare
+ * @returns Prediction result with winner, confidence level (0-100), and reasoning
+ *
+ * @example
+ * const prediction = predictWinner(card1, card2);
+ * console.log(`Predicted winner: ${prediction.winner.name}`);
+ * console.log(`Confidence: ${prediction.confidence}%`);
+ * console.log(`Reason: ${prediction.reason}`);
  */
 export function predictWinner(card1: Card, card2: Card): {
   winner: Card;
