@@ -7,7 +7,11 @@
   import { t } from '@/i18n';
 
   // Props
-  export let achievement: Achievement;
+  interface Props {
+    achievement: Achievement;
+  }
+
+  let { achievement }: Props = $props();
   let showProgress = $state(false);
 
   // Animated progress value
@@ -17,53 +21,56 @@
   });
 
   // Get rarity configuration
-  $: rarityConfig = ACHIEVEMENT_RARITY_CONFIG[achievement.rarity];
+  let rarityConfig = $derived(ACHIEVEMENT_RARITY_CONFIG[achievement.rarity]);
 
   // Calculate progress percentage
-  $: progressPercent = achievement.maxProgress && achievement.maxProgress > 0
+  let progressPercent = $derived(achievement.maxProgress && achievement.maxProgress > 0
     ? Math.min(100, (achievement.progress || 0) / achievement.maxProgress * 100)
-    : 0;
+    : 0
+  );
 
   // Check if achievement is unlocked
-  $: isUnlocked = achievement.unlockedAt !== undefined;
+  let isUnlocked = $derived(achievement.unlockedAt !== undefined);
 
   // Check if achievement has progress
-  $: hasProgress = achievement.maxProgress !== undefined && achievement.maxProgress > 1;
+  let hasProgress = $derived(achievement.maxProgress !== undefined && achievement.maxProgress > 1);
 
   // Animate progress on mount
   onMount(() => {
-    if (hasProgress && !isUnlocked) {
+    if (hasProgress.value && !isUnlocked.value) {
       showProgress = true;
       progress.set(achievement.progress || 0);
     }
   });
 
   // Update progress when achievement changes
-  $: if (hasProgress && achievement.progress !== undefined) {
-    progress.set(achievement.progress);
-  }
+  $effect(() => {
+    if (hasProgress.value && achievement.progress !== undefined) {
+      progress.set(achievement.progress);
+    }
+  });
 </script>
 
 <div
   class="achievement-card"
-  class:unlocked={isUnlocked}
-  class:locked={!isUnlocked}
-  style="border-color: {rarityConfig.borderColor};"
+  class:unlocked={isUnlocked.value}
+  class:locked={!isUnlocked.value}
+  style="border-color: {rarityConfig.value.borderColor};"
 >
   <!-- Achievement icon and rarity -->
   <div class="achievement-header">
     <div
       class="achievement-icon"
-      class:unlocked-icon={isUnlocked}
-      style="color: {isUnlocked ? rarityConfig.color : '#666'};"
+      class:unlocked-icon={isUnlocked.value}
+      style="color: {isUnlocked.value ? rarityConfig.value.color : '#666'};"
     >
       {achievement.icon || '🏆'}
     </div>
     <div class="achievement-info">
-      <div class="achievement-rarity" style="color: {rarityConfig.color};">
-        {rarityConfig.name}
+      <div class="achievement-rarity" style="color: {rarityConfig.value.color};">
+        {rarityConfig.value.name}
       </div>
-      <h3 class="achievement-name" class:unlocked-name={isUnlocked}>
+      <h3 class="achievement-name" class:unlocked-name={isUnlocked.value}>
         {achievement.name}
       </h3>
       <p class="achievement-description">
@@ -73,7 +80,7 @@
   </div>
 
   <!-- Progress bar for multi-step achievements -->
-  {#if hasProgress && !isUnlocked}
+  {#if hasProgress.value && !isUnlocked.value}
     <div class="progress-section" class:visible={showProgress}>
       <div class="progress-header">
         <span class="progress-label">
@@ -89,23 +96,23 @@
         <!-- Animated progress fill -->
         <div
           class="progress-fill"
-          style="width: {$progress / (achievement.maxProgress || 1) * 100}%; background: {rarityConfig.color};"
+          style="width: {$progress / (achievement.maxProgress || 1) * 100}%; background: {rarityConfig.value.color};"
         ></div>
 
         <!-- Progress glow effect -->
         <div
           class="progress-glow"
-          style="width: {$progress / (achievement.maxProgress || 1) * 100}%; background: {rarityConfig.glowColor};"
+          style="width: {$progress / (achievement.maxProgress || 1) * 100}%; background: {rarityConfig.value.glowColor};"
         ></div>
       </div>
 
       <!-- Progress percentage -->
-      <div class="progress-percent" style="color: {rarityConfig.color};">
-        {Math.round(progressPercent)}%
+      <div class="progress-percent" style="color: {rarityConfig.value.color};">
+        {Math.round(progressPercent.value)}%
       </div>
     </div>
-  {:else if isUnlocked}
-    <div class="unlocked-badge" style="background: {rarityConfig.bgColor}; color: {rarityConfig.color};">
+  {:else if isUnlocked.value}
+    <div class="unlocked-badge" style="background: {rarityConfig.value.bgColor}; color: {rarityConfig.value.color};">
       {t('achievements.complete')}
     </div>
   {/if}

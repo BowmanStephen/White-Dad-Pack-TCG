@@ -17,7 +17,8 @@
     "share": "Share",
     "download": "Download",
     "copy": "Copy",
-    "open": "Open"
+    "open": "Open",
+    "all": "All"
   },
   "nav": {
     "home": "Home",
@@ -243,6 +244,12 @@
     "progress": "Progress",
     "complete": "Complete",
     "of": "of",
+    "categories": {
+      "collection": "Collection",
+      "battle": "Battle",
+      "social": "Social",
+      "special": "Special"
+    },
     "firstPack": "First Pack",
     "firstPackDesc": "Open your first pack",
     "collector": "Collector",

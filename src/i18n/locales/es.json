@@ -17,7 +17,8 @@
     "share": "Compartir",
     "download": "Descargar",
     "copy": "Copiar",
-    "open": "Abrir"
+    "open": "Abrir",
+    "all": "Todos"
   },
   "nav": {
     "home": "Inicio",
@@ -199,6 +200,12 @@
     "progress": "Progreso",
     "complete": "Completo",
     "of": "de",
+    "categories": {
+      "collection": "Colección",
+      "battle": "Batalla",
+      "social": "Social",
+      "special": "Especial"
+    },
     "firstPack": "Primer Sobre",
     "firstPackDesc": "Abre tu primer sobre",
     "collector": "Coleccionista",

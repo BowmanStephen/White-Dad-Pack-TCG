@@ -4,7 +4,7 @@ import type { Pack, Collection, CollectionStats } from './collection';
 export type AchievementRarity = 'bronze' | 'silver' | 'gold' | 'platinum';
 
 // Achievement categories
-export type AchievementCategory = 'opening' | 'collection' | 'rare' | 'holo' | 'variety' | 'daily';
+export type AchievementCategory = 'collection' | 'battle' | 'social' | 'special';
 
 // Achievement interface
 export interface Achievement {
@@ -87,10 +87,8 @@ export const ACHIEVEMENT_RARITY_CONFIG: Record<AchievementRarity, AchievementRar
 
 // Achievement category display names
 export const ACHIEVEMENT_CATEGORY_NAMES: Record<AchievementCategory, string> = {
-  opening: 'Pack Opening',
-  collection: 'Collection Building',
-  rare: 'Rare Pulls',
-  holo: 'Holo Hunters',
-  variety: 'Variety Seekers',
-  daily: 'Daily Rewards',
+  collection: 'Collection',
+  battle: 'Battle',
+  social: 'Social',
+  special: 'Special',
 };

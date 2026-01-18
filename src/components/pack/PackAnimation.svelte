@@ -16,6 +16,13 @@
   let particles: Array<{ x: number; y: number; vx: number; vy: number; size: number; alpha: number }> = [];
   let reducedMotion = false;
 
+  // Swipe-to-tear gesture state
+  let touchStartX = 0;
+  let isDragging = false;
+  let tearProgress = 0;
+  const TEAR_THRESHOLD = 200; // Pixels to drag for complete tear
+  const COMPLETE_TEAR_PERCENTAGE = 0.7; // 70% drag to complete tear
+
   // Hover and interaction state for shake animations
   let isHovered = false;
   let isHolding = false;
@@ -68,32 +75,38 @@
   });
 
   async function runAnimation() {
-    // Phase 1: Pack appears (with ease-out)
-    phase = 'appear';
-    await delay(phaseDurations.appear);
-
-    // Phase 2: Pack glows (builds anticipation) - longer in cinematic mode
-    phase = 'glow';
-    await delay(phaseDurations.glow);
-
-    // Phase 3: Pack tears open (the main event)
-    phase = 'tear';
-
-    // Play pack tear sound effect (enhanced in cinematic mode)
-    if (cinematicConfig.audioEnhanced) {
-      // Play louder/dramatic tear sound in cinematic mode
-      playPackTear();
+    // Check if tear already completed via swipe gesture
+    if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
+      // Skip tear phase if already completed
+      phase = 'burst';
     } else {
-      playPackTear();
-    }
+      // Phase 1: Pack appears (with ease-out)
+      phase = 'appear';
+      await delay(phaseDurations.appear);
 
-    // Initialize particles for burst phase
-    if (!reducedMotion) {
-      initParticles();
-      animateParticles();
-    }
+      // Phase 2: Pack glows (builds anticipation) - longer in cinematic mode
+      phase = 'glow';
+      await delay(phaseDurations.glow);
 
-    await delay(phaseDurations.tear);
+      // Phase 3: Pack tears open (the main event) - only runs if not swiped
+      phase = 'tear';
+
+      // Play pack tear sound effect (enhanced in cinematic mode)
+      if (cinematicConfig.audioEnhanced) {
+        // Play louder/dramatic tear sound in cinematic mode
+        playPackTear();
+      } else {
+        playPackTear();
+      }
+
+      // Initialize particles for burst phase
+      if (!reducedMotion) {
+        initParticles();
+        animateParticles();
+      }
+
+      await delay(phaseDurations.tear);
+    }
 
     // Phase 4: Burst and fade
     phase = 'burst';
@@ -105,6 +118,9 @@
       animationFrameId = null;
     }
 
+    // Reset tear progress
+    tearProgress = 0;
+
     // Animation complete
     dispatch('complete');
   }
@@ -114,7 +130,13 @@
   }
 
   function handleClick() {
-    dispatch('skip');
+    // If tear is in progress (user swiping), skip to burst
+    if (isDragging && tearProgress > 0) {
+      handleCompleteTear();
+    } else {
+      // Normal click to skip
+      dispatch('skip');
+    }
   }
 
   function handleKeydown(event: KeyboardEvent) {
@@ -134,10 +156,80 @@
 
   function handleMouseDown() {
     isHolding = true;
+    // Initialize drag for swipe-to-tear (desktop)
+    touchStartX = 0;
+    isDragging = true;
+    tearProgress = 0;
   }
 
   function handleMouseUp() {
     isHolding = false;
+    isDragging = false;
+    // Trigger tear if sufficient progress
+    if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
+      handleCompleteTear();
+    } else {
+      tearProgress = 0;
+    }
+  }
+
+  // Swipe-to-tear gesture handlers (mobile)
+  function handleTouchStart(event: TouchEvent) {
+    touchStartX = event.touches[0].clientX;
+    isDragging = true;
+    tearProgress = 0;
+  }
+
+  function handleTouchMove(event: TouchEvent) {
+    if (!isDragging) return;
+
+    event.preventDefault();
+    const currentX = event.touches[0].clientX;
+    const deltaX = currentX - touchStartX;
+    
+    // Calculate tear progress (normalized to 0-1)
+    tearProgress = Math.min(1, Math.max(0, deltaX / TEAR_THRESHOLD));
+    
+    // Visual feedback: shake pack as tear progresses
+    if (tearProgress > 0.3) {
+      phase = 'tear';
+    }
+  }
+
+  function handleTouchEnd(event: TouchEvent) {
+    isDragging = false;
+    
+    // Trigger tear if sufficient progress
+    if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
+      handleCompleteTear();
+    } else {
+      tearProgress = 0;
+    }
+  }
+
+  // Mouse drag handlers (desktop)
+  function handleMouseMove(event: MouseEvent) {
+    if (!isDragging) return;
+
+    const deltaX = event.movementX;
+    tearProgress = Math.min(1, Math.max(0, tearProgress + deltaX / TEAR_THRESHOLD));
+    
+    // Visual feedback: shake pack as tear progresses
+    if (tearProgress > 0.3) {
+      phase = 'tear';
+    }
+  }
+
+  // Complete the tear animation
+  function handleCompleteTear() {
+    isDragging = false;
+    tearProgress = 0;
+    // Haptic feedback (vibrate on mobile)
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+    // Continue to next animation phase
+    phase = 'burst';
   }
 
   // Particle system for tear burst (60fps optimized)
@@ -185,12 +277,31 @@
   on:keydown={handleKeydown}
   on:mousedown={handleMouseDown}
   on:mouseup={handleMouseUp}
+  on:mousemove={handleMouseMove}
   on:mouseenter={handleMouseEnter}
   on:mouseleave={handleMouseLeave}
+  on:touchstart={handleTouchStart}
+  on:touchmove={handleTouchMove}
+  on:touchend={handleTouchEnd}
   role="button"
   tabindex="0"
-  aria-label="Click to skip animation"
+  aria-label="Swipe to open pack or click to skip animation"
 >
+  <!-- Swipe instruction (shown on first load) -->
+  {#if phase === 'glow'}
+    <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium animate-pulse">
+      Swipe to tear! →
+    </div>
+  {/if}
+
+  <!-- Tear progress indicator -->
+  {#if isDragging && tearProgress > 0}
+    <div class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+      <div class="w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-100"
+        style="width: {tearProgress * 100}%"
+      />
+    </div>
+  {/if}
   <!-- Glow effect (builds anticipation) -->
   <div
     class="absolute inset-0 rounded-2xl blur-3xl transition-all duration-300 ease-out"

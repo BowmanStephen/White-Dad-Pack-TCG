@@ -364,12 +364,35 @@ async function syncCollection() {
       return;
     }
 
-    // TODO: Send collection to server when backend is available
+    // TODO: [SERVER-SYNC] Send collection to server when backend is available
+    //
+    // Requirements:
+    // 1. Implement `/api/collection/sync` endpoint on backend
+    // 2. Add authentication (user JWT/session)
+    // 3. Handle sync conflicts (last-write-wins or merge strategy)
+    // 4. Add retry logic for failed sync attempts
+    // 5. Consider delta sync (only send changes since last sync)
+    //
+    // Example implementation:
     // const response = await fetch('/api/collection/sync', {
     //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(collection),
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${getUserToken()}`,
+    //   },
+    //   body: JSON.stringify({
+    //     collection,
+    //     lastSyncTime: getLastSyncTimestamp(),
+    //     deviceId: getDeviceId(),
+    //   }),
     // });
+    //
+    // if (!response.ok) {
+    //   throw new Error(`Sync failed: ${response.statusText}`);
+    // }
+    //
+    // const result = await response.json();
+    // updateLastSyncTimestamp(result.syncTimestamp);
 
     console.log('[SW] Collection synced successfully');
   } catch (error) {
