@@ -1,5 +1,6 @@
 ---
 import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
+import PageLoader from '../components/common/PageLoader.svelte';
 import InstallPrompt from '../components/pwa/InstallPrompt.svelte';
 import OfflineBanner from '../components/common/OfflineBanner.svelte';
 import CookieConsent from '../components/common/CookieConsent.svelte';
@@ -144,6 +145,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
     >
       Skip to main content
     </a>
+
+    <!-- SKELETON-003: Page Transition Loading State -->
+    <PageLoader client:load />
 
     <!-- Browser Upgrade Banner -->
     <BrowserUpgradeBanner client:load />
