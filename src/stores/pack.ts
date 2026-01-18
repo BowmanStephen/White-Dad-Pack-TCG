@@ -1,5 +1,5 @@
 import { atom, computed } from 'nanostores';
-import type { Pack, PackState, PackType, DadType } from '../types';
+import type { Pack, PackState, PackType, DadType, TearAnimation } from '../types';
 import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
 import { addPackToCollection, getPityCounter } from './collection';
 import { trackEvent } from './analytics';
@@ -7,10 +7,14 @@ import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
 import { wishlist } from './wishlist';
 import { findPulledWishlistedCards } from '../lib/collection/utils';
+import { selectRandomTearAnimation } from '../types';
 
 // Current pack type selection (for UI state)
 export const selectedPackType = atom<PackType>('standard');
 export const selectedThemeType = atom<DadType | undefined>(undefined);
+
+// PACK-027: Current tear animation type
+export const currentTearAnimation = atom<TearAnimation>('standard');
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
@@ -114,6 +118,13 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
 
         // Generate pack with configuration and pity counter (PACK-003)
         const pack = generatePack(packConfig, undefined, pityCounter);
+
+        // PACK-027: Randomly select tear animation
+        const tearAnimation = selectRandomTearAnimation();
+        currentTearAnimation.set(tearAnimation);
+
+        // Add tear animation to pack metadata
+        (pack as any).tearAnimation = tearAnimation;
 
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;

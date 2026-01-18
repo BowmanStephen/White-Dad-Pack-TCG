@@ -1,12 +1,14 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
-  import type { Rarity, PackDesign } from '../../types';
-  import { RARITY_CONFIG, PACK_DESIGN_CONFIG } from '../../types';
+  import type { Rarity, PackDesign, TearAnimation } from '../../types';
+  import { RARITY_CONFIG, PACK_DESIGN_CONFIG, TEAR_ANIMATION_CONFIG, type TearAnimationConfig } from '../../types';
   import * as uiStore from '../../stores/ui';
+  import * as packStore from '../../stores/pack';
   import { playPackTear } from '../../stores/audio';
 
   export let bestRarity: Rarity = 'common';
   export let design: PackDesign = 'standard';
+  export let tearAnimation: TearAnimation = 'standard';
 
   const dispatch = createEventDispatcher();
 
@@ -31,16 +33,23 @@
   $: packDesign = PACK_DESIGN_CONFIG[design];
   $: glowColor = rarityConfig.glowColor;
 
+  // PACK-027: Get tear animation configuration
+  $: tearConfig = TEAR_ANIMATION_CONFIG[tearAnimation];
+
   // Get cinematic configuration
   $: cinematicConfig = uiStore.getCinematicConfig();
   $: isCinematic = uiStore.$cinematicMode.get() === 'cinematic';
 
-  // Calculate particle count with cinematic multiplier
+  // Calculate particle count with tear animation and cinematic multipliers
   $: baseParticleCount = reducedMotion ? 0 : rarityConfig.particleCount;
-  $: particleCount = Math.floor(baseParticleCount * cinematicConfig.particleMultiplier);
+  $: particleCount = Math.floor(
+    baseParticleCount *
+    tearConfig.particleCount *
+    cinematicConfig.particleMultiplier
+  );
 
-  // Animation timing (1.5-2 second total duration in normal mode)
-  // In cinematic mode, animations are 2x slower
+  // Animation timing (PACK-027: Varies by tear animation type)
+  // Base phase durations that will be multiplied by tear animation config
   const BASE_PHASE_DURATIONS = {
     appear: 400,   // Pack appears with scale
     glow: 600,     // Glow intensifies
@@ -49,11 +58,18 @@
   };
 
   $: phaseDurations = {
-    appear: BASE_PHASE_DURATIONS.appear / cinematicConfig.speedMultiplier,
-    glow: BASE_PHASE_DURATIONS.glow / cinematicConfig.speedMultiplier,
-    tear: BASE_PHASE_DURATIONS.tear / cinematicConfig.speedMultiplier,
-    burst: BASE_PHASE_DURATIONS.burst / cinematicConfig.speedMultiplier,
+    appear: (BASE_PHASE_DURATIONS.appear * tearConfig.phaseMultipliers.appear) / cinematicConfig.speedMultiplier,
+    glow: (BASE_PHASE_DURATIONS.glow * tearConfig.phaseMultipliers.glow) / cinematicConfig.speedMultiplier,
+    tear: (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear) / cinematicConfig.speedMultiplier,
+    burst: (BASE_PHASE_DURATIONS.burst * tearConfig.phaseMultipliers.burst) / cinematicConfig.speedMultiplier,
   };
+
+  // PACK-027: Shake animation class based on tear animation intensity
+  $: shakeClass = (() => {
+    if (tearConfig.shakeIntensity === 'subtle') return 'animate-pack-shake-subtle';
+    if (tearConfig.shakeIntensity === 'intense') return 'animate-pack-shake-intense';
+    return 'animate-pack-shake';
+  })();
 
   onMount(() => {
     // Subscribe to reduced motion preference
@@ -84,7 +100,7 @@
       phase = 'appear';
       await delay(phaseDurations.appear);
 
-      // Phase 2: Pack glows (builds anticipation) - longer in cinematic mode
+      // Phase 2: Pack glows (builds anticipation) - longer in cinematic mode and slow tear
       phase = 'glow';
       await delay(phaseDurations.glow);
 
@@ -186,10 +202,10 @@
     event.preventDefault();
     const currentX = event.touches[0].clientX;
     const deltaX = currentX - touchStartX;
-    
+
     // Calculate tear progress (normalized to 0-1)
     tearProgress = Math.min(1, Math.max(0, deltaX / TEAR_THRESHOLD));
-    
+
     // Visual feedback: shake pack as tear progresses
     if (tearProgress > 0.3) {
       phase = 'tear';
@@ -198,7 +214,7 @@
 
   function handleTouchEnd(event: TouchEvent) {
     isDragging = false;
-    
+
     // Trigger tear if sufficient progress
     if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
       handleCompleteTear();
@@ -213,7 +229,7 @@
 
     const deltaX = event.movementX;
     tearProgress = Math.min(1, Math.max(0, tearProgress + deltaX / TEAR_THRESHOLD));
-    
+
     // Visual feedback: shake pack as tear progresses
     if (tearProgress > 0.3) {
       phase = 'tear';
@@ -233,7 +249,7 @@
   }
 
   // Particle system for tear burst (60fps optimized)
-  // Enhanced particle count in cinematic mode
+  // Enhanced particle count in cinematic mode and tear animation
   function initParticles() {
     particles = [];
     const count = particleCount || 10;
@@ -323,12 +339,10 @@
     class:opacity-0={phase === 'burst'}
     style:animation={phase === 'appear' ? 'packAppear 0.4s ease-out forwards' : 'none'}
   >
-    <!-- Pack wrapper with shake during tear -->
+    <!-- Pack wrapper with shake during tear (PACK-027: dynamic shake based on tear animation) -->
     <div
       class="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-transform duration-200 ease-out"
-      class:animate-pack-shake={phase === 'tear'}
-      class:animate-pack-shake-festive={phase === 'tear' && design === 'holiday'}
-      class:animate-pack-shake-golden={phase === 'tear' && design === 'premium'}
+      class:{shakeClass}={phase === 'tear'}
       class:animate-pack-hover={isHovered && !isHolding && phase !== 'tear' && phase !== 'burst'}
       class:animate-pack-hold={isHolding && phase !== 'tear' && phase !== 'burst'}
     >
@@ -520,6 +534,28 @@
     0%, 100% { transform: translateX(0) rotate(0deg); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) rotate(-0.5deg); }
     20%, 40%, 60%, 80% { transform: translateX(4px) rotate(0.5deg); }
+  }
+
+  /* PACK-027: Subtle shake for slow-mo tear animation */
+  .animate-pack-shake-subtle {
+    animation: packShakeSubtle 0.8s ease-out;
+  }
+
+  @keyframes packShakeSubtle {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    20%, 40%, 60%, 80% { transform: translateX(-1px) rotate(-0.2deg); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(1px) rotate(0.2deg); }
+  }
+
+  /* PACK-027: Intense shake for explosive tear animation */
+  .animate-pack-shake-intense {
+    animation: packShakeIntense 0.3s ease-out;
+  }
+
+  @keyframes packShakeIntense {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px) rotate(-2deg); }
+    20%, 40%, 60%, 80% { transform: translateX(8px) rotate(2deg); }
   }
 
   /* Pack shake animation - holiday (festive bounce) */

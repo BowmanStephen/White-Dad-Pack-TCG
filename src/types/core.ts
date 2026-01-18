@@ -266,10 +266,29 @@ import {
   type SortOption as SortOptionImport,
 } from '../data/configs';
 
+// Import tear animation configuration from index.ts (PACK-027)
+import {
+  TEAR_ANIMATION_CONFIG,
+  selectRandomTearAnimation,
+  type TearAnimation,
+} from './index';
+
 // Re-export constants for backward compatibility
 export const RARITY_CONFIG = RARITY_CONFIG_IMPORT;
-export { RARITY_ORDER, SORT_OPTION_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS, HOLO_VARIANT_NAMES, HOLO_VARIANT_ICONS, PACK_DESIGN_CONFIG };
-export type { SortOptionImport as SortOption };
+export {
+  RARITY_ORDER,
+  SORT_OPTION_CONFIG,
+  DAD_TYPE_NAMES,
+  DAD_TYPE_ICONS,
+  STAT_NAMES,
+  STAT_ICONS,
+  HOLO_VARIANT_NAMES,
+  HOLO_VARIANT_ICONS,
+  PACK_DESIGN_CONFIG,
+  TEAR_ANIMATION_CONFIG,
+  selectRandomTearAnimation,
+};
+export type { SortOptionImport as SortOption, TearAnimation };
 
 // ============================================================================
 // SEASON SYSTEM TYPES (US086 - Season System - Content Drops)

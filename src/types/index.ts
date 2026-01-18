@@ -98,6 +98,7 @@ export interface Pack {
   openedAt: Date;
   bestRarity: Rarity;
   design: PackDesign;
+  tearAnimation?: TearAnimation; // PACK-027: Track which tear animation was used
 }
 
 // Animation State
@@ -111,6 +112,9 @@ export type PackState =
 
 // Pack Design Types (US068 - Pack Designs - Visual Variety)
 export type PackDesign = 'standard' | 'holiday' | 'premium' | SeasonPackDesign;
+
+// Tear Animation Types (PACK-027 - Pack Tear Variations)
+export type TearAnimation = 'standard' | 'slow' | 'explosive';
 
 // ============================================================================
 // BATCH PACK OPENING TYPES (US076 - Batch Actions - Open Multiple Packs)
@@ -2248,6 +2252,83 @@ export const PACK_DESIGN_CONFIG: Record<PackDesign, PackDesignConfig> = {
     animationVariant: 'standard',
   },
 };
+
+// ============================================================================
+// PACK-027: TEAR ANIMATION TYPES - Pack Opening Variations
+// ============================================================================
+
+// Tear Animation Configuration
+export interface TearAnimationConfig {
+  name: string;
+  description: string;
+  duration: number; // Total animation duration in milliseconds
+  phaseMultipliers: {
+    appear: number; // Multiplier for base phase duration
+    glow: number;
+    tear: number;
+    burst: number;
+  };
+  shakeIntensity: 'subtle' | 'normal' | 'intense';
+  particleCount: number; // Multiplier for base particle count
+}
+
+// Tear Animation Configurations (PACK-027)
+// Distribution: 60% standard, 25% slow, 15% explosive
+export const TEAR_ANIMATION_CONFIG: Record<TearAnimation, TearAnimationConfig> = {
+  standard: {
+    name: 'Standard Tear',
+    description: 'Normal pack opening animation',
+    duration: 1500, // 1.5s total
+    phaseMultipliers: {
+      appear: 1.0,
+      glow: 1.0,
+      tear: 1.0,
+      burst: 1.0,
+    },
+    shakeIntensity: 'normal',
+    particleCount: 1.0,
+  },
+  slow: {
+    name: 'Slow-Mo Tear',
+    description: 'Dramatic slow-motion tear',
+    duration: 2500, // 2.5s total
+    phaseMultipliers: {
+      appear: 1.5,
+      glow: 2.0, // Longer glow for anticipation
+      tear: 2.0, // Slow motion tear
+      burst: 1.5,
+    },
+    shakeIntensity: 'subtle',
+    particleCount: 1.5, // More particles for dramatic effect
+  },
+  explosive: {
+    name: 'Explosive Tear',
+    description: 'Quick burst open with particles',
+    duration: 1000, // 1.0s total
+    phaseMultipliers: {
+      appear: 0.8,
+      glow: 0.5, // Short anticipation
+      tear: 0.3, // Very fast tear
+      burst: 1.2, // Longer burst for impact
+    },
+    shakeIntensity: 'intense',
+    particleCount: 2.0, // Double particles
+  },
+};
+
+// Randomly select a tear animation based on probability weights
+export function selectRandomTearAnimation(): TearAnimation {
+  const random = Math.random();
+
+  // 60% standard, 25% slow, 15% explosive
+  if (random < 0.60) {
+    return 'standard';
+  } else if (random < 0.85) {
+    return 'slow';
+  } else {
+    return 'explosive';
+  }
+}
 
 // ============================================================================
 // CARD BATTLES TYPES (US090 - Card Battles - Minigame)

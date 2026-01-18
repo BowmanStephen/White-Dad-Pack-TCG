@@ -19,6 +19,7 @@
     packStats as packStatsStore,
     packError as packErrorStore,
     storageError as storageErrorStore,
+    currentTearAnimation as currentTearAnimationStore,
   } from '../../stores/pack';
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
@@ -39,6 +40,7 @@
   let packStats = $state<any>(null);
   let packError = $state<AppError | null>(null);
   let storageError = $state<AppError | null>(null);
+  let currentTearAnimation = $state<'standard' | 'slow' | 'explosive'>('standard');
 
   // Track selected pack type (PACK-001)
   let selectedPackType: PackType = $state<PackType>('standard');
@@ -56,6 +58,7 @@
       packStatsStore.subscribe((value) => { packStats = value; }),
       packErrorStore.subscribe((value) => { packError = value as AppError | null; }),
       storageErrorStore.subscribe((value) => { storageError = value as AppError | null; }),
+      currentTearAnimationStore.subscribe((value) => { currentTearAnimation = value; }),
     ];
 
     // Start opening a pack with default settings
@@ -237,6 +240,7 @@
     <PackAnimation
       bestRarity={currentPack.bestRarity}
       design={currentPack.design}
+      tearAnimation={currentTearAnimation}
       on:complete={completePackAnimationHandler}
       on:skip={skipToResultsHandler}
     />
