@@ -36,6 +36,16 @@
   let showVictoryScreen = $state(false);
   let battlePhase = $state<'idle' | 'player_attack' | 'opponent_attack' | 'complete'>('idle');
 
+  // PACK-012: Enhanced animation states
+  let screenShake = $state(false);
+  let criticalHitActive = $state(false);
+  let statusEffectParticles = $state<Array<{ id: string; effectType: string; x: number; y: number }>>([]);
+  let showConfetti = $state(false);
+  let isSkipping = $state(false);
+  let canSkip = $state(false);
+  let canReplay = $state(false);
+  let battleReplayData = $state<DuelResult | null>(null);
+
   // Tutorial state
   let showTutorial = $state(false);
   let tutorialCompleted = $state(false);
@@ -305,6 +315,80 @@
     return parsedLogs;
   }
 
+  // PACK-012: Trigger screen shake
+  function triggerScreenShake(isCritical = false) {
+    screenShake = true;
+    criticalHitActive = isCritical;
+
+    // Shake for longer if critical hit
+    const shakeDuration = isCritical ? 600 : 300;
+    setTimeout(() => {
+      screenShake = false;
+      criticalHitActive = false;
+    }, shakeDuration);
+  }
+
+  // PACK-012: Create status effect particles
+  function createStatusParticles(effectType: string) {
+    const particles: Array<{ id: string; effectType: string; x: number; y: number }> = [];
+
+    for (let i = 0; i < 8; i++) {
+      particles.push({
+        id: `${effectType}-${i}-${Date.now()}`,
+        effectType,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+      });
+    }
+
+    statusEffectParticles = [...statusEffectParticles, ...particles];
+
+    // Clear particles after animation
+    setTimeout(() => {
+      statusEffectParticles = statusEffectParticles.filter(p => !particles.find(pt => pt.id === p.id));
+    }, 1500);
+  }
+
+  // PACK-012: Trigger confetti on victory
+  function triggerConfetti() {
+    showConfetti = true;
+    setTimeout(() => {
+      showConfetti = false;
+    }, 3000);
+  }
+
+  // PACK-012: Skip animations
+  function skipAnimations() {
+    isSkipping = true;
+    canSkip = false;
+
+    // Fast-forward to end state
+    setTimeout(() => {
+      battlePhase = 'complete';
+      showVictoryScreen = true;
+      isBattling = false;
+      isSkipping = false;
+      canReplay = true;
+    }, 100);
+  }
+
+  // PACK-012: Replay battle
+  function replayBattle() {
+    if (!battleReplayData || !selectedCard || !opponentCard) return;
+
+    canReplay = false;
+    battleResult = null;
+    battleLog = [];
+    currentTurn = 0;
+    damageNumbers = [];
+    showVictoryScreen = false;
+    playerStatusEffects = [];
+    opponentStatusEffects = [];
+
+    // Re-run battle with same cards
+    startDuel();
+  }
+
   async function startDuel() {
     if (!selectedCard || !opponentCard || isBattling) return;
 
@@ -315,6 +399,8 @@
     currentTurn = 0;
     damageNumbers = [];
     showVictoryScreen = false;
+    canSkip = true;
+    canReplay = false;
 
     // Player card attacks
     playerAttackAnimation = true;
@@ -323,6 +409,7 @@
 
     // Parse battle log for damage numbers
     const result = simulateBattle(selectedCard, opponentCard);
+    battleReplayData = result; // Store for replay
     const parsedLogs = parseBattleLog(result.log);
     battleLog = parsedLogs;
     battleResult = result;
@@ -333,15 +420,19 @@
       currentTurn = lastLog.turn;
     }
 
-    // Extract damage numbers from battle log
+    // Extract damage numbers and check for critical hits
     const damagePattern = /→ (\d+) damage/g;
     let match;
     let isPlayerTurn = true;
+    let hasCriticalHit = false;
+
     while ((match = damagePattern.exec(result.log.join('\n'))) !== null) {
       const damage = parseInt(match[1]);
       const isCrit = result.log.some(log =>
         log.includes(`${damage} damage`) && log.includes('CRITICAL')
       );
+
+      if (isCrit) hasCriticalHit = true;
 
       damageNumbers.push({
         id: Math.random().toString(36),
@@ -352,8 +443,26 @@
       isPlayerTurn = !isPlayerTurn;
     }
 
+    // PACK-012: Trigger screen shake and critical hit effects
+    if (!isSkipping) {
+      triggerScreenShake(hasCriticalHit);
+      await sleep(hasCriticalHit ? 600 : 300);
+    }
+
+    // PACK-012: Check for status effects and create particles
+    const statusEffects = result.log.filter(log => log.includes('Status effects:'));
+    if (statusEffects.length > 0 && !isSkipping) {
+      statusEffects.forEach(statusLog => {
+        const effects = statusLog.replace('  → Status effects:', '').trim().split(', ');
+        effects.forEach(effect => createStatusParticles(effect));
+      });
+      await sleep(500);
+    }
+
     // Opponent attacks back
-    await sleep(300);
+    if (!isSkipping) {
+      await sleep(300);
+    }
     battlePhase = 'opponent_attack';
     opponentAttackAnimation = true;
     await sleep(400);
@@ -364,12 +473,19 @@
     battlePhase = 'complete';
     showVictoryScreen = true;
 
+    // PACK-012: Trigger confetti on victory
+    if (playerWins && !isSkipping) {
+      triggerConfetti();
+    }
+
     // Clear damage numbers after animation
     setTimeout(() => {
       damageNumbers = [];
     }, 3000);
 
     isBattling = false;
+    canSkip = false;
+    canReplay = true;
   }
 
   function sleep(ms: number): Promise<void> {
@@ -474,10 +590,56 @@
       <button class="primary-button" disabled={!canStartDuel} on:click={startDuel}>
         Start Duel
       </button>
+
+      <!-- PACK-012: Skip button during battle -->
+      {#if canSkip && isBattling}
+        <button class="skip-button" on:click={skipAnimations}>
+          Skip ⏩
+        </button>
+      {/if}
+
       {#if battleResult}
         <button class="ghost-button" on:click={resetDuel}>Reset</button>
       {/if}
+
+      <!-- PACK-012: Replay button -->
+      {#if canReplay && selectedCard && opponentCard}
+        <button class="replay-button" on:click={replayBattle}>
+          🔄 Replay
+        </button>
+      {/if}
     </div>
+
+    <!-- PACK-012: Confetti effect on victory -->
+    {#if showConfetti}
+      <div class="confetti-container">
+        {#each Array(50) as _, i}
+          <div
+            class="confetti"
+            style="left: {Math.random() * 100}%; animation-delay: {Math.random() * 2}s; animation-duration: {2 + Math.random() * 2}s;"
+          ></div>
+        {/each}
+      </div>
+    {/if}
+
+    <!-- PACK-012: Status effect particles -->
+    {#if statusEffectParticles.length > 0}
+      <div class="status-particles-container">
+        {#each statusEffectParticles as particle}
+          <div
+            class="status-particle"
+            style="left: {particle.x}%; top: {particle.y}%;"
+          >
+            <StatusIcon effect={{ type: particle.effectType as any, duration: 0, stacks: 1 }} size="xs" />
+          </div>
+        {/each}
+      </div>
+    {/if}
+
+    <!-- PACK-012: Screen shake effect -->
+    {#if screenShake}
+      <div class="screen-shake" class:critical={criticalHitActive}></div>
+    {/if}
 
     {#if battleResult}
       <div class="duel-results" class:win={playerWins} class:loss={!playerWins}>
@@ -522,11 +684,21 @@
               </svg>
             {/if}
           </div>
-          <h2 class="victory-title">{playerWins ? 'VICTORY!' : 'DEFEAT'}</h2>
+          <!-- PACK-012: Enhanced victory/defeat titles with animations -->
+          <h2 class="victory-title" class:win-title={playerWins} class:defeat-title={!playerWins}>
+            {playerWins ? '🏆 VICTORY! 🏆' : '💀 DEFEAT 💀'}
+          </h2>
           <p class="victory-subtitle">
             {battleResult.winner.name} wins in {battleResult.turns} turns!
           </p>
-          <button class="victory-button" on:click={resetDuel}>Battle Again</button>
+          <div class="victory-buttons">
+            <button class="victory-button" on:click={resetDuel}>Battle Again</button>
+            {#if canReplay}
+              <button class="victory-button replay-victory-button" on:click={replayBattle}>
+                🔄 Watch Replay
+              </button>
+            {/if}
+          </div>
         </div>
       </div>
     {/if}
@@ -1086,6 +1258,256 @@
     background: radial-gradient(circle at center, rgba(239, 68, 68, 0.2) 0%, rgba(0, 0, 0, 0.85) 70%);
   }
 
+  /* PACK-012: Enhanced victory/defeat title styling */
+  .victory-title.win-title {
+    animation: victory-pulse 1.5s ease-in-out infinite;
+  }
+
+  .victory-title.defeat-title {
+    animation: defeat-shake 0.5s ease-in-out;
+  }
+
+  @keyframes victory-pulse {
+    0%, 100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+  }
+
+  @keyframes defeat-shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(5px);
+    }
+  }
+
+  .victory-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .replay-victory-button {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+  }
+
+  .replay-victory-button:hover {
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.6);
+  }
+
+  /* PACK-012: Skip button styling */
+  .skip-button {
+    padding: 0.7rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 2px solid rgba(251, 191, 36, 0.6);
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    animation: skip-pulse 2s ease-in-out infinite;
+  }
+
+  .skip-button:hover {
+    background: rgba(251, 191, 36, 0.25);
+    border-color: rgba(251, 191, 36, 0.8);
+    transform: translateY(-2px);
+  }
+
+  @keyframes skip-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(251, 191, 36, 0);
+    }
+  }
+
+  /* PACK-012: Replay button styling */
+  .replay-button {
+    padding: 0.7rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 2px solid rgba(59, 130, 246, 0.6);
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .replay-button:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.8);
+    transform: translateY(-2px);
+  }
+
+  /* PACK-012: Screen shake effect */
+  .screen-shake {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9999;
+    animation: shake 0.3s ease-in-out;
+  }
+
+  .screen-shake.critical {
+    animation: critical-shake 0.6s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-4px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(4px);
+    }
+  }
+
+  @keyframes critical-shake {
+    0%, 100% {
+      transform: translateX(0) translateY(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-8px) translateY(-2px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(8px) translateY(2px);
+    }
+    25%, 75% {
+      transform: rotate(-1deg);
+    }
+    50% {
+      transform: rotate(1deg);
+    }
+  }
+
+  /* PACK-012: Confetti animation */
+  .confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    animation: confetti-fall linear forwards;
+    opacity: 0.8;
+  }
+
+  .confetti:nth-child(3n) {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  .confetti:nth-child(3n+1) {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+
+  .confetti:nth-child(3n+2) {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+  }
+
+  @keyframes confetti-fall {
+    0% {
+      top: -10px;
+      transform: translateX(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      top: 100vh;
+      transform: translateX(100px) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  /* PACK-012: Status effect particles */
+  .status-particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  .status-particle {
+    position: absolute;
+    animation: particle-float 1.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes particle-float {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    80% {
+      opacity: 0.8;
+      transform: translate(-50%, -100%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -150%) scale(0.5);
+    }
+  }
+
+  /* PACK-012: Defeat greyed out effect */
+  .victory-screen.loss .victory-content {
+    filter: grayscale(0.8);
+  }
+
+  .victory-screen.loss .victory-icon {
+    filter: grayscale(1) brightness(0.7);
+  }
+
+  /* PACK-012: Performance optimizations for 60fps */
+  .duel-stage,
+  .victory-screen,
+  .confetti-container,
+  .status-particles-container,
+  .screen-shake {
+    will-change: transform, opacity;
+  }
+
+  .attack-animation,
+  .damage-number,
+  .confetti,
+  .status-particle {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
   @media (max-width: 720px) {
     .duel-stage {
       padding: 1.5rem;
@@ -1093,6 +1515,35 @@
 
     .duel-divider {
       font-size: 1.25rem;
+    }
+
+    /* PACK-012: Reduce animations on mobile for better performance */
+    @media (prefers-reduced-motion: no-preference) {
+      .confetti {
+        animation-duration: 1.5s;
+      }
+
+      .status-particle {
+        animation-duration: 1s;
+      }
+    }
+  }
+
+  /* PACK-012: Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .attack-animation,
+    .damage-number,
+    .screen-shake,
+    .confetti,
+    .status-particle,
+    .victory-title,
+    .victory-icon {
+      animation: none;
+      transition: none;
+    }
+
+    .skip-button {
+      animation: none;
     }
   }
 </style>
