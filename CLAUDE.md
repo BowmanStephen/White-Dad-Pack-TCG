@@ -747,6 +747,359 @@ import { generatePack } from '@lib/pack/generator'; // src/lib/pack/generator
 
 ---
 
+## 🛠️ Development Workflows
+
+### Feature Development Workflow
+
+**Step 1: Planning & Types**
+```typescript
+// 1. Define your types in src/types/index.ts
+export interface NewFeature {
+  id: string;
+  status: 'pending' | 'active' | 'complete';
+  // ... other properties
+}
+```
+
+**Step 2: Create State Management**
+```typescript
+// 2. Create store in src/stores/feature.ts
+import { atom, computed } from 'nanostores';
+
+export const featureState = atom<NewFeature[]>([]);
+export const activeCount = computed(featureState,
+  items => items.filter(i => i.status === 'active').length
+);
+
+export function addFeature(feature: NewFeature) {
+  featureState.set([...featureState.get(), feature]);
+}
+```
+
+**Step 3: Implement Business Logic**
+```typescript
+// 3. Add logic to src/lib/feature/
+export function processFeature(input: Input): Output {
+  // Pure functions for business logic
+  return {
+    result: input.value * 2,
+    timestamp: new Date()
+  };
+}
+```
+
+**Step 4: Build Components**
+```svelte
+<!-- 4. Create component src/components/feature/FeatureUI.svelte -->
+<script lang="ts">
+  import { featureState, addFeature } from '@/stores/feature';
+
+  let newFeature = $state('');
+
+  function handleSubmit() {
+    addFeature({ id: crypto.randomUUID(), status: 'pending' });
+  }
+</script>
+
+<button on:click={handleSubmit}>Add Feature</button>
+```
+
+**Step 5: Integrate with Astro**
+```astro
+<!-- 5. Add page src/pages/feature.astro ---
+import FeatureUI from '@/components/feature/FeatureUI.svelte';
+
+<Layout title="New Feature">
+  <FeatureUI client:load />
+</Layout>
+```
+
+**Step 6: Write Tests**
+```typescript
+// 6. Add tests in tests/feature/
+import { describe, it, expect } from 'vitest';
+import { featureState, addFeature } from '@/stores/feature';
+
+describe('Feature Store', () => {
+  it('should add feature to state', () => {
+    addFeature({ id: 'test', status: 'pending' });
+    expect(featureState.get()).toHaveLength(1);
+  });
+});
+```
+
+### Code Patterns & Best Practices
+
+**1. Store Actions Pattern**
+```typescript
+// ✅ GOOD: Actions encapsulate state changes
+export function openPack(config: PackConfig) {
+  const pack = generatePack(config);
+  currentPack.set(pack);
+  packState.set('cards_ready');
+  addToHistory(pack);
+}
+
+// ❌ BAD: Direct state manipulation from components
+import { currentPack } from '@/stores/pack';
+currentPack.set(myPack); // Components shouldn't do this
+```
+
+**2. Derived State with Computed Stores**
+```typescript
+// ✅ GOOD: Use computed for derived state
+export const cardCount = computed(collection,
+  coll => coll.packs.reduce((sum, pack) => sum + pack.cards.length, 0)
+);
+
+// ❌ BAD: Manual recalculation
+function getCardCount() {
+  return collection.get().packs.reduce(...); // Error-prone
+}
+```
+
+**3. Type Guards for Validation**
+```typescript
+// ✅ GOOD: Type guards for runtime validation
+export function isPack(value: unknown): value is Pack {
+  return (
+    typeof value === 'object' && value !== null &&
+    'id' in value && 'cards' in value &&
+    Array.isArray(value.cards)
+  );
+}
+
+// Usage
+if (isPack(data)) {
+  processPack(data); // TypeScript knows this is Pack
+}
+```
+
+**4. Error Boundaries**
+```svelte
+<!-- ✅ GOOD: Wrap components in error boundaries -->
+<ErrorBoundary>
+  <PackOpener />
+</ErrorBoundary>
+
+<!-- ✅ GOOD: Fallback UI -->
+{#if error}
+  <ErrorMessage message={error.message} />
+{:else}
+  <PackOpener />
+{/if}
+```
+
+**5. Loading States**
+```svelte
+<!-- ✅ GOOD: Skeleton loading -->
+{#if loading}
+  <CardSkeleton />
+{:else}
+  <Card {data} />
+{/if}
+
+<!-- ✅ GOOD: Progressive enhancement -->
+<Card {data} />
+{#if isLoadingMore}
+  <CardSkeleton />
+{/if}
+```
+
+### Common Pitfalls & Solutions
+
+**1. State Not Updating**
+```typescript
+// ❌ PROBLEM: Direct mutation
+const collection = collectionStore.get();
+collection.packs.push(newPack); // Won't trigger reactivity
+
+// ✅ SOLUTION: Immutable updates
+const collection = collectionStore.get();
+collectionStore.set({
+  ...collection,
+  packs: [...collection.packs, newPack]
+});
+```
+
+**2. Astro Component Not Hydrating**
+```astro
+<!-- ❌ PROBLEM: Missing client directive -->
+<PackOpener />  <!-- Won't be interactive -->
+
+<!-- ✅ SOLUTION: Add client directive -->
+<PackOpener client:load />  <!-- Hydrates on page load -->
+<PackOpener client:idle />  <!-- Hydrates when browser idle -->
+<PackOpener client:visible />  <!-- Hydrates when visible -->
+```
+
+**3. Import Path Errors**
+```typescript
+// ❌ PROBLEM: Relative paths
+import { Card } from '../../../types/index';
+
+// ✅ SOLUTION: Use path aliases
+import { Card } from '@/types';  // Clean and maintainable
+```
+
+**4. LocalStorage Quota Exceeded**
+```typescript
+// ✅ SOLUTION: Quota management with compression
+import { persistentAtom } from '@nanostores/persistent';
+
+export const collection = persistentAtom(
+  'daddeck-collection',
+  DEFAULT_COLLECTION,
+  {
+    encode: (value) => JSON.stringify(value), // Add compression here
+    decode: (value) => JSON.parse(value),
+  }
+);
+
+// Monitor quota
+function checkQuota() {
+  const usage = JSON.stringify(localStorage).length;
+  const limit = 5 * 1024 * 1024; // 5MB typical
+  if (usage > limit * 0.9) {
+    console.warn('LocalStorage near capacity');
+  }
+}
+```
+
+**5. Test Environment Issues**
+```typescript
+// ❌ PROBLEM: Tests failing due to missing DOM
+import { describe, it } from 'vitest';
+
+// ✅ SOLUTION: Configure Vitest environment
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    environment: 'jsdom',  // Or 'happy-dom' for lighter setup
+    setupFiles: ['./tests/setup.ts']
+  }
+});
+
+// tests/setup.ts
+import { vi } from 'vitest';
+
+// Mock LocalStorage
+global.localStorage = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+} as Storage;
+```
+
+---
+
+## 🎨 Styling & Theming
+
+### Tailwind Configuration
+
+**Custom Design Tokens** (`tailwind.config.mjs`):
+```javascript
+export default {
+  theme: {
+    extend: {
+      colors: {
+        rarity: {
+          common: '#9ca3af',    // Grey
+          uncommon: '#3b82f6',  // Blue
+          rare: '#eab308',      // Gold
+          epic: '#a855f7',      // Purple
+          legendary: '#f97316', // Orange
+          mythic: '#ec4899',    // Pink
+        },
+        dad: {
+          bbq: '#ef4444',
+          fixit: '#22c55e',
+          golf: '#06b6d4',
+          // ... other type colors
+        }
+      },
+      animation: {
+        'pack-tear': 'tear 1s ease-out',
+        'card-flip': 'flip 0.6s ease-out',
+        'glow-pulse': 'glow 2s ease-in-out infinite',
+      }
+    }
+  }
+}
+```
+
+### Styling Patterns
+
+**1. Rarity-Based Styling**
+```svelte
+<div class="card border-2 border-rarity-{card.rarity}">
+  <!-- Dynamic border color based on rarity -->
+</div>
+
+<!-- Or with computed classes -->
+<script>
+  const rarityColors = {
+    common: 'border-gray-400',
+    rare: 'border-yellow-500',
+    epic: 'border-purple-500',
+  };
+
+  $: borderClass = rarityColors[card.rarity];
+</script>
+
+<div class="card border-2 {borderClass}">
+  <!-- ... -->
+</div>
+```
+
+**2. Responsive Design**
+```svelte
+<!-- Mobile-first approach -->
+<div class="
+  grid
+  grid-cols-2           <!-- Mobile: 2 columns -->
+  md:grid-cols-3        <!-- Tablet: 3 columns -->
+  lg:grid-cols-4        <!-- Desktop: 4 columns -->
+  gap-4                 <!-- Consistent spacing -->
+">
+  {#each cards as card}
+    <Card {card} />
+  {/each}
+</div>
+```
+
+**3. Dark Mode Support**
+```svelte
+<script>
+  import { theme } from '@/stores/theme';
+</script>
+
+<div class="
+  bg-white
+  dark:bg-gray-900
+  text-gray-900
+  dark:text-gray-100
+">
+  <!-- Automatically adapts to theme -->
+</div>
+```
+
+**4. Animation Performance**
+```svelte
+<!-- ✅ GOOD: GPU-accelerated animations -->
+<div class="transform will-change-transform transition-transform">
+  <!-- Animating transform and opacity -->
+</div>
+
+<!-- ❌ BAD: CPU-intensive animations -->
+<div class="animate-width">
+  <!-- Avoid animating layout properties -->
+</div>
+```
+
+---
+
 ## 🧪 Testing
 
 ### Run Tests
@@ -846,6 +1199,456 @@ PUBLIC_ANALYTICS_ID=      # For tracking (GA, Plausible, etc.)
 - ✅ Premium pack opening feel
 - ✅ Shareable card pulls
 - ✅ 50+ unique cards in database
+
+---
+
+## 🐛 Debugging Guide
+
+### Browser DevTools
+
+**1. Debugging State Changes**
+```typescript
+// Log store changes
+import { currentPack } from '@/stores/pack';
+
+currentPack.subscribe((pack) => {
+  console.log('Pack updated:', pack);
+});
+
+// Or use Svelte's $inspect directive
+<script>
+  import { inspect } from 'svelte';
+
+  // Log all reactive statement executions
+  $inspect(currentPack);
+</script>
+```
+
+**2. Performance Profiling**
+```javascript
+// Measure pack generation time
+console.time('pack-generation');
+const pack = generatePack(config);
+console.timeEnd('pack-generation');
+
+// Profile animation performance
+performance.mark('animation-start');
+// ... animation code
+performance.mark('animation-end');
+performance.measure('animation', 'animation-start', 'animation-end');
+```
+
+**3. Network Requests**
+```typescript
+// Check if assets are loading
+const img = new Image();
+img.onload = () => console.log('Image loaded:', img.src);
+img.onerror = () => console.error('Image failed:', img.src);
+img.src = card.artwork;
+```
+
+### Common Issues & Diagnostics
+
+**Issue: Pack Opening Not Working**
+```typescript
+// Diagnostic checklist
+function diagnosePackIssue() {
+  // 1. Check store initialization
+  console.log('Pack state:', packState.get());
+
+  // 2. Verify card data loaded
+  const cards = getAllCards();
+  console.log('Card database size:', cards.length);
+
+  // 3. Test generator
+  try {
+    const testPack = generatePack(DEFAULT_PACK_CONFIG, 12345);
+    console.log('Test pack generated:', testPack);
+  } catch (error) {
+    console.error('Generator failed:', error);
+  }
+
+  // 4. Check LocalStorage
+  console.log('LocalStorage available:', !!localStorage);
+  console.log('Current usage:', JSON.stringify(localStorage).length, 'bytes');
+}
+```
+
+**Issue: Animations Laggy**
+```svelte
+<script>
+  // Check if animations are causing lag
+  let fps = $state(0);
+  let frameCount = 0;
+  let lastTime = performance.now();
+
+  function measureFPS() {
+    frameCount++;
+    const currentTime = performance.now();
+    if (currentTime >= lastTime + 1000) {
+      fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+      frameCount = 0;
+      lastTime = currentTime;
+    }
+    requestAnimationFrame(measureFPS);
+  }
+
+  onMount(() => measureFPS());
+</script>
+
+<div>FPS: {fps}</div>
+```
+
+**Issue: LocalStorage Full**
+```typescript
+function checkStorage() {
+  const total = JSON.stringify(localStorage).length;
+  const limit = 5 * 1024 * 1024; // 5MB
+  const percentage = (total / limit) * 100;
+
+  if (percentage > 90) {
+    console.warn(`Storage at ${percentage.toFixed(1)}% capacity`);
+    // Suggest clearing old packs or compressing data
+  }
+
+  return { total, limit, percentage };
+}
+```
+
+### Debug Mode Toggle
+
+```typescript
+// src/stores/debug.ts
+import { atom } from 'nanostores';
+
+export const debugMode = atom(false);
+
+export function enableDebug() {
+  debugMode.set(true);
+  console.log('%c🔧 Debug Mode Enabled', 'color: orange; font-size: 16px');
+}
+
+export function logStore(storeName: string, store: any) {
+  if (!debugMode.get()) return;
+
+  store.subscribe((value: any) => {
+    console.log(`%c[${storeName}]`, 'color: blue', value);
+  });
+}
+```
+
+---
+
+## ⚡ Performance Optimization Guide
+
+### Bundle Analysis
+
+```bash
+# Analyze bundle size
+bun run build
+bunx vite-bundle-visualizer
+```
+
+**Optimization Targets:**
+- Initial JS bundle: <200KB (gzipped)
+- First Contentful Paint: <1.5s
+- Time to Interactive: <3s
+- Pack generation: <500ms
+
+### Code Splitting Strategy
+
+**1. Route-Based Splitting**
+```typescript
+// Astro automatically splits by route
+// Each page gets its own chunk
+
+// Lazy load heavy components
+const PackOpener = lazy(() => import('@/components/pack/PackOpener.svelte'));
+```
+
+**2. Vendor Chunking** (Already configured)
+```javascript
+// astro.config.mjs
+manualChunks: (id) => {
+  if (id.includes('html2canvas')) return 'vendor-html2canvas';
+  if (id.includes('svelte')) return 'vendor-svelte';
+  if (id.includes('nanostores')) return 'vendor-nanostores';
+  return 'vendor';
+}
+```
+
+**3. Dynamic Imports**
+```typescript
+// Load expensive features on demand
+async function openShareDialog() {
+  const { ShareDialog } = await import('@/components/share/ShareDialog.svelte');
+  // Show dialog
+}
+```
+
+### Runtime Performance
+
+**1. Memoization**
+```svelte
+<script>
+  import { computed } from 'nanostores';
+
+  // ✅ GOOD: Computed values are cached
+  const expensiveValue = computed(data,
+    items => items.map(calculateExpensiveThing)
+  );
+
+  // ❌ BAD: Recalculates on every access
+  function getExpensiveValue() {
+    return data.get().map(calculateExpensiveThing);
+  }
+</script>
+```
+
+**2. Virtual Scrolling** (For large collections)
+```svelte
+<!-- Only render visible items -->
+<script>
+  import { VirtualList } from 'svelte-virtual-list';
+
+  let visibleRange = $state({ start: 0, end: 20 });
+
+  function onScroll(event) {
+    const { scrollTop, clientHeight } = event.target;
+    visibleRange.start = Math.floor(scrollTop / ITEM_HEIGHT);
+    visibleRange.end = visibleRange.start + Math.ceil(clientHeight / ITEM_HEIGHT);
+  }
+</script>
+
+<div on:scroll={onScroll}>
+  {#each cards.slice(visibleRange.start, visibleRange.end) as card}
+    <Card {card} style="position: absolute; top: {card.index * ITEM_HEIGHT}px" />
+  {/each}
+</div>
+```
+
+**3. Debouncing User Input**
+```typescript
+import { debounce } from './utils/debounce';
+
+export const searchQuery = atom('');
+
+export const debouncedSearch = computed(
+  searchQuery,
+  debounce((query) => {
+    // Expensive search operation
+    return searchCards(query);
+  }, 300)
+);
+```
+
+### Image Optimization
+
+**1. Pre-Load Critical Images**
+```svelte
+<link rel="preload" as="image" href="/images/pack-base.png" />
+```
+
+**2. Lazy Load Offscreen Images**
+```svelte
+<img
+  src={card.artwork}
+  loading="lazy"
+  decoding="async"
+/>
+```
+
+**3. Use Modern Formats**
+```html
+<!-- Serve WebP with fallback -->
+<picture>
+  <source srcset="/images/card.webp" type="image/webp" />
+  <img src="/images/card.png" alt="Card" />
+</picture>
+```
+
+---
+
+## 🚀 Deployment Guide
+
+### Pre-Deployment Checklist
+
+```bash
+# 1. Run all checks
+bun run test           # Ensure tests pass
+bun run build          # Verify build succeeds
+bun run preview        # Test production build locally
+
+# 2. Check bundle size
+bun run build
+du -sh dist/           # Should be <500KB
+
+# 3. Test critical paths
+# - Pack opening flow
+# - Collection persistence
+# - Mobile responsiveness
+
+# 4. Validate SEO
+# - Check meta tags
+# - Verify sitemap.xml
+# - Test Open Graph tags
+```
+
+### Vercel Deployment (Recommended)
+
+```bash
+# Install Vercel CLI
+bun install -g vercel
+
+# Deploy
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+**vercel.json Configuration:**
+```json
+{
+  "buildCommand": "bun run build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "headers": [
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+### Netlify Deployment
+
+**netlify.toml Configuration:**
+```toml
+[build]
+  command = "bun run build"
+  publish = "dist"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+### Environment Variables
+
+**For Production:**
+```bash
+# Vercel/Netlify Dashboard
+PUBLIC_ANALYTICS_ID=G-XXXXXXXXXX
+PUBLIC_SENTRY_DSN=https://...
+PUBLIC_DISCORD_CLIENT_ID=YOUR_CLIENT_ID
+```
+
+**For Local Development:**
+```bash
+# .env.local
+PUBLIC_ANALYTICS_ID=debug
+PUBLIC_API_URL=http://localhost:4321
+```
+
+### Post-Deployment Monitoring
+
+**1. Analytics Integration**
+```typescript
+// src/lib/analytics/track.ts
+export function trackPackOpen(pack: Pack) {
+  if (typeof window === 'undefined') return;
+
+  // Google Analytics
+  window.gtag?.('event', 'pack_open', {
+    rarity: pack.bestRarity,
+    card_count: pack.cards.length,
+    holo_count: pack.cards.filter(c => c.isHolo).length
+  });
+
+  // Plausible
+  window.plausible?.('Pack Open', {
+    props: { rarity: pack.bestRarity }
+  });
+}
+```
+
+**2. Error Tracking** (Sentry)
+```typescript
+import * as Sentry from '@sentry/browser';
+
+Sentry.init({
+  dsn: import.meta.env.PUBLIC_SENTRY_DSN,
+  environment: import.meta.env.MODE,
+  tracesSampleRate: 0.1,
+});
+
+// Track errors in stores
+currentPack.subscribe((pack) => {
+  try {
+    // ... operations
+  } catch (error) {
+    Sentry.captureException(error);
+  }
+});
+```
+
+**3. Performance Monitoring**
+```typescript
+// Measure Core Web Vitals
+export function reportWebVitals(metric) {
+  const { name, value, id } = metric;
+
+  // Send to analytics
+  window.gtag?.('event', name, {
+    value: Math.round(name === 'CLS' ? value * 1000 : value),
+    event_label: id,
+    non_interaction: true,
+  });
+}
+```
 
 ---
 
@@ -1089,5 +1892,82 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 ---
 
 **Last updated:** January 17, 2026
+
+---
+
+## 📚 Documentation Summary
+
+This CLAUDE.md file now contains comprehensive documentation covering:
+
+### Quick Reference
+- **Tech Stack** - Astro, Svelte, Tailwind, Nanostores, Bun
+- **Quick Commands** - Development, build, test, deploy
+- **Project Structure** - Complete file organization
+
+### Architecture Deep Dives
+- **System Architecture** - 4-layer architecture diagram
+- **Data Flow** - From user action to visual update
+- **State Management** - Nanostores patterns and persistence
+- **Component Architecture** - Hierarchy and communication
+- **Key Algorithms** - Pack generation, battles, crafting
+- **Security** - Anti-cheat and validation
+- **Performance** - Build and runtime optimizations
+
+### Development Guides
+- **Feature Workflow** - Step-by-step feature development
+- **Code Patterns** - Best practices and examples
+- **Common Pitfalls** - Problems and solutions
+- **Styling & Theming** - Tailwind configuration and patterns
+- **Testing** - Unit and integration tests
+
+### Production Readiness
+- **Debugging Guide** - Browser DevTools and diagnostics
+- **Performance Optimization** - Bundle analysis and code splitting
+- **Deployment Guide** - Vercel/Netlify configurations
+- **Post-Deployment** - Monitoring and analytics
+
+### Project Status
+- **Features** - Complete list of implemented features
+- **Roadmap** - Future enhancements planned
+- **Claude Skills** - When to use specialized agents
+
+---
+
+## 🎓 For New Developers
+
+**Start Here:**
+1. Read the **Project Overview** (section 1)
+2. Study the **Architecture Overview** (section 4)
+3. Follow the **Feature Development Workflow** (section 11)
+4. Reference **Code Patterns & Best Practices** (section 11.2)
+5. Check **Common Pitfalls** when stuck (section 11.3)
+
+**Key Files to Understand:**
+- `src/types/index.ts` - All data models
+- `src/lib/pack/generator.ts` - Core business logic
+- `src/stores/pack.ts` - State management example
+- `astro.config.mjs` - Build configuration
+- `tailwind.config.mjs` - Design tokens
+
+**When Adding Features:**
+1. Define types in `src/types/`
+2. Create store in `src/stores/`
+3. Add logic to `src/lib/`
+4. Build component in `src/components/`
+5. Write tests in `tests/`
+
+**When Debugging:**
+1. Check browser console for errors
+2. Use `diagnosePackIssue()` for pack problems
+3. Enable debug mode with `debugMode.set(true)`
+4. Profile performance with DevTools
+
+**Before Deploying:**
+1. Run `bun test` - ensure tests pass
+2. Run `bun run build` - verify build succeeds
+3. Run `bun run preview` - test production build
+4. Check bundle size: `du -sh dist/`
+
+---
 
 **Questions?** Check the PRD (`PRD.md`) or ask about specific components!
