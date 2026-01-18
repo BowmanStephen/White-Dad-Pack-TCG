@@ -8,6 +8,7 @@ import MusicInitializer from '../components/audio/MusicInitializer.svelte';
 import KeyboardInitializer from '../components/keyboard/KeyboardInitializer.svelte';
 import ShortcutsModal from '../components/keyboard/ShortcutsModal.svelte';
 import BottomNav from '../components/nav/BottomNav.svelte';
+import ToastContainer from '../components/common/ToastContainer.svelte';
 import { initI18n } from '../i18n';
 
 // Initialize i18n with default locale (client-side will detect browser locale)
@@ -130,6 +131,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <!-- Keyboard Shortcuts System -->
     <KeyboardInitializer client:load />
     <ShortcutsModal client:load />
+
+    <!-- Toast Notification System -->
+    <ToastContainer client:load />
 
     <!-- Bottom Navigation (Mobile Only) -->
     <BottomNav client:load />
