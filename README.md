@@ -1,9 +1,26 @@
 # DadDeck™ - The Ultimate White Dad Trading Card Simulator
 
-**Status:** Stable & Production Ready ✅
-**Version:** 2.1.0
+**Status:** Stable & Production Ready ✅  
+**Version:** 2.1.0  
+**Last Updated:** January 18, 2026 (Post-Phase 4 Stabilization)
 
 DadDeck™ is a satirical trading card game pack-opening simulator that parodies suburban American dad culture. Built with modern web technologies, it offers a premium, AAA-quality "pack pull" experience without the microtransactions.
+
+### ✅ What Works
+- **Pack Opening** - Full 6-stage opening flow with premium animations
+- **Collections** - LocalStorage-backed card persistence and history tracking
+- **Battle System** - Stat-based combat with type advantages
+- **Deck Building** - Create/validate custom decks with real-time stats
+- **Card Database** - 50+ unique cards across 15+ dad types with full metadata
+- **Achievements** - Pop-up unlocks and gallery system
+- **Responsive Design** - Works beautifully on mobile (65%) and desktop (35%)
+
+### ⚠️ Known Limitations
+- **Premium Features Removed (Jan 18, 2026)** - Removed premium/DadPass stores per Phase 4 cleanup. All features 100% free.
+- **Server-Side Features Not Implemented** - No user accounts, cloud sync, or multiplayer
+- **Trading/Referral Stubs** - UI elements exist but don't persist across sessions
+- **Discord Bot** - Experimental feature, limited functionality
+- **2 Minor Test Errors** - Non-blocking validation edge cases (197/197 core tests pass)
 
 ---
 
@@ -52,12 +69,52 @@ DadDeck™ is a satirical trading card game pack-opening simulator that parodies
 # Install dependencies
 bun install
 
-# Start development server
+# Start development server (opens http://localhost:4321)
 bun run dev
 
-# Run tests
+# Run tests (watch mode)
 bun test
+
+# Build for production
+bun run build
+
+# Preview production build locally
+bun run preview
 ```
+
+### Setup Instructions
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/BowmanStephen/White-Dad-Pack-TCG.git
+   cd White-Dad-Pack-TCG
+   ```
+
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
+
+3. **Start development server**
+   ```bash
+   bun run dev
+   ```
+
+4. **Open in browser**
+   - Navigate to `http://localhost:4321`
+   - Click "Open Pack" to start collecting!
+
+### Available Commands
+
+| Command | Purpose |
+|---------|---------|
+| `bun run dev` | Start development server with hot reload |
+| `bun run build` | Build for production (outputs to `./dist/`) |
+| `bun run preview` | Preview production build locally |
+| `bun test` | Run tests in watch mode |
+| `bun run test:run` | Run tests once |
+| `bun run optimize:images` | Optimize images in `public/` |
+| `bun run generate-sitemap` | Generate `sitemap.xml` |
 
 ---
 
@@ -116,6 +173,49 @@ DadDeck™ includes a built-in anti-cheat system (`src/lib/security/pack-validat
 - **[Card Mechanics](./docs/CARD_MECHANICS.md)** - Detailed look at how rarity and holos work.
 - **[Ralph Loop Architecture](./docs/RALPH_LOOP_ARCHITECTURE.md)** - Our agentic approach to UX and state.
 - **[Performance Guide](./docs/PERFORMANCE_OPTIMIZATION.md)** - How we hit 60fps on mobile.
+
+---
+
+## 🧑‍💻 Development Status
+
+### Build & Test Status
+- **Build:** ✅ Passing (0 errors, 0 warnings)
+- **Tests:** ✅ 197/197 core tests passing
+- **Type Checking:** ✅ TypeScript strict mode passing
+- **Bundle Size:** ~200KB gzipped (optimized)
+
+### Recent Changes (Jan 18, 2026)
+- ✂️ **Removed premium features** - Deleted `src/stores/premium.ts` as all features are free-to-play
+- 🧹 **Code cleanup** - Consolidated CSS utilities, removed ~2,463 lines of dead code
+- 🌍 **Internationalization** - Added i18n system with English & Spanish (300+ keys)
+- 🔍 **Collection search & filters** - Full-text search, multi-select filters, sorting
+- 📊 **Interactive stat tooltips** - Hover & tap-to-reveal on card stats
+
+### Current Architecture
+
+**Frontend Stack:**
+- **Astro 5** - Static site generation with component islands
+- **Svelte 5** - Interactive components with runes-based reactivity
+- **Tailwind CSS 3** - Utility-first styling with custom design tokens
+- **Nanostores** - Lightweight atomic state management with LocalStorage persistence
+
+**Key Features:**
+- **Pack Generation** - Seeded randomness with rarity slot system
+- **Anti-Cheat** - Duplicate detection, statistical anomaly checking
+- **Responsive Design** - Mobile-first approach (65% mobile, 35% desktop)
+- **LocalStorage Persistence** - Collections survive page reloads
+
+### For Developers
+
+**Getting Started:**
+1. Read [CLAUDE.md](./CLAUDE.md) for project context and guidance
+2. Check [ARCHITECTURE.md](./ARCHITECTURE.md) for technical overview
+3. Review [CONTRIBUTING.md](./CONTRIBUTING.md) for code standards
+
+**Next Steps for Contributors:**
+- Post-MVP roadmap includes user accounts, cloud sync, multiplayer battles
+- Premium features deferred to Phase 2 (monetization strategy TBD)
+- Server-side infrastructure not yet implemented
 
 ---
 
