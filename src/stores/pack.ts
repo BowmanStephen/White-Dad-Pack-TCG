@@ -8,7 +8,7 @@ import { haptics } from '../lib/utils/haptics';
 import { wishlist } from './wishlist';
 import { findPulledWishlistedCards } from '../lib/collection/utils';
 import { selectRandomTearAnimation } from '../types';
-import { skipAnimations as skipAnimationsStore } from './ui';
+import { skipAnimations as skipAnimationsStore, showToast } from './ui';
 
 // Current pack type selection (for UI state)
 export const selectedPackType = atom<PackType>('standard');
@@ -370,6 +370,10 @@ function trackPackComplete(pack: Pack, skipped: boolean): void {
       skipped,
     },
   });
+
+  // Show toast notification for pack opened (PACK-080)
+  const bestRarityLabel = pack.bestRarity.charAt(0).toUpperCase() + pack.bestRarity.slice(1);
+  showToast(`Pack opened! Best card: ${bestRarityLabel}${holoCount > 0 ? ` (${holoCount} holo)` : ''}`, 'success');
 
   // Reset pack open start time
   packOpenStartTime = null;

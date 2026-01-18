@@ -22,7 +22,6 @@ export type EmailCategory =
   | 'special_event'     // Special event announcements
   | 'trade_offer'       // Trade offer notifications
   | 'achievement'       // Achievement unlocked
-  | 'daddypass'         // DadPass rewards and updates
   | 'marketing';        // General marketing (optional)
 
 /**
@@ -40,9 +39,7 @@ export type EmailTemplate =
   | 'trade_offer_received'
   | 'trade_offer_accepted'
   | 'trade_offer_expired'
-  | 'achievement_unlocked'
-  | 'daddypass_reward_ready'
-  | 'daddypass_expiring';
+  | 'achievement_unlocked';
 
 // ============================================================================
 // EMAIL VERIFICATION TYPES
@@ -85,7 +82,6 @@ export interface EmailPreferences {
   specialEventEnabled: boolean;
   tradeOfferEnabled: boolean;
   achievementEnabled: boolean;
-  daddypassEnabled: boolean;
   marketingEnabled: boolean;
 
   // Global email toggle
@@ -149,14 +145,6 @@ export interface WeeklyDigestData {
   tradesCompleted: number;
   tradesReceived: number;
 
-  // DadPass progress (if subscribed)
-  dadPassProgress?: {
-    isActive: boolean;
-    currentTier: number;
-    xpEarned: number;
-    rewardsClaimed: number;
-  };
-
   // Stats comparison vs last week
   weekOverWeek: {
     packsOpenedChange: number; // percentage
@@ -201,7 +189,7 @@ export interface SpecialEventAnnouncement {
   };
 
   // Email targeting
-  targetAudience: 'all' | 'verified' | 'active' | 'daddypass' | 'inactive';
+  targetAudience: 'all' | 'verified' | 'active' | 'inactive';
 
   // Email content
   subject: string;
@@ -348,7 +336,6 @@ export const DEFAULT_EMAIL_PREFERENCES: Omit<
   specialEventEnabled: true,
   tradeOfferEnabled: true,
   achievementEnabled: true,
-  daddypassEnabled: true,
   marketingEnabled: false, // Opt-in only
   allEmailsEnabled: true,
   digestDay: 0, // Sunday

@@ -2,16 +2,21 @@
  * Formatters - Internationalized number and date formatting
  *
  * Provides locale-aware formatting functions using Intl API.
- * Note: i18n system not yet implemented, defaults to 'en-US'.
+ * Integrates with the i18n system in src/i18n/ for locale detection.
  */
 
 type Locale = 'en-US' | 'es-ES';
 
 /**
- * Get current locale (placeholder for future i18n implementation)
+ * Get current locale from browser or localStorage
+ * Falls back to 'en-US' if not available
  */
 function getCurrentLocale(): Locale {
-  // TODO: Implement actual locale detection when i18n is added
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('daddeck-locale');
+    if (saved === 'es') return 'es-ES';
+    if (saved === 'en') return 'en-US';
+  }
   return 'en-US';
 }
 
@@ -174,7 +179,7 @@ export function formatTimestamp(date: Date, locale?: Locale): string {
   // Use locale-specific messages for very recent times
   if (diffSeconds < 10) {
     // Just now - use i18n if available, otherwise fallback
-    return targetLocale === 'es' ? 'ahora mismo' : 'just now';
+    return targetLocale === 'es-ES' ? 'ahora mismo' : 'just now';
   }
 
   if (diffMinutes < 60) {

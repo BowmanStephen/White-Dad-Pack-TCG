@@ -8,6 +8,7 @@ import type {
   CraftingState,
 } from '@/types/crafting';
 import type { PackCard, Rarity } from '@/types';
+import { showToast } from './ui';
 
 // ============================================================================
 // CRAFTING CONFIG
@@ -426,6 +427,15 @@ export async function executeCraft(inputCards: PackCard[]): Promise<PackCard | n
     completedAt: new Date(),
   });
   craftingState.set(success ? 'success' : 'failed');
+
+  // Show toast notification for crafting result (PACK-080)
+  if (success) {
+    const rarityLabel = recipe.outputRarity.charAt(0).toUpperCase() + recipe.outputRarity.slice(1);
+    const holoText = resultCard?.isHolo ? ' Holo!' : '';
+    showToast(`Card crafted: ${rarityLabel}${holoText}`, 'success');
+  } else {
+    showToast(`Crafting failed. Try again!`, 'error');
+  }
 
   return resultCard;
 }

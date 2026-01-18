@@ -122,7 +122,7 @@ export const $deviceOrientation = atom<{ alpha: number; beta: number; gamma: num
 export const $modalOpen = atom<string | null>(null);
 
 // Toast notifications
-export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>([]);
+export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' | 'warning' | 'achievement' }>>([]);
 
 // Screen shake enabled state
 const getInitialScreenShake = (): boolean => {
@@ -406,11 +406,11 @@ export function updatePointerPosition(x: number, y: number): void {
 /**
  * Show a toast notification
  */
-export function showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+export function showToast(message: string, type: 'success' | 'error' | 'info' | 'warning' | 'achievement' = 'info'): void {
   const id = Math.random().toString(36).substring(2, 9);
   const currentToasts = $toasts.get();
   $toasts.set([...currentToasts, { id, message, type }]);
-  
+
   // Auto-remove after 3 seconds
   setTimeout(() => {
     removeToast(id);

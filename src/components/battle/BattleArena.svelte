@@ -1,6 +1,7 @@
 <script lang="ts">
   import { collection } from '@/stores/collection';
   import { trackEvent } from '@/stores/analytics';
+  import { showToast } from '@/stores/ui';
   import type { Card as CardType, PackCard } from '@/types';
   import { RARITY_CONFIG } from '@/types';
   import type { StatusEffect } from '@lib/mechanics/combat';
@@ -453,6 +454,13 @@
     await sleep(500);
     battlePhase = 'complete';
     showVictoryScreen = true;
+
+    // PACK-080: Show toast notification for battle result
+    if (playerWins) {
+      showToast(`Battle won! ${battleResult.winner.name} defeated ${battleResult.loser.name} in ${battleResult.turns} turns!`, 'achievement');
+    } else {
+      showToast(`Battle lost. ${battleResult.winner.name} defeated ${selectedCard.name}.`, 'error');
+    }
 
     // PACK-012: Trigger confetti on victory
     if (playerWins && !isSkipping) {

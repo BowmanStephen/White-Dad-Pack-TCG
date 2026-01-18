@@ -2,14 +2,12 @@
   /**
    * LanguageSelector Component
    * 
-   * Placeholder for future internationalization (i18n) support.
-   * Currently displays English only. When i18n is fully implemented,
-   * this will allow users to switch between languages.
+   * Language selector for internationalization (i18n) support.
+   * Uses the i18n system in src/i18n/ for translations.
    * 
-   * TODO: Implement full i18n system with:
-   * - src/i18n/store.ts - Locale state management
-   * - src/i18n/locales/en.json - English translations
-   * - src/i18n/locales/es.json - Spanish translations
+   * @see src/i18n/store.ts - Locale state management
+   * @see src/i18n/locales/en.json - English translations
+   * @see src/i18n/locales/es.json - Spanish translations
    */
 
   type Locale = 'en' | 'es';
@@ -17,7 +15,7 @@
   // Available languages
   const languages: { code: Locale; name: string; flag: string }[] = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
-    // { code: 'es', name: 'Español', flag: '🇪🇸' }, // Uncomment when i18n is implemented
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
 
   // Current locale (stored in localStorage for persistence)

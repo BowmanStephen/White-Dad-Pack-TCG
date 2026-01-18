@@ -5,6 +5,53 @@ import { RARITY_ORDER } from '../../types';
 import { getHighestPityTier } from './pity';
 
 /**
+ * Get filtered cards for the given rarity, optionally filtered by theme type
+ * and excluding already-used cards.
+ */
+function getFilteredCards(
+  rarity: Rarity,
+  excludedIds: Set<string>,
+  themeType?: DadType
+): Card[] {
+  const cards = themeType
+    ? getCardsByRarityAndType(rarity, themeType)
+    : getCardsByRarity(rarity);
+
+  return cards.filter((card) => !excludedIds.has(card.id));
+}
+
+/**
+ * Find cards from adjacent rarities when the primary rarity pool is exhausted.
+ * Searches lower rarities first, then higher rarities.
+ */
+function findFallbackRarity(
+  requestedRarity: Rarity,
+  excludedIds: Set<string>,
+  themeType?: DadType
+): Card[] {
+  const rarityValue = RARITY_ORDER[requestedRarity];
+  const allRarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+
+  // Try lower rarities first
+  for (const otherRarity of allRarities) {
+    if (RARITY_ORDER[otherRarity] < rarityValue) {
+      const available = getFilteredCards(otherRarity, excludedIds, themeType);
+      if (available.length > 0) return available;
+    }
+  }
+
+  // Then try higher rarities
+  for (const otherRarity of allRarities) {
+    if (RARITY_ORDER[otherRarity] > rarityValue) {
+      const available = getFilteredCards(otherRarity, excludedIds, themeType);
+      if (available.length > 0) return available;
+    }
+  }
+
+  return [];
+}
+
+/**
  * Select cards from the rarity pool, excluding already used cards.
  *
  * This function implements the card selection logic for pack generation:
@@ -33,57 +80,24 @@ export function selectCards(
 
   for (let i = 0; i < count; i++) {
     // Get available cards of the requested rarity (and type for theme packs)
-    let available = themeType
-      ? getCardsByRarityAndType(rarity, themeType).filter((card) => !excludedIds.has(card.id))
-      : getCardsByRarity(rarity).filter((card) => !excludedIds.has(card.id));
+    let available = getFilteredCards(rarity, excludedIds, themeType);
 
     // Fallback 1: Try adjacent rarities if pool is exhausted
     if (available.length === 0) {
-      const rarityValue = RARITY_ORDER[rarity];
-      const allRarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
-
-      // Search outward from the requested rarity (lower first, then higher)
-      for (const otherRarity of allRarities) {
-        if (otherRarity === rarity) continue;
-
-        const otherValue = RARITY_ORDER[otherRarity];
-        // Try lower rarities first
-        if (otherValue < rarityValue) {
-          available = themeType
-            ? getCardsByRarityAndType(otherRarity, themeType).filter((card) => !excludedIds.has(card.id))
-            : getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
-          if (available.length > 0) break;
-        }
-      }
-
-      // If still no cards, try higher rarities
-      if (available.length === 0) {
-        for (const otherRarity of allRarities) {
-          if (otherRarity === rarity) continue;
-
-          const otherValue = RARITY_ORDER[otherRarity];
-          if (otherValue > rarityValue) {
-            available = themeType
-              ? getCardsByRarityAndType(otherRarity, themeType).filter((card) => !excludedIds.has(card.id))
-              : getCardsByRarity(otherRarity).filter((card) => !excludedIds.has(card.id));
-            if (available.length > 0) break;
-          }
-        }
-      }
+      available = findFallbackRarity(rarity, excludedIds, themeType);
     }
 
-    // Fallback 2: Allow duplicates if all pools are exhausted
+    // Fallback 2: Allow duplicates (without excluding) if all pools are exhausted
     if (available.length === 0) {
-      available = themeType
-        ? getCardsByRarityAndType(rarity, themeType)
-        : getCardsByRarity(rarity);
-      // If still no cards, try all rarities
-      if (available.length === 0) {
-        available = getAllCards();
-      }
+      available = themeType ? getCardsByRarityAndType(rarity, themeType) : getCardsByRarity(rarity);
     }
 
-    // If we still have no cards, skip this selection
+    // Fallback 3: Try all cards if we still have nothing
+    if (available.length === 0) {
+      available = getAllCards();
+    }
+
+    // Skip if no cards available at all
     if (available.length === 0) {
       continue;
     }

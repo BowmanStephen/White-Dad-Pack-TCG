@@ -17,14 +17,15 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
     completeTutorial,
   } from '@/stores/tutorial';
 
-  // Track highlighted element
   let highlightedElement: HTMLElement | null = null;
   let overlay: HTMLElement;
   let spotlight: HTMLElement;
   let dontShowAgain = false;
 
-  // Auto-scroll to highlighted element
-  async function scrollToElement() {
+  // SSR guard
+  const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+
+  async function scrollToElement(): Promise<void> {
     await tick();
     if (!highlightedElement) return;
 
@@ -35,10 +36,8 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
     });
   }
 
-  // Update spotlight position when step changes
-  async function updateSpotlight() {
-    // Guard against SSR
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  async function updateSpotlight(): Promise<void> {
+    if (!isBrowser) return;
 
     await tick();
 
@@ -48,8 +47,7 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
       return;
     }
 
-    // Find target element
-    const target = document.querySelector(step.target) as HTMLElement;
+    const target = document.querySelector(step.target) as HTMLElement | null;
     if (!target) {
       console.warn(`Tutorial target not found: ${step.target}`);
       if (spotlight) spotlight.style.display = 'none';
@@ -58,7 +56,6 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
 
     highlightedElement = target;
 
-    // Calculate position
     const rect = target.getBoundingClientRect();
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
@@ -71,12 +68,10 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
       spotlight.style.height = `${rect.height}px`;
     }
 
-    // Scroll to element
     await scrollToElement();
   }
 
-  // Handle keyboard navigation
-  function handleKeydown(event: KeyboardEvent) {
+  function handleKeydown(event: KeyboardEvent): void {
     if (!tutorialState.get().isActive) return;
 
     switch (event.key) {
@@ -92,45 +87,37 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
     }
   }
 
-  // Subscribe to step changes
   let unsubscribe: (() => void) | null = null;
 
   onMount(() => {
-    // Guard against SSR
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
 
     window.addEventListener('keydown', handleKeydown);
+    unsubscribe = currentStep.subscribe(updateSpotlight);
 
-    unsubscribe = currentStep.subscribe(() => {
-      updateSpotlight();
-    });
-
-    // Initial update
     updateSpotlight();
   });
 
   onDestroy(() => {
-    // Guard against SSR
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
 
     window.removeEventListener('keydown', handleKeydown);
     if (unsubscribe) unsubscribe();
   });
 
-  // Get step position for tooltip placement
-  function getPositionClass(position?: string): string {
-    switch (position) {
-      case 'top':
-        return 'bottom-full mb-4';
-      case 'bottom':
-        return 'top-full mt-4';
-      case 'left':
-        return 'right-full mr-4';
-      case 'right':
-        return 'left-full ml-4';
-      case 'center':
-      default:
-        return '';
+  function handleSkip(): void {
+    if (dontShowAgain) {
+      completeTutorial();
+    } else {
+      skipTutorial();
+    }
+  }
+
+  function handleFinish(): void {
+    if ($tutorialState.currentStepIndex === $tutorialState.steps.length - 1) {
+      completeTutorial();
+    } else {
+      nextStep();
     }
   }
 </script>
@@ -217,24 +204,15 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
 
         <!-- Navigation buttons -->
         <div class="flex items-center justify-between gap-4">
-          <!-- Skip button -->
           <button
-            on:click={() => {
-              if (dontShowAgain) {
-                completeTutorial(); // Mark as completed so it doesn't show again
-              } else {
-                skipTutorial();
-              }
-            }}
+            on:click={handleSkip}
             class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium"
             type="button"
           >
             Skip Tutorial
           </button>
 
-          <!-- Navigation -->
           <div class="flex gap-3">
-            <!-- Previous button -->
             {#if $tutorialState.currentStepIndex > 0}
               <button
                 on:click={prevStep}
@@ -245,15 +223,8 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
               </button>
             {/if}
 
-            <!-- Next/Finish button -->
             <button
-              on:click={() => {
-                if ($tutorialState.currentStepIndex === $tutorialState.steps.length - 1) {
-                  completeTutorial();
-                } else {
-                  nextStep();
-                }
-              }}
+              on:click={handleFinish}
               class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all font-medium shadow-lg hover:shadow-xl"
               type="button"
             >

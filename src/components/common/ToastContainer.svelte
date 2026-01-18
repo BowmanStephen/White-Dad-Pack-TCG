@@ -3,7 +3,7 @@
   import ToastItem from './ToastItem.svelte';
 
   // Maximum number of toasts to show at once
-  const MAX_TOASTS = 5;
+  const MAX_TOASTS = 3;
 
   // Auto-dismiss duration (can be overridden per toast)
   const DEFAULT_DURATION = 4000;
