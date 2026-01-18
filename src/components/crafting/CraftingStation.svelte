@@ -230,7 +230,32 @@
   $: stats = getCraftingStats();
   $: availableRecipes = getAvailableRecipes();
   $: canCraft = recipe && selected.length === recipe.inputCount;
+
+  // Screen reader announcements
+  let craftingAnnouncement = '';
+  $: if (state === 'crafting') {
+    craftingAnnouncement = 'Crafting in progress...';
+  } else if (state === 'success') {
+    const resultCard = session?.resultCard;
+    if (resultCard) {
+      craftingAnnouncement = `Crafting successful! You created ${resultCard.name}, a ${RARITY_CONFIG[resultCard.rarity].name} card.`;
+    } else {
+      craftingAnnouncement = 'Crafting successful!';
+    }
+  } else if (state === 'failed') {
+    const returnedCount = session?.returnedCards?.length || 0;
+    craftingAnnouncement = `Crafting failed. You received ${returnedCount} cards back.`;
+  } else if (state === 'selecting') {
+    const selectedCount = selected.length;
+    const neededCount = recipe?.inputCount || 0;
+    craftingAnnouncement = `Select ${neededCount - selectedCount} more ${RARITY_CONFIG[recipe?.inputRarity || 'common'].name} cards to craft.`;
+  }
 </script>
+
+<!-- Live region for screen reader announcements -->
+<div aria-live="polite" aria-atomic="true" class="sr-only" role="status">
+  {craftingAnnouncement}
+</div>
 
 <div class="crafting-station">
   <div class="crafting-header">

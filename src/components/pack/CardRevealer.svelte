@@ -23,6 +23,13 @@
   $: allRevealed = revealedIndices.size >= pack.cards.length;
   $: rarityConfig = currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common;
 
+  // Screen reader announcement for card reveals
+  let announcement = '';
+  $: if (isCurrentRevealed && currentCard) {
+    const holoText = currentCard.isHolo ? ` holographic${currentCard.holoType !== 'standard' ? ' ' + currentCard.holoType : ''}` : '';
+    announcement = `Card ${currentIndex + 1} of ${pack.cards.length}: ${currentCard.name}, ${RARITY_CONFIG[currentCard.rarity].name}${holoText}. ${currentCard.subtitle || ''}`;
+  }
+
   // Cinematic mode configuration
   $: cinematicConfig = uiStore.getCinematicConfig();
   $: isCinematic = uiStore.$cinematicMode.get() === 'cinematic';
@@ -285,7 +292,12 @@
   }
 </script>
 
-<div 
+<!-- Live region for screen reader announcements -->
+<div aria-live="polite" aria-atomic="true" class="sr-only" role="status">
+  {announcement}
+</div>
+
+<div
   class="flex flex-col items-center gap-6 w-full max-w-lg"
   on:touchstart={handleTouchStart}
   on:touchend={handleTouchEnd}

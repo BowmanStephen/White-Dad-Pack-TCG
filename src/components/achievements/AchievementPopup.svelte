@@ -20,6 +20,12 @@
   let slideIn = false;
   let pulse = false;
 
+  // Screen reader announcement
+  let announcement = '';
+  $: if (currentAchievement && isVisible) {
+    announcement = `Achievement unlocked: ${currentAchievement.name}. ${currentAchievement.description}`;
+  }
+
   // Load next achievement when popup opens
   $: if (show && !currentAchievement) {
     loadNextAchievement();
@@ -123,6 +129,11 @@
     }
   });
 </script>
+
+<!-- Live region for screen reader announcements -->
+<div aria-live="assertive" aria-atomic="true" class="sr-only" role="alert">
+  {announcement}
+</div>
 
 {#if show && currentAchievement}
   <div
