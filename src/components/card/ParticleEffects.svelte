@@ -76,7 +76,7 @@
 </script>
 
 {#if active && particleCount > 0}
-  <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+  <div class="particle-container absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
     {#each particles as particle (particle.id)}
       <div
         class="particle"
@@ -98,6 +98,12 @@
 {/if}
 
 <style>
+  .particle-container {
+    /* CSS containment for performance optimization */
+    contain: layout style paint;
+    /* Prevent the browser from recalculating layout outside this container */
+  }
+
   .particle {
     position: absolute;
     border-radius: 50%;

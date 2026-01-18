@@ -229,3 +229,49 @@ export function createScrollHandler(fn: () => void): () => void {
   window.addEventListener('scroll', throttled, { passive: true });
   return () => window.removeEventListener('scroll', throttled);
 }
+
+/**
+ * Create a throttled requestAnimationFrame loop
+ * @param callback Function to execute each frame
+ * @param targetFPS Target FPS (default: 60, use 30 for low-end devices)
+ * @returns Object with start and stop methods
+ */
+export function createThrottledRAF(
+  callback: (deltaTime: number) => void,
+  targetFPS: number = 60
+): { start: () => void; stop: () => void; isRunning: () => boolean } {
+  let rafId: number | null = null;
+  let lastTime = 0;
+  const frameInterval = 1000 / targetFPS;
+
+  function animate(currentTime: number) {
+    if (!lastTime) lastTime = currentTime;
+
+    const deltaTime = currentTime - lastTime;
+
+    if (deltaTime >= frameInterval) {
+      // Execute callback with actual delta time
+      callback(deltaTime);
+      lastTime = currentTime - (deltaTime % frameInterval);
+    }
+
+    rafId = requestAnimationFrame(animate);
+  }
+
+  return {
+    start: () => {
+      if (rafId === null) {
+        lastTime = 0;
+        rafId = requestAnimationFrame(animate);
+      }
+    },
+    stop: () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+        lastTime = 0;
+      }
+    },
+    isRunning: () => rafId !== null,
+  };
+}

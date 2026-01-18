@@ -3,6 +3,7 @@
   import { RARITY_CONFIG } from '../../types';
   import { getParticleMultiplier } from '../../stores/ui';
   import { onMount, onDestroy } from 'svelte';
+  import { isLowEndDevice, createThrottledRAF } from '../../lib/utils/performance';
 
   interface Props {
     rarity: Rarity;
@@ -24,9 +25,11 @@
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
-  let animationId: number | null = null;
   let isRunning = false;
   let autoClearTimer: number | null = null;
+
+  // Determine target FPS based on device capabilities
+  const targetFPS = isLowEndDevice() ? 30 : 60;
 
   // Particle multiplier for performance scaling
   const particleMultiplier = getParticleMultiplier();
@@ -201,7 +204,7 @@
     }
 
     // Start animation loop
-    animate();
+    animationLoop.start();
 
     // Auto-clear after 3 seconds
     if (autoClearTimer) clearTimeout(autoClearTimer);
@@ -215,10 +218,7 @@
    */
   function stopConfetti(): void {
     isRunning = false;
-    if (animationId !== null) {
-      cancelAnimationFrame(animationId);
-      animationId = null;
-    }
+    animationLoop.stop();
     if (autoClearTimer) {
       clearTimeout(autoClearTimer);
       autoClearTimer = null;
@@ -234,14 +234,15 @@
   /**
    * Animation loop with physics
    */
-  function animate(): void {
+  function animate(deltaTime: number): void {
     if (!isRunning || !ctx || !canvas) return;
 
     // Clear canvas with slight trail effect (optional)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Physics constants
-    const gravity = 0.3; // Downward acceleration
+    // Physics constants (scaled by deltaTime for consistent speed across framerates)
+    const timeScale = deltaTime / 16.67; // Normalize to 60fps
+    const gravity = 0.3 * timeScale; // Downward acceleration
     const drag = 0.99; // Air resistance
 
     // Update and draw all active particles
@@ -255,15 +256,14 @@
       }
     }
 
-    // Continue animation if particles remain
-    if (activeParticles.size > 0) {
-      animationId = requestAnimationFrame(animate);
-    } else {
-      // All particles done - clean up completely
+    // Stop if no particles remaining
+    if (activeParticles.size === 0) {
       isRunning = false;
-      animationId = null;
     }
   }
+
+  // Create throttled animation loop
+  const animationLoop = createThrottledRAF(animate, targetFPS);
 
   /**
    * React to active prop changes
@@ -280,15 +280,18 @@
 {#if isLegendaryPlus && adjustedConfettiCount > 0}
   <canvas
     bind:this={canvas}
-    class="absolute inset-0 pointer-events-none"
+    class="confetti-canvas absolute inset-0 pointer-events-none"
     style="z-index: 50;"
   ></canvas>
 {/if}
 
 <style>
-  canvas {
+  .confetti-canvas {
     width: 100%;
     height: 100%;
     display: block;
+    /* CSS containment for performance optimization */
+    contain: layout style paint;
+    /* Prevent the browser from recalculating layout outside this canvas */
   }
 </style>
