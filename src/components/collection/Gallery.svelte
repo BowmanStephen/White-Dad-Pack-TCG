@@ -25,8 +25,9 @@
   import FadeIn from '../loading/FadeIn.svelte';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, SORT_OPTION_CONFIG, STAT_NAMES, STAT_ICONS, HOLO_VARIANT_NAMES, HOLO_VARIANT_ICONS } from '../../types';
   import CardLightbox from '../card/CardLightbox.svelte';
+  import CardDetailModal from './CardDetailModal.svelte';
   import RarityBadge from '../card/RarityBadge.svelte';
-  import { openLightbox } from '../../stores/lightbox';
+  import { openDetailModal, isDetailModalOpen, detailModalCard } from '../../stores/card-detail-modal';
   import { calculateVisibleRange, getTotalHeight, getEstimatedCardHeight } from '../../lib/utils/virtual-scroll';
   import CollectionSort from './CollectionSort.svelte';
 
@@ -354,26 +355,15 @@
   // ============================================================================
 
   /**
-   * Handle card click to open lightbox
-   * @param card - The card to view in lightbox
+   * Handle card click to open detail modal (PACK-022)
+   * @param card - The card to view in detail modal
    * @param event - The interaction event (to prevent bubbling)
    */
   function handleCardClick(card: PackCard, event: MouseEvent | KeyboardEvent) {
     event.stopPropagation();
 
-    // Convert displayed cards to PackCard array for lightbox navigation
-    const allDisplayedCards = displayedCards.map(c => ({
-      ...c,
-      isRevealed: true,
-      isHolo: c.isHolo,
-      holoType: c.holoType,
-    }));
-
-    // Find the index of the clicked card
-    const cardIndex = allDisplayedCards.findIndex(c => c.id === card.id);
-
-    // Open lightbox with the card and navigation list
-    openLightbox(card, allDisplayedCards, cardIndex);
+    // Open detail modal with the card (shows ownership, pack history, etc.)
+    openDetailModal(card);
   }
 
   // ============================================================================
@@ -997,6 +987,11 @@
 
 <!-- Card Lightbox (US082) -->
 <CardLightbox />
+
+<!-- Card Detail Modal (PACK-022) -->
+{#if $isDetailModalOpen && $detailModalCard}
+  <CardDetailModal />
+{/if}
 
 <style>
   .gallery-container {
