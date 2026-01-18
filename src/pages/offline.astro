@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Logo from '@/components/common/Logo.astro';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
 ---
 
 <BaseLayout
@@ -8,7 +9,8 @@ import Logo from '@/components/common/Logo.astro';
   description="Offline mode for DadDeck. Continue opening packs and viewing your collection even without an internet connection."
   noindex={true}
 >
-  <main class="min-h-screen flex items-center justify-center px-4">
+  <ErrorBoundary component="OfflinePage" fallbackMessage="Offline page unavailable.">
+    <main class="min-h-screen flex items-center justify-center px-4">
     <div class="text-center max-w-md">
       <!-- Logo -->
       <div class="mb-8 flex justify-center">
@@ -173,6 +175,7 @@ import Logo from '@/components/common/Logo.astro';
     // Log current status
     console.log('[Offline Page] Online:', isOnline());
   </script>
+  </ErrorBoundary>
 </BaseLayout>
 
 <style>

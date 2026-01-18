@@ -5,16 +5,20 @@
   import { createNewDeck, updateDeckInfo, addCard, clearCurrentDeck } from '@/stores/deck';
   import type { DeckImportResult } from '@/lib/deck/sharing';
 
-  export let open = false;
+  interface Props {
+    open?: boolean;
+  }
+
+  let { open = $bindable(false) }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  let deckCode = '';
-  let importResult: DeckImportResult | null = null;
-  let isImporting = false;
-  let validationError: string | null = null;
+  let deckCode = $state('');
+  let importResult = $state<DeckImportResult | null>(null);
+  let isImporting = $state(false);
+  let validationError = $state<string | null>(null);
 
-  $: userCollectionCards = new Set($collection.cards.map(c => c.id));
+  let userCollectionCards = $derived(new Set($collection.cards.map(c => c.id)));
 
   function close() {
     open = false;

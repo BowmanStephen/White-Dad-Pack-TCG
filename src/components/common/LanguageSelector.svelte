@@ -1,130 +1,119 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { locale, changeLocale, getAvailableLocales, getLocaleName, type Locale } from '@/i18n/store';
+  /**
+   * LanguageSelector Component
+   * 
+   * Placeholder for future internationalization (i18n) support.
+   * Currently displays English only. When i18n is fully implemented,
+   * this will allow users to switch between languages.
+   * 
+   * TODO: Implement full i18n system with:
+   * - src/i18n/store.ts - Locale state management
+   * - src/i18n/locales/en.json - English translations
+   * - src/i18n/locales/es.json - Spanish translations
+   */
 
-  let isOpen = $state(false);
-  let buttonElement: HTMLElement;
+  type Locale = 'en' | 'es';
 
-  // Get current locale value from store
+  // Available languages
+  const languages: { code: Locale; name: string; flag: string }[] = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    // { code: 'es', name: 'Español', flag: '🇪🇸' }, // Uncomment when i18n is implemented
+  ];
+
+  // Current locale (stored in localStorage for persistence)
   let currentLocale = $state<Locale>('en');
 
-  // Subscribe to locale changes
-  onMount(() => {
-    const unsubscribe = locale.subscribe((value) => {
-      currentLocale = value;
-    });
-
-    return () => {
-      unsubscribe();
-    };
+  // Load saved locale on mount
+  $effect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('daddeck-locale') as Locale | null;
+      if (saved && languages.some(l => l.code === saved)) {
+        currentLocale = saved;
+      }
+    }
   });
 
-  const availableLocales = getAvailableLocales();
-
-  function handleLocaleSelect(newLocale: Locale) {
-    changeLocale(newLocale);
-    isOpen = false;
-    buttonElement?.focus();
-  }
-
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      isOpen = false;
-      buttonElement?.focus();
+  // Change language
+  function changeLanguage(newLocale: Locale) {
+    currentLocale = newLocale;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('daddeck-locale', newLocale);
+      // Future: Trigger i18n store update and page refresh/re-render
     }
   }
 
-  function toggleDropdown() {
-    isOpen = !isOpen;
-  }
-
-  function closeDropdown() {
-    isOpen = false;
-  }
+  // Get current language info
+  let currentLanguage = $derived(languages.find((lang) => lang.code === currentLocale) || languages[0]);
 </script>
 
-<div class="relative language-selector">
-  <button
-    bind:this={buttonElement}
-    on:click={toggleDropdown}
-    on:keydown={(e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleDropdown();
-      }
-    }}
-    class="flex items-center gap-2 px-4 py-2 bg-slate-800/50 backdrop-blur text-white font-bold rounded-xl hover:bg-slate-700 transition-all border border-white/10 uppercase tracking-widest text-xs"
-    aria-expanded={isOpen}
-    aria-haspopup="listbox"
-    aria-label="Select language"
-  >
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-      <circle cx="12" cy="12" r="10"></circle>
-      <line x1="2" y1="12" x2="22" y2="12"></line>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-    </svg>
-    <span>{getLocaleName(currentLocale)}</span>
-    <svg
-      class="w-3 h-3 transition-transform duration-200"
-      class:rotate-180={isOpen}
-      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+<!-- Only render if multiple languages are available -->
+{#if languages.length > 1}
+  <div class="language-selector">
+    <select
+      class="language-select"
+      value={currentLocale}
+      onchange={(e) => changeLanguage((e.target as HTMLSelectElement).value as Locale)}
+      aria-label="Select language"
     >
-      <polyline points="6 9 12 15 18 9"></polyline>
-    </svg>
-  </button>
-
-  {#if isOpen}
-    <div
-      on:click={closeDropdown}
-      on:keydown={handleKeydown}
-      role="listbox"
-      class="absolute right-0 mt-2 w-48 bg-slate-900/95 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl z-50"
-      style="min-width: 200px;"
-    >
-      <div class="p-2">
-        {#each availableLocales as loc}
-          <button
-            on:click={(e) => {
-              e.stopPropagation();
-              handleLocaleSelect(loc);
-            }}
-            role="option"
-            aria-selected={currentLocale === loc}
-            class="locale-option {currentLocale === loc ? 'active' : ''}"
-            tabindex="0"
-            on:keydown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleLocaleSelect(loc);
-              }
-            }}
-          >
-            <span class="text-lg">{loc === 'en' ? '🇺🇸' : '🇪🇸'}</span>
-            <span>{getLocaleName(loc)}</span>
-            {#if currentLocale === loc}
-              <svg class="w-4 h-4 ml-auto text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            {/if}
-          </button>
-        {/each}
-      </div>
-    </div>
-  {/if}
-</div>
+      {#each languages as lang}
+        <option value={lang.code}>
+          {lang.flag} {lang.name}
+        </option>
+      {/each}
+    </select>
+  </div>
+{/if}
 
 <style>
-  .locale-option {
-    @apply w-full text-left px-4 py-3 rounded-lg transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-3 text-slate-300 hover:bg-white/5;
+  .language-selector {
+    display: flex;
+    align-items: center;
   }
 
-  .locale-option.active {
-    @apply bg-white/10 text-white;
+  .language-select {
+    appearance: none;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.25rem;
+    padding-right: 2.5rem;
   }
 
-  /* Close dropdown when clicking outside */
-  :global(:focus-visible) {
-    outline: 2px solid white;
-    outline-offset: 2px;
+  .language-select:hover {
+    background-color: rgba(51, 65, 85, 0.8);
+    border-color: rgba(148, 163, 184, 0.3);
+  }
+
+  .language-select:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+  }
+
+  /* Dark mode adjustments */
+  :global(.dark) .language-select {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(71, 85, 105, 0.3);
+  }
+
+  :global(.dark) .language-select:hover {
+    background-color: rgba(30, 41, 59, 0.8);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .language-select {
+      font-size: 0.8125rem;
+      padding: 0.4375rem 2rem 0.4375rem 0.625rem;
+    }
   }
 </style>

@@ -22,24 +22,24 @@
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
-  // Subscribe to store changes
-  $: isOpen = $isLightboxOpen;
-  $: card = $currentCard;
-  $: cards = $cardList;
-  $: index = $currentIndex;
-  $: progress = getProgress();
-  $: isFlipped = $isCardFlipped;
+  // Subscribe to store changes using Svelte 5 runes
+  let isOpen = $derived($isLightboxOpen);
+  let card = $derived($currentCard);
+  let cards = $derived($cardList);
+  let index = $derived($currentIndex);
+  let progress = $derived(getProgress());
+  let isFlipped = $derived($isCardFlipped);
 
   // Share support check
-  $: shareSupport = checkShareSupport();
-  $: canShare = shareSupport.webShareAPI && shareSupport.webShareFiles;
+  let shareSupport = $derived(checkShareSupport());
+  let canShare = $derived(shareSupport.webShareAPI && shareSupport.webShareFiles);
 
   // Share/download state
-  let isGeneratingImage = false;
-  let shareError: string | null = null;
-  let lightboxElement: HTMLDivElement;
-  let cardImageElement: HTMLDivElement;
-  let hasKeyListener = false;
+  let isGeneratingImage = $state(false);
+  let shareError = $state<string | null>(null);
+  let lightboxElement = $state<HTMLDivElement | undefined>(undefined);
+  let cardImageElement = $state<HTMLDivElement | undefined>(undefined);
+  let hasKeyListener = $state(false);
 
   // Keyboard navigation
   function handleKeyDown(event: KeyboardEvent) {
@@ -132,11 +132,14 @@
   });
 
   // Prevent body scroll when lightbox is open
-  $: if (isOpen) {
-    if (typeof document !== 'undefined') {
+  $effect(() => {
+    if (isOpen && typeof document !== 'undefined') {
       document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
     }
-  }
+  });
 
   function getHoloVariantName(holoType: string): string {
     const names: Record<string, string> = {

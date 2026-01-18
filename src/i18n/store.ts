@@ -1,53 +1,85 @@
 /**
- * i18n Store - Nanostores integration for internationalization
- *
- * This provides reactive locale state for Svelte components.
+ * i18n Store - Locale State Management Stub
+ * 
+ * Minimal implementation for locale state management.
+ * When full i18n is implemented, this will manage locale switching
+ * and translation loading.
  */
 
 import { atom } from 'nanostores';
-import type { Locale } from './index';
-import { t, setLocale, getLocale, detectLocale, getAvailableLocales, getLocaleName } from './index';
 
-// Reactive locale state
+export type Locale = 'en' | 'es';
+
+// Available locales
+const AVAILABLE_LOCALES: Locale[] = ['en'];
+
+// Locale names for display
+const LOCALE_NAMES: Record<Locale, string> = {
+  en: 'English',
+  es: 'Español',
+};
+
+// Current locale store
 export const locale = atom<Locale>('en');
 
-// Initialize locale from browser/localStorage on client
-if (typeof window !== 'undefined') {
-  detectLocale().then((detectedLocale) => {
-    setLocale(detectedLocale);
-    locale.set(detectedLocale);
-  });
+/**
+ * Set the current locale
+ */
+export function setLocale(newLocale: Locale): void {
+  if (AVAILABLE_LOCALES.includes(newLocale)) {
+    locale.set(newLocale);
+    
+    // Persist to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('daddeck-locale', newLocale);
+    }
+  }
 }
 
 /**
- * Change the current locale and update the store
+ * Change locale (alias for setLocale)
  */
 export function changeLocale(newLocale: Locale): void {
   setLocale(newLocale);
-  locale.set(newLocale);
 }
 
 /**
- * Get the current locale from the store
+ * Get the display name for a locale
+ */
+export function getLocaleName(localeCode: Locale): string {
+  return LOCALE_NAMES[localeCode] || localeCode;
+}
+
+/**
+ * Get all available locales
+ */
+export function getAvailableLocales(): Locale[] {
+  return [...AVAILABLE_LOCALES];
+}
+
+/**
+ * Get the current locale value
  */
 export function getCurrentLocale(): Locale {
   return locale.get();
 }
 
 /**
- * Get available locales
+ * Initialize locale from localStorage or browser settings
  */
-export { getAvailableLocales };
-
-/**
- * Get locale display name
- */
-export { getLocaleName };
-
-/**
- * Translation function (re-exported for convenience)
- */
-export { t };
-
-// Re-export types
-export type { Locale } from './index';
+export function initLocale(): void {
+  if (typeof window === 'undefined') return;
+  
+  // Try localStorage first
+  const saved = localStorage.getItem('daddeck-locale') as Locale | null;
+  if (saved && AVAILABLE_LOCALES.includes(saved)) {
+    locale.set(saved);
+    return;
+  }
+  
+  // Try browser language
+  const browserLang = navigator.language.split('-')[0] as Locale;
+  if (AVAILABLE_LOCALES.includes(browserLang)) {
+    locale.set(browserLang);
+  }
+}

@@ -4,19 +4,23 @@
   import { exportDeckToCode, exportDeckToText, generateDeckShareUrl } from '@/lib/deck/sharing';
   import type { Deck } from '@/types';
 
-  export let open = false;
+  interface Props {
+    open?: boolean;
+  }
+
+  let { open = $bindable(false) }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  let activeTab: 'code' | 'text' | 'url' = 'code';
-  let copied: 'code' | 'text' | 'url' | null = null;
-  let copyTimeout: NodeJS.Timeout | null = null;
+  let activeTab = $state<'code' | 'text' | 'url'>('code');
+  let copied = $state<'code' | 'text' | 'url' | null>(null);
+  let copyTimeout = $state<ReturnType<typeof setTimeout> | null>(null);
 
-  $: deck = $currentDeck;
+  let deck = $derived($currentDeck);
 
-  $: deckCode = deck ? exportDeckToCode(deck) : '';
-  $: deckText = deck ? exportDeckToText(deck) : '';
-  $: deckUrl = deck ? generateDeckShareUrl(deck) : '';
+  let deckCode = $derived(deck ? exportDeckToCode(deck) : '');
+  let deckText = $derived(deck ? exportDeckToText(deck) : '');
+  let deckUrl = $derived(deck ? generateDeckShareUrl(deck) : '');
 
   function close() {
     open = false;
@@ -55,7 +59,11 @@
       }, 2000);
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
-      alert('Failed to copy. Please select and copy manually.');
+      // Fallback: select the text for manual copy
+      const textArea = document.querySelector('textarea, input[type="text"]') as HTMLInputElement | HTMLTextAreaElement;
+      if (textArea) {
+        textArea.select();
+      }
     }
   }
 

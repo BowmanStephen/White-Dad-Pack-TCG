@@ -284,11 +284,11 @@
   let glowColor = $derived(rarityConfig.glowColor);
 
   // Hover state tracking
-  let isHovered = false;
+  let isHovered = $state(false);
 
   // Share functionality
-  let isGeneratingImage = false;
-  let shareError: string | null = null;
+  let isGeneratingImage = $state(false);
+  let shareError = $state<string | null>(null);
 
   async function handleDownload() {
     if (isGeneratingImage || !cardElement) return;

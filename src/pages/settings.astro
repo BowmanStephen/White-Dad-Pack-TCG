@@ -9,6 +9,8 @@
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SettingsManager from '@/components/settings/SettingsManager.svelte';
+import Navigation from '@/components/common/Navigation.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
 import { getFullURL } from '@/lib/seo';
 
 // Enhanced SEO for settings page
@@ -21,6 +23,10 @@ const settingsPageURL = getFullURL('/settings');
   title={title}
   description={description}
 >
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
+
   <main class="settings-page">
     <div class="container">
       <header class="page-header">
@@ -28,7 +34,14 @@ const settingsPageURL = getFullURL('/settings');
         <p>Customize your DadDeck experience</p>
       </header>
 
-      <SettingsManager client:only="svelte" />
+      <ErrorBoundary
+        component="SettingsManager"
+        fallbackTitle="Settings Error"
+        fallbackMessage="We couldn't load the settings panel. Please refresh the page."
+        onRetry={() => window.location.reload()}
+      >
+        <SettingsManager client:only="svelte" />
+      </ErrorBoundary>
     </div>
   </main>
 </BaseLayout>

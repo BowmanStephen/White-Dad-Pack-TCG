@@ -148,6 +148,9 @@
     URL.revokeObjectURL(url);
   }
 
+  // Copy feedback state
+  let copySuccess = $state(false);
+
   async function copyBattleLog() {
     if (logs.length === 0) return;
 
@@ -162,7 +165,11 @@
 
     try {
       await navigator.clipboard.writeText(logText);
-      // Could add a toast notification here
+      // Show copy success feedback
+      copySuccess = true;
+      setTimeout(() => {
+        copySuccess = false;
+      }, 2000);
     } catch (err) {
       console.error('Failed to copy battle log:', err);
       // Fallback for older browsers
@@ -172,6 +179,11 @@
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
+      // Show success even for fallback
+      copySuccess = true;
+      setTimeout(() => {
+        copySuccess = false;
+      }, 2000);
     }
   }
 </script>
@@ -188,10 +200,15 @@
       <div class="header-actions">
         <button
           class="action-button"
+          class:copy-success={copySuccess}
           on:click={copyBattleLog}
           title="Copy battle log to clipboard"
         >
-          📋 Copy
+          {#if copySuccess}
+            ✓ Copied!
+          {:else}
+            📋 Copy
+          {/if}
         </button>
         <button
           class="action-button"
@@ -325,6 +342,12 @@
 
   .action-button:active {
     transform: translateY(0);
+  }
+
+  .action-button.copy-success {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: rgba(34, 197, 94, 0.5);
+    color: #22c55e;
   }
 
   .battle-log-empty {

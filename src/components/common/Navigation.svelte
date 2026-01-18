@@ -3,7 +3,6 @@
   import { muted, toggleMute } from '../../stores/audio';
   import ThemeToggle from './ThemeToggle.svelte';
   import MotionToggle from './MotionToggle.svelte';
-  import LanguageSelector from './LanguageSelector.svelte';
 
   interface NavLink {
     href: string;
@@ -129,9 +128,6 @@
       <!-- Motion Toggle (PACK-057) -->
       <MotionToggle />
 
-      <!-- Language Selector -->
-      <LanguageSelector />
-
       <!-- Settings Button -->
       <a href="/settings" class="settings-button" aria-label="Settings">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,11 +206,6 @@
           {/if}
         </span>
       </button>
-
-      <!-- Language Selector in mobile menu -->
-      <div class="px-4 py-3">
-        <LanguageSelector />
-      </div>
 
       <!-- Settings button in mobile menu -->
       <a

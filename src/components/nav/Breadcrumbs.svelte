@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { t } from '@/i18n';
 
   // Breadcrumb item interface
   interface BreadcrumbItem {
@@ -9,18 +8,19 @@
     current: boolean;
   }
 
-  // Route label mappings (translated)
+  // Route label mappings
   function getRouteLabels(): Record<string, string> {
     return {
-      'pack': t('nav.packs'),
-      'collection': t('nav.collection'),
-      'deck-builder': t('nav.deck'),
-      'upgrade': t('nav.upgrade'),
-      'crafting': t('nav.crafting'),
-      'trade': t('nav.trade'),
-      'battle': t('battle.title'),
-      'achievements': t('achievements.title'),
-      'leaderboard': t('nav.leaderboard'),
+      'pack': 'Open Pack',
+      'collection': 'My Collection',
+      'deck-builder': 'Deck Builder',
+      'upgrade': 'Card Upgrades',
+      'crafting': 'Crafting',
+      'trade': 'Trading',
+      'battle': 'Battle Arena',
+      'settings': 'Settings',
+      'achievements': 'Achievements',
+      'leaderboard': 'Leaderboards',
     };
   }
 

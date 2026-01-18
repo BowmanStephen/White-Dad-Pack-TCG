@@ -2,11 +2,18 @@
  * Formatters - Internationalized number and date formatting
  *
  * Provides locale-aware formatting functions using Intl API.
- * Integrates with the i18n system to automatically use the current locale.
+ * Note: i18n system not yet implemented, defaults to 'en-US'.
  */
 
-import { getCurrentLocale } from '@/i18n/store';
-import type { Locale } from '@/i18n';
+type Locale = 'en-US' | 'es-ES';
+
+/**
+ * Get current locale (placeholder for future i18n implementation)
+ */
+function getCurrentLocale(): Locale {
+  // TODO: Implement actual locale detection when i18n is added
+  return 'en-US';
+}
 
 /**
  * Format a number with locale-aware formatting

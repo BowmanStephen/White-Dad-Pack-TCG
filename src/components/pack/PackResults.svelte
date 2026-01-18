@@ -14,7 +14,6 @@
   import ScreenShake from '../card/ScreenShake.svelte';
   import { collection, getCurrentStreak, getBestStreak } from '../../stores/collection';
   import WishlistToast from '../wishlist/WishlistToast.svelte';
-  import { removeFromWishlist } from '../../stores/wishlist';
 
   interface Props {
     pack: Pack;
