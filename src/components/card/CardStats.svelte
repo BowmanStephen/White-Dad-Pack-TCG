@@ -24,18 +24,36 @@
     .sort((a, b) => b.value - a.value);
 
   $: barGradient = (value: number) => {
-    const baseColor = value >= 80
-      ? rarityConfig.color // Use rarity color for high stats
-      : '#64748b'; // Slate-500 for normal stats
-
-    return `linear-gradient(90deg, ${baseColor}, ${baseColor}dd, ${baseColor}aa)`;
+    // Color gradient system: red (0-50), yellow (50-80), green (80-100)
+    if (value >= 80) {
+      // High stats: Green gradient with rarity-based glow
+      const greenGradient = 'linear-gradient(90deg, #22c55e, #4ade80, #86efac)';
+      return value >= 90
+        ? `linear-gradient(90deg, ${rarityConfig.color}, #ffffff, ${rarityConfig.color})` // Mythic-level: Prismatic
+        : greenGradient;
+    } else if (value >= 50) {
+      // Medium stats: Yellow gradient
+      return 'linear-gradient(90deg, #eab308, #facc15, #fde047)';
+    } else {
+      // Low stats: Red gradient
+      return 'linear-gradient(90deg, #ef4444, #f87171, #fca5a5)';
+    }
   };
 
   $: getGlowStyle = (value: number) => {
-    if (value >= 80) {
-      return `box-shadow: 0 0 12px ${rarityConfig.glowColor}, 0 0 20px ${rarityConfig.color}44;`;
+    if (value >= 90) {
+      // Mythic-level stats: Intense prismatic glow
+      return `box-shadow: 0 0 16px ${rarityConfig.color}, 0 0 32px ${rarityConfig.glowColor}, 0 0 48px ${rarityConfig.color}66;`;
+    } else if (value >= 80) {
+      // High stats: Green glow with rarity tint
+      return `box-shadow: 0 0 12px #22c55e, 0 0 24px #4ade8088, 0 0 36px #86efac44;`;
+    } else if (value >= 50) {
+      // Medium stats: Yellow glow
+      return `box-shadow: 0 0 8px #eab30888;`;
+    } else {
+      // Low stats: Subtle red glow
+      return `box-shadow: 0 0 6px #ef444455;`;
     }
-    return `box-shadow: 0 0 8px ${rarityConfig.glowColor}55;`;
   };
 
   // Tooltip state
