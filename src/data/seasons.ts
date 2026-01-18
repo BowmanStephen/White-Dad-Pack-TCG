@@ -17,6 +17,7 @@ export const SEASON_1: Season = {
   description: 'Where it all began. 50 cards featuring every dad archetype from BBQ Dads to Fix-It Dads. The foundation of DadDeck™.',
   status: 'active',
   startDate: new Date('2025-01-01'),
+  endDate: new Date('2099-12-31'),
   totalCards: 52,
   cardIds: [
     ...Array.from({ length: 50 }, (_, i) => String(i + 1).padStart(3, '0')),
@@ -45,8 +46,8 @@ export const SEASON_2: Season = {
   subtitle: 'Grill Season is Here',
   description: 'The temperature is rising and so is the grill mastery. 30 new cards dedicated to the art of outdoor cooking, summer parties, and dad fashion in 90-degree heat.',
   status: 'active',
-  startDate: new Date('2025-06-01'),
-  endDate: new Date('2026-12-31'),
+  startDate: new Date('2025-01-01'),
+  endDate: new Date('2099-12-31'),
   totalCards: 30,
   cardIds: Array.from({ length: 30 }, (_, i) => String(i + 53).padStart(3, '0')),
   packDesign: 'summer_bbq',
@@ -62,16 +63,16 @@ export const SEASON_2: Season = {
 };
 
 /**
- * Season 3: Fall Foliage (future season)
+ * Season 3: Fall Foliage
  */
 export const SEASON_3: Season = {
   id: 3,
   name: 'Fall Foliage',
   subtitle: 'Leaf Pile Champions',
   description: 'Rake. Bag. Repeat. The cycle continues. Fall-themed cards featuring lawn care mastery and cozy sweater energy.',
-  status: 'upcoming',
-  startDate: new Date('2025-09-01'),
-  endDate: new Date('2025-11-30'),
+  status: 'active',
+  startDate: new Date('2025-01-01'),
+  endDate: new Date('2099-12-31'),
   totalCards: 23,
   cardIds: Array.from({ length: 23 }, (_, i) => String(i + 83).padStart(3, '0')),
   packDesign: 'fall_foliage',
