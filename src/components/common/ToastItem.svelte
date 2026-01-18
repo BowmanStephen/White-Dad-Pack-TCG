@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import type { NotificationType } from '../../types';
 
   interface Props {
@@ -13,6 +13,7 @@
 
   let visible = $state(false);
   let isExiting = $state(false);
+  let autoDismissTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Icon mapping for each notification type
   const icons: Record<NotificationType, string> = {
@@ -60,9 +61,17 @@
 
     // Auto-dismiss after duration
     if (duration > 0) {
-      setTimeout(() => {
+      autoDismissTimer = setTimeout(() => {
         dismiss();
       }, duration);
+    }
+  });
+
+  onDestroy(() => {
+    // Cleanup auto-dismiss timer
+    if (autoDismissTimer) {
+      clearTimeout(autoDismissTimer);
+      autoDismissTimer = null;
     }
   });
 

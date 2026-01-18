@@ -25,6 +25,7 @@
   let particles: Particle[] = [];
   let confettiActive = false;
   let animationFrame: number | null = null;
+  let confettiTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Subscribe to current toast
   onMount(() => {
@@ -51,6 +52,10 @@
       if (animationFrame !== null) {
         cancelAnimationFrame(animationFrame);
       }
+      // Cleanup confetti timer on unmount
+      if (confettiTimer !== null) {
+        clearTimeout(confettiTimer);
+      }
     };
   });
 
@@ -76,9 +81,15 @@
     // Start animation loop
     animateConfetti();
 
+    // Clear existing timer if any
+    if (confettiTimer !== null) {
+      clearTimeout(confettiTimer);
+    }
+
     // Stop confetti after 2.5 seconds
-    setTimeout(() => {
+    confettiTimer = setTimeout(() => {
       confettiActive = false;
+      confettiTimer = null;
     }, 2500);
   }
 
