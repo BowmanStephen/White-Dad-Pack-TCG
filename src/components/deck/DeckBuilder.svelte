@@ -22,6 +22,8 @@
   import { t } from '@/i18n';
   import DeckStats from './DeckStats.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
+  import DeckShareModal from './DeckShareModal.svelte';
+  import DeckImportModal from './DeckImportModal.svelte';
 
   // View state
   let view: 'list' | 'edit' | 'create' = 'list';
@@ -29,6 +31,8 @@
   let draggedOverSlot: string | null = null;
   let selectedCards: Set<string> = new Set();
   let showAddModal = false;
+  let showShareModal = false;
+  let showImportModal = false;
   let deckName = '';
   let deckDescription = '';
   let searchQuery = '';
@@ -216,14 +220,22 @@
     <div class="deck-list">
       <div class="deck-list-header">
         <h1 class="deck-list-title">{$t('deck.title')}</h1>
-        <button
-          on:click={handleCreateDeck}
-          disabled={limitReached}
-          class="btn-primary"
-          class:disabled={limitReached}
-        >
-          {limitReached ? $t('deck.maxDecksReached') : $t('deck.createNew')}
-        </button>
+        <div class="header-actions">
+          <button
+            on:click={() => showImportModal = true}
+            class="btn-secondary"
+          >
+            📥 Import
+          </button>
+          <button
+            on:click={handleCreateDeck}
+            disabled={limitReached}
+            class="btn-primary"
+            class:disabled={limitReached}
+          >
+            {limitReached ? $t('deck.maxDecksReached') : $t('deck.createNew')}
+          </button>
+        </div>
       </div>
 
       {#if allDecks.length === 0}
@@ -248,6 +260,17 @@
               <div class="deck-card-header">
                 <h3 class="deck-name">{deck.name}</h3>
                 <div class="deck-actions">
+                  <button
+                    on:click={(e) => {
+                      e.stopPropagation();
+                      handleSelectDeck(deck.id);
+                      showShareModal = true;
+                    }}
+                    class="btn-icon"
+                    title="Share Deck"
+                  >
+                    📤
+                  </button>
                   <button
                     on:click={(e) => handleDuplicateDeck(deck.id, e)}
                     class="btn-icon"
@@ -1249,4 +1272,17 @@
       justify-content: space-between;
     }
   }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
 </style>
+
+<!-- Share and Import Modals -->
+<DeckShareModal bind:open={showShareModal} />
+<DeckImportModal bind:open={showImportModal} on:imported={() => {
+  // Refresh deck list after import
+  view = 'list';
+}} />
