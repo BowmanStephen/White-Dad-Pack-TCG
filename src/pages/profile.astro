@@ -1,0 +1,83 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navigation from '@/components/common/Navigation.svelte';
+import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
+import ProfileView from '@/components/profile/ProfileView.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
+
+// Enhanced SEO for profile page
+const title = "My Profile - DadDeck Trading Card Game";
+const description = "View your DadDeck player profile with collection stats, achievements, badges, and avatar customization. Track your TCG journey and showcase your best dad cards.";
+const profilePageURL = new URL('/profile', Astro.site).href;
+const imageURL = new URL('/og-image.png', Astro.site).href;
+
+// ProfilePage structured data
+const profilePageSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "name": "DadDeck Player Profile",
+  "url": profilePageURL,
+  "description": "Player profile page for DadDeck - the White Dad Trading Card Simulator",
+  "about": {
+    "@type": "Thing",
+    "name": "Player Profile",
+    "description": "Customizable player profile with stats and achievements"
+  }
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image="/og-image.png"
+>
+  <Navigation client:load />
+
+  <!-- Breadcrumbs -->
+  <Breadcrumbs client:load />
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="max-w-6xl mx-auto px-4 py-12 text-center">
+      <h1 class="text-4xl md:text-5xl font-black text-white mb-4">
+        <span class="text-amber-400">My</span> Profile
+      </h1>
+      <p class="text-slate-400 text-lg">
+        Your collection stats, achievements, and badges
+      </p>
+    </div>
+  </div>
+
+  <!-- Profile View -->
+  <div class="profile-section">
+    <ErrorBoundary
+      fallbackTitle="Profile Error"
+      fallbackMessage="We couldn't load your profile. Please refresh the page."
+    >
+      <ProfileView client:load />
+    </ErrorBoundary>
+  </div>
+
+  <!-- Structured data for profile page -->
+  <script type="application/ld+json" set:html={JSON.stringify(profilePageSchema)} />
+</BaseLayout>
+
+<style>
+  .page-header {
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6));
+    border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+  }
+
+  .profile-section {
+    min-height: calc(100vh - 200px);
+    background: radial-gradient(ellipse at top, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
+                linear-gradient(to bottom, #0f172a, #1e293b);
+    padding: 2rem 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .page-header h1 {
+      font-size: 2.5rem;
+    }
+  }
+</style>
