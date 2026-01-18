@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PackCard, SeasonId } from '../../types';
+  import type { PackCard, SeasonId, WishlistPriority } from '../../types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES, SEASON_PACK_CONFIG } from '../../types';
   import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor, getSpecialCardGlowClasses, hasCardStats } from '../../lib/card-types';
   import CardStats from './CardStats.svelte';
@@ -10,6 +10,7 @@
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
   import { openLightbox } from '../../stores/lightbox';
   import { getRandomJoke } from '../../lib/jokes';
+  import { isInWishlist, addToWishlist, removeFromWishlist } from '../../stores/wishlist';
 
   export let card: PackCard;
   export let isFlipped: boolean = false;
@@ -23,6 +24,8 @@
   export let cardList: PackCard[] = [];
   export let cardIndex: number = 0;
   export let useRandomJoke: boolean = false;
+  export let showWishlistButton: boolean = false; // PACK-020: Show star button
+  export let onWishlistToggle: ((isWishlisted: boolean) => void) | undefined = undefined;
 
   $: rarityConfig = RARITY_CONFIG[card.rarity];
   $: typeIcon = DAD_TYPE_ICONS[card.type];
@@ -31,6 +34,34 @@
   $: canShare = enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles;
   $: displayFlavorText = useRandomJoke ? getRandomJoke(card.type) : card.flavorText;
   const upgradeLevel = 0;
+
+  // PACK-020: Wishlist state
+  let isWishlisted = $state(false);
+
+  // Check wishlist status on mount and when card changes
+  $: if (showWishlistButton && card.id) {
+    isWishlisted = isInWishlist(card.id);
+  }
+
+  // Handle wishlist toggle
+  async function handleWishlistToggle(event: Event) {
+    event.stopPropagation(); // Prevent card click
+
+    if (isWishlisted) {
+      const result = removeFromWishlist(card.id);
+      if (result.success) {
+        isWishlisted = false;
+        onWishlistToggle?.(false);
+      }
+    } else {
+      // Add with medium priority by default (can be edited later)
+      const result = addToWishlist(card as any, 'medium');
+      if (result.success) {
+        isWishlisted = true;
+        onWishlistToggle?.(true);
+      }
+    }
+  }
 
   const sizeClasses = {
     sm: 'w-48 h-[268px]',
@@ -504,6 +535,29 @@
   {/if}
 {/if}
 
+<!-- Wishlist Button (PACK-020) -->
+{#if showWishlistButton && !isFlipped}
+  <div class="flex justify-center mt-3">
+    <button
+      on:click={handleWishlistToggle}
+      class="wishlist-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
+      class:wishlisted={isWishlisted}
+      style={!isWishlisted
+        ? "background: linear-gradient(135deg, #64748b, #475569); color: white; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);"
+        : "background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);"}
+      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+    >
+      {#if isWishlisted}
+        <span class="wishlist-star" aria-hidden="true">⭐</span>
+        <span>Wishlisted</span>
+      {:else}
+        <span class="wishlist-star" aria-hidden="true">☆</span>
+        <span>Add to Wishlist</span>
+      {/if}
+    </button>
+  </div>
+{/if}
+
 <!-- Upgrade Button (US085) -->
 {#if showUpgradeButton && !isFlipped && onUpgradeClick}
   <div class="flex justify-center mt-3">
@@ -647,5 +701,47 @@
   .season-badge {
     font-weight: 600;
     text-shadow: 0 0 4px currentColor;
+  }
+
+  /* Wishlist Button Styles (PACK-020) */
+  .wishlist-btn {
+    transition: all 0.3s ease;
+  }
+
+  .wishlist-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .wishlist-btn:active {
+    transform: scale(0.95);
+  }
+
+  .wishlist-star {
+    display: inline-block;
+    font-size: 1.2em;
+  }
+
+  .wishlist-btn.wishlisted .wishlist-star {
+    animation: starPop 0.4s ease-out;
+  }
+
+  @keyframes starPop {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wishlist-btn,
+    .wishlist-star {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 </style>

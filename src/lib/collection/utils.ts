@@ -390,3 +390,53 @@ export function areStatRangesDefault(statRanges: StatRanges): boolean {
 
   return true;
 }
+
+// ============================================================================
+// WISHLIST UTILITIES (PACK-020 - Collection Wishlist)
+// ============================================================================
+
+/**
+ * Check if pulled cards contain any wishlisted cards
+ * @param pulledCards - Cards from an opened pack
+ * @param wishlistEntries - Wishlist entries to check against
+ * @returns Array of wishlisted cards that were pulled
+ */
+export function findPulledWishlistedCards(
+  pulledCards: string[],
+  wishlistEntries: any[]
+): string[] {
+  const wishlistCardIds = new Set(wishlistEntries.map((entry) => entry.cardId));
+  return pulledCards.filter((cardId) => wishlistCardIds.has(cardId));
+}
+
+/**
+ * Format priority for display
+ * @param priority - Wishlist priority level
+ * @returns Formatted priority label with emoji
+ */
+export function formatWishlistPriority(priority: string): string {
+  const priorityLabels: Record<string, string> = {
+    urgent: '🔥 Urgent',
+    high: '⭐ High',
+    medium: '📍 Medium',
+    low: '💤 Low',
+  };
+
+  return priorityLabels[priority] || priority;
+}
+
+/**
+ * Get priority color for styling
+ * @param priority - Wishlist priority level
+ * @returns CSS color class or hex color
+ */
+export function getPriorityColor(priority: string): string {
+  const priorityColors: Record<string, string> = {
+    urgent: '#ef4444', // Red
+    high: '#f59e0b',   // Orange
+    medium: '#3b82f6', // Blue
+    low: '#9ca3af',    // Gray
+  };
+
+  return priorityColors[priority] || '#9ca3af';
+}

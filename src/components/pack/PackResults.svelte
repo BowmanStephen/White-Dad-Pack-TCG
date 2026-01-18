@@ -12,6 +12,8 @@
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import ScreenShake from '../card/ScreenShake.svelte';
   import { collection } from '../../stores/collection';
+  import WishlistToast from '../wishlist/WishlistToast.svelte';
+  import { removeFromWishlist } from '../../stores/wishlist';
 
   interface Props {
     pack: Pack;
@@ -42,6 +44,10 @@
   let isGeneratingBestCardImage = $state(false);
   let bestCardImageSuccess = $state(false);
   let bestCardCopiedToClipboard = $state(false);
+
+  // PACK-020: Wishlist notification state
+  let showWishlistToast = $state(false);
+  let wishlistedCards = $state<PackCard[]>([]);
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -105,6 +111,22 @@
 
   onMount(() => {
     canNativeShare = !!navigator.share;
+
+    // PACK-020: Check if any pulled cards are on wishlist
+    const wishlistedCardIds = (pack as any).wishlistedCards || [];
+    if (wishlistedCardIds.length > 0) {
+      // Get the actual card objects
+      wishlistedCards = pack.cards.filter(card => wishlistedCardIds.includes(card.id));
+
+      // Show the wishlist toast notification
+      if (wishlistedCards.length > 0) {
+        showWishlistToast = true;
+
+        // Optionally remove cards from wishlist after pulling
+        // Uncomment the next line if you want to auto-remove wishlisted cards
+        // wishlistedCards.forEach(card => removeFromWishlist(card.id));
+      }
+    }
   });
 
   // Focus trap for inspect modal
@@ -776,6 +798,13 @@
 
 <!-- Share Modal -->
 <ShareModal cards={pack.cards} packImageElement={null} />
+
+<!-- Wishlist Notification Toast (PACK-020) -->
+<WishlistToast
+  cards={wishlistedCards}
+  show={showWishlistToast}
+  onClose={() => (showWishlistToast = false)}
+/>
 
 <style>
   @keyframes shimmer {

@@ -6,6 +6,7 @@ import PackStats from '../components/pack/PackStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import MissingCardsPanel from '../components/collection/MissingCardsPanel.svelte';
+import WishlistPanel from '../components/collection/WishlistPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
 
@@ -74,6 +75,16 @@ const collectionPageSchema = {
     </ErrorBoundary>
   </div>
 
+  <!-- Wishlist Panel (PACK-020) -->
+  <div class="wishlist-section">
+    <ErrorBoundary
+      fallbackTitle="Wishlist Error"
+      fallbackMessage="We couldn't load your wishlist. Please refresh the page."
+    >
+      <WishlistPanel client:load />
+    </ErrorBoundary>
+  </div>
+
   <!-- Collection Stats -->
   <div class="stats-section">
     <CollectionStats client:load />
@@ -135,5 +146,10 @@ const collectionPageSchema = {
 
   .missing-cards-section {
     padding: 0 1rem 2rem 1rem;
+  }
+
+  .wishlist-section {
+    padding: 0 1rem 2rem 1rem;
+    background: radial-gradient(ellipse at top, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
   }
 </style>

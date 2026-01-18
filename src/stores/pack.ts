@@ -5,6 +5,8 @@ import { addPackToCollection, getPityCounter } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
+import { wishlist } from './wishlist';
+import { findPulledWishlistedCards } from '../lib/collection/utils';
 
 // Current pack type selection (for UI state)
 export const selectedPackType = atom<PackType>('standard');
@@ -146,6 +148,16 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
           );
           storageError.set(storageAppError);
           logError(storageAppError, saveResult.error);
+        }
+
+        // PACK-020: Check if any pulled cards are on wishlist
+        const currentWishlist = wishlist.get();
+        const pulledCardIds = pack.cards.map(card => card.id);
+        const wishlistedCardIds = findPulledWishlistedCards(pulledCardIds, currentWishlist.entries);
+
+        if (wishlistedCardIds.length > 0) {
+          // Store wishlisted card IDs for notification display
+          (pack as any).wishlistedCards = wishlistedCardIds;
         }
 
         // Track pack open event
