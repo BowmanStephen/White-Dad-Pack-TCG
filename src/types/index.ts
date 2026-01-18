@@ -430,6 +430,18 @@ export const STAT_ICONS: Record<keyof CardStats, string> = {
   beerSnob: '🍺',
 };
 
+// Stat Descriptions (for tooltips)
+export const STAT_DESCRIPTIONS: Record<keyof CardStats, string> = {
+  dadJoke: 'Quality of terrible puns and "groaner" jokes. Higher = worse (and therefore better) jokes.',
+  grillSkill: 'BBQ mastery level. Determines success at grilling meats, veggies, and avoiding food poisoning.',
+  fixIt: 'Repair capabilities. Covers home repairs, DIY projects, and the classic "I\'ll fix it this weekend".',
+  napPower: 'Ability to fall asleep anywhere, anytime. Critical for the Sunday afternoon couch recharge.',
+  remoteControl: 'Channel surfing expertise. Higher values mean faster navigation and better show selection.',
+  thermostat: 'Temperature control obsession. The sacred duty of adjusting the temp by exactly one degree.',
+  sockSandal: 'Fashion confidence in the most iconic dad footwear. A bold statement of comfort over style.',
+  beerSnob: 'Craft beer knowledge and appreciation. Includes brewery recommendations and proper glassware usage.',
+};
+
 // ============================================================================
 // ANALYTICS TYPES
 // ============================================================================

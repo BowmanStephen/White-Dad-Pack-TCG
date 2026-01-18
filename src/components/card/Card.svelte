@@ -374,7 +374,7 @@
 
       <!-- Stats section -->
       <div class="relative z-20 px-3 mt-3">
-        <CardStats stats={card.stats} {rarityConfig} compact={size === 'sm'} />
+        <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={size === 'sm'} />
       </div>
 
       <!-- Flavor text -->

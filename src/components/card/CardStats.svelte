@@ -1,10 +1,12 @@
 <script lang="ts">
-  import type { CardStats as CardStatsType, RarityConfig } from '../../types';
+  import type { CardStats as CardStatsType, RarityConfig, Rarity } from '../../types';
   import { STAT_ICONS, STAT_NAMES } from '../../types';
+  import StatTooltip from './StatTooltip.svelte';
 
   export let stats: CardStatsType;
   export let rarityConfig: RarityConfig;
   export let compact: boolean = false;
+  export let cardRarity: Rarity = 'rare'; // Default to rare if not provided
 
   $: statEntries = Object.entries(stats)
     .map(([key, value]) => ({
@@ -30,13 +32,33 @@
     }
     return `box-shadow: 0 0 8px ${rarityConfig.glowColor}55;`;
   };
+
+  // Tooltip state
+  let tooltipTargets: Record<string, HTMLElement> = {};
+  let activeTooltip: { key: string; element: HTMLElement } | null = null;
+
+  // Svelte action to register tooltip targets
+  function tooltipTarget(node: HTMLElement, { key, register }: { key: string; register: (el: HTMLElement) => void }) {
+    register(node);
+    return {
+      destroy() {
+        // Cleanup if needed
+      }
+    };
+  }
 </script>
 
 <div class="space-y-1.5 stats-grid">
   {#each statEntries as stat, i}
     <div
-      class="flex items-center gap-1.5 stat-row"
+      class="flex items-center gap-1.5 stat-row cursor-help"
       class:high-stat={stat.isHighStat}
+      role="button"
+      tabindex="0"
+      aria-label="{stat.name}: {stat.value} out of 100. Press or hold for details."
+      on:mouseenter={() => activeTooltip = { key: stat.key, element: tooltipTargets[stat.key] }}
+      on:mouseleave={() => activeTooltip = null}
+      use:tooltipTarget={{ key: stat.key, register: (el) => tooltipTargets[stat.key] = el }}
     >
       <span class="text-xs w-4 drop-shadow-sm stat-icon" aria-hidden="true">{stat.icon}</span>
       <span class="text-[9px] text-slate-400 stat-label font-medium uppercase tracking-tight" class:text-slate-300={stat.isHighStat}>{stat.name}</span>
@@ -69,6 +91,16 @@
     </div>
   {/each}
 </div>
+
+<!-- Tooltip for active stat -->
+{#if activeTooltip}
+  <StatTooltip
+    statKey={activeTooltip.key}
+    statValue={stats[activeTooltip.key]}
+    triggerElement={activeTooltip.element}
+    cardRarity={cardRarity}
+  />
+{/if}
 
 <style>
   @keyframes shimmer {
