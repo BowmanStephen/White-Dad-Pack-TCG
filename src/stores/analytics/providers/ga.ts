@@ -203,6 +203,33 @@ class GoogleAnalyticsProvider implements AnalyticsProvider {
           },
         };
 
+      case 'battle_played':
+        return {
+          name: 'battle_played',
+          params: {
+            ...baseParams,
+            result: event.data.result,
+            opponent_type: event.data.opponentType,
+            deck_size: event.data.deckSize,
+            battle_duration: event.data.battleDuration,
+            total_damage: event.data.totalDamage,
+            total_damage_taken: event.data.totalDamageTaken,
+          },
+        };
+
+      case 'deck_created':
+        return {
+          name: 'deck_created',
+          params: {
+            ...baseParams,
+            deck_size: event.data.deckSize,
+            average_rarity: event.data.averageRarity,
+            deck_type: event.data.deckType,
+            card_count: event.data.cardCount,
+            total_power: event.data.totalPower,
+          },
+        };
+
       default:
         return {
           name: 'unknown_event',

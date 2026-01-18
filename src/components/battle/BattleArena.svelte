@@ -1,5 +1,6 @@
 <script lang="ts">
   import { collection } from '../../stores/collection';
+  import { trackEvent } from '../../stores/analytics';
   import type { Card as CardType, PackCard } from '../../types';
   import { RARITY_CONFIG } from '../../types';
   import type { StatusEffect } from '../../lib/mechanics/combat';
@@ -466,6 +467,32 @@
     isBattling = false;
     canSkip = false;
     canReplay = true;
+
+    // Track battle played event (PACK-071)
+    trackBattlePlayed(result, playerWins);
+  }
+
+  function trackBattlePlayed(result: DuelResult, playerWon: boolean): void {
+    if (!selectedCard || !opponentCard) return;
+
+    // Calculate battle duration (could be tracked more precisely with a timer)
+    const battleDuration = 0; // Not currently tracked precisely
+
+    // Calculate total stats for both cards
+    const playerStats = Object.values(selectedCard.stats).reduce((sum, val) => sum + val, 0);
+    const opponentStats = Object.values(opponentCard.stats).reduce((sum, val) => sum + val, 0);
+
+    trackEvent({
+      type: 'battle_played',
+      data: {
+        result: playerWon ? 'win' : 'loss',
+        opponentType: 'ai', // Currently only AI battles
+        deckSize: 1, // 1v1 card battles
+        battleDuration,
+        totalDamage: playerStats,
+        totalDamageTaken: opponentStats,
+      }
+    });
   }
 
   function sleep(ms: number): Promise<void> {

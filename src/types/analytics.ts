@@ -23,7 +23,9 @@ export type AnalyticsEventType =
   | 'trade_create'        // User created a trade offer (US078)
   | 'trade_accept'        // User accepted a trade (US078)
   | 'trade_reject'        // User rejected a trade (US078)
-  | 'trade_cancel';       // User cancelled a trade (US078)
+  | 'trade_cancel'        // User cancelled a trade (US078)
+  | 'battle_played'       // User played a battle match (PACK-071)
+  | 'deck_created';       // User created a new deck (PACK-071)
 
 // Share platforms
 export type SharePlatform = 'twitter' | 'discord' | 'download' | 'native' | 'copy_link';
@@ -170,6 +172,31 @@ export interface DailyRewardClaimEvent extends AnalyticsEvent {
   };
 }
 
+// Battle played event (PACK-071)
+export interface BattlePlayedEvent extends AnalyticsEvent {
+  type: 'battle_played';
+  data: {
+    result: 'win' | 'loss' | 'draw';        // Battle result
+    opponentType: 'ai' | 'pvp';             // Opponent type
+    deckSize: number;                        // Number of cards in deck
+    battleDuration: number;                  // Battle duration in seconds
+    totalDamage: number;                     // Total damage dealt
+    totalDamageTaken: number;                // Total damage received
+  };
+}
+
+// Deck created event (PACK-071)
+export interface DeckCreatedEvent extends AnalyticsEvent {
+  type: 'deck_created';
+  data: {
+    deckSize: number;                        // Number of cards in deck
+    averageRarity: string;                   // Average rarity tier
+    deckType: string;                        // Deck type/archetype (custom, prebuilt, etc.)
+    cardCount: number;                       // Number of cards
+    totalPower: number;                      // Total deck power/stats
+  };
+}
+
 // Union type of all analytics events
 export type AnyAnalyticsEvent =
   | PackOpenEvent
@@ -184,7 +211,9 @@ export type AnyAnalyticsEvent =
   | ModalOpenEvent
   | ModalCloseEvent
   | AchievementUnlockEvent
-  | DailyRewardClaimEvent;
+  | DailyRewardClaimEvent
+  | BattlePlayedEvent
+  | DeckCreatedEvent;
 
 // Analytics configuration
 export interface AnalyticsConfig {

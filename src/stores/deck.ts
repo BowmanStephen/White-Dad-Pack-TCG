@@ -18,6 +18,8 @@ import {
   validateDeck,
   canAddCardToDeck
 } from '@/lib/deck';
+import { trackEvent } from './analytics';
+import { RARITY_ORDER } from '@/types';
 
 /**
  * All saved decks (max 10)
@@ -133,6 +135,8 @@ export function saveCurrentDeck(): void {
   const existingIndex = allDecks.findIndex(d => d.id === deck.id);
 
   let newDecks: Deck[];
+  const isNewDeck = existingIndex < 0;
+
   if (existingIndex >= 0) {
     // Update existing deck
     newDecks = [...allDecks];
@@ -146,6 +150,47 @@ export function saveCurrentDeck(): void {
   }
 
   decks.set(newDecks);
+
+  // Track deck creation for new decks only (not updates)
+  if (isNewDeck) {
+    trackDeckCreated(deck);
+  }
+}
+
+/**
+ * Track deck created analytics event
+ */
+function trackDeckCreated(deck: Deck): void {
+  // Calculate total deck power (sum of all card stats)
+  let totalPower = 0;
+  let rarityScores: number[] = [];
+
+  for (const card of deck.cards) {
+    // Sum all 8 stats
+    const cardPower = Object.values(card.card.stats).reduce((sum, val) => sum + val, 0);
+    totalPower += cardPower * card.count;
+
+    // Calculate rarity score for average
+    const rarityIndex = RARITY_ORDER.indexOf(card.card.rarity);
+    rarityScores.push(...Array(card.count).fill(rarityIndex));
+  }
+
+  // Calculate average rarity
+  const avgRarityScore = rarityScores.length > 0
+    ? rarityScores.reduce((a, b) => a + b, 0) / rarityScores.length
+    : 0;
+  const averageRarity = RARITY_ORDER[Math.round(avgRarityScore)] || 'common';
+
+  trackEvent({
+    type: 'deck_created',
+    data: {
+      deckSize: deck.cards.length,
+      averageRarity,
+      deckType: 'custom', // All user-created decks are custom
+      cardCount: deck.cards.reduce((sum, card) => sum + card.count, 0),
+      totalPower,
+    }
+  });
 }
 
 /**
