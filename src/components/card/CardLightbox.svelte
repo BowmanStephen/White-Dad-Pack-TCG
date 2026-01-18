@@ -4,25 +4,31 @@
     isLightboxOpen,
     currentCard,
     currentIndex,
+    cardList,
     nextCard,
     prevCard,
     closeLightbox,
     hasNextCard,
     hasPrevCard,
     getProgress,
+    isCardFlipped,
+    toggleCardFlip,
   } from '../../stores/lightbox';
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import type { PackCard } from '../../types';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import CardStats from './CardStats.svelte';
+  import Card from './Card.svelte';
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
 
   // Subscribe to store changes
   $: isOpen = $isLightboxOpen;
   $: card = $currentCard;
+  $: cards = $cardList;
   $: index = $currentIndex;
   $: progress = getProgress();
+  $: isFlipped = $isCardFlipped;
 
   // Share support check
   $: shareSupport = checkShareSupport();
@@ -49,6 +55,13 @@
       case 'ArrowRight':
         if (hasNextCard()) nextCard();
         break;
+      case 'f':
+      case 'F':
+      case ' ':
+        // Space or F to flip
+        event.preventDefault();
+        toggleCardFlip();
+        break;
     }
   }
 
@@ -57,6 +70,11 @@
     if (event.target === lightboxElement) {
       closeLightbox();
     }
+  }
+
+  // Handle card click to flip (PACK-036)
+  function handleCardClick() {
+    toggleCardFlip();
   }
 
   // Download functionality
@@ -69,7 +87,7 @@
       await downloadCardImage(card, cardImageElement, { scale: 2 });
     } catch (error) {
       console.error('Failed to download card image:', error);
-      shareError = 'Failed to download image. Please try again.';
+      shareError = 'Failed to download card image. Please try again.';
     } finally {
       isGeneratingImage = false;
     }
@@ -92,7 +110,7 @@
       }
     } catch (error) {
       console.error('Failed to share card image:', error);
-      shareError = 'Failed to share image. Please try again.';
+      shareError = 'Failed to share card image. Please try again.';
       isGeneratingImage = false;
     } finally {
       isGeneratingImage = false;
@@ -120,25 +138,6 @@
     }
   }
 
-  // Helper function for card background
-  function getCardBackground(rarity: string): string {
-    switch (rarity) {
-      case 'common':
-      case 'uncommon':
-        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
-      case 'rare':
-        return 'linear-gradient(to bottom right, #1e3a8a, #1e293b, #172554)';
-      case 'epic':
-        return 'linear-gradient(to bottom right, #581c87, #312e81, #3b0764)';
-      case 'legendary':
-        return 'linear-gradient(to bottom right, #78350f, #7c2d12, #450a0a)';
-      case 'mythic':
-        return 'linear-gradient(to bottom right, #831843, #701a75, #500724)';
-      default:
-        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
-    }
-  }
-
   function getHoloVariantName(holoType: string): string {
     const names: Record<string, string> = {
       none: 'Non-Holo',
@@ -148,10 +147,6 @@
       prismatic: 'Prismatic Holo',
     };
     return names[holoType] || holoType;
-  }
-
-  function isStatlessCard(type: string): boolean {
-    return isSpecialCardType(type) && type !== 'EVOLUTION' && type !== 'ITEM';
   }
 </script>
 
@@ -197,45 +192,56 @@
           </button>
         {/if}
 
-        <!-- Card Display (Max Resolution) -->
+        <!-- PACK-036: Card Display with Flip Animation -->
         <div class="lightbox-card-display">
           <div
-            class="lightbox-card-image"
-            bind:this={cardImageElement}
-            style="--rarity-color: {RARITY_CONFIG[card.rarity].color}; --rarity-glow: {RARITY_CONFIG[card.rarity].glowColor};"
+            class="lightbox-card-wrapper"
+            on:click={handleCardClick}
+            role="button"
+            tabindex="0"
+            aria-label="Click to flip card"
+            on:keydown={(e) => e.key === 'Enter' && handleCardClick()}
           >
-            <!-- Card Background -->
-            <div class="card-bg-full" style="background: {getCardBackground(card.rarity)};">
-              <!-- Full-size artwork -->
-              <div class="artwork-full">
-                <GenerativeCardArt
-                  card={card}
-                  width={800}
-                  height={800}
-                  showName={false}
-                  alt={card.name}
+            <div
+              class="lightbox-card-inner"
+              class:flipped={isFlipped}
+              bind:this={cardImageElement}
+            >
+              <!-- Card Front -->
+              <div class="lightbox-card-face">
+                <Card
+                  {card}
+                  size="lg"
+                  interactive={false}
+                  enableLightbox={false}
+                  enableShare={false}
+                  showBack={false}
+                  isFlipped={false}
+                  cardList={cards}
+                  cardIndex={index}
                 />
               </div>
 
-              <!-- Holo overlay for full-screen effect -->
-              {#if card.isHolo}
-                <div class="holo-overlay-full"></div>
-              {/if}
-
-              <!-- Card name overlay -->
-              <div class="card-name-overlay">
-                <h2 id="lightbox-card-name" class="card-title-full">{card.name}</h2>
-                <p class="card-subtitle-full">{card.subtitle}</p>
-              </div>
-
-              <!-- Rarity indicator -->
-              <div class="rarity-badge-full" style="background: {RARITY_CONFIG[card.rarity].color};">
-                {RARITY_CONFIG[card.rarity].name}
-                {#if card.isHolo}
-                  <span class="holo-indicator">✨</span>
-                {/if}
+              <!-- Card Back -->
+              <div class="lightbox-card-face lightbox-card-back">
+                <Card
+                  {card}
+                  size="lg"
+                  interactive={false}
+                  enableLightbox={false}
+                  enableShare={false}
+                  showBack={true}
+                  isFlipped={true}
+                  cardList={cards}
+                  cardIndex={index}
+                />
               </div>
             </div>
+          </div>
+
+          <!-- Flip hint -->
+          <div class="flip-hint" class:flipped-hint={isFlipped}>
+            {isFlipped ? 'Click to see front' : 'Click to see back'}
           </div>
         </div>
 
@@ -293,21 +299,17 @@
             <p class="flavor-text">"{card.flavorText}"</p>
           </div>
 
-          <!-- Card Stats -->
-          {#if !isStatlessCard(card.type)}
-            <div class="stats-section">
-              <h3 class="stats-title">Stats</h3>
-              <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={false} cardType={card.type} />
-            </div>
-          {:else}
-            <div class="statless-card-section">
-              <p class="statless-card-text">{getSpecialCardTypeLabel(card.type)} Card</p>
-              <p class="statless-card-subtext">Effect-based abilities</p>
-            </div>
-          {/if}
-
           <!-- Action Buttons -->
           <div class="lightbox-actions">
+            <button
+              class="action-button action-button-secondary"
+              on:click={toggleCardFlip}
+              style="--button-color: {RARITY_CONFIG[card.rarity].color};"
+              aria-label="Flip card"
+            >
+              <span>{isFlipped ? '🔄 Show Front' : '🔄 Show Back'}</span>
+            </button>
+
             {#if canShare}
               <button
                 class="action-button action-button-primary"
@@ -356,6 +358,7 @@
       <!-- Keyboard Hints -->
       <div class="keyboard-hints" aria-hidden="true">
         <span class="hint">← → to navigate</span>
+        <span class="hint">F / Space to flip</span>
         <span class="hint">Esc to close</span>
       </div>
     </div>
@@ -480,109 +483,60 @@
     }
   }
 
-  /* Card Display */
+  /* PACK-036: Card Display with Flip Animation */
   .lightbox-card-display {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 1rem;
   }
 
-  .lightbox-card-image {
+  .lightbox-card-wrapper {
     position: relative;
     width: 100%;
-    max-width: 600px;
-    aspect-ratio: 1 / 1.2;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 0 60px var(--rarity-glow), 0 0 120px var(--rarity-glow)55;
+    max-width: 500px;
+    cursor: pointer;
+    perspective: 1200px;
   }
 
-  .card-bg-full {
-    width: 100%;
-    height: 100%;
+  .lightbox-card-inner {
     position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease-out; /* PACK-036: 0.3s ease-out timing */
+    will-change: transform;
   }
 
-  .artwork-full {
+  .lightbox-card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .lightbox-card-face {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
-  .artwork-full :global(canvas) {
-    width: 100% !important;
-    height: 100% !important;
+  .lightbox-card-back {
+    transform: rotateY(180deg);
   }
 
-  .holo-overlay-full {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      transparent 100%
-    );
-    animation: holo-shift 3s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  @keyframes holo-shift {
-    0%, 100% {
-      opacity: 0.3;
-      transform: translateX(-10%);
-    }
-    50% {
-      opacity: 0.6;
-      transform: translateX(10%);
-    }
-  }
-
-  .card-name-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 2rem 1.5rem 1rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-    text-align: center;
-  }
-
-  .card-title-full {
-    font-size: 2rem;
-    font-weight: 900;
-    color: white;
-    margin: 0;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-  }
-
-  .card-subtitle-full {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0.25rem 0 0 0;
-    font-style: italic;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-  }
-
-  .rarity-badge-full {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+  .flip-hint {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+    background: rgba(15, 23, 42, 0.8);
     padding: 0.5rem 1rem;
     border-radius: 2rem;
-    font-weight: 700;
-    font-size: 0.875rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    transition: all 0.3s ease;
   }
 
-  .holo-indicator {
-    font-size: 1rem;
+  .flip-hint.flipped-hint {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
   }
 
   /* Info Panel */
@@ -673,43 +627,6 @@
     line-height: 1.5;
   }
 
-  .stats-section {
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 0.5rem;
-    border: 1px solid rgba(71, 85, 105, 0.2);
-  }
-
-  .stats-title {
-    margin: 0 0 0.75rem 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .statless-card-section {
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 0.5rem;
-    border: 1px solid rgba(71, 85, 105, 0.2);
-    text-align: center;
-  }
-
-  .statless-card-text {
-    margin: 0 0 0.25rem 0;
-    font-size: 0.875rem;
-    color: #94a3b8;
-    font-weight: 600;
-  }
-
-  .statless-card-subtext {
-    margin: 0;
-    font-size: 0.75rem;
-    color: #64748b;
-  }
-
   .lightbox-actions {
     display: flex;
     flex-direction: column;
@@ -772,6 +689,7 @@
     justify-content: center;
     gap: 2rem;
     padding-top: 1rem;
+    flex-wrap: wrap;
   }
 
   .hint {
@@ -799,7 +717,8 @@
     .lightbox-close,
     .lightbox-nav,
     .action-button,
-    .holo-overlay-full {
+    .lightbox-card-inner,
+    .flip-hint {
       animation: none !important;
       transition: none !important;
     }

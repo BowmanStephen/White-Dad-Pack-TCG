@@ -27,6 +27,9 @@ export const cardList = atom<PackCard[]>([]);
 // Current index in card list
 export const currentIndex = atom<number>(0);
 
+// Flip state for card inspection (PACK-036)
+export const isCardFlipped = atom<boolean>(false);
+
 // ============================================================================
 // ACTIONS
 // ============================================================================
@@ -57,6 +60,7 @@ export function closeLightbox() {
   currentCard.set(null);
   cardList.set([]);
   currentIndex.set(0);
+  isCardFlipped.set(false); // Reset flip state
 
   // Restore body scroll
   if (typeof document !== 'undefined') {
@@ -131,4 +135,18 @@ export function getProgress(): string {
   if (cards.length === 0) return '0 of 0';
 
   return `${index + 1} of ${cards.length}`;
+}
+
+/**
+ * Toggle card flip state (PACK-036)
+ */
+export function toggleCardFlip() {
+  isCardFlipped.set(!isCardFlipped.get());
+}
+
+/**
+ * Set card flip state (PACK-036)
+ */
+export function setCardFlip(flipped: boolean) {
+  isCardFlipped.set(flipped);
 }
