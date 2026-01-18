@@ -9,6 +9,7 @@
   import HoloEffect from './HoloEffect.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
   import { openLightbox } from '../../stores/lightbox';
+  import { getRandomJoke } from '../../lib/jokes';
 
   export let card: PackCard;
   export let isFlipped: boolean = false;
@@ -21,12 +22,14 @@
   export let enableLightbox: boolean = true;
   export let cardList: PackCard[] = [];
   export let cardIndex: number = 0;
+  export let useRandomJoke: boolean = false;
 
   $: rarityConfig = RARITY_CONFIG[card.rarity];
   $: typeIcon = DAD_TYPE_ICONS[card.type];
   $: typeName = DAD_TYPE_NAMES[card.type];
   $: shareSupport = checkShareSupport();
   $: canShare = enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles;
+  $: displayFlavorText = useRandomJoke ? getRandomJoke(card.type) : card.flavorText;
   const upgradeLevel = 0;
 
   const sizeClasses = {
@@ -403,7 +406,7 @@
 
       <!-- Flavor text -->
       <div class="relative z-20 mx-3 mt-2 p-2.5 bg-black/40 rounded-lg text-xs text-slate-300 italic leading-snug border border-white/5">
-        "{card.flavorText}"
+        "{displayFlavorText}"
       </div>
 
       <!-- Abilities section -->
