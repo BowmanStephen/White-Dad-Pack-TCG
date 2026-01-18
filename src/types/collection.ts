@@ -8,6 +8,12 @@ export interface PityCounter {
   mythic: number;    // Packs since last mythic
 }
 
+// PACK-030: Streak counter state
+export interface StreakCounter {
+  current: number;  // Current consecutive rare+ streak
+  best: number;     // Best streak ever achieved
+}
+
 // Collection Metadata - Statistics about user's collection
 export interface CollectionMetadata {
   totalPacksOpened: number;
@@ -18,6 +24,7 @@ export interface CollectionMetadata {
   created?: Date;
   rarityCounts?: Record<Rarity, number>;
   pityCounter?: PityCounter; // PACK-003: Pity system state
+  streakCounter?: StreakCounter; // PACK-030: Streak tracking
 }
 
 // Collection - All packs owned by user

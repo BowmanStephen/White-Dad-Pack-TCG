@@ -13,11 +13,17 @@ import {
   isStorageAvailable
 } from '@/lib/storage/indexeddb';
 import { updatePityCounter, DEFAULT_PITY_COUNTER } from '@/lib/pack/pity';
-import type { PityCounter } from '@/types/collection';
+import type { PityCounter, StreakCounter } from '@/types/collection';
 
 // ============================================================================
 // STORAGE LAYER (INDEXEDDB)
 // ============================================================================
+
+// PACK-030: Default streak counter
+const DEFAULT_STREAK_COUNTER: StreakCounter = {
+  current: 0,
+  best: 0
+};
 
 // Initialize empty collection
 const DEFAULT_COLLECTION: Collection = {
@@ -37,7 +43,8 @@ const DEFAULT_COLLECTION: Collection = {
       legendary: 0,
       mythic: 0
     },
-    pityCounter: DEFAULT_PITY_COUNTER // PACK-003: Initialize pity counter
+    pityCounter: DEFAULT_PITY_COUNTER, // PACK-003: Initialize pity counter
+    streakCounter: DEFAULT_STREAK_COUNTER // PACK-030: Initialize streak counter
   }
 };
 
@@ -202,6 +209,22 @@ export function getCollectionStats(): CollectionStats {
   };
 }
 
+// PACK-030: Get current streak counter
+export function getStreakCounter(): StreakCounter {
+  const current = collection.get();
+  return current.metadata.streakCounter || DEFAULT_STREAK_COUNTER;
+}
+
+// PACK-030: Get current streak (consecutive rare+ packs)
+export function getCurrentStreak(): number {
+  return getStreakCounter().current;
+}
+
+// PACK-030: Get best streak ever achieved
+export function getBestStreak(): number {
+  return getStreakCounter().best;
+}
+
 // ============================================================================
 // COLLECTION OPERATIONS
 // ============================================================================
@@ -244,6 +267,24 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
     const currentPityCounter = current.metadata.pityCounter || DEFAULT_PITY_COUNTER;
     const newPityCounter = updatePityCounter(currentPityCounter, pulledRarities);
 
+    // PACK-030: Calculate streak (consecutive rare+ packs)
+    const currentStreak = current.metadata.streakCounter || DEFAULT_STREAK_COUNTER;
+    let newStreak: StreakCounter;
+
+    if (rarePullsInPack > 0) {
+      // Has rare+ card: increment current streak
+      newStreak = {
+        current: currentStreak.current + 1,
+        best: Math.max(currentStreak.best, currentStreak.current + 1)
+      };
+    } else {
+      // No rare+ card: reset streak
+      newStreak = {
+        current: 0,
+        best: currentStreak.best
+      };
+    }
+
     // Update collection with new pack
     const newCollection: Collection = {
       packs: [pack, ...current.packs], // New packs first
@@ -255,7 +296,8 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
         holoPulls: current.metadata.holoPulls + holoPullsInPack,
         created: current.metadata.created,
         rarityCounts: newRarityCounts,
-        pityCounter: newPityCounter // PACK-003: Include updated pity counter
+        pityCounter: newPityCounter, // PACK-003: Include updated pity counter
+        streakCounter: newStreak // PACK-030: Include updated streak counter
       }
     };
 
@@ -288,7 +330,8 @@ export function clearUserCollection(): { success: boolean; error?: string } {
         holoPulls: 0,
         created: new Date(),
         rarityCounts: initializeRarityCounts(),
-        pityCounter: DEFAULT_PITY_COUNTER // PACK-003: Reset pity counter
+        pityCounter: DEFAULT_PITY_COUNTER, // PACK-003: Reset pity counter
+        streakCounter: DEFAULT_STREAK_COUNTER // PACK-030: Reset streak counter
       }
     };
 

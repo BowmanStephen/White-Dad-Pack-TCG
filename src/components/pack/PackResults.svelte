@@ -12,7 +12,7 @@
   import ConfettiEffects from '../card/ConfettiEffects.svelte';
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import ScreenShake from '../card/ScreenShake.svelte';
-  import { collection } from '../../stores/collection';
+  import { collection, getCurrentStreak, getBestStreak } from '../../stores/collection';
   import WishlistToast from '../wishlist/WishlistToast.svelte';
   import { removeFromWishlist } from '../../stores/wishlist';
 
@@ -370,6 +370,11 @@
 
   // PACK-029: Calculate pack quality
   const packQuality = $derived(calculatePackQuality(pack.cards));
+
+  // PACK-030: Get streak data
+  const currentStreak = $derived(getCurrentStreak());
+  const bestStreak = $derived(getBestStreak());
+  const hasActiveStreak = $derived(currentStreak > 0);
 </script>
 
 <!-- Celebration Effects -->
@@ -472,6 +477,59 @@
       </div>
     </div>
   </div>
+
+  <!-- PACK-030: Streak Counter -->
+  {#if hasActiveStreak || bestStreak > 0}
+    <div
+      class="mb-12 p-8 bg-slate-900/50 rounded-3xl border border-white/5 backdrop-blur-sm"
+      in:fly={{ y: 30, duration: 600, delay: 550 }}
+    >
+      <div class="flex items-center justify-between gap-6">
+        <div class="flex-1">
+          <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3 flex items-center gap-2">
+            <span>🔥</span>
+            <span>Rare+ Streak</span>
+          </h3>
+          <div class="flex items-baseline gap-3">
+            <div class="text-4xl md:text-5xl font-black tracking-tighter" style="color: {hasActiveStreak ? '#f97316' : '#94a3b8'};">
+              {currentStreak}
+            </div>
+            <div class="text-slate-500 text-xl">
+              {currentStreak === 1 ? 'pack' : 'packs'}
+            </div>
+          </div>
+          <p class="text-slate-400 text-sm mt-2 font-medium">
+            {hasActiveStreak
+              ? `You're on fire! ${currentStreak} consecutive ${currentStreak === 1 ? 'pack with' : 'packs with'} rare+ cards.`
+              : 'Streak reset. Open a pack with rare+ cards to start a new streak!'}
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div
+            class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center border-4 relative"
+            style="
+              background: linear-gradient(135deg, #f9731622, #f9731644);
+              border-color: #f97316;
+              box-shadow: 0 0 30px #f9731644;
+            "
+          >
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-black" style="color: #f97316;">
+                {bestStreak}
+              </div>
+              <div class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1">
+                BEST
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 text-xs font-bold uppercase tracking-widest" style="color: #f97316;">
+            All-Time Best
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
 
   <!-- Best card highlight -->
   <div 
