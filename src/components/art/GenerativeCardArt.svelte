@@ -13,10 +13,14 @@
   let imageUrl: string = '';
   let isGenerating = true;
   let useFallback = false;
+  let imageLoaded = false;
+  let imageLoadingError = false;
 
   function generateArt() {
+    // If card has artwork, we'll let the img tag handle it with lazy loading
     if (card.artwork && !useFallback) {
       isGenerating = false;
+      imageLoaded = false;
       return;
     }
 
@@ -35,8 +39,22 @@
     img.onload = () => {
       ctx.drawImage(img, 0, 0);
       isGenerating = false;
+      imageLoaded = true;
     };
     img.src = imageUrl;
+  }
+
+  function handleImageLoad() {
+    imageLoaded = true;
+    imageLoadingError = false;
+    isGenerating = false;
+  }
+
+  function handleImageError() {
+    imageLoadingError = true;
+    useFallback = true;
+    imageLoaded = false;
+    generateArt();
   }
 
   // Generate artwork on mount
@@ -65,18 +83,22 @@
     {height}
     class="generative-card-art absolute inset-0 w-full h-full"
     class:loading={isGenerating && !card.artwork}
+    class:hidden={card.artwork && !useFallback && imageLoaded}
     aria-label={alt}
+    aria-hidden={card.artwork && !useFallback && imageLoaded}
   ></canvas>
 
   {#if card.artwork && !useFallback}
     <img
       src={card.artwork}
       alt={alt}
-      class="absolute inset-0 z-10 w-full h-full object-cover"
-      on:error={() => {
-        useFallback = true;
-        generateArt();
-      }}
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 z-10 w-full h-full object-cover transition-opacity duration-300"
+      class:opacity-0={!imageLoaded}
+      class:opacity-100={imageLoaded}
+      onload={handleImageLoad}
+      onerror={handleImageError}
     />
   {/if}
 </div>
@@ -87,6 +109,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .hidden {
+    display: none;
   }
 
   .loading {
@@ -121,6 +147,10 @@
   @media (prefers-reduced-motion: reduce) {
     .spinner {
       animation: none;
+    }
+
+    .transition-opacity {
+      transition: none;
     }
   }
 </style>
