@@ -2807,7 +2807,7 @@
       "cardNumber": 91,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "092",
@@ -3047,7 +3047,7 @@
       "cardNumber": 99,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "100",
@@ -3077,7 +3077,7 @@
       "cardNumber": 100,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "101",
@@ -3107,7 +3107,7 @@
       "cardNumber": 101,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "102",
@@ -3137,7 +3137,7 @@
       "cardNumber": 102,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "103",
@@ -3167,7 +3167,7 @@
       "cardNumber": 103,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "104",
@@ -3197,7 +3197,7 @@
       "cardNumber": 104,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     },
     {
       "id": "105",
@@ -3227,7 +3227,7 @@
       "cardNumber": 105,
       "totalInSeries": 150,
       "artist": "DadArt Studios",
-      "seasonId": 3
+      "seasonId": 1
     }
   ]
 }

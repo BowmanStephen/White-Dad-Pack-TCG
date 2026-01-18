@@ -1,5 +1,6 @@
 ---
 import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
+import InstallPrompt from '../components/pwa/InstallPrompt.svelte';
 
 interface Props {
   title?: string;
@@ -100,6 +101,8 @@ const fullImageURL = new URL(image, Astro.site!).href;
     </a>
     <slot />
 
+    <!-- PWA Install Prompt -->
+    <InstallPrompt client:load />
 
     <!-- Service Worker Registration (deferred for performance) -->
     <script is:inline define:vars={{}}>
