@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { closeModal, modalOpen } from '@/stores/ui';
-  import { t } from '@/i18n';
   import {
     getAllShortcuts,
     formatShortcutKey,
@@ -34,9 +33,18 @@
     }
   }
 
-  // Get description from translation
-  function getDescription(descriptionKey: string): string {
-    return t(descriptionKey as any);
+  // Category labels
+  const categoryLabels: Record<string, string> = {
+    navigation: 'Navigation',
+    pack: 'Pack Opening',
+    collection: 'Collection',
+    deck: 'Deck Builder',
+    general: 'General',
+  };
+
+  // Get category label
+  function getCategoryLabel(category: string): string {
+    return categoryLabels[category] || category;
   }
 </script>
 
@@ -52,12 +60,12 @@
       <!-- Header -->
       <div class="modal-header">
         <h2 id="shortcuts-title" class="modal-title">
-          {$t('keyboard.title')}
+          Keyboard Shortcuts
         </h2>
         <button
           class="modal-close-btn"
           on:click={closeModal}
-          aria-label={$t('common.close')}
+          aria-label="Close"
         >
           <svg
             fill="none"
@@ -77,7 +85,7 @@
 
       <!-- Description -->
       <p class="modal-description">
-        {$t('keyboard.description')}
+        Use these keyboard shortcuts to navigate and interact with DadDeck more efficiently.
       </p>
 
       <!-- Shortcuts List -->
@@ -86,13 +94,13 @@
           {#if shortcuts.length > 0}
             <div class="shortcut-category">
               <h3 class="category-title">
-                {$t(`keyboard.categories.${category}`)}
+                {getCategoryLabel(category)}
               </h3>
               <div class="shortcuts-grid">
                 {#each shortcuts as shortcut}
                   <div class="shortcut-item">
                     <div class="shortcut-description">
-                      {getDescription(shortcut.description)}
+                      {shortcut.description}
                     </div>
                     <kbd class="shortcut-key">
                       {formatShortcutKey(shortcut.key)}
@@ -108,7 +116,7 @@
       <!-- Footer -->
       <div class="modal-footer">
         <button class="btn-secondary" on:click={closeModal}>
-          {$t('common.close')}
+          Close
         </button>
       </div>
     </div>

@@ -1,18 +1,18 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
-  import type { Pack, PackCard } from '../../types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS } from '../../types';
+  import type { Pack, PackCard } from '@/types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS } from '@/types';
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
-  import { downloadPackImage, sharePackImage, shareToTwitter, generateCardImage, downloadCardImage, shareCardImage } from '../../lib/utils/image-generation';
-  import { calculatePackQuality } from '../../lib/utils/pack-quality';
-  import { openModal } from '../../stores/ui';
+  import { downloadPackImage, sharePackImage, shareToTwitter, generateCardImage, downloadCardImage, shareCardImage } from '@lib/utils/image-generation';
+  import { calculatePackQuality } from '@lib/utils/pack-quality';
+  import { openModal, showToast } from '@/stores/ui';
   import ShareModal from '../common/ShareModal.svelte';
   import Card from '../card/Card.svelte';
   import ConfettiEffects from '../card/ConfettiEffects.svelte';
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import ScreenShake from '../card/ScreenShake.svelte';
-  import { collection, getCurrentStreak, getBestStreak } from '../../stores/collection';
+  import { collection, getCurrentStreak, getBestStreak } from '@/stores/collection';
   import WishlistToast from '../wishlist/WishlistToast.svelte';
 
   interface Props {
@@ -41,13 +41,21 @@
   let isCardFlipped = $state(false);
   let flippedCardStates = $state(new Map<string, boolean>());
   let bestCardElement = $state<HTMLElement>();
-  let isGeneratingBestCardImage = $state(false);
-  let bestCardImageSuccess = $state(false);
-  let bestCardCopiedToClipboard = $state(false);
-
-  // PACK-020: Wishlist notification state
-  let showWishlistToast = $state(false);
-  let wishlistedCards = $state<PackCard[]>([]);
+   let isGeneratingBestCardImage = $state(false);
+   let bestCardImageSuccess = $state(false);
+   let bestCardCopiedToClipboard = $state(false);
+ 
+   // Error states for user feedback (string | false pattern)
+   let linkCopyError = $state<string | false>(false);
+   let nativeShareError = $state<string | false>(false);
+   let packShareError = $state<string | false>(false);
+   let bestCardShareError = $state<string | false>(false);
+   let bestCardDownloadError = $state<string | false>(false);
+   let bestCardCopyError = $state<string | false>(false);
+ 
+   // PACK-020: Wishlist notification state
+   let showWishlistToast = $state(false);
+   let wishlistedCards = $state<PackCard[]>([]);
 
   // Rarity order for sorting (mythic first, common last)
   const RARITY_ORDER: Record<string, number> = {
@@ -226,138 +234,147 @@
     openModal('share');
   }
 
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(window.location.origin);
-      copied = true;
-      clearTimeout(copyTimeout);
-      copyTimeout = setTimeout(() => {
-        copied = false;
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  }
+   async function copyLink() {
+     linkCopyError = false;
+     try {
+       await navigator.clipboard.writeText(window.location.origin);
+       copied = true;
+       clearTimeout(copyTimeout);
+       copyTimeout = setTimeout(() => {
+         copied = false;
+       }, 2000);
+     } catch (err) {
+       linkCopyError = true;
+       showToast('Failed to copy link. Please try again.', 'error');
+     }
+   }
 
-  async function handleNativeShare() {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'DadDeck™ - The Ultimate White Dad Trading Card Simulator',
-          text: `I just pulled a ${stats.bestCard.isHolo ? 'Holographic ' : ''}${bestRarityConfig.name} ${stats.bestCard.name}! Check out my DadDeck™ pulls.`,
-          url: window.location.origin,
-        });
-      } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          console.error('Share failed:', err);
-        }
-      }
-    }
-  }
+   async function handleNativeShare() {
+     if (navigator.share) {
+       nativeShareError = false;
+       try {
+         await navigator.share({
+           title: 'DadDeck™ - The Ultimate White Dad Trading Card Simulator',
+           text: `I just pulled a ${stats.bestCard.isHolo ? 'Holographic ' : ''}${bestRarityConfig.name} ${stats.bestCard.name}! Check out my DadDeck™ pulls.`,
+           url: window.location.origin,
+         });
+       } catch (err) {
+         if ((err as Error).name !== 'AbortError') {
+           nativeShareError = true;
+           showToast('Share failed. Please try again.', 'error');
+         }
+       }
+     }
+   }
 
-  async function handleSharePackImage() {
-    isGeneratingPackImage = true;
-    try {
-      const success = await sharePackImage(pack.cards);
-      if (success) {
-        packImageShareSuccess = true;
-        setTimeout(() => {
-          packImageShareSuccess = false;
-        }, 2000);
-      } else {
-        await downloadPackImage(pack.cards);
-      }
-    } catch (error) {
-      console.error('Pack image generation failed:', error);
-    } finally {
-      isGeneratingPackImage = false;
-    }
-  }
+   async function handleSharePackImage() {
+     isGeneratingPackImage = true;
+     packShareError = false;
+     try {
+       const success = await sharePackImage(pack.cards);
+       if (success) {
+         packImageShareSuccess = true;
+         setTimeout(() => {
+           packImageShareSuccess = false;
+         }, 2000);
+       } else {
+         await downloadPackImage(pack.cards);
+       }
+     } catch (error) {
+       packShareError = true;
+       showToast('Failed to share pack image. Please try again.', 'error');
+     } finally {
+       isGeneratingPackImage = false;
+     }
+   }
 
-  async function handleShareBestCard() {
-    if (!bestCardElement) {
-      console.error('Best card element not found');
-      return;
-    }
+   async function handleShareBestCard() {
+     if (!bestCardElement) {
+       bestCardShareError = 'Card element not available. Please try refreshing the page.';
+       return;
+     }
+ 
+     isGeneratingBestCardImage = true;
+     bestCardImageSuccess = false;
+     bestCardCopiedToClipboard = false;
+     bestCardShareError = false;
+ 
+     try {
+       const success = await shareCardImage(stats.bestCard, bestCardElement, {
+         shareTitle: 'DadDeck™ - Best Pull',
+         shareText: `I just pulled a ${bestRarityConfig.name} ${stats.bestCard.isHolo ? 'Holographic ' : ''}${stats.bestCard.name}! 🎴✨\n\nOpen your free pack at:`,
+         imageGeneration: { scale: 2 }
+       });
+ 
+       if (success) {
+         bestCardImageSuccess = true;
+         setTimeout(() => {
+           bestCardImageSuccess = false;
+         }, 3000);
+       } else {
+         // Fallback to download if share API not available
+         await handleDownloadBestCard();
+       }
+     } catch (error) {
+       bestCardShareError = 'Failed to share card. Please try again.';
+     } finally {
+       isGeneratingBestCardImage = false;
+     }
+   }
 
-    isGeneratingBestCardImage = true;
-    bestCardImageSuccess = false;
-    bestCardCopiedToClipboard = false;
+   async function handleDownloadBestCard() {
+     if (!bestCardElement) {
+       bestCardDownloadError = 'Card element not available. Please try refreshing the page.';
+       return;
+     }
+ 
+     isGeneratingBestCardImage = true;
+     bestCardDownloadError = false;
+ 
+     try {
+       await downloadCardImage(stats.bestCard, bestCardElement, { scale: 2 });
+     } catch (error) {
+       bestCardDownloadError = 'Failed to download card image. Please try again.';
+     } finally {
+       isGeneratingBestCardImage = false;
+     }
+   }
 
-    try {
-      const success = await shareCardImage(stats.bestCard, bestCardElement, {
-        shareTitle: 'DadDeck™ - Best Pull',
-        shareText: `I just pulled a ${bestRarityConfig.name} ${stats.bestCard.isHolo ? 'Holographic ' : ''}${stats.bestCard.name}! 🎴✨\n\nOpen your free pack at:`,
-        imageGeneration: { scale: 2 }
-      });
-
-      if (success) {
-        bestCardImageSuccess = true;
-        setTimeout(() => {
-          bestCardImageSuccess = false;
-        }, 3000);
-      } else {
-        // Fallback to download if share API not available
-        await handleDownloadBestCard();
-      }
-    } catch (error) {
-      console.error('Failed to share best card:', error);
-    } finally {
-      isGeneratingBestCardImage = false;
-    }
-  }
-
-  async function handleDownloadBestCard() {
-    if (!bestCardElement) {
-      console.error('Best card element not found');
-      return;
-    }
-
-    isGeneratingBestCardImage = true;
-
-    try {
-      await downloadCardImage(stats.bestCard, bestCardElement, { scale: 2 });
-    } catch (error) {
-      console.error('Failed to download best card image:', error);
-    } finally {
-      isGeneratingBestCardImage = false;
-    }
-  }
-
-  async function handleCopyBestCardImage() {
-    if (!bestCardElement) {
-      console.error('Best card element not found');
-      return;
-    }
-
-    isGeneratingBestCardImage = true;
-    bestCardCopiedToClipboard = false;
-
-    try {
-      const blob = await generateCardImage(stats.bestCard, bestCardElement, { scale: 2 });
-
-      // Check if Clipboard API with image support is available
-      if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': blob }),
-        ]);
-        bestCardCopiedToClipboard = true;
-        setTimeout(() => {
-          bestCardCopiedToClipboard = false;
-        }, 3000);
-      } else {
-        // Fallback to download if clipboard not available
-        console.warn('Clipboard image not supported, downloading instead');
-        await handleDownloadBestCard();
-      }
-    } catch (error) {
-      console.error('Failed to copy best card image to clipboard:', error);
-      // Fallback to download
-      await handleDownloadBestCard();
-    } finally {
-      isGeneratingBestCardImage = false;
-    }
-  }
+   async function handleCopyBestCardImage() {
+     if (!bestCardElement) {
+       bestCardCopyError = 'Card element not available. Please try refreshing the page.';
+       return;
+     }
+ 
+     isGeneratingBestCardImage = true;
+     bestCardCopiedToClipboard = false;
+     bestCardCopyError = false;
+ 
+     try {
+       const blob = await generateCardImage(stats.bestCard, bestCardElement, { scale: 2 });
+ 
+       // Check if Clipboard API with image support is available
+       if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+         await navigator.clipboard.write([
+           new ClipboardItem({ 'image/png': blob }),
+         ]);
+         bestCardCopiedToClipboard = true;
+         setTimeout(() => {
+           bestCardCopiedToClipboard = false;
+         }, 3000);
+       } else {
+         // Fallback to download if clipboard not available
+         showToast('Clipboard not supported. Downloading instead.', 'info');
+         await handleDownloadBestCard();
+       }
+     } catch (error) {
+       bestCardCopyError = 'Failed to copy to clipboard. Please try again.';
+       // Fallback to download
+       await handleDownloadBestCard();
+     } finally {
+       isGeneratingBestCardImage = false;
+     }
+   }
 
   const rarityCounts = $derived(Object.entries(stats.rarityBreakdown)
     .filter(([_, count]) => count > 0)
@@ -587,6 +604,7 @@
           <div class="flex flex-col items-stretch gap-3 mb-4">
             <!-- Primary: Share Best Card -->
             <button
+              data-tutorial="share-button"
               on:click={handleShareBestCard}
               disabled={isGeneratingBestCardImage}
               class="flex items-center justify-center gap-3 px-6 py-3.5 bg-white text-slate-950 font-black rounded-xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl hover:shadow-white/10 uppercase tracking-wider text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -674,6 +692,7 @@
   
   <!-- All cards grid -->
   <div
+    data-tutorial="card-reveal"
     class="mb-16"
     in:fade={{ duration: 600, delay: 800 }}
   >
@@ -796,8 +815,19 @@
     >
       Back to Street
     </button>
-  </div>
-</div>
+             </div>
+
+             <!-- Error messages for best card operations -->
+             {#if bestCardShareError}
+               <div class="mt-2 text-center text-xs text-red-400">{bestCardShareError}</div>
+             {/if}
+             {#if bestCardDownloadError}
+               <div class="mt-2 text-center text-xs text-red-400">{bestCardDownloadError}</div>
+             {/if}
+             {#if bestCardCopyError}
+               <div class="mt-2 text-center text-xs text-red-400">{bestCardCopyError}</div>
+             {/if}
+           </div>
 
 <!-- Card Inspection Modal -->
 {#if inspectCard}

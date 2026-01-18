@@ -86,7 +86,6 @@
     try {
       await downloadCardImage(card, cardImageElement, { scale: 2 });
     } catch (error) {
-      console.error('Failed to download card image:', error);
       shareError = 'Failed to download card image. Please try again.';
     } finally {
       isGeneratingImage = false;
@@ -109,7 +108,6 @@
         await handleDownload();
       }
     } catch (error) {
-      console.error('Failed to share card image:', error);
       shareError = 'Failed to share card image. Please try again.';
       isGeneratingImage = false;
     } finally {

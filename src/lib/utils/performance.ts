@@ -118,14 +118,17 @@ export function scheduleIdle(
   let handle: number | undefined;
 
   if ('requestIdleCallback' in window) {
-    handle = (window as any).requestIdleCallback(
+    const requestIdleCallback = (window as Window & { requestIdleCallback: (callback: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+    const cancelIdleCallback = (window as Window & { cancelIdleCallback: (handle: number) => void }).cancelIdleCallback;
+    
+    handle = requestIdleCallback(
       () => fn(),
       { timeout }
-    ) as number;
+    );
 
     return () => {
       if (handle !== undefined) {
-        (window as any).cancelIdleCallback(handle);
+        cancelIdleCallback(handle);
       }
     };
   }
@@ -176,12 +179,14 @@ export function isLowEndDevice(): boolean {
   // Check for limited memory (if available)
   const memoryLimit =
     'deviceMemory' in navigator &&
-    (navigator as any).deviceMemory < 4; // Less than 4GB RAM
+    (navigator as Navigator & { deviceMemory?: number }).deviceMemory !== undefined &&
+    (navigator as Navigator & { deviceMemory: number }).deviceMemory < 4; // Less than 4GB RAM
 
   // Check for slow CPU (hardware concurrency)
   const slowCPU =
     'hardwareConcurrency' in navigator &&
-    (navigator as any).hardwareConcurrency < 4; // Less than 4 cores
+    navigator.hardwareConcurrency !== undefined &&
+    navigator.hardwareConcurrency < 4; // Less than 4 cores
 
   return isMobile || memoryLimit || slowCPU;
 }

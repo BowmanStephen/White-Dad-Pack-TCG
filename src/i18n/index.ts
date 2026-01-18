@@ -2,69 +2,123 @@
  * i18n Module - Internationalization Stub
  * 
  * This is a minimal implementation that returns English strings.
- * When full i18n is implemented, this will be replaced with a proper
- * translation system using locale files.
+ * The full i18n system was removed for simplicity.
  */
 
-import { readable } from 'svelte/store';
+// i18n Module - Internationalization Stub (simplified)
 
-export type Locale = 'en' | 'es';
+export type Locale = 'en';
+
+// Simple English translations for common keys
+const translations: Record<string, string> = {
+  // Deck-related
+  'deck.title': 'Deck Builder',
+  'deck.newDeckTitle': 'New Deck',
+  'deck.createNew': 'Create New Deck',
+  'deck.editDeck': 'Edit Deck',
+  'deck.save': 'Save',
+  'deck.back': 'Back',
+  'deck.delete': 'Delete',
+  'deck.duplicate': 'Duplicate',
+  'deck.noDecks': 'No Decks Yet',
+  'deck.noDecksDescription': 'Create your first deck to start building!',
+  'deck.createFirst': 'Create Your First Deck',
+  'deck.maxDecksReached': 'Max decks reached',
+  'deck.confirmDelete': 'Are you sure you want to delete this deck?',
+  'deck.deckInfo': 'Deck Info',
+  'deck.name': 'Deck Name',
+  'deck.namePlaceholder': 'Enter deck name...',
+  'deck.description': 'Description',
+  'deck.descriptionPlaceholder': 'Describe your deck strategy...',
+  'deck.cardsInDeck': 'Cards in Deck',
+  'deck.addCards': 'Add Cards',
+  'deck.emptyDeck': 'No cards in deck yet',
+  'deck.lastUpdated': 'Last updated',
+  'deck.errors.maxDecksReached': 'Maximum number of decks reached',
+  'deck.errors.createFailed': 'Failed to create deck',
+  'deck.errors.saveFailed': 'Failed to save deck',
+  'deck.errors.duplicateFailed': 'Failed to duplicate deck',
+  'deck.errors.addCardFailed': 'Failed to add card',
+  'deck.stats.totalCards': 'Total Cards',
+  'deck.stats.uniqueCards': 'Unique Cards',
+  'deck.stats.averageRating': 'Avg Rating',
+  'deck.stats.rarityBreakdown': 'Rarity Breakdown',
+  'deck.stats.typeBreakdown': 'Type Breakdown',
+  'deck.stats.averageStats': 'Average Stats',
+  
+  // Synergy
+  'deck.synergy.title': 'Synergy Analysis',
+  'deck.synergy.bonus': 'Synergy Bonus',
+  'deck.synergy.potential': 'Potential',
+  'deck.synergy.currentBonus': 'Current Bonus',
+  'deck.synergy.typeSuggestions': 'Type Suggestions',
+  'deck.synergy.recommendedCards': 'Recommended Cards',
+  'deck.synergy.dominantType': 'Dominant Type',
+  
+  // Optimization
+  'deck.optimization.title': 'Deck Optimization',
+  'deck.optimization.balance': 'Balance Score',
+  'deck.optimization.balancedDeck': 'Well Balanced!',
+  'deck.optimization.weakestStat': 'Weakest Stat',
+  'deck.optimization.targetValue': 'Target: {value}',
+  'deck.optimization.improveDeck': 'Add cards with high {stat}',
+  'deck.optimization.priorityHigh': 'High Priority',
+  'deck.optimization.priorityMedium': 'Medium',
+  'deck.optimization.priorityLow': 'Low',
+  'deck.optimization.statImbalances': 'Stat Imbalances',
+  'deck.optimization.aboveAverage': 'Above Avg',
+  'deck.optimization.belowAverage': 'Below Avg',
+  'deck.optimization.recommendations': 'Recommendations',
+  'deck.optimization.noRecommendations': 'No specific recommendations',
+  
+  // Common
+  'common.close': 'Close',
+  'common.save': 'Save',
+  'common.cancel': 'Cancel',
+  'common.delete': 'Delete',
+};
 
 /**
- * Translation function stub
- * Returns the key as-is (or a readable version of it)
- * 
- * Usage: t('pack.title') -> 'Pack Title'
+ * Translation function - returns the English string for a key
+ * Falls back to converting the key to a readable format if not found
  */
 export function t(key: string, params?: Record<string, string | number>): string {
-  // Convert key to readable format
-  // e.g., 'pack.openPack' -> 'Open Pack'
-  const parts = key.split('.');
-  const lastPart = parts[parts.length - 1];
+  let result = translations[key];
   
-  // Convert camelCase to Title Case
-  const readable = lastPart
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase())
-    .trim();
-  
-  // Handle parameter interpolation
-  if (params) {
-    let result = readable;
-    for (const [paramKey, value] of Object.entries(params)) {
-      result = result.replace(`{${paramKey}}`, String(value));
-    }
-    return result;
+  if (!result) {
+    // Convert key to readable format as fallback
+    // e.g., 'deck.someKey' -> 'Some Key'
+    const parts = key.split('.');
+    const lastPart = parts[parts.length - 1];
+    result = lastPart
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
   }
   
-  return readable;
+  // Replace {param} placeholders
+  if (params) {
+    Object.entries(params).forEach(([param, value]) => {
+      result = result.replace(`{${param}}`, String(value));
+    });
+  }
+  
+  return result;
+}
+
+// Note: Use t('key') directly in templates, not $t('key')
+// The $t store pattern was removed for simplicity
+
+/**
+ * Format number according to locale (English formatting)
+ */
+export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
+  return new Intl.NumberFormat('en-US', options).format(value);
 }
 
 /**
- * Svelte store version of t() for reactive translations
+ * Format date according to locale (English formatting)
  */
-export const $t = readable(t);
-
-/**
- * Format number according to locale
- */
-export function formatNumber(value: number, locale: Locale = 'en'): string {
-  return new Intl.NumberFormat(locale).format(value);
+export function formatDate(date: Date, options?: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat('en-US', options).format(date);
 }
-
-/**
- * Format date according to locale
- */
-export function formatDate(date: Date, locale: Locale = 'en'): string {
-  return new Intl.DateTimeFormat(locale).format(date);
-}
-
-/**
- * Format percentage
- */
-export function formatPercent(value: number, locale: Locale = 'en'): string {
-  return new Intl.NumberFormat(locale, { style: 'percent' }).format(value);
-}
-
-// Re-export store types
-export * from './store';

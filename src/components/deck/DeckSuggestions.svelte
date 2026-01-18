@@ -86,10 +86,10 @@
   <div class="deck-suggestions" class:compact>
     <!-- Synergy Potential -->
     <div class="synergy-overview">
-      <h3 class="suggestions-title">{$t('deck.synergy.title')}</h3>
+      <h3 class="suggestions-title">{t('deck.synergy.title')}</h3>
       <div class="synergy-potential">
         <div class="potential-header">
-          <span class="potential-label">{$t('deck.synergy.potential')}</span>
+          <span class="potential-label">{t('deck.synergy.potential')}</span>
           <span class="potential-value" class:potential-high={synergyPotential >= 85} class:potential-medium={synergyPotential >= 60 && synergyPotential < 85} class:potential-low={synergyPotential < 60}>
             {synergyPotential}%
           </span>
@@ -100,7 +100,7 @@
         {#if currentBonus > 0}
           <div class="current-bonus">
             <span class="bonus-icon">✨</span>
-            <span class="bonus-text">{$t('deck.synergy.currentBonus')}: +{currentBonus * 100}%</span>
+            <span class="bonus-text">{t('deck.synergy.currentBonus')}: +{currentBonus * 100}%</span>
           </div>
         {/if}
       </div>
@@ -110,7 +110,7 @@
       <!-- Type Suggestions -->
       {#if typeSuggestions.length > 0}
         <div class="suggestions-section">
-          <h4 class="section-subtitle">{$t('deck.synergy.typeSuggestions')}</h4>
+          <h4 class="section-subtitle">{t('deck.synergy.typeSuggestions')}</h4>
           <div class="suggestions-list">
             {#each typeSuggestions.slice(0, 3) as suggestion}
               {#if suggestion.suggestedCount > 0}
@@ -137,7 +137,7 @@
       <!-- Card Recommendations -->
       {#if cardRecommendations.length > 0}
         <div class="suggestions-section">
-          <h4 class="section-subtitle">{$t('deck.synergy.recommendedCards')}</h4>
+          <h4 class="section-subtitle">{t('deck.synergy.recommendedCards')}</h4>
           <div class="recommendations-grid">
             {#each cardRecommendations.slice(0, 4) as rec}
               <div
@@ -166,7 +166,7 @@
       <!-- Dominant Type Display -->
       {#if dominantType}
         <div class="dominant-type">
-          <span class="dominant-label">{$t('deck.synergy.dominantType')}:</span>
+          <span class="dominant-label">{t('deck.synergy.dominantType')}:</span>
           <span class="dominant-value">
             <span class="type-icon">{DAD_TYPE_ICONS[dominantType]}</span>
             {DAD_TYPE_NAMES[dominantType]}
@@ -179,9 +179,9 @@
     {#if statAnalysis && !compact}
       <!-- Balance Score -->
       <div class="optimization-section">
-        <h3 class="section-title optimization-title">{$t('deck.optimization.title')}</h3>
+        <h3 class="section-title optimization-title">{t('deck.optimization.title')}</h3>
         <div class="balance-score-card">
-          <div class="score-label">{$t('deck.optimization.balance')}</div>
+          <div class="score-label">{t('deck.optimization.balance')}</div>
           <div
             class="score-value"
             class:score-high={balanceScore >= 75}
@@ -196,7 +196,7 @@
           <!-- Well-balanced deck message -->
           <div class="balanced-message">
             <span class="icon">✓</span>
-            <span>{$t('deck.optimization.balancedDeck')}</span>
+            <span>{t('deck.optimization.balancedDeck')}</span>
           </div>
         {/if}
 
@@ -205,7 +205,7 @@
           <div class="stat-warning">
             <h4 class="warning-title">
               <span class="icon">⚠️</span>
-              {$t('deck.optimization.weakestStat')}: {weakestStat.statName}
+              {t('deck.optimization.weakestStat')}: {weakestStat.statName}
             </h4>
             <div class="stat-details">
               <div class="stat-current">
@@ -213,10 +213,10 @@
                 <span class="value low">{weakestStat.currentValue}</span>
               </div>
               <div class="stat-target">
-                <span class="label">{$t('deck.optimization.targetValue', { value: weakestStat.targetValue })}</span>
+                <span class="label">{t('deck.optimization.targetValue', { value: weakestStat.targetValue })}</span>
               </div>
               <p class="improve-text">
-                {$t('deck.optimization.improveDeck', { stat: weakestStat.statName.toLowerCase() })}
+                {t('deck.optimization.improveDeck', { stat: weakestStat.statName.toLowerCase() })}
               </p>
             </div>
 
@@ -227,10 +227,10 @@
                   <span class="priority-dot" style="background-color: {getPriorityColor(weakestStat.priority)}"></span>
                   <span class="priority-text">
                     {weakestStat.priority === 'high'
-                      ? $t('deck.optimization.priorityHigh')
+                      ? t('deck.optimization.priorityHigh')
                       : weakestStat.priority === 'medium'
-                        ? $t('deck.optimization.priorityMedium')
-                        : $t('deck.optimization.priorityLow')}
+                        ? t('deck.optimization.priorityMedium')
+                        : t('deck.optimization.priorityLow')}
                   </span>
                 </div>
                 <div class="rec-cards-list">
@@ -258,7 +258,7 @@
         <!-- Stat Imbalances -->
         {#if imbalances.length > 0}
           <div class="imbalances-section">
-            <h4 class="section-subtitle">{$t('deck.optimization.statImbalances')}</h4>
+            <h4 class="section-subtitle">{t('deck.optimization.statImbalances')}</h4>
             <div class="imbalances-list">
               {#each imbalances.slice(0, 5) as imbalance}
                 <div
@@ -274,10 +274,10 @@
                   <div class="imbalance-badge">
                     {#if imbalance.isHigh}
                       <span class="badge high">↑</span>
-                      <span class="badge-text">{$t('deck.optimization.aboveAverage')}</span>
+                      <span class="badge-text">{t('deck.optimization.aboveAverage')}</span>
                     {:else}
                       <span class="badge low">↓</span>
-                      <span class="badge-text">{$t('deck.optimization.belowAverage')}</span>
+                      <span class="badge-text">{t('deck.optimization.belowAverage')}</span>
                     {/if}
                   </div>
                 </div>
@@ -289,7 +289,7 @@
         <!-- All Stat Recommendations -->
         {#if statRecommendations.length > 0 && balanceScore < 75}
           <div class="stat-recommendations">
-            <h4 class="section-subtitle">{$t('deck.optimization.recommendations')}</h4>
+            <h4 class="section-subtitle">{t('deck.optimization.recommendations')}</h4>
             {#each statRecommendations.slice(0, 3) as rec}
               <div class="stat-rec-item">
                 <div class="stat-rec-header">
@@ -308,7 +308,7 @@
                     {/each}
                   </div>
                 {:else}
-                  <div class="no-cards">{$t('deck.optimization.noRecommendations')}</div>
+                  <div class="no-cards">{t('deck.optimization.noRecommendations')}</div>
                 {/if}
               </div>
             {/each}

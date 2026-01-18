@@ -99,6 +99,9 @@ DadDeck™ is a free, browser-based trading card pack-opening simulator that par
 - **Bun** - Package manager & runtime (see `bun.lock`)
 - **TypeScript** - Type safety across the codebase
 - **Vitest 4.0+** - Testing framework
+- **ESLint** - Custom config with TypeScript, Svelte, and test-specific rules
+- **Prettier** - Code formatting with Svelte plugin
+- **Storybook** - Component documentation and development (see `/storybook`)
 
 ### Package Manager
 **Use Bun for all commands:**
@@ -351,6 +354,82 @@ export const CRAFTING_RECIPES: CraftingRecipe[] = [
 ];
 ```
 
+### Network Architecture
+
+**Real-time Network Detection & Offline Support:**
+
+The application includes a comprehensive network detection and offline support system that ensures users can continue using core features even without internet connectivity.
+
+**Components:**
+- **`src/lib/network/network-detector.ts`** (346 lines) - Network status monitoring with custom events
+- **`src/lib/network/request-queue.ts`** (313 lines) - Request queuing with automatic retry
+- **`src/components/network/OfflineBanner.svelte`** (324 lines) - User notification UI
+
+**Network Detection System:**
+```typescript
+import { getNetworkDetector, NETWORK_EVENTS } from '@/lib/network/network-detector';
+
+// Get network info
+const detector = getNetworkDetector();
+const info = detector.getNetworkInfo();
+// Returns: { status, connectionType, effectiveType, downlink, rtt, saveData, lastChange }
+
+// Listen for network changes
+window.addEventListener(NETWORK_EVENTS.OFFLINE, () => {
+  console.log('Connection lost');
+});
+
+window.addEventListener(NETWORK_EVENTS.ONLINE, () => {
+  console.log('Connection restored');
+});
+
+window.addEventListener(NETWORK_EVENTS.UNSTABLE, () => {
+  console.log('Connection unstable');
+});
+```
+
+**Request Queue System:**
+```typescript
+import { getRequestQueue } from '@/lib/network/request-queue';
+
+const queue = getRequestQueue();
+
+// Add request to queue (auto-processed when online)
+const requestId = queue.add({
+  url: '/api/save-pack',
+  method: 'POST',
+  body: { packId: '123', cards: [...] },
+  priority: 'high',      // 'high' | 'normal' | 'low'
+  maxRetries: 3,         // Exponential backoff retry
+});
+
+// Process queue manually (usually automatic)
+queue.processQueue();
+
+// Clear all pending requests
+queue.clear();
+```
+
+**Features:**
+- **Real-time detection** - Monitors online/offline/unstable status
+- **Connection type awareness** - WiFi, cellular, ethernet detection
+- **Custom events system** - `daddeck:network-online`, `daddeck:network-offline`, `daddeck:network-unstable`
+- **Automatic retry** - Failed requests queued and retried when connection restores
+- **Exponential backoff** - Prevents server overload during reconnection
+- **Priority queuing** - High/normal/low priority for different request types
+- **Persistent queue** - Survives page reloads via LocalStorage
+- **User notifications** - Non-intrusive banner shows status and pending request count
+
+**Usage in Components:**
+```svelte
+<script lang="ts">
+  import { OfflineBanner } from '@/components/network/OfflineBanner.svelte';
+</script>
+
+<!-- Auto-shows/hides based on network status -->
+<OfflineBanner />
+```
+
 ### Security Architecture
 
 **Ralph Loop cross-reference:** In Ralph Loop terms, `validatePackBeforeOpen()` is a
@@ -524,6 +603,8 @@ loops in UI/state machines.
 │   │   │   └── FadeIn.svelte               # Fade animation
 │   │   ├── art/            # Generative art
 │   │   │   └── GenerativeCardArt.svelte    # Procedural artwork
+│   │   ├── network/        # Network detection & offline support
+│   │   │   └── OfflineBanner.svelte        # Connection status banner
 │   │   └── common/          # Shared components
 │   │       ├── Logo.astro             # DadDeck™ logo
 │   │       ├── Button.astro           # Reusable button
@@ -537,9 +618,12 @@ loops in UI/state machines.
 │   │       └── ErrorBoundary.svelte   # Error boundary
 │   ├── layouts/             # Astro layouts
 │   │   └── BaseLayout.astro # Root layout with global styles
-│   ├── lib/                 # Business logic
+│   │   ├── lib/                 # Business logic
 │   │   ├── cards/
 │   │   │   └── database.ts  # Card data access layer (wraps JSON)
+│   │   ├── network/
+│   │   │   ├── network-detector.ts  # Real-time network status monitoring
+│   │   │   └── request-queue.ts     # Request queuing with retry logic
 │   │   ├── pack/
 │   │   │   └── generator.ts # Pack generation logic (512 lines)
 │   │   ├── security/
@@ -635,7 +719,10 @@ loops in UI/state machines.
 │   ├── unit/
 │   │   ├── lib/security/pack-validator.test.ts
 │   │   └── stores/collection.test.ts
-│   └── integration/         # End-to-end tests
+│   ├── e2e/                    # End-to-end tests
+│   └── visual/                 # Visual regression tests
+├── .storybook/                # Storybook configuration
+│   └── main.ts                 # Storybook decorators and setup
 ├── discord-bot/            # Discord bot integration
 │   └── index.ts            # Bot entry point
 ├── scripts/                # Build utility scripts
@@ -1298,6 +1385,7 @@ bun run test:visual:update  # Update baseline screenshots
 - **Environment:** Node (for unit tests)
 - **Include pattern:** `tests/**/*.test.ts`
 - **Path aliases:** Same as tsconfig.json (`@/`, `@lib/`, `@stores/`, etc.)
+- **Coverage thresholds:** 60% lines, functions, statements; 55% branches (enforced across all files)
 
 **Playwright setup** (`playwright.config.ts`):
 - **E2E tests:** `tests/e2e/` directory
@@ -1368,6 +1456,107 @@ bunx playwright show-report
 - Collection interface
 
 **Documentation:** See `tests/visual/README.md` and `docs/VISUAL_TESTING_GUIDE.md` for complete guide.
+
+### Component Development with Storybook
+
+**Overview:** Storybook provides an isolated development environment for building and documenting UI components independently of the main application.
+
+**Quick Start:**
+```bash
+# Start Storybook development server
+bun run storybook
+# → http://localhost:6006
+
+# Build static Storybook
+bun run build-storybook
+# → Outputs to ./storybook-static/
+```
+
+**Story Structure:**
+```typescript
+// src/components/common/Button.stories.ts
+import type { Meta, StoryObj } from '@storybook/svelte';
+import Button from './Button.svelte';
+
+const meta: Meta<Button> = {
+  title: 'Common/Button',
+  component: Button,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'icon', 'cta'],
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+    },
+    disabled: {
+      control: 'boolean',
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<Button>;
+
+export const Primary: Story = {
+  args: {
+    variant: 'primary',
+    size: 'md',
+    children: 'Open Pack',
+  },
+};
+
+export const Secondary: Story = {
+  args: {
+    variant: 'secondary',
+    children: 'Cancel',
+  },
+};
+
+export const Large: Story = {
+  args: {
+    variant: 'cta',
+    size: 'lg',
+    children: 'Get Started',
+  },
+};
+```
+
+**Available Stories:**
+- **Button** - Primary, secondary, icon, and CTA variants
+- **Card** - All rarity tiers with holographic effects
+- **Modal** - Dialog containers with backdrops
+
+**Best Practices:**
+1. **One component per file** - Name story files after the component
+2. **Use autodocs** - Tag stories with `autodocs` for automatic documentation
+3. **Document all props** - Use `argTypes` to expose component props as controls
+4. **Show variations** - Create separate stories for each major variant
+5. **Test edge cases** - Include stories for loading, error, and empty states
+
+**When to Use Storybook:**
+- ✅ Developing new components in isolation
+- ✅ Testing component variants and edge cases
+- ✅ Documenting component API for other developers
+- ✅ Visual regression testing for components
+- ✅ Design system reviews with stakeholders
+
+**Integration with Development Workflow:**
+```bash
+# 1. Develop component in Storybook
+bun run storybook
+
+# 2. Test component in main app
+bun run dev
+
+# 3. Add unit tests
+bun test
+
+# 4. Update Storybook docs
+bun run build-storybook
+```
 
 ---
 
@@ -2139,6 +2328,7 @@ Type `/skillname` to invoke any skill in conversation (e.g., `/performance-analy
 ---
 
 **Last updated:** January 18, 2026
+**Recent Update:** Added network architecture documentation and Storybook integration guide
 **Recent Update:** Added `docs/TCG_BEST_PRACTICES.md` - Comprehensive TCG simulator market research and best practices
 
 ---

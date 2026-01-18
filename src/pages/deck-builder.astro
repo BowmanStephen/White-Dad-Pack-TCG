@@ -2,23 +2,16 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DeckBuilder from '@/components/deck/DeckBuilder.svelte';
 import Navigation from '@/components/common/Navigation.svelte';
-import Breadcrumbs from '@/components/nav/Breadcrumbs.svelte';
 import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
-import { t } from '@/i18n';
 
 // SEO Meta Tags
-const title = t('deck.title');
-const description = t('deck.metaDescription');
+const title = "Deck Builder - DadDeck";
+const description = "Build your ultimate dad deck! Select cards, create strategies, and prepare for battle.";
 ---
 
 <BaseLayout title={title} description={description}>
   <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
     <Navigation client:load />
-  </ErrorBoundary>
-
-  <!-- Breadcrumbs -->
-  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
-    <Breadcrumbs client:load />
   </ErrorBoundary>
 
   <main class="deck-builder-page">

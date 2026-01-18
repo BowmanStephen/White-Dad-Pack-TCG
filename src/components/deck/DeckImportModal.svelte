@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { importDeckFromCode, validateDeckCardsInCollection } from '@/lib/deck/sharing';
-  import { collection } from '@/stores/collection';
-  import { createNewDeck, updateDeckInfo, addCard, clearCurrentDeck } from '@/stores/deck';
-  import type { DeckImportResult } from '@/lib/deck/sharing';
+   import { createEventDispatcher } from 'svelte';
+   import { importDeckFromCode, validateDeckCardsInCollection } from '@/lib/deck/sharing';
+   import { collection } from '@/stores/collection';
+   import { createNewDeck, updateDeckInfo, addCard, clearCurrentDeck } from '@/stores/deck';
+   import { showToast } from '@/stores/ui';
+   import type { DeckImportResult } from '@/lib/deck/sharing';
 
   interface Props {
     open?: boolean;
@@ -59,16 +60,16 @@
     // Create new deck
     createNewDeck(importResult.deck.name || 'Imported Deck', importResult.deck.description);
 
-    // Add cards to deck
-    if (importResult.deck.cards) {
-      for (const deckCard of importResult.deck.cards) {
-        try {
-          addCard(deckCard.card, deckCard.count);
-        } catch (error) {
-          console.error(`Failed to add card ${deckCard.card.name}:`, error);
-        }
-      }
-    }
+     // Add cards to deck
+     if (importResult.deck.cards) {
+       for (const deckCard of importResult.deck.cards) {
+         try {
+           addCard(deckCard.card, deckCard.count);
+         } catch (error) {
+           showToast(`Failed to add card ${deckCard.card.name}. Please try again.`, 'error');
+         }
+       }
+     }
 
     // Close modal
     close();

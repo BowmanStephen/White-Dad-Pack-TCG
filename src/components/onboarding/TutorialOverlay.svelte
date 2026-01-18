@@ -21,6 +21,7 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
   let highlightedElement: HTMLElement | null = null;
   let overlay: HTMLElement;
   let spotlight: HTMLElement;
+  let dontShowAgain = false;
 
   // Auto-scroll to highlighted element
   async function scrollToElement() {
@@ -218,7 +219,13 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
         <div class="flex items-center justify-between gap-4">
           <!-- Skip button -->
           <button
-            on:click={skipTutorial}
+            on:click={() => {
+              if (dontShowAgain) {
+                completeTutorial(); // Mark as completed so it doesn't show again
+              } else {
+                skipTutorial();
+              }
+            }}
             class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium"
             type="button"
           >
@@ -255,6 +262,20 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
                 : 'Next →'}
             </button>
           </div>
+        </div>
+
+        <!-- Don't show again checkbox -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              bind:checked={dontShowAgain}
+              class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300">
+              Don't show this tutorial again
+            </span>
+          </label>
         </div>
 
         <!-- Keyboard hint -->

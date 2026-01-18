@@ -5,7 +5,6 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { t } from '@/i18n';
   import {
     cookiePreferences,
     acceptAllCookies,
@@ -69,17 +68,11 @@
         <!-- Message -->
         <div class="flex-1 space-y-2">
           <h2 id="cookie-title" class="text-lg font-bold text-amber-400">
-            {$t('cookies.title')}
+            Cookie Settings
           </h2>
           <p id="cookie-description" class="text-sm text-slate-300">
-            {$t('cookies.description')}
+            We use cookies to enhance your experience. You can customize your preferences below.
           </p>
-          <a
-            href="/privacy"
-            class="text-sm text-amber-400 hover:text-amber-300 underline"
-          >
-            {$t('cookies.privacyLink')}
-          </a>
         </div>
 
         <!-- Actions -->
@@ -89,19 +82,19 @@
               on:click={handleDecline}
               class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-colors"
             >
-              {$t('cookies.decline')}
+              Decline
             </button>
             <button
               on:click={openSettings}
               class="px-4 py-2 text-sm font-semibold text-slate-900 bg-slate-200 hover:bg-slate-100 rounded-lg transition-colors"
             >
-              {$t('cookies.customize')}
+              Customize
             </button>
             <button
               on:click={handleAcceptAll}
               class="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-lg shadow-lg hover:shadow-xl transition-all"
             >
-              {$t('cookies.acceptAll')}
+              Accept All
             </button>
           </div>
         {:else}
@@ -110,10 +103,10 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-semibold text-slate-200">
-                  {$t('cookies.analytics')}
+                  Analytics
                 </p>
                 <p class="text-xs text-slate-400">
-                  {$t('cookies.analyticsDesc')}
+                  Help us improve by sharing usage data
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -132,10 +125,10 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-semibold text-slate-200">
-                  {$t('cookies.marketing')}
+                  Marketing
                 </p>
                 <p class="text-xs text-slate-400">
-                  {$t('cookies.marketingDesc')}
+                  Receive personalized recommendations
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -154,10 +147,10 @@
             <div class="flex items-center justify-between opacity-50">
               <div>
                 <p class="text-sm font-semibold text-slate-200">
-                  {$t('cookies.necessary')}
+                  Necessary
                 </p>
                 <p class="text-xs text-slate-400">
-                  {$t('cookies.necessaryDesc')}
+                  Required for the site to function
                 </p>
               </div>
               <div class="w-11 h-6 bg-amber-500 rounded-full relative">
@@ -173,13 +166,13 @@
                 on:click={closeSettings}
                 class="flex-1 px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-colors"
               >
-                {$t('cookies.cancel')}
+                Cancel
               </button>
               <button
                 on:click={handleSavePreferences}
                 class="flex-1 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-lg shadow-lg hover:shadow-xl transition-all"
               >
-                {$t('cookies.savePreferences')}
+                Save Preferences
               </button>
             </div>
           </div>

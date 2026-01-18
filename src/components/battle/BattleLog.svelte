@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Card as CardType } from '../../types';
+  import { showToast } from '../../stores/ui';
 
   export interface BattleLogEntry {
     turn: number;
@@ -163,28 +164,36 @@
       logText += formatLogEntryAsText(log, index) + '\n';
     });
 
-    try {
-      await navigator.clipboard.writeText(logText);
-      // Show copy success feedback
-      copySuccess = true;
-      setTimeout(() => {
-        copySuccess = false;
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy battle log:', err);
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = logText;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      // Show success even for fallback
-      copySuccess = true;
-      setTimeout(() => {
-        copySuccess = false;
-      }, 2000);
-    }
+     try {
+       await navigator.clipboard.writeText(logText);
+       showToast('Battle log copied to clipboard!', 'success');
+       copySuccess = true;
+       setTimeout(() => {
+         copySuccess = false;
+       }, 2000);
+     } catch (err) {
+       // Fallback for older browsers
+       try {
+         const textArea = document.createElement('textarea');
+         textArea.value = logText;
+         document.body.appendChild(textArea);
+         textArea.select();
+         const execResult = document.execCommand('copy');
+         document.body.removeChild(textArea);
+
+         if (execResult) {
+           showToast('Battle log copied using fallback method.', 'success');
+           copySuccess = true;
+           setTimeout(() => {
+             copySuccess = false;
+           }, 2000);
+         } else {
+           showToast('Failed to copy battle log. Please try again.', 'error');
+         }
+       } catch (fallbackErr) {
+         showToast('Failed to copy battle log. Please try again.', 'error');
+       }
+     }
   }
 </script>
 

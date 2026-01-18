@@ -96,24 +96,24 @@
   function handleCreateDeck() {
     try {
       if (limitReached) {
-        errorMessage = $t('deck.errors.maxDecksReached');
+        errorMessage = t('deck.errors.maxDecksReached');
         return;
       }
 
-      createNewDeck($t('deck.newDeckTitle'));
-      deckName = $currentDeck?.name || '';
-      deckDescription = $currentDeck?.description || '';
+      createNewDeck(t('deck.newDeckTitle'));
+      deckName = currentDeckData?.name || '';
+      deckDescription = currentDeckData?.description || '';
       view = 'create';
       errorMessage = '';
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : $t('deck.errors.createFailed');
+      errorMessage = error instanceof Error ? error.message : t('deck.errors.createFailed');
     }
   }
 
   function handleSelectDeck(deckId: string) {
     loadDeck(deckId);
-    deckName = $currentDeck?.name || '';
-    deckDescription = $currentDeck?.description || '';
+    deckName = currentDeckData?.name || '';
+    deckDescription = currentDeckData?.description || '';
     view = 'edit';
     errorMessage = '';
   }
@@ -125,15 +125,15 @@
       view = 'list';
       errorMessage = '';
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : $t('deck.errors.saveFailed');
+      errorMessage = error instanceof Error ? error.message : t('deck.errors.saveFailed');
     }
   }
 
   function handleDeleteDeck(deckId: string, event: Event) {
     event.stopPropagation();
-    if (confirm($t('deck.confirmDelete'))) {
+    if (confirm(t('deck.confirmDelete'))) {
       deleteDeck(deckId);
-      if ($currentDeck?.id === deckId) {
+      if (currentDeckData?.id === deckId) {
         clearCurrentDeck();
         view = 'list';
       }
@@ -145,7 +145,7 @@
     try {
       duplicateDeck(deckId);
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : $t('deck.errors.duplicateFailed');
+      errorMessage = error instanceof Error ? error.message : t('deck.errors.duplicateFailed');
     }
   }
 
@@ -153,7 +153,7 @@
     try {
       addCard(card);
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : $t('deck.errors.addCardFailed');
+      errorMessage = error instanceof Error ? error.message : t('deck.errors.addCardFailed');
       // Clear error after 3 seconds
       setTimeout(() => errorMessage = '', 3000);
     }
@@ -220,7 +220,7 @@
   {#if view === 'list'}
     <div class="deck-list">
       <div class="deck-list-header">
-        <h1 class="deck-list-title">{$t('deck.title')}</h1>
+        <h1 class="deck-list-title">{t('deck.title')}</h1>
         <div class="header-actions">
           <button
             on:click={() => showImportModal = true}
@@ -234,7 +234,7 @@
             class="btn-primary"
             class:disabled={limitReached}
           >
-            {limitReached ? $t('deck.maxDecksReached') : $t('deck.createNew')}
+            {limitReached ? t('deck.maxDecksReached') : t('deck.createNew')}
           </button>
         </div>
       </div>
@@ -242,10 +242,10 @@
       {#if allDecks.length === 0}
         <div class="empty-state">
           <div class="empty-icon">🃏</div>
-          <h2>{$t('deck.noDecks')}</h2>
-          <p>{$t('deck.noDecksDescription')}</p>
+          <h2>{t('deck.noDecks')}</h2>
+          <p>{t('deck.noDecksDescription')}</p>
           <button on:click={handleCreateDeck} class="btn-primary">
-            {$t('deck.createFirst')}
+            {t('deck.createFirst')}
           </button>
         </div>
       {:else}
@@ -275,14 +275,14 @@
                   <button
                     on:click={(e) => handleDuplicateDeck(deck.id, e)}
                     class="btn-icon"
-                    title={$t('deck.duplicate')}
+                    title={t('deck.duplicate')}
                   >
                     📋
                   </button>
                   <button
                     on:click={(e) => handleDeleteDeck(deck.id, e)}
                     class="btn-icon btn-danger"
-                    title={$t('deck.delete')}
+                    title={t('deck.delete')}
                   >
                     🗑️
                   </button>
@@ -292,11 +292,11 @@
               <div class="deck-card-body">
                 <div class="deck-stats-compact">
                   <div class="mini-stat">
-                    <span class="mini-stat-label">{$t('deck.stats.totalCards')}</span>
+                    <span class="mini-stat-label">{t('deck.stats.totalCards')}</span>
                     <span class="mini-stat-value">{deck.stats.totalCards}</span>
                   </div>
                   <div class="mini-stat">
-                    <span class="mini-stat-label">{$t('deck.stats.uniqueCards')}</span>
+                    <span class="mini-stat-label">{t('deck.stats.uniqueCards')}</span>
                     <span class="mini-stat-value">{deck.stats.uniqueCards}</span>
                   </div>
                 </div>
@@ -320,7 +320,7 @@
 
               <div class="deck-card-footer">
                 <span class="deck-date">
-                  {$t('deck.lastUpdated')}: {new Date(deck.updatedAt).toLocaleDateString()}
+                  {t('deck.lastUpdated')}: {new Date(deck.updatedAt).toLocaleDateString()}
                 </span>
               </div>
             </div>
@@ -334,10 +334,10 @@
     <div class="deck-editor">
       <div class="editor-header">
         <button on:click={cancelEdit} class="btn-secondary">
-          ← {$t('deck.back')}
+          ← {t('deck.back')}
         </button>
         <h1 class="editor-title">
-          {view === 'create' ? $t('deck.createNew') : $t('deck.editDeck')}
+          {view === 'create' ? t('deck.createNew') : t('deck.editDeck')}
         </h1>
         <button
           on:click={handleSaveDeck}
@@ -345,7 +345,7 @@
           class="btn-primary"
           class:disabled={!validation.isValid}
         >
-          {$t('deck.save')}
+          {t('deck.save')}
         </button>
       </div>
 
@@ -354,24 +354,24 @@
         <div class="editor-main">
           <!-- Deck Metadata -->
           <div class="editor-section">
-            <h2 class="section-title">{$t('deck.deckInfo')}</h2>
+            <h2 class="section-title">{t('deck.deckInfo')}</h2>
             <div class="form-group">
-              <label for="deck-name">{$t('deck.name')}</label>
+              <label for="deck-name">{t('deck.name')}</label>
               <input
                 id="deck-name"
                 type="text"
                 bind:value={deckName}
-                placeholder={$t('deck.namePlaceholder')}
+                placeholder={t('deck.namePlaceholder')}
                 class="input-field"
                 maxlength="50"
               />
             </div>
             <div class="form-group">
-              <label for="deck-description">{$t('deck.description')}</label>
+              <label for="deck-description">{t('deck.description')}</label>
               <textarea
                 id="deck-description"
                 bind:value={deckDescription}
-                placeholder={$t('deck.descriptionPlaceholder')}
+                placeholder={t('deck.descriptionPlaceholder')}
                 class="textarea-field"
                 rows="3"
                 maxlength="200"
@@ -399,18 +399,18 @@
           <!-- Deck Cards -->
           <div class="editor-section">
             <div class="section-header">
-              <h2 class="section-title">{$t('deck.cardsInDeck')}</h2>
+              <h2 class="section-title">{t('deck.cardsInDeck')}</h2>
               <button on:click={() => showAddModal = true} class="btn-secondary">
-                + {$t('deck.addCards')}
+                + {t('deck.addCards')}
               </button>
             </div>
 
             {#if !currentDeckData || currentDeckData.cards.length === 0}
               <div class="empty-deck">
                 <div class="empty-icon">📭</div>
-                <p>{$t('deck.emptyDeck')}</p>
+                <p>{t('deck.emptyDeck')}</p>
                 <button on:click={() => showAddModal = true} class="btn-primary">
-                  {$t('deck.addCards')}
+                  {t('deck.addCards')}
                 </button>
               </div>
             {:else}
@@ -440,7 +440,7 @@
                           {RARITY_CONFIG[card.rarity].label}
                         </span>
                         <span class="card-stats">
-                          {$t('deck.stats.totalCards')}: {card.stats.dadJoke + card.stats.grillSkill}
+                          {t('deck.stats.totalCards')}: {card.stats.dadJoke + card.stats.grillSkill}
                         </span>
                       </div>
                     </div>
@@ -464,7 +464,7 @@
                       <button
                         on:click={() => handleRemoveCard(deckCard.cardId)}
                         class="btn-icon btn-danger"
-                        title={$t('deck.remove')}
+                        title={t('deck.remove')}
                       >
                         🗑️
                       </button>
@@ -481,7 +481,7 @@
           <!-- Deck Statistics -->
           {#if currentDeckData && currentDeckData.stats}
             <div class="editor-section">
-              <h2 class="section-title">{$t('deck.stats.title')}</h2>
+              <h2 class="section-title">{t('deck.stats.title')}</h2>
               <DeckStats stats={currentDeckData.stats} deck={currentDeckData} compact={true} />
             </div>
           {/if}
@@ -502,8 +502,8 @@
           >
             <div class="drop-zone-content">
               <div class="drop-zone-icon">📥</div>
-              <p class="drop-zone-text">{$t('deck.dragCardsHere')}</p>
-              <p class="drop-zone-hint">{$t('deck.dragCardsHint')}</p>
+              <p class="drop-zone-text">{t('deck.dragCardsHere')}</p>
+              <p class="drop-zone-hint">{t('deck.dragCardsHint')}</p>
             </div>
           </div>
         </div>
@@ -514,7 +514,7 @@
         <div class="modal-overlay" on:click={() => showAddModal = false}>
           <div class="modal-content" on:click|stopPropagation>
             <div class="modal-header">
-              <h2 class="modal-title">{$t('deck.addCards')}</h2>
+              <h2 class="modal-title">{t('deck.addCards')}</h2>
               <button on:click={() => showAddModal = false} class="btn-icon" aria-label="Close add deck modal">×</button>
             </div>
 
@@ -524,11 +524,11 @@
                 <input
                   type="text"
                   bind:value={searchQuery}
-                  placeholder={$t('deck.searchCards')}
+                  placeholder={t('deck.searchCards')}
                   class="input-field"
                 />
                 <select bind:value={filterRarity} class="select-field">
-                  <option value="">{$t('deck.allRarities')}</option>
+                  <option value="">{t('deck.allRarities')}</option>
                   {#each Object.entries(RARITY_CONFIG) as [rarity, config]}
                     <option value={rarity}>{config.label}</option>
                   {/each}
@@ -563,7 +563,7 @@
 
                 {#if availableCards.length === 0}
                   <div class="no-cards">
-                    <p>{$t('deck.noCardsFound')}</p>
+                    <p>{t('deck.noCardsFound')}</p>
                   </div>
                 {/if}
               </div>
@@ -571,7 +571,7 @@
 
             <div class="modal-footer">
               <button on:click={() => showAddModal = false} class="btn-secondary">
-                {$t('deck.close')}
+                {t('deck.close')}
               </button>
             </div>
           </div>

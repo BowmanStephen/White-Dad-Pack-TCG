@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { PackCard, SeasonId, WishlistPriority } from '../../types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES, SEASON_PACK_CONFIG } from '../../types';
-  import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor, getSpecialCardGlowClasses, hasCardStats } from '../../lib/card-types';
+  import type { PackCard, SeasonId, WishlistPriority } from '@/types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES, SEASON_PACK_CONFIG } from '@/types';
+  import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor, getSpecialCardGlowClasses, hasCardStats } from '@lib/card-types';
   import CardStats from './CardStats.svelte';
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
   import HoloEffect from './HoloEffect.svelte';
-  import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
-  import { openLightbox } from '../../stores/lightbox';
-  import { getRandomJoke } from '../../lib/jokes';
-  import { isInWishlist, addToWishlist, removeFromWishlist } from '../../stores/wishlist';
+  import { downloadCardImage, shareCardImage, checkShareSupport } from '@lib/utils/image-generation';
+  import { openLightbox } from '@/stores/lightbox';
+  import { getRandomJoke } from '@lib/jokes';
+  import { isInWishlist, addToWishlist, removeFromWishlist } from '@/stores/wishlist';
 
   interface Props {
     card: PackCard;
@@ -298,7 +298,6 @@
     try {
       await downloadCardImage(card, cardElement, { scale: 2 });
     } catch (error) {
-      console.error('Failed to download card image:', error);
       shareError = 'Failed to download image. Please try again.';
     } finally {
       isGeneratingImage = false;
@@ -321,7 +320,6 @@
         await handleDownload();
       }
     } catch (error) {
-      console.error('Failed to share card image:', error);
       shareError = 'Failed to share image. Please try again.';
       isGeneratingImage = false;
     } finally {

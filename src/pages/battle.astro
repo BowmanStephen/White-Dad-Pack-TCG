@@ -2,7 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BattleArena from '../components/battle/BattleArena.svelte';
 import Navigation from '../components/common/Navigation.svelte';
-import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
 import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 import { getFullURL, getImageURL, generateVideoGameSchema } from '@/lib/seo';
 
@@ -28,11 +27,6 @@ const battleSchema = generateVideoGameSchema({
 >
   <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
     <Navigation client:load />
-  </ErrorBoundary>
-
-  <!-- Breadcrumbs -->
-  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
-    <Breadcrumbs client:load />
   </ErrorBoundary>
 
   <main id="main-content" class="container mx-auto px-4 py-8">

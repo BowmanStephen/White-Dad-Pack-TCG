@@ -144,9 +144,8 @@
       });
 
       showToast('Instructions copied! Paste them in Discord, then right-click the image to copy it.', 'info');
-    } catch (error) {
-      console.error('Failed to copy Discord instructions:', error);
-      showToast('Right-click the preview image → Copy Image → Paste in Discord!', 'info');
+     } catch (error) {
+      showToast('Failed to copy instructions. Please try again.', 'error');
     }
   }
 

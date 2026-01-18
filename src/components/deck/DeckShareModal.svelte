@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { currentDeck } from '@/stores/deck';
-  import { exportDeckToCode, exportDeckToText, generateDeckShareUrl } from '@/lib/deck/sharing';
-  import type { Deck } from '@/types';
+   import { createEventDispatcher } from 'svelte';
+   import { currentDeck } from '@/stores/deck';
+   import { exportDeckToCode, exportDeckToText, generateDeckShareUrl } from '@/lib/deck/sharing';
+   import { showToast } from '@/stores/ui';
+   import type { Deck } from '@/types';
 
   interface Props {
     open?: boolean;
@@ -58,12 +59,7 @@
         copied = null;
       }, 2000);
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      // Fallback: select the text for manual copy
-      const textArea = document.querySelector('textarea, input[type="text"]') as HTMLInputElement | HTMLTextAreaElement;
-      if (textArea) {
-        textArea.select();
-      }
+      showToast('Failed to copy to clipboard. Please try again.', 'error');
     }
   }
 

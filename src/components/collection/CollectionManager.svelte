@@ -4,8 +4,8 @@
     importCollection,
     collection,
     clearCollection,
-  } from '../../stores/collection';
-  import type { Collection } from '../../types';
+  } from '@/stores/collection';
+  import type { Collection } from '@/types';
 
   // UI state
   let showModal = $state(false);

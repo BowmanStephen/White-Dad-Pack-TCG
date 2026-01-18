@@ -8,7 +8,6 @@ import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import MissingCardsPanel from '../components/collection/MissingCardsPanel.svelte';
 import WishlistPanel from '../components/collection/WishlistPanel.svelte';
 import Navigation from '../components/common/Navigation.svelte';
-import Breadcrumbs from '../components/nav/Breadcrumbs.svelte';
 
 import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
 
@@ -40,11 +39,6 @@ const collectionPageSchema = {
 >
   <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
     <Navigation client:load />
-  </ErrorBoundary>
-
-  <!-- Breadcrumbs -->
-  <ErrorBoundary component="Breadcrumbs" fallbackMessage="Breadcrumbs unavailable.">
-    <Breadcrumbs client:load />
   </ErrorBoundary>
 
   <!-- Page Header -->

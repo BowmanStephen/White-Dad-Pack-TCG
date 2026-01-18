@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Pack, PackState, PackType, DadType } from '../../types';
-  import type { AppError } from '../../lib/utils/errors';
+  import type { Pack, PackState, PackType, DadType, PackCard } from '@/types';
+  import type { AppError } from '@lib/utils/errors';
   import {
     openNewPack,
     completePackAnimation,
@@ -20,7 +20,7 @@
     packError as packErrorStore,
     storageError as storageErrorStore,
     currentTearAnimation as currentTearAnimationStore,
-  } from '../../stores/pack';
+  } from '@/stores/pack';
   import PackAnimation from './PackAnimation.svelte';
   import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
@@ -31,7 +31,7 @@
   import ErrorMessage from '../common/ErrorMessage.svelte';
   import CinematicToggle from '../common/CinematicToggle.svelte';
   import AnimationControls from './AnimationControls.svelte';
-  import { skipAnimations } from '../../stores/ui';
+  import { skipAnimations } from '@/stores/ui';
 
 
   // Reactive state using Svelte 5 runes
@@ -39,7 +39,12 @@
   let packState = $state<PackState>('idle');
   let currentCardIndex = $state<number>(0);
   let revealedCards = $state<Set<number>>(new Set());
-  let packStats = $state<any>(null);
+  let packStats = $state<{
+    totalCards: number;
+    rarityBreakdown: Record<string, number>;
+    holoCount: number;
+    bestCard: PackCard;
+  } | null>(null);
   let packError = $state<AppError | null>(null);
   let storageError = $state<AppError | null>(null);
   let currentTearAnimation = $state<'standard' | 'slow' | 'explosive'>('standard');

@@ -3,7 +3,6 @@
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES } from '../../types';
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
   import { closeLightbox, nextCard, prevCard } from '../../stores/lightbox';
-  import { locale, t } from 'svelte-i18n';
   import CardStats from './CardStats.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
@@ -82,7 +81,7 @@
     <button
       on:click={closeLightbox}
       class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white transition-all duration-200 hover:scale-110 active:scale-95"
-      aria-label={$t('card.closeDetails')}
+      aria-label="Close card details"
     >
       <span class="text-2xl" aria-hidden="true">&times;</span>
     </button>
@@ -95,22 +94,22 @@
             on:click={prevCard}
             class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentIndex === 0}
-            aria-label={$t('accessibility.previousCard')}
+            aria-label="Previous card"
           >
-            ← {$t('common.previous')}
+            ← Previous
           </button>
 
           <span class="text-white font-semibold">
-            {currentIndex + 1} {$t('common.of')} {totalCards}
+            {currentIndex + 1} of {totalCards}
           </span>
 
           <button
             on:click={nextCard}
             class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentIndex === totalCards - 1}
-            aria-label={$t('accessibility.nextCard')}
+            aria-label="Next card"
           >
-            {$t('common.next')} →
+            Next →
           </button>
         </div>
       </div>
@@ -145,7 +144,7 @@
           />
           {#if card.isHolo}
             <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-black bg-gradient-to-r from-pink-500 to-purple-600 text-white" style="box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
-              {$t('card.holo')}
+              HOLO
             </div>
           {/if}
         </div>
@@ -156,7 +155,7 @@
         <div class="mb-8">
           <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <span>📊</span>
-            <span>{$t('card.stats')}</span>
+            <span>Stats</span>
           </h2>
           <div class="bg-black/30 rounded-xl p-6 border border-white/10">
             <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={false} cardType={card.type} />
@@ -165,9 +164,9 @@
       {:else}
         <div class="mb-8 text-center py-6 bg-black/20 rounded-xl border border-white/10">
           <p class="text-lg text-slate-300 font-semibold">
-            {getSpecialCardTypeLabel(card.type)} {$t('card.card')}
+            {getSpecialCardTypeLabel(card.type)} Card
           </p>
-          <p class="text-sm text-slate-500 mt-2">{$t('card.effectBased')}</p>
+          <p class="text-sm text-slate-500 mt-2">Effect-based card with no stat values</p>
         </div>
       {/if}
 
@@ -187,7 +186,7 @@
         <div class="mb-8">
           <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <span>⚡</span>
-            <span>{$t('card.abilities')}</span>
+            <span>Abilities</span>
           </h2>
           <div class="grid gap-4">
             {#each card.abilities as ability, index}
@@ -219,25 +218,25 @@
       <div class="bg-black/40 rounded-xl p-6 border border-white/10">
         <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
           <span>ℹ️</span>
-          <span>{$t('card.identity')}</span>
+          <span>Card Identity</span>
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
-            <span class="text-slate-400">{$t('card.collectorNumber')}:</span>
+            <span class="text-slate-400">Collector #:</span>
             <span class="ml-2 text-white font-semibold">#{formatCardNumber(card.cardNumber, card.totalInSeries)}</span>
           </div>
           <div>
-            <span class="text-slate-400">{$t('card.series')}:</span>
+            <span class="text-slate-400">Series:</span>
             <span class="ml-2 text-white font-semibold">{card.series}</span>
           </div>
           {#if card.seasonId}
             <div>
-              <span class="text-slate-400">{$t('card.season')}:</span>
+              <span class="text-slate-400">Season:</span>
               <span class="ml-2 font-semibold" style="color: {getSeasonColor(card.seasonId)};">S{card.seasonId}</span>
             </div>
           {/if}
           <div>
-            <span class="text-slate-400">{$t('card.artist')}:</span>
+            <span class="text-slate-400">Artist:</span>
             <span class="ml-2 text-white font-semibold">{card.artist}</span>
           </div>
         </div>
@@ -251,7 +250,7 @@
         class="w-full px-6 py-3 rounded-xl font-bold text-white transition-all duration-200 hover:scale-105 active:scale-95"
         style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
       >
-        {$t('common.close')}
+        Close
       </button>
     </div>
   </div>

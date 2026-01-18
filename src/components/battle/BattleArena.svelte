@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { collection } from '../../stores/collection';
-  import { trackEvent } from '../../stores/analytics';
-  import type { Card as CardType, PackCard } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
-  import type { StatusEffect } from '../../lib/mechanics/combat';
+  import { collection } from '@/stores/collection';
+  import { trackEvent } from '@/stores/analytics';
+  import type { Card as CardType, PackCard } from '@/types';
+  import { RARITY_CONFIG } from '@/types';
+  import type { StatusEffect } from '@lib/mechanics/combat';
 
   type DuelResult = {
     winner: CardType;
@@ -15,7 +15,7 @@
   import BattleLog from './BattleLog.svelte';
   import BattleTutorial from './BattleTutorial.svelte';
   import StatusIcon from './StatusIcon.svelte';
-  import { simulateBattle } from '../../lib/mechanics/combat';
+  import { simulateBattle } from '@lib/mechanics/combat';
   import type { BattleLogEntry } from './BattleLog.svelte';
 
   let availableCards = $state<PackCard[]>([]);

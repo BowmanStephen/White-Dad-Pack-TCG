@@ -39,8 +39,7 @@
     setAnimationQuality,
     type AnimationQuality,
   } from '@/stores/ui';
-  import { locale, changeLocale, getLocaleName, getAvailableLocales } from '@/i18n/store';
-  import type { Locale } from '@/i18n';
+
   import {
     themeMode,
     setThemeMode,
@@ -102,7 +101,6 @@
   let currentSkipAnimations = $state(false);
   let currentFastForward = $state(false);
   let currentAnimationQuality = $state<AnimationQuality>('auto');
-  let currentLocale = $state<Locale>('en');
   let currentThemeMode = $state<ThemeMode>('auto');
   let currentIsDarkMode = $state(false);
   let currentNotificationPrefs = $state<NotificationPreferences>(notificationPreferences.get());
@@ -119,7 +117,6 @@
     const unsubSkip = skipAnimations.subscribe((v) => (currentSkipAnimations = v));
     const unsubFast = fastForward.subscribe((v) => (currentFastForward = v));
     const unsubQuality = animationQuality.subscribe((v) => (currentAnimationQuality = v));
-    const unsubLocale = locale.subscribe((v) => (currentLocale = v));
     const unsubThemeMode = themeMode.subscribe((v) => (currentThemeMode = v));
     const unsubIsDarkMode = isDarkMode.subscribe((v) => (currentIsDarkMode = v));
     const unsubNotifications = notificationPreferences.subscribe((v) => (currentNotificationPrefs = v));
@@ -135,7 +132,6 @@
       unsubSkip();
       unsubFast();
       unsubQuality();
-      unsubLocale();
       unsubThemeMode();
       unsubIsDarkMode();
       unsubNotifications();
@@ -241,15 +237,6 @@
       description: 'Always use dark mode',
     },
   ];
-
-  // Helper function to get available locales
-  function getLocaleOptions(): { value: Locale; label: string }[] {
-    const locales = getAvailableLocales();
-    return locales.map((loc) => ({
-      value: loc,
-      label: getLocaleName(loc),
-    }));
-  }
 
   // Format volume percentage
   function formatVolume(value: number): string {
@@ -599,38 +586,6 @@
     <!-- Theme Note -->
     <div class="setting-note">
       <p>💡 <strong>Note:</strong> Theme changes apply instantly. Your preference is saved automatically.</p>
-    </div>
-  </section>
-
-  <!-- Language Settings Section -->
-  <section class="settings-section">
-    <div class="section-header">
-      <h2>🌐 Language Settings</h2>
-      <p>Choose your preferred language</p>
-    </div>
-
-    <!-- Language Selector -->
-    <div class="setting-row">
-      <div class="setting-info">
-        <label for="language-select" class="setting-label">Language</label>
-        <p class="setting-description">Select your preferred language</p>
-      </div>
-      <select
-        id="language-select"
-        bind:value={currentLocale}
-        on:change={(e) => changeLocale(e.target.value as Locale)}
-        class="select-input"
-        aria-label="Language preference"
-      >
-        {#each getLocaleOptions() as localeOption}
-          <option value={localeOption.value}>{localeOption.label}</option>
-        {/each}
-      </select>
-    </div>
-
-    <!-- Language Note -->
-    <div class="setting-note">
-      <p>💡 <strong>Note:</strong> Changing the language will instantly update all text in the app. Your preference is saved automatically.</p>
     </div>
   </section>
 

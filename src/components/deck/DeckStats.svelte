@@ -66,17 +66,17 @@
   <!-- Summary Stats -->
   <div class="stat-summary">
     <div class="stat-item">
-      <span class="stat-label">{$t('deck.stats.totalCards')}</span>
+      <span class="stat-label">{t('deck.stats.totalCards')}</span>
       <span class="stat-value">{stats.totalCards}</span>
     </div>
 
     <div class="stat-item">
-      <span class="stat-label">{$t('deck.stats.uniqueCards')}</span>
+      <span class="stat-label">{t('deck.stats.uniqueCards')}</span>
       <span class="stat-value">{stats.uniqueCards}</span>
     </div>
 
     <div class="stat-item">
-      <span class="stat-label">{$t('deck.stats.averageRating')}</span>
+      <span class="stat-label">{t('deck.stats.averageRating')}</span>
       <span class="stat-value" class:rating-high={averageRating >= 75} class:rating-medium={averageRating >= 50 && averageRating < 75} class:rating-low={averageRating < 50}>
         {averageRating}
       </span>
@@ -84,7 +84,7 @@
 
     {#if synergyBonus > 0}
       <div class="stat-item">
-        <span class="stat-label">{$t('deck.synergy.bonus')}</span>
+        <span class="stat-label">{t('deck.synergy.bonus')}</span>
         <span class="stat-value synergy-bonus">
           ✨ +{synergyBonus}%
         </span>
@@ -95,7 +95,7 @@
   {#if !compact}
     <!-- Rarity Breakdown -->
     <div class="stat-section">
-      <h3 class="stat-section-title">{$t('deck.stats.rarityBreakdown')}</h3>
+      <h3 class="stat-section-title">{t('deck.stats.rarityBreakdown')}</h3>
       <div class="rarity-grid">
         {#each sortedRarities as rarity}
           {@const rarityData = RARITY_CONFIG[rarity]}
@@ -112,7 +112,7 @@
     <!-- Type Breakdown -->
     {#if sortedTypes.length > 0}
       <div class="stat-section">
-        <h3 class="stat-section-title">{$t('deck.stats.typeBreakdown')}</h3>
+        <h3 class="stat-section-title">{t('deck.stats.typeBreakdown')}</h3>
         <div class="type-grid">
           {#each sortedTypes.slice(0, 10) as [type, count]}
             <div class="type-item">
@@ -127,7 +127,7 @@
 
     <!-- Average Stats -->
     <div class="stat-section">
-      <h3 class="stat-section-title">{$t('deck.stats.averageStats')}</h3>
+      <h3 class="stat-section-title">{t('deck.stats.averageStats')}</h3>
       <div class="stats-grid">
         {#each Object.entries(stats.averageStats) as [stat, value]}
           <div class="stat-row">
