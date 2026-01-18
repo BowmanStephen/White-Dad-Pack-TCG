@@ -2,10 +2,10 @@
  * Unit tests for status effects system (PACK-011)
  *
  * Tests the new status effect mechanics:
- * - GRILLED: defense -20% (BBQ_DAD)
- * - LECTURED: attack -20% (COUCH_DAD)
- * - DRUNK: accuracy -30% (HOLIDAY_DAD)
- * - WIRED: speed +30% (TECH_DAD)
+ * - GRILLED: defense -20% (BBQ_DICKTATOR)
+ * - LECTURED: attack -20% (COUCH_CUMMANDER)
+ * - DRUNK: accuracy -30% (HOLIDAY_HORNDOGS)
+ * - WIRED: speed +30% (TECH_TWATS)
  * - Status duration: 2 turns
  * - Max stacking: 2 stacks
  */
@@ -108,7 +108,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
 
   describe('applyStatusEffectsToCard()', () => {
     it('should apply single grilled effect to all stats', () => {
-      const card = createTestCard('card-001', 'Test Dad', 'BBQ_DAD', {
+      const card = createTestCard('card-001', 'Test Dad', 'BBQ_DICKTATOR', {
         dadJoke: 80,
         grillSkill: 90,
         fixIt: 85,
@@ -132,7 +132,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
     });
 
     it('should apply single lectured effect to all stats', () => {
-      const card = createTestCard('card-002', 'Lectured Dad', 'COUCH_DAD', {
+      const card = createTestCard('card-002', 'Lectured Dad', 'COUCH_CUMMANDER', {
         dadJoke: 80,
         grillSkill: 70,
         fixIt: 75,
@@ -156,7 +156,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
     });
 
     it('should apply wired effect to increase all stats', () => {
-      const card = createTestCard('card-003', 'Tech Dad', 'TECH_DAD', {
+      const card = createTestCard('card-003', 'Tech Dad', 'TECH_TWATS', {
         dadJoke: 50,
         grillSkill: 55,
         fixIt: 60,
@@ -180,7 +180,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
     });
 
     it('should handle multiple status effects', () => {
-      const card = createTestCard('card-004', 'Multi Status Dad', 'BBQ_DAD', {
+      const card = createTestCard('card-004', 'Multi Status Dad', 'BBQ_DICKTATOR', {
         dadJoke: 100,
         grillSkill: 100,
         fixIt: 100,
@@ -205,7 +205,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
     });
 
     it('should clamp stats to 0-100 range', () => {
-      const card = createTestCard('card-005', 'Edge Case Dad', 'BBQ_DAD', {
+      const card = createTestCard('card-005', 'Edge Case Dad', 'BBQ_DICKTATOR', {
         dadJoke: 5,
         grillSkill: 3,
         fixIt: 2,
@@ -230,7 +230,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
     });
 
     it('should handle empty status effects array', () => {
-      const card = createTestCard('card-006', 'Normal Dad', 'BBQ_DAD', {
+      const card = createTestCard('card-006', 'Normal Dad', 'BBQ_DICKTATOR', {
         dadJoke: 70,
         grillSkill: 80,
         fixIt: 75,
@@ -355,8 +355,8 @@ describe('PACK-011: Battle System - Status Effects', () => {
   });
 
   describe('executeAbility() - Status Effect Application', () => {
-    it('should apply grilled status for BBQ_DAD cards', () => {
-      const card = createTestCard('bbq-001', 'BBQ Dad', 'BBQ_DAD', {
+    it('should apply grilled status for BBQ_DICKTATOR cards', () => {
+      const card = createTestCard('bbq-001', 'BBQ Dad', 'BBQ_DICKTATOR', {
         dadJoke: 70,
         grillSkill: 90,
         fixIt: 80,
@@ -367,7 +367,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
         beerSnob: 75,
       });
 
-      const target = createTestCard('target-001', 'Target Dad', 'COUCH_DAD', {
+      const target = createTestCard('target-001', 'Target Dad', 'COUCH_CUMMANDER', {
         dadJoke: 50,
         grillSkill: 50,
         fixIt: 50,
@@ -393,8 +393,8 @@ describe('PACK-011: Battle System - Status Effects', () => {
       expect(foundGrilled).toBe(true);
     });
 
-    it('should apply lectured status for COUCH_DAD cards', () => {
-      const card = createTestCard('couch-001', 'Couch Dad', 'COUCH_DAD', {
+    it('should apply lectured status for COUCH_CUMMANDER cards', () => {
+      const card = createTestCard('couch-001', 'Couch Dad', 'COUCH_CUMMANDER', {
         dadJoke: 70,
         grillSkill: 60,
         fixIt: 65,
@@ -405,7 +405,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
         beerSnob: 55,
       });
 
-      const target = createTestCard('target-002', 'Target Dad', 'BBQ_DAD', {
+      const target = createTestCard('target-002', 'Target Dad', 'BBQ_DICKTATOR', {
         dadJoke: 50,
         grillSkill: 50,
         fixIt: 50,
@@ -431,8 +431,8 @@ describe('PACK-011: Battle System - Status Effects', () => {
       expect(foundLectured).toBe(true);
     });
 
-    it('should apply drunk status for HOLIDAY_DAD cards', () => {
-      const card = createTestCard('holiday-001', 'Holiday Dad', 'HOLIDAY_DAD', {
+    it('should apply drunk status for HOLIDAY_HORNDOGS cards', () => {
+      const card = createTestCard('holiday-001', 'Holiday Dad', 'HOLIDAY_HORNDOGS', {
         dadJoke: 60,
         grillSkill: 55,
         fixIt: 50,
@@ -443,7 +443,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
         beerSnob: 75,
       });
 
-      const target = createTestCard('target-003', 'Target Dad', 'COUCH_DAD', {
+      const target = createTestCard('target-003', 'Target Dad', 'COUCH_CUMMANDER', {
         dadJoke: 50,
         grillSkill: 50,
         fixIt: 50,
@@ -469,8 +469,8 @@ describe('PACK-011: Battle System - Status Effects', () => {
       expect(foundDrunk).toBe(true);
     });
 
-    it('should apply wired status for TECH_DAD cards', () => {
-      const card = createTestCard('tech-001', 'Tech Dad', 'TECH_DAD', {
+    it('should apply wired status for TECH_TWATS cards', () => {
+      const card = createTestCard('tech-001', 'Tech Dad', 'TECH_TWATS', {
         dadJoke: 65,
         grillSkill: 60,
         fixIt: 70,
@@ -481,7 +481,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
         beerSnob: 65,
       });
 
-      const target = createTestCard('target-004', 'Target Dad', 'COUCH_DAD', {
+      const target = createTestCard('target-004', 'Target Dad', 'COUCH_CUMMANDER', {
         dadJoke: 50,
         grillSkill: 50,
         fixIt: 50,
@@ -508,7 +508,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
     });
 
     it('should not apply status for non-status-applying cards', () => {
-      const card = createTestCard('golf-001', 'Golf Dad', 'GOLF_DAD', {
+      const card = createTestCard('golf-001', 'Golf Dad', 'GOLF_GONAD', {
         dadJoke: 70,
         grillSkill: 60,
         fixIt: 65,
@@ -519,7 +519,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
         beerSnob: 55,
       });
 
-      const target = createTestCard('target-005', 'Target Dad', 'COUCH_DAD', {
+      const target = createTestCard('target-005', 'Target Dad', 'COUCH_CUMMANDER', {
         dadJoke: 50,
         grillSkill: 50,
         fixIt: 50,
@@ -532,14 +532,14 @@ describe('PACK-011: Battle System - Status Effects', () => {
 
       const result = executeAbility(card, target);
 
-      // GOLF_DAD doesn't apply status effects
+      // GOLF_GONAD doesn't apply status effects
       expect(result.statusEffects).toHaveLength(0);
     });
   });
 
   describe('Status Effect Duration', () => {
     it('should have 2 turn duration for all new status effects', () => {
-      const cardTypes = ['BBQ_DAD', 'COUCH_DAD', 'HOLIDAY_DAD', 'TECH_DAD'] as const;
+      const cardTypes = ['BBQ_DICKTATOR', 'COUCH_CUMMANDER', 'HOLIDAY_HORNDOGS', 'TECH_TWATS'] as const;
 
       for (const cardType of cardTypes) {
         const card = createTestCard(`${cardType.toLowerCase()}-001`, `${cardType} Dad`, cardType, {
@@ -553,7 +553,7 @@ describe('PACK-011: Battle System - Status Effects', () => {
           beerSnob: 70,
         });
 
-        const target = createTestCard('target-001', 'Target Dad', 'COUCH_DAD', {
+        const target = createTestCard('target-001', 'Target Dad', 'COUCH_CUMMANDER', {
           dadJoke: 50,
           grillSkill: 50,
           fixIt: 50,

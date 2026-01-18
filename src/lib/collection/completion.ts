@@ -127,11 +127,12 @@ function calculateTypeCompletion(
   _config: CompletionConfig
 ): Record<DadType, TypeCompletion> {
   const allCards = getAllCards();
+  // Use internal X-rated DadType names from core.ts (Season 2+ branding)
   const types: DadType[] = [
-    'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD', 'LAWN_DAD',
-    'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD', 'COACH_DAD', 'CHEF_DAD',
-    'HOLIDAY_DAD', 'WAREHOUSE_DAD', 'VINTAGE_DAD', 'FASHION_DAD',
-    'TECH_DAD', 'ITEM',
+    'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER', 'LAWN_LUNATIC',
+    'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS', 'COACH_CUMSTERS', 'CHEF_CUMSTERS',
+    'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS', 'VINTAGE_VAGABONDS', 'FASHION_FUCK',
+    'TECH_TWATS', 'ITEM',
   ];
   const result: Record<DadType, TypeCompletion> = {} as Record<DadType, TypeCompletion>;
 

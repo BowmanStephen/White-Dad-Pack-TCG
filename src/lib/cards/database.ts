@@ -174,12 +174,12 @@ export function verifyTypeDistribution(): {
   const aboveTarget = entries.filter(([_, count]) => count > targetAverage + 2);
   const belowTarget = entries.filter(([_, count]) => count < targetAverage - 2);
 
-  // Check for core dad types (16 expected types)
+  // Check for core dad types (using internal X-rated names from core.ts)
   const coreDadTypes: string[] = [
-    'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD', 'LAWN_DAD',
-    'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD', 'COACH_DAD', 'CHEF_DAD',
-    'HOLIDAY_DAD', 'WAREHOUSE_DAD', 'VINTAGE_DAD', 'FASHION_DAD',
-    'TECH_DAD'
+    'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER', 'LAWN_LUNATIC',
+    'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS', 'COACH_CUMSTERS', 'CHEF_CUMSTERS',
+    'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS', 'VINTAGE_VAGABONDS', 'FASHION_FUCK',
+    'TECH_TWATS'
   ];
   const missingCoreTypes = coreDadTypes.filter(type => !distribution[type]);
 

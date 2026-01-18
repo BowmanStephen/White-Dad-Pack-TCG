@@ -13,7 +13,8 @@ export type LeaderboardCategory =
   | 'uniqueCards'
   | 'mythicCards'
   | 'totalCards'
-  | 'collectionValue'; // PACK-023: Collection Value leaderboard
+  | 'collectionValue' // PACK-023: Collection Value leaderboard
+  | 'battleRecord'; // PACK-085: Best Battle Record leaderboard
 
 /**
  * Leaderboard scope - global or friends-only
@@ -44,6 +45,9 @@ export interface PlayerStats {
   totalCards: number;
   /** Collection value in points (PACK-023) */
   collectionValue?: number;
+  /** Battle win rate for battle record leaderboard (PACK-085) */
+  battleWins?: number;
+  battleLosses?: number;
   /** Last active timestamp */
   lastActive: Date;
   /** When the player joined */
@@ -160,6 +164,16 @@ export const LEADERBOARD_CATEGORIES: Record<
     label: 'Largest Collection',
     description: 'Players with the most cards overall',
     icon: '📚',
+  },
+  collectionValue: {
+    label: 'Highest Collection Value',
+    description: 'Players with the most valuable card collections',
+    icon: '💎',
+  },
+  battleRecord: {
+    label: 'Best Battle Record',
+    description: 'Players with the highest battle win rates',
+    icon: '⚔️',
   },
 };
 

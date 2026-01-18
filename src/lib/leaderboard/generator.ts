@@ -61,12 +61,18 @@ function generatePlayerStats(): PlayerStats {
     mythicCards * 5000 // Mythic cards are worth 5000 points each
   );
 
+  // Generate battle record (PACK-085)
+  const battleWins = Math.floor(Math.random() * 500);
+  const battleLosses = Math.floor(Math.random() * 300);
+
   return {
     totalPacksOpened,
     uniqueCards,
     mythicCards,
     totalCards,
     collectionValue,
+    battleWins,
+    battleLosses,
     lastActive: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
     joinedAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
   };
@@ -104,6 +110,8 @@ function filterStatsByTimePeriod(
       mythicCards: 0,
       totalCards: 0,
       collectionValue: 0,
+      battleWins: 0,
+      battleLosses: 0,
     };
   }
 
@@ -125,6 +133,8 @@ function filterStatsByTimePeriod(
     uniqueCards: Math.floor(stats.uniqueCards * activityRatio),
     mythicCards: Math.floor(stats.mythicCards * activityRatio * 0.5), // Mythics are rarer
     totalCards: Math.floor(stats.totalCards * activityRatio),
+    battleWins: Math.floor((stats.battleWins ?? 0) * activityRatio),
+    battleLosses: Math.floor((stats.battleLosses ?? 0) * activityRatio),
   };
 }
 
@@ -143,6 +153,11 @@ function getStatValue(stats: PlayerStats, category: LeaderboardCategory): number
       return stats.totalCards;
     case 'collectionValue':
       return stats.collectionValue ?? 0;
+    case 'battleRecord':
+      // Calculate win rate: (wins / (wins + losses)) * 1000 for precision
+      const totalBattles = (stats.battleWins ?? 0) + (stats.battleLosses ?? 0);
+      if (totalBattles === 0) return 0;
+      return Math.round(((stats.battleWins ?? 0) / totalBattles) * 1000);
   }
 }
 

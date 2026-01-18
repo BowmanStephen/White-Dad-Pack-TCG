@@ -21,7 +21,25 @@
         return entry.stats.mythicCards;
       case 'totalCards':
         return entry.stats.totalCards;
+      case 'collectionValue':
+        return entry.stats.collectionValue ?? 0;
+      case 'battleRecord':
+        // Return win rate percentage (scaled down from stored value)
+        const totalBattles = (entry.stats.battleWins ?? 0) + (entry.stats.battleLosses ?? 0);
+        if (totalBattles === 0) return 0;
+        return Math.round(((entry.stats.battleWins ?? 0) / totalBattles) * 100);
     }
+  }
+
+  // Format stat value for display
+  function formatStatValue(entry: LeaderboardEntry, category: LeaderboardCategory): string {
+    const value = getStatValue(entry, category);
+    if (category === 'battleRecord') {
+      const wins = entry.stats.battleWins ?? 0;
+      const losses = entry.stats.battleLosses ?? 0;
+      return `${value}% (${wins}-${losses})`;
+    }
+    return formatNumber(value);
   }
 
   // Format number with commas
@@ -75,7 +93,7 @@
 
           <div class="entry-stats">
             <div class="stat-value">
-              {formatNumber(getStatValue(entry, leaderboard.category))}
+              {formatStatValue(entry, leaderboard.category)}
             </div>
             <div class="stat-label">
               {LEADERBOARD_CATEGORIES[leaderboard.category].label}
@@ -103,7 +121,7 @@
 
           <div class="entry-stats">
             <div class="stat-value">
-              {formatNumber(getStatValue(leaderboard.userEntry, leaderboard.category))}
+              {formatStatValue(leaderboard.userEntry, leaderboard.category)}
             </div>
             <div class="stat-label">
               {LEADERBOARD_CATEGORIES[leaderboard.category].label}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
   import {
     exportCollection,
     importCollection,
@@ -14,11 +15,25 @@
   let success = $state<string | null>(null);
   let isProcessing = $state(false);
 
+  // Reactive collection state
+  let currentCollection = $state<Collection>(collection.get());
+  let currentPackCount = $derived(currentCollection?.packs?.length || 0);
+
   // File input ref
   let fileInput: HTMLInputElement;
 
-  // Get current collection stats (guard for SSR)
-  let currentPackCount = $derived(typeof window !== 'undefined' ? collection.get().packs.length : 0);
+  // Subscription cleanup
+  let unsubscribe: (() => void);
+
+  onMount(() => {
+    unsubscribe = collection.subscribe(value => {
+      currentCollection = value;
+    });
+  });
+
+  onDestroy(() => {
+    if (unsubscribe) unsubscribe();
+  });
 
   /**
    * Export collection as JSON file

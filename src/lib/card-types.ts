@@ -1,3 +1,49 @@
+import type { DadType } from '../types/core';
+
+// Legacy DadType names mapped to internal X-rated names (Season 2+)
+// This compatibility layer allows legacy data/UI maps to work with new type system
+const LEGACY_DAD_TYPE_MAP: Record<string, DadType> = {
+  // Legacy Season 1 names → Season 2+ internal names
+  BBQ_DAD: 'BBQ_DICKTATOR',
+  FIX_IT_DAD: 'FIX_IT_FUCKBOY',
+  GOLF_DAD: 'GOLF_GONAD',
+  COUCH_DAD: 'COUCH_CUMMANDER',
+  LAWN_DAD: 'LAWN_LUNATIC',
+  CAR_DAD: 'CAR_COCK',
+  OFFICE_DAD: 'OFFICE_ORGASMS',
+  COOL_DAD: 'COOL_CUCKS',
+  COACH_DAD: 'COACH_CUMSTERS',
+  CHEF_DAD: 'CHEF_CUMSTERS',
+  HOLIDAY_DAD: 'HOLIDAY_HORNDOGS',
+  WAREHOUSE_DAD: 'WAREHOUSE_WANKERS',
+  VINTAGE_DAD: 'VINTAGE_VAGABONDS',
+  FASHION_DAD: 'FASHION_FUCK',
+  TECH_DAD: 'TECH_TWATS',
+  // Special card types and variants don't have legacy names
+  // Crossover events don't have legacy names
+};
+
+/**
+ * Normalize a DadType value from legacy or internal name to internal DadType
+ * Accepts both legacy names (BBQ_DAD) and internal names (BBQ_DICKTATOR)
+ * Returns the internal DadType name
+ */
+export function normalizeDadType(type: string): DadType {
+  // If it's already a valid internal name, return it
+  if (LEGACY_DAD_TYPE_MAP[type]) {
+    return LEGACY_DAD_TYPE_MAP[type];
+  }
+  // Otherwise, assume it's already the internal name or a special type
+  return type as DadType;
+}
+
+/**
+ * Check if a string is a legacy DadType name
+ */
+export function isLegacyDadType(type: string): boolean {
+  return type in LEGACY_DAD_TYPE_MAP;
+}
+
 // Special card type utilities
 
 const SPECIAL_CARD_TYPES = ['ITEM', 'EVENT', 'TERRAIN', 'EVOLUTION', 'CURSE', 'TRAP'] as const;

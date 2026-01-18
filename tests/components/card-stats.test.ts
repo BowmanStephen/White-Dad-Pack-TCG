@@ -388,7 +388,7 @@ describe('CardStats Component', () => {
         stats: mockStats,
         rarityConfig: RARITY_CONFIG.rare,
         cardRarity: 'rare',
-        cardType: 'BBQ_DAD',
+        cardType: 'BBQ_DICKTATOR',
       });
 
       expect(container.querySelector('.stats-grid')).toBeTruthy();

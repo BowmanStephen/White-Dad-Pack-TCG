@@ -115,30 +115,33 @@ export function selectCards(
  * Default pack configuration based on US036 rarity distribution rules
  *
  * Slot breakdown:
- * - Slot 1-3: Common (100%)
- * - Slot 4-5: Uncommon or better (74% uncommon, 20% rare, 5% epic, 1% legendary+)
- * - Slot 6: Rare or better (50% rare, 10% epic, 2% legendary+, 0.1% mythic)
- * - Holo chance: 1 in 6 cards (~16.67%)
+ * - Slot 1-3: Common (100%) - Base filler to ensure pack volume
+ * - Slot 4-5: Uncommon or better - The "mid-pack" tension builder
+ *   (74% uncommon, 20% rare, 5% epic, 1% legendary+)
+ * - Slot 6: Rare or better - The "money slot" / payoff moment
+ *   (87.9% rare, 10% epic, 2% legendary+, 0.1% mythic)
+ * - Holo chance: 1 in 6 cards (~16.67%) - Classic TCG industry standard
  */
 export const DEFAULT_PACK_CONFIG: PackConfig = {
   cardsPerPack: 6,
   raritySlots: [
-    { slot: 1, guaranteedRarity: 'common' },
-    { slot: 2, guaranteedRarity: 'common' },
-    { slot: 3, guaranteedRarity: 'common' },
+    { slot: 1, guaranteedRarity: 'common' }, // Foundation
+    { slot: 2, guaranteedRarity: 'common' }, // Foundation
+    { slot: 3, guaranteedRarity: 'common' }, // Foundation
     {
       slot: 4,
       rarityPool: true,
-      probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 }
+      probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 } // Building tension
     },
     {
       slot: 5,
       rarityPool: true,
-      probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 }
+      probability: { uncommon: 0.74, rare: 0.20, epic: 0.05, legendary: 0.009, mythic: 0.001 } // Building tension
     },
     {
       slot: 6,
       rarityPool: true,
+      // The Payoff: 88% Rare (disappointment/standard), 10% Epic (win), 2% Legendary (big win), 0.1% Mythic (jackpot)
       probability: { rare: 0.879, epic: 0.10, legendary: 0.0199, mythic: 0.001 }
     },
   ],
@@ -304,12 +307,12 @@ export function getHighestRarity(cards: Card[]): Rarity {
 /**
  * Roll for holographic variant based on US038 distribution.
  *
- * Distribution:
- * - 80% none (no holo)
- * - 15% standard (basic holo shine)
- * - 3% reverse (reverse holo - background only)
- * - 1.5% full_art (full art holo - legendary+ only)
- * - 0.5% prismatic (prismatic rainbow holo - mythic only)
+ * Distribution (Standard Industry Rates):
+ * - 80% none (no holo) - Keeps holos feeling special
+ * - 15% standard (basic holo shine) - The "common" premium hit
+ * - 3% reverse (reverse holo) - Niche collector preference
+ * - 1.5% full_art (legendary+) - High impact visual upgrade
+ * - 0.5% prismatic (mythic only) - The "Chase" card finish
  *
  * Rarity restrictions:
  * - Prismatic only available for mythic rarity

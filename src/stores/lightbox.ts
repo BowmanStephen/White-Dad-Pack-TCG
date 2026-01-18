@@ -30,6 +30,12 @@ export const currentIndex = atom<number>(0);
 // Flip state for card inspection (PACK-036)
 export const isCardFlipped = atom<boolean>(false);
 
+// Card view mode for enhanced display (ROUND-3)
+export const cardViewMode = atom<'default' | '3d' | 'zoom'>('default');
+
+// Zoom level for interactive viewing (ROUND-3)
+export const zoomLevel = atom<number>(1);
+
 // ============================================================================
 // ACTIONS
 // ============================================================================
@@ -149,4 +155,28 @@ export function toggleCardFlip() {
  */
 export function setCardFlip(flipped: boolean) {
   isCardFlipped.set(flipped);
+}
+
+/**
+ * Set card view mode (ROUND-3: Enhanced display modes)
+ */
+export function setCardViewMode(mode: 'default' | '3d' | 'zoom') {
+  cardViewMode.set(mode);
+}
+
+/**
+ * Set zoom level (ROUND-3: Interactive zoom)
+ */
+export function setZoomLevel(level: number) {
+  const clampedLevel = Math.max(1, Math.min(level, 3)); // Clamp between 1 and 3
+  zoomLevel.set(clampedLevel);
+}
+
+/**
+ * Reset view to defaults
+ */
+export function resetCardView() {
+  cardViewMode.set('default');
+  zoomLevel.set(1);
+  isCardFlipped.set(false);
 }

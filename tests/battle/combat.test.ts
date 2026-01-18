@@ -171,18 +171,18 @@ describe('PACK-049: Battle System Tests', () => {
     it('should normalize stats by card count for fair battles', () => {
       // 3-card deck with high stats (70 average each)
       const threeCardDeck = createTestDeck('Small High-Stat Deck', [
-        { card: createTestCard('Card1', 'BBQ_DAD', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
-        { card: createTestCard('Card2', 'BBQ_DAD', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
-        { card: createTestCard('Card3', 'BBQ_DAD', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
+        { card: createTestCard('Card1', 'BBQ_DICKTATOR', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
+        { card: createTestCard('Card2', 'BBQ_DICKTATOR', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
+        { card: createTestCard('Card3', 'BBQ_DICKTATOR', { dadJoke: 70, grillSkill: 70, fixIt: 70, napPower: 70, remoteControl: 70, thermostat: 70, sockSandal: 70, beerSnob: 70 }), count: 1 },
       ]);
 
       // 5-card deck with lower stats (50 average each)
       const fiveCardDeck = createTestDeck('Large Low-Stat Deck', [
-        { card: createTestCard('Card4', 'FIX_IT_DAD', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card5', 'FIX_IT_DAD', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card6', 'FIX_IT_DAD', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card7', 'FIX_IT_DAD', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
-        { card: createTestCard('Card8', 'FIX_IT_DAD', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
+        { card: createTestCard('Card4', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
+        { card: createTestCard('Card5', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
+        { card: createTestCard('Card6', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
+        { card: createTestCard('Card7', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
+        { card: createTestCard('Card8', 'FIX_IT_FUCKBOY', { dadJoke: 50, grillSkill: 50, fixIt: 50, napPower: 50, remoteControl: 50, thermostat: 50, sockSandal: 50, beerSnob: 50 }), count: 1 },
       ]);
 
       const result = calculateBattleResult(threeCardDeck, fiveCardDeck, 12345);
@@ -201,17 +201,17 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should handle decks with different card counts fairly', () => {
       const smallDeck = createTestDeck('2-Card Deck', [
-        { card: createTestCard('Small1', 'BBQ_DAD', { dadJoke: 80, grillSkill: 80, fixIt: 80, napPower: 80, remoteControl: 80, thermostat: 80, sockSandal: 80, beerSnob: 80 }), count: 1 },
-        { card: createTestCard('Small2', 'BBQ_DAD', { dadJoke: 80, grillSkill: 80, fixIt: 80, napPower: 80, remoteControl: 80, thermostat: 80, sockSandal: 80, beerSnob: 80 }), count: 1 },
+        { card: createTestCard('Small1', 'BBQ_DICKTATOR', { dadJoke: 80, grillSkill: 80, fixIt: 80, napPower: 80, remoteControl: 80, thermostat: 80, sockSandal: 80, beerSnob: 80 }), count: 1 },
+        { card: createTestCard('Small2', 'BBQ_DICKTATOR', { dadJoke: 80, grillSkill: 80, fixIt: 80, napPower: 80, remoteControl: 80, thermostat: 80, sockSandal: 80, beerSnob: 80 }), count: 1 },
       ]);
 
       const largeDeck = createTestDeck('6-Card Deck', [
-        { card: createTestCard('Large1', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large2', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large3', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large4', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large5', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
-        { card: createTestCard('Large6', 'GOLF_DAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large1', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large2', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large3', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large4', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large5', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
+        { card: createTestCard('Large6', 'GOLF_GONAD', { dadJoke: 40, grillSkill: 40, fixIt: 40, napPower: 40, remoteControl: 40, thermostat: 40, sockSandal: 40, beerSnob: 40 }), count: 1 },
       ]);
 
       const result = calculateBattleResult(smallDeck, largeDeck, 54321);
@@ -224,8 +224,8 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should normalize stats correctly in averageStats', () => {
       const deck = createTestDeck('Test Deck', [
-        { card: createTestCard('Stat1', 'BBQ_DAD', { dadJoke: 100, grillSkill: 60, fixIt: 40, napPower: 80, remoteControl: 70, thermostat: 50, sockSandal: 90, beerSnob: 30 }), count: 1 },
-        { card: createTestCard('Stat2', 'FIX_IT_DAD', { dadJoke: 20, grillSkill: 80, fixIt: 90, napPower: 30, remoteControl: 40, thermostat: 60, sockSandal: 50, beerSnob: 70 }), count: 1 },
+        { card: createTestCard('Stat1', 'BBQ_DICKTATOR', { dadJoke: 100, grillSkill: 60, fixIt: 40, napPower: 80, remoteControl: 70, thermostat: 50, sockSandal: 90, beerSnob: 30 }), count: 1 },
+        { card: createTestCard('Stat2', 'FIX_IT_FUCKBOY', { dadJoke: 20, grillSkill: 80, fixIt: 90, napPower: 30, remoteControl: 40, thermostat: 60, sockSandal: 50, beerSnob: 70 }), count: 1 },
       ]);
 
       // Average should be (100+20)/2 = 60 for dadJoke
@@ -247,10 +247,10 @@ describe('PACK-049: Battle System Tests', () => {
 
       // Verify each type has exactly 2 advantages
       const allTypes: DadType[] = [
-        'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD',
-        'LAWN_DAD', 'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD',
-        'COACH_DAD', 'CHEF_DAD', 'HOLIDAY_DAD', 'WAREHOUSE_DAD',
-        'VINTAGE_DAD', 'FASHION_DAD', 'TECH_DAD',
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
       ];
 
       for (const type of allTypes) {
@@ -268,41 +268,41 @@ describe('PACK-049: Battle System Tests', () => {
     });
 
     it('should return 1.2 multiplier for advantages', () => {
-      // BBQ_DAD beats GOLF_DAD and COUCH_DAD
-      expect(getTypeAdvantage('BBQ_DAD', 'GOLF_DAD')).toBe(1.2);
-      expect(getTypeAdvantage('BBQ_DAD', 'COUCH_DAD')).toBe(1.2);
+      // BBQ_DICKTATOR beats GOLF_GONAD and COUCH_CUMMANDER
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'GOLF_GONAD')).toBe(1.2);
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'COUCH_CUMMANDER')).toBe(1.2);
 
-      // FIX_IT_DAD beats TECH_DAD and CAR_DAD
-      expect(getTypeAdvantage('FIX_IT_DAD', 'TECH_DAD')).toBe(1.2);
-      expect(getTypeAdvantage('FIX_IT_DAD', 'CAR_DAD')).toBe(1.2);
+      // FIX_IT_FUCKBOY beats TECH_TWATS and CAR_COCK
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'TECH_TWATS')).toBe(1.2);
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'CAR_COCK')).toBe(1.2);
     });
 
     it('should return 0.8 multiplier for disadvantages', () => {
-      // If BBQ_DAD beats GOLF_DAD, then GOLF_DAD should have disadvantage vs BBQ_DAD
-      expect(getTypeAdvantage('GOLF_DAD', 'BBQ_DAD')).toBe(0.8);
+      // If BBQ_DICKTATOR beats GOLF_GONAD, then GOLF_GONAD should have disadvantage vs BBQ_DICKTATOR
+      expect(getTypeAdvantage('GOLF_GONAD', 'BBQ_DICKTATOR')).toBe(0.8);
 
       // Symmetric disadvantage
-      expect(getTypeAdvantage('COUCH_DAD', 'BBQ_DAD')).toBe(0.8);
-      expect(getTypeAdvantage('TECH_DAD', 'FIX_IT_DAD')).toBe(0.8);
-      expect(getTypeAdvantage('CAR_DAD', 'FIX_IT_DAD')).toBe(0.8);
+      expect(getTypeAdvantage('COUCH_CUMMANDER', 'BBQ_DICKTATOR')).toBe(0.8);
+      expect(getTypeAdvantage('TECH_TWATS', 'FIX_IT_FUCKBOY')).toBe(0.8);
+      expect(getTypeAdvantage('CAR_COCK', 'FIX_IT_FUCKBOY')).toBe(0.8);
     });
 
     it('should return 1.0 multiplier for neutral matchups', () => {
-      // BBQ_DAD vs FIX_IT_DAD (no advantage/disadvantage)
-      expect(getTypeAdvantage('BBQ_DAD', 'FIX_IT_DAD')).toBe(1.0);
-      expect(getTypeAdvantage('FIX_IT_DAD', 'BBQ_DAD')).toBe(1.0);
+      // BBQ_DICKTATOR vs FIX_IT_FUCKBOY (no advantage/disadvantage)
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'FIX_IT_FUCKBOY')).toBe(1.0);
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'BBQ_DICKTATOR')).toBe(1.0);
 
-      // GOLF_DAD vs LAWN_DAD (no advantage/disadvantage)
-      expect(getTypeAdvantage('GOLF_DAD', 'LAWN_DAD')).toBe(1.0);
-      expect(getTypeAdvantage('LAWN_DAD', 'GOLF_DAD')).toBe(1.0);
+      // GOLF_GONAD vs LAWN_LUNATIC (no advantage/disadvantage)
+      expect(getTypeAdvantage('GOLF_GONAD', 'LAWN_LUNATIC')).toBe(1.0);
+      expect(getTypeAdvantage('LAWN_LUNATIC', 'GOLF_GONAD')).toBe(1.0);
     });
 
     it('should have 11 neutral matchups per type', () => {
       const allTypes: DadType[] = [
-        'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD',
-        'LAWN_DAD', 'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD',
-        'COACH_DAD', 'CHEF_DAD', 'HOLIDAY_DAD', 'WAREHOUSE_DAD',
-        'VINTAGE_DAD', 'FASHION_DAD', 'TECH_DAD',
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
       ];
 
       for (const type of allTypes) {
@@ -313,32 +313,32 @@ describe('PACK-049: Battle System Tests', () => {
 
     it('should apply type advantages in deck battles', () => {
       const bbqDeck = createTestDeck('BBQ Deck', [
-        { card: createTestCard('BBQ1', 'BBQ_DAD', { dadJoke: 50, grillSkill: 80, fixIt: 40, napPower: 30, remoteControl: 50, thermostat: 60, sockSandal: 45, beerSnob: 70 }), count: 3 },
+        { card: createTestCard('BBQ1', 'BBQ_DICKTATOR', { dadJoke: 50, grillSkill: 80, fixIt: 40, napPower: 30, remoteControl: 50, thermostat: 60, sockSandal: 45, beerSnob: 70 }), count: 3 },
       ]);
 
       const couchDeck = createTestDeck('COUCH Deck', [
-        { card: createTestCard('COUCH1', 'COUCH_DAD', { dadJoke: 50, grillSkill: 40, fixIt: 40, napPower: 80, remoteControl: 70, thermostat: 50, sockSandal: 45, beerSnob: 50 }), count: 3 },
+        { card: createTestCard('COUCH1', 'COUCH_CUMMANDER', { dadJoke: 50, grillSkill: 40, fixIt: 40, napPower: 80, remoteControl: 70, thermostat: 50, sockSandal: 45, beerSnob: 50 }), count: 3 },
       ]);
 
       const result = calculateBattleResult(bbqDeck, couchDeck, 11111);
 
-      // BBQ_DAD has advantage over COUCH_DAD (1.2x multiplier)
+      // BBQ_DICKTATOR has advantage over COUCH_CUMMANDER (1.2x multiplier)
       expect(result.typeAdvantage).toBe(1.2);
       expect(result.winner.name).toBe('BBQ Deck');
     });
 
     it('should apply type disadvantages in deck battles', () => {
       const couchDeck = createTestDeck('COUCH Deck', [
-        { card: createTestCard('COUCH1', 'COUCH_DAD', { dadJoke: 50, grillSkill: 40, fixIt: 40, napPower: 80, remoteControl: 70, thermostat: 50, sockSandal: 45, beerSnob: 50 }), count: 3 },
+        { card: createTestCard('COUCH1', 'COUCH_CUMMANDER', { dadJoke: 50, grillSkill: 40, fixIt: 40, napPower: 80, remoteControl: 70, thermostat: 50, sockSandal: 45, beerSnob: 50 }), count: 3 },
       ]);
 
       const bbqDeck = createTestDeck('BBQ Deck', [
-        { card: createTestCard('BBQ1', 'BBQ_DAD', { dadJoke: 50, grillSkill: 80, fixIt: 40, napPower: 30, remoteControl: 50, thermostat: 60, sockSandal: 45, beerSnob: 70 }), count: 3 },
+        { card: createTestCard('BBQ1', 'BBQ_DICKTATOR', { dadJoke: 50, grillSkill: 80, fixIt: 40, napPower: 30, remoteControl: 50, thermostat: 60, sockSandal: 45, beerSnob: 70 }), count: 3 },
       ]);
 
       const result = calculateBattleResult(couchDeck, bbqDeck, 22222);
 
-      // COUCH_DAD has disadvantage vs BBQ_DAD (0.8x multiplier)
+      // COUCH_CUMMANDER has disadvantage vs BBQ_DICKTATOR (0.8x multiplier)
       expect(result.typeAdvantage).toBe(0.8);
       expect(result.winner.name).toBe('BBQ Deck'); // BBQ still wins due to stats
     });

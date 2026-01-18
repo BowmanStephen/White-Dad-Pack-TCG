@@ -18,21 +18,21 @@ describe('Type Advantage Matrix (PACK-008)', () => {
   describe('Matrix Structure', () => {
     it('should have all 16 dad types defined', () => {
       const expectedTypes: DadType[] = [
-        'BBQ_DAD',
-        'FIX_IT_DAD',
-        'GOLF_DAD',
-        'COUCH_DAD',
-        'LAWN_DAD',
-        'CAR_DAD',
-        'OFFICE_DAD',
-        'COOL_DAD',
-        'COACH_DAD',
-        'CHEF_DAD',
-        'HOLIDAY_DAD',
-        'WAREHOUSE_DAD',
-        'VINTAGE_DAD',
-        'FASHION_DAD',
-        'TECH_DAD',
+        'BBQ_DICKTATOR',
+        'FIX_IT_FUCKBOY',
+        'GOLF_GONAD',
+        'COUCH_CUMMANDER',
+        'LAWN_LUNATIC',
+        'CAR_COCK',
+        'OFFICE_ORGASMS',
+        'COOL_CUCKS',
+        'COACH_CUMSTERS',
+        'CHEF_CUMSTERS',
+        'HOLIDAY_HORNDOGS',
+        'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS',
+        'FASHION_FUCK',
+        'TECH_TWATS',
         'ITEM',
       ];
 
@@ -41,30 +41,47 @@ describe('Type Advantage Matrix (PACK-008)', () => {
       });
     });
 
-    it('should have exactly 2 advantages per type (except ITEM)', () => {
-      Object.entries(TYPE_ADVANTAGE_MATRIX).forEach(([type, advantages]) => {
-        if (type === 'ITEM') {
-          expect(advantages).toEqual([]);
-        } else {
-          expect(advantages.length).toBe(2);
-        }
+    it('should have exactly 2 advantages per type (core types only)', () => {
+      const coreTypes: DadType[] = [
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+      ];
+
+      coreTypes.forEach(type => {
+        const advantages = TYPE_ADVANTAGE_MATRIX[type];
+        expect(advantages.length).toBe(2);
       });
+
+      // ITEM and special types have no advantages
+      expect(TYPE_ADVANTAGE_MATRIX['ITEM']).toEqual([]);
     });
 
-    it('should have exactly 2 disadvantages per type (except ITEM)', () => {
-      Object.keys(TYPE_ADVANTAGE_MATRIX).forEach(type => {
-        if (type === 'ITEM') return;
+    it('should have exactly 2 disadvantages per type (core types only)', () => {
+      const coreTypes: DadType[] = [
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+      ];
 
-        const disadvantages = getDisadvantages(type as DadType);
+      coreTypes.forEach(type => {
+        const disadvantages = getDisadvantages(type);
         expect(disadvantages.length).toBe(2);
       });
     });
 
-    it('should have 11 neutral matchups per type', () => {
-      Object.keys(TYPE_ADVANTAGE_MATRIX).forEach(type => {
-        if (type === 'ITEM') return;
+    it('should have 11 neutral matchups per type (core types only)', () => {
+      const coreTypes: DadType[] = [
+        'BBQ_DICKTATOR', 'FIX_IT_FUCKBOY', 'GOLF_GONAD', 'COUCH_CUMMANDER',
+        'LAWN_LUNATIC', 'CAR_COCK', 'OFFICE_ORGASMS', 'COOL_CUCKS',
+        'COACH_CUMSTERS', 'CHEF_CUMSTERS', 'HOLIDAY_HORNDOGS', 'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS', 'FASHION_FUCK', 'TECH_TWATS',
+      ];
 
-        const neutrals = getNeutrals(type as DadType);
+      coreTypes.forEach(type => {
+        const neutrals = getNeutrals(type);
         expect(neutrals.length).toBe(11);
       });
     });
@@ -76,64 +93,64 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
   describe('getTypeAdvantage', () => {
     it('should return 1.2 for advantageous matchups', () => {
-      // BBQ_DAD has advantage over GOLF_DAD and COUCH_DAD
-      expect(getTypeAdvantage('BBQ_DAD', 'GOLF_DAD')).toBe(ADVANTAGE_MULTIPLIER);
-      expect(getTypeAdvantage('BBQ_DAD', 'COUCH_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+      // BBQ_DICKTATOR has advantage over GOLF_GONAD and COUCH_CUMMANDER
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'GOLF_GONAD')).toBe(ADVANTAGE_MULTIPLIER);
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'COUCH_CUMMANDER')).toBe(ADVANTAGE_MULTIPLIER);
 
-      // FIX_IT_DAD has advantage over TECH_DAD and CAR_DAD
-      expect(getTypeAdvantage('FIX_IT_DAD', 'TECH_DAD')).toBe(ADVANTAGE_MULTIPLIER);
-      expect(getTypeAdvantage('FIX_IT_DAD', 'CAR_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+      // FIX_IT_FUCKBOY has advantage over TECH_TWATS and CAR_COCK
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'TECH_TWATS')).toBe(ADVANTAGE_MULTIPLIER);
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'CAR_COCK')).toBe(ADVANTAGE_MULTIPLIER);
 
-      // GOLF_DAD has advantage over COACH_DAD and COOL_DAD
-      expect(getTypeAdvantage('GOLF_DAD', 'COACH_DAD')).toBe(ADVANTAGE_MULTIPLIER);
-      expect(getTypeAdvantage('GOLF_DAD', 'COOL_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+      // GOLF_GONAD has advantage over COACH_CUMSTERS and COOL_CUCKS
+      expect(getTypeAdvantage('GOLF_GONAD', 'COACH_CUMSTERS')).toBe(ADVANTAGE_MULTIPLIER);
+      expect(getTypeAdvantage('GOLF_GONAD', 'COOL_CUCKS')).toBe(ADVANTAGE_MULTIPLIER);
     });
 
     it('should return 0.8 for disadvantageous matchups', () => {
-      // GOLF_DAD is at disadvantage when BBQ_DAD attacks
-      expect(getTypeAdvantage('GOLF_DAD', 'BBQ_DAD')).toBe(DISADVANTAGE_MULTIPLIER);
+      // GOLF_GONAD is at disadvantage when BBQ_DICKTATOR attacks
+      expect(getTypeAdvantage('GOLF_GONAD', 'BBQ_DICKTATOR')).toBe(DISADVANTAGE_MULTIPLIER);
 
-      // TECH_DAD is at disadvantage when FIX_IT_DAD attacks
-      expect(getTypeAdvantage('TECH_DAD', 'FIX_IT_DAD')).toBe(DISADVANTAGE_MULTIPLIER);
+      // TECH_TWATS is at disadvantage when FIX_IT_FUCKBOY attacks
+      expect(getTypeAdvantage('TECH_TWATS', 'FIX_IT_FUCKBOY')).toBe(DISADVANTAGE_MULTIPLIER);
 
-      // COACH_DAD is at disadvantage when GOLF_DAD attacks
-      expect(getTypeAdvantage('COACH_DAD', 'GOLF_DAD')).toBe(DISADVANTAGE_MULTIPLIER);
+      // COACH_CUMSTERS is at disadvantage when GOLF_GONAD attacks
+      expect(getTypeAdvantage('COACH_CUMSTERS', 'GOLF_GONAD')).toBe(DISADVANTAGE_MULTIPLIER);
     });
 
     it('should return 1.0 for neutral matchups', () => {
-      // BBQ_DAD vs FIX_IT_DAD is neutral
-      expect(getTypeAdvantage('BBQ_DAD', 'FIX_IT_DAD')).toBe(NEUTRAL_MULTIPLIER);
+      // BBQ_DICKTATOR vs FIX_IT_FUCKBOY is neutral
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'FIX_IT_FUCKBOY')).toBe(NEUTRAL_MULTIPLIER);
 
-      // GOLF_DAD vs LAWN_DAD is neutral
-      expect(getTypeAdvantage('GOLF_DAD', 'LAWN_DAD')).toBe(NEUTRAL_MULTIPLIER);
+      // GOLF_GONAD vs LAWN_LUNATIC is neutral
+      expect(getTypeAdvantage('GOLF_GONAD', 'LAWN_LUNATIC')).toBe(NEUTRAL_MULTIPLIER);
 
-      // TECH_DAD vs CAR_DAD is neutral
-      expect(getTypeAdvantage('TECH_DAD', 'CAR_DAD')).toBe(NEUTRAL_MULTIPLIER);
+      // TECH_TWATS vs CAR_COCK is neutral
+      expect(getTypeAdvantage('TECH_TWATS', 'CAR_COCK')).toBe(NEUTRAL_MULTIPLIER);
     });
 
     it('should return 1.0 for ITEM type matchups', () => {
-      expect(getTypeAdvantage('ITEM', 'BBQ_DAD')).toBe(NEUTRAL_MULTIPLIER);
-      expect(getTypeAdvantage('BBQ_DAD', 'ITEM')).toBe(NEUTRAL_MULTIPLIER);
+      expect(getTypeAdvantage('ITEM', 'BBQ_DICKTATOR')).toBe(NEUTRAL_MULTIPLIER);
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'ITEM')).toBe(NEUTRAL_MULTIPLIER);
       expect(getTypeAdvantage('ITEM', 'ITEM')).toBe(NEUTRAL_MULTIPLIER);
     });
 
     it('should be symmetric (advantage in one direction = disadvantage in other)', () => {
       const allTypes: DadType[] = [
-        'BBQ_DAD',
-        'FIX_IT_DAD',
-        'GOLF_DAD',
-        'COUCH_DAD',
-        'LAWN_DAD',
-        'CAR_DAD',
-        'OFFICE_DAD',
-        'COOL_DAD',
-        'COACH_DAD',
-        'CHEF_DAD',
-        'HOLIDAY_DAD',
-        'WAREHOUSE_DAD',
-        'VINTAGE_DAD',
-        'FASHION_DAD',
-        'TECH_DAD',
+        'BBQ_DICKTATOR',
+        'FIX_IT_FUCKBOY',
+        'GOLF_GONAD',
+        'COUCH_CUMMANDER',
+        'LAWN_LUNATIC',
+        'CAR_COCK',
+        'OFFICE_ORGASMS',
+        'COOL_CUCKS',
+        'COACH_CUMSTERS',
+        'CHEF_CUMSTERS',
+        'HOLIDAY_HORNDOGS',
+        'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS',
+        'FASHION_FUCK',
+        'TECH_TWATS',
       ];
 
       // Check that advantages are symmetric
@@ -156,20 +173,20 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
   describe('getAdvantages', () => {
     it('should return 2 types that this type has advantage over', () => {
-      const bbqAdvantages = getAdvantages('BBQ_DAD');
+      const bbqAdvantages = getAdvantages('BBQ_DICKTATOR');
       expect(bbqAdvantages).toHaveLength(2);
-      expect(bbqAdvantages).toContain('GOLF_DAD');
-      expect(bbqAdvantages).toContain('COUCH_DAD');
+      expect(bbqAdvantages).toContain('GOLF_GONAD');
+      expect(bbqAdvantages).toContain('COUCH_CUMMANDER');
 
-      const fixItAdvantages = getAdvantages('FIX_IT_DAD');
+      const fixItAdvantages = getAdvantages('FIX_IT_FUCKBOY');
       expect(fixItAdvantages).toHaveLength(2);
-      expect(fixItAdvantages).toContain('TECH_DAD');
-      expect(fixItAdvantages).toContain('CAR_DAD');
+      expect(fixItAdvantages).toContain('TECH_TWATS');
+      expect(fixItAdvantages).toContain('CAR_COCK');
 
-      const golfAdvantages = getAdvantages('GOLF_DAD');
+      const golfAdvantages = getAdvantages('GOLF_GONAD');
       expect(golfAdvantages).toHaveLength(2);
-      expect(golfAdvantages).toContain('COACH_DAD');
-      expect(golfAdvantages).toContain('COOL_DAD');
+      expect(golfAdvantages).toContain('COACH_CUMSTERS');
+      expect(golfAdvantages).toContain('COOL_CUCKS');
     });
 
     it('should return empty array for ITEM type', () => {
@@ -179,35 +196,35 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
   describe('getDisadvantages', () => {
     it('should return 2 types that this type has disadvantage against', () => {
-      const bbqDisadvantages = getDisadvantages('BBQ_DAD');
+      const bbqDisadvantages = getDisadvantages('BBQ_DICKTATOR');
       expect(bbqDisadvantages).toHaveLength(2);
-      // BBQ_DAD is at disadvantage when CHEF_DAD or GOLF_DAD attack
+      // BBQ_DICKTATOR is at disadvantage when CHEF_CUMSTERS or GOLF_GONAD attack
 
-      const fixItDisadvantages = getDisadvantages('FIX_IT_DAD');
+      const fixItDisadvantages = getDisadvantages('FIX_IT_FUCKBOY');
       expect(fixItDisadvantages).toHaveLength(2);
-      // FIX_IT_DAD is at disadvantage when COACH_DAD or VINTAGE_DAD attack
-      expect(fixItDisadvantages).toContain('COACH_DAD');
-      expect(fixItDisadvantages).toContain('VINTAGE_DAD');
+      // FIX_IT_FUCKBOY is at disadvantage when COACH_CUMSTERS or VINTAGE_VAGABONDS attack
+      expect(fixItDisadvantages).toContain('COACH_CUMSTERS');
+      expect(fixItDisadvantages).toContain('VINTAGE_VAGABONDS');
 
-      const golfDisadvantages = getDisadvantages('GOLF_DAD');
+      const golfDisadvantages = getDisadvantages('GOLF_GONAD');
       expect(golfDisadvantages).toHaveLength(2);
-      expect(golfDisadvantages).toContain('BBQ_DAD');
+      expect(golfDisadvantages).toContain('BBQ_DICKTATOR');
     });
   });
 
   describe('getNeutrals', () => {
     it('should return 11 neutral matchups', () => {
-      const bbqNeutrals = getNeutrals('BBQ_DAD');
+      const bbqNeutrals = getNeutrals('BBQ_DICKTATOR');
       expect(bbqNeutrals).toHaveLength(11);
 
-      const fixItNeutrals = getNeutrals('FIX_IT_DAD');
+      const fixItNeutrals = getNeutrals('FIX_IT_FUCKBOY');
       expect(fixItNeutrals).toHaveLength(11);
     });
 
     it('should not include advantages or disadvantages in neutrals', () => {
-      const bbqAdvantages = getAdvantages('BBQ_DAD');
-      const bbqDisadvantages = getDisadvantages('BBQ_DAD');
-      const bbqNeutrals = getNeutrals('BBQ_DAD');
+      const bbqAdvantages = getAdvantages('BBQ_DICKTATOR');
+      const bbqDisadvantages = getDisadvantages('BBQ_DICKTATOR');
+      const bbqNeutrals = getNeutrals('BBQ_DICKTATOR');
 
       bbqAdvantages.forEach(adv => {
         expect(bbqNeutrals).not.toContain(adv);
@@ -221,51 +238,51 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
   describe('hasAdvantage', () => {
     it('should return true for advantageous matchups', () => {
-      expect(hasAdvantage('BBQ_DAD', 'GOLF_DAD')).toBe(true);
-      expect(hasAdvantage('FIX_IT_DAD', 'TECH_DAD')).toBe(true);
-      expect(hasAdvantage('GOLF_DAD', 'COACH_DAD')).toBe(true);
+      expect(hasAdvantage('BBQ_DICKTATOR', 'GOLF_GONAD')).toBe(true);
+      expect(hasAdvantage('FIX_IT_FUCKBOY', 'TECH_TWATS')).toBe(true);
+      expect(hasAdvantage('GOLF_GONAD', 'COACH_CUMSTERS')).toBe(true);
     });
 
     it('should return false for non-advantageous matchups', () => {
-      expect(hasAdvantage('GOLF_DAD', 'BBQ_DAD')).toBe(false);
-      expect(hasAdvantage('TECH_DAD', 'FIX_IT_DAD')).toBe(false);
-      expect(hasAdvantage('BBQ_DAD', 'FIX_IT_DAD')).toBe(false);
+      expect(hasAdvantage('GOLF_GONAD', 'BBQ_DICKTATOR')).toBe(false);
+      expect(hasAdvantage('TECH_TWATS', 'FIX_IT_FUCKBOY')).toBe(false);
+      expect(hasAdvantage('BBQ_DICKTATOR', 'FIX_IT_FUCKBOY')).toBe(false);
     });
   });
 
   describe('hasDisadvantage', () => {
     it('should return true for disadvantageous matchups', () => {
-      expect(hasDisadvantage('GOLF_DAD', 'BBQ_DAD')).toBe(true);
-      expect(hasDisadvantage('TECH_DAD', 'FIX_IT_DAD')).toBe(true);
-      expect(hasDisadvantage('COACH_DAD', 'GOLF_DAD')).toBe(true);
+      expect(hasDisadvantage('GOLF_GONAD', 'BBQ_DICKTATOR')).toBe(true);
+      expect(hasDisadvantage('TECH_TWATS', 'FIX_IT_FUCKBOY')).toBe(true);
+      expect(hasDisadvantage('COACH_CUMSTERS', 'GOLF_GONAD')).toBe(true);
     });
 
     it('should return false for non-disadvantageous matchups', () => {
-      expect(hasDisadvantage('BBQ_DAD', 'GOLF_DAD')).toBe(false);
-      expect(hasDisadvantage('FIX_IT_DAD', 'TECH_DAD')).toBe(false);
-      expect(hasDisadvantage('BBQ_DAD', 'FIX_IT_DAD')).toBe(false);
+      expect(hasDisadvantage('BBQ_DICKTATOR', 'GOLF_GONAD')).toBe(false);
+      expect(hasDisadvantage('FIX_IT_FUCKBOY', 'TECH_TWATS')).toBe(false);
+      expect(hasDisadvantage('BBQ_DICKTATOR', 'FIX_IT_FUCKBOY')).toBe(false);
     });
   });
 
   describe('Thematic Logic Examples', () => {
-    it('should have BBQ_DAD +20% vs GOLF_DAD (heat melts golf game)', () => {
-      expect(getTypeAdvantage('BBQ_DAD', 'GOLF_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+    it('should have BBQ_DICKTATOR +20% vs GOLF_GONAD (heat melts golf game)', () => {
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'GOLF_GONAD')).toBe(ADVANTAGE_MULTIPLIER);
     });
 
-    it('should have FIX_IT_DAD +20% vs TECH_DAD (analog beats digital)', () => {
-      expect(getTypeAdvantage('FIX_IT_DAD', 'TECH_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+    it('should have FIX_IT_FUCKBOY +20% vs TECH_TWATS (analog beats digital)', () => {
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'TECH_TWATS')).toBe(ADVANTAGE_MULTIPLIER);
     });
 
-    it('should have GOLF_DAD +20% vs COACH_DAD (golf vs sports coach rivalry)', () => {
-      expect(getTypeAdvantage('GOLF_DAD', 'COACH_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+    it('should have GOLF_GONAD +20% vs COACH_CUMSTERS (golf vs sports coach rivalry)', () => {
+      expect(getTypeAdvantage('GOLF_GONAD', 'COACH_CUMSTERS')).toBe(ADVANTAGE_MULTIPLIER);
     });
 
-    it('should have CHEF_DAD +20% vs BBQ_DAD (kitchen beats BBQ rivalry)', () => {
-      expect(getTypeAdvantage('CHEF_DAD', 'BBQ_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+    it('should have CHEF_CUMSTERS +20% vs BBQ_DICKTATOR (kitchen beats BBQ rivalry)', () => {
+      expect(getTypeAdvantage('CHEF_CUMSTERS', 'BBQ_DICKTATOR')).toBe(ADVANTAGE_MULTIPLIER);
     });
 
-    it('should have FIX_IT_DAD +20% vs TECH_DAD (analog beats digital)', () => {
-      expect(getTypeAdvantage('FIX_IT_DAD', 'TECH_DAD')).toBe(ADVANTAGE_MULTIPLIER);
+    it('should have FIX_IT_FUCKBOY +20% vs TECH_TWATS (analog beats digital)', () => {
+      expect(getTypeAdvantage('FIX_IT_FUCKBOY', 'TECH_TWATS')).toBe(ADVANTAGE_MULTIPLIER);
     });
   });
 
@@ -290,7 +307,7 @@ describe('Type Advantage Matrix (PACK-008)', () => {
   describe('Battle System Integration', () => {
     it('should calculate correct damage with advantage', () => {
       const baseDamage = 100;
-      const advantage = getTypeAdvantage('BBQ_DAD', 'GOLF_DAD');
+      const advantage = getTypeAdvantage('BBQ_DICKTATOR', 'GOLF_GONAD');
       const expectedDamage = baseDamage * advantage;
 
       expect(expectedDamage).toBe(120); // 100 * 1.2
@@ -298,7 +315,7 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
     it('should calculate correct damage with disadvantage', () => {
       const baseDamage = 100;
-      const disadvantage = getTypeAdvantage('GOLF_DAD', 'BBQ_DAD');
+      const disadvantage = getTypeAdvantage('GOLF_GONAD', 'BBQ_DICKTATOR');
       const expectedDamage = baseDamage * disadvantage;
 
       expect(expectedDamage).toBe(80); // 100 * 0.8
@@ -306,7 +323,7 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
     it('should calculate correct damage with neutral matchup', () => {
       const baseDamage = 100;
-      const neutral = getTypeAdvantage('BBQ_DAD', 'FIX_IT_DAD');
+      const neutral = getTypeAdvantage('BBQ_DICKTATOR', 'FIX_IT_FUCKBOY');
       const expectedDamage = baseDamage * neutral;
 
       expect(expectedDamage).toBe(100); // 100 * 1.0
@@ -315,33 +332,33 @@ describe('Type Advantage Matrix (PACK-008)', () => {
 
   describe('Edge Cases', () => {
     it('should handle same type matchups as neutral', () => {
-      expect(getTypeAdvantage('BBQ_DAD', 'BBQ_DAD')).toBe(NEUTRAL_MULTIPLIER);
-      expect(getTypeAdvantage('TECH_DAD', 'TECH_DAD')).toBe(NEUTRAL_MULTIPLIER);
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'BBQ_DICKTATOR')).toBe(NEUTRAL_MULTIPLIER);
+      expect(getTypeAdvantage('TECH_TWATS', 'TECH_TWATS')).toBe(NEUTRAL_MULTIPLIER);
     });
 
     it('should handle ITEM type matchups', () => {
-      expect(getTypeAdvantage('ITEM', 'BBQ_DAD')).toBe(NEUTRAL_MULTIPLIER);
-      expect(getTypeAdvantage('BBQ_DAD', 'ITEM')).toBe(NEUTRAL_MULTIPLIER);
+      expect(getTypeAdvantage('ITEM', 'BBQ_DICKTATOR')).toBe(NEUTRAL_MULTIPLIER);
+      expect(getTypeAdvantage('BBQ_DICKTATOR', 'ITEM')).toBe(NEUTRAL_MULTIPLIER);
       expect(getTypeAdvantage('ITEM', 'ITEM')).toBe(NEUTRAL_MULTIPLIER);
     });
 
     it('should handle all type combinations without errors', () => {
       const allTypes: DadType[] = [
-        'BBQ_DAD',
-        'FIX_IT_DAD',
-        'GOLF_DAD',
-        'COUCH_DAD',
-        'LAWN_DAD',
-        'CAR_DAD',
-        'OFFICE_DAD',
-        'COOL_DAD',
-        'COACH_DAD',
-        'CHEF_DAD',
-        'HOLIDAY_DAD',
-        'WAREHOUSE_DAD',
-        'VINTAGE_DAD',
-        'FASHION_DAD',
-        'TECH_DAD',
+        'BBQ_DICKTATOR',
+        'FIX_IT_FUCKBOY',
+        'GOLF_GONAD',
+        'COUCH_CUMMANDER',
+        'LAWN_LUNATIC',
+        'CAR_COCK',
+        'OFFICE_ORGASMS',
+        'COOL_CUCKS',
+        'COACH_CUMSTERS',
+        'CHEF_CUMSTERS',
+        'HOLIDAY_HORNDOGS',
+        'WAREHOUSE_WANKERS',
+        'VINTAGE_VAGABONDS',
+        'FASHION_FUCK',
+        'TECH_TWATS',
         'ITEM',
       ];
 

@@ -2,9 +2,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
   <defs>
     <linearGradient id="bg-gradient-summer_001" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.26" />
-      <stop offset="50%" style="stop-color:#ec4899;stop-opacity:0.4" />
-      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.26" />
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
     </linearGradient>
     
   <filter id="shadow-summer_001">
@@ -12,37 +12,37 @@
   </filter>
   </defs>
   <rect width="400" height="550" fill="url(#bg-gradient-0.42495539621450007)" />
-  <g opacity="0.3"><circle cx="50.7" cy="92.8" r="36.2" fill="none" stroke="#a855f7" stroke-width="1.3" opacity="0.11" />
-    <circle cx="152.4" cy="425.0" r="27.4" fill="none" stroke="#06b6d4" stroke-width="1.9" opacity="0.20" />
-    <rect x="297.4" y="63.0" width="70.9" height="70.9" fill="none" stroke="#06b6d4" stroke-width="2.5" opacity="0.22" />
-    <circle cx="241.5" cy="174.5" r="12.7" fill="none" stroke="#06b6d4" stroke-width="1.3" opacity="0.27" />
-    <circle cx="32.8" cy="167.7" r="25.4" fill="none" stroke="#a855f7" stroke-width="1.7" opacity="0.12" />
-    <rect x="296.8" y="250.3" width="63.7" height="63.7" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.12" />
-    <rect x="295.5" y="22.8" width="27.6" height="27.6" fill="none" stroke="#06b6d4" stroke-width="2.3" opacity="0.13" />
-    <rect x="221.6" y="237.5" width="37.5" height="37.5" fill="none" stroke="#a855f7" stroke-width="1.4" opacity="0.11" />
-    <circle cx="109.6" cy="89.9" r="20.4" fill="none" stroke="#ec4899" stroke-width="1.7" opacity="0.19" />
-    <rect x="-10.9" y="502.0" width="72.2" height="72.2" fill="none" stroke="#ec4899" stroke-width="2.1" opacity="0.22" />
-    <circle cx="306.6" cy="503.1" r="32.3" fill="none" stroke="#ec4899" stroke-width="2.1" opacity="0.24" /></g>
-  <polygon points="295.9,167.5 320.2,216.0 271.6,216.0" fill="#ec4899" opacity="0.13" />
-    <polygon points="167.5,281.7 191.1,305.3 167.5,329.0 143.8,305.3" fill="#ec4899" opacity="0.29" />
-    <polygon points="198.2,218.7 233.2,288.7 163.2,288.7" fill="#06b6d4" opacity="0.37" />
-    <circle cx="326.0" cy="410.7" r="33.6" fill="#ec4899" opacity="0.39" />
-    <polygon points="40.7,81.4 51.5,92.3 40.7,103.1 29.8,92.3" fill="#a855f7" opacity="0.21" />
-    <circle cx="393.6" cy="366.1" r="29.3" fill="#06b6d4" opacity="0.14" />
-    <rect x="37.8" y="475.5" width="47.8" height="47.8" fill="#06b6d4" opacity="0.27" />
-    <rect x="124.5" y="310.3" width="57.0" height="57.0" fill="#ec4899" opacity="0.38" />
-    <polygon points="280.9,504.7 318.6,580.2 243.2,580.2" fill="#06b6d4" opacity="0.22" />
-    <polygon points="64.6,15.9 114.2,115.1 15.0,115.1" fill="#ec4899" opacity="0.30" />
-    <polygon points="245.5,469.4 276.2,500.1 245.5,530.8 214.8,500.1" fill="#ec4899" opacity="0.24" />
-    <rect x="139.4" y="6.2" width="80.0" height="80.0" fill="#a855f7" opacity="0.21" />
-    <rect x="316.1" y="108.7" width="47.7" height="47.7" fill="#a855f7" opacity="0.19" />
-    <rect x="246.8" y="279.5" width="99.0" height="99.0" fill="#06b6d4" opacity="0.21" />
+  <g opacity="0.3"><circle cx="50.7" cy="92.8" r="36.2" fill="none" stroke="#64748b" stroke-width="1.3" opacity="0.11" />
+    <circle cx="152.4" cy="425.0" r="27.4" fill="none" stroke="#fbbf24" stroke-width="1.9" opacity="0.20" />
+    <rect x="297.4" y="63.0" width="70.9" height="70.9" fill="none" stroke="#fbbf24" stroke-width="2.5" opacity="0.22" />
+    <circle cx="241.5" cy="174.5" r="12.7" fill="none" stroke="#fbbf24" stroke-width="1.3" opacity="0.27" />
+    <circle cx="32.8" cy="167.7" r="25.4" fill="none" stroke="#64748b" stroke-width="1.7" opacity="0.12" />
+    <rect x="296.8" y="250.3" width="63.7" height="63.7" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.12" />
+    <rect x="295.5" y="22.8" width="27.6" height="27.6" fill="none" stroke="#fbbf24" stroke-width="2.3" opacity="0.13" />
+    <rect x="221.6" y="237.5" width="37.5" height="37.5" fill="none" stroke="#64748b" stroke-width="1.4" opacity="0.11" />
+    <circle cx="109.6" cy="89.9" r="20.4" fill="none" stroke="#94a3b8" stroke-width="1.7" opacity="0.19" />
+    <rect x="-10.9" y="502.0" width="72.2" height="72.2" fill="none" stroke="#94a3b8" stroke-width="2.1" opacity="0.22" />
+    <circle cx="306.6" cy="503.1" r="32.3" fill="none" stroke="#94a3b8" stroke-width="2.1" opacity="0.24" /></g>
+  <polygon points="295.9,167.5 320.2,216.0 271.6,216.0" fill="#94a3b8" opacity="0.13" />
+    <polygon points="167.5,281.7 191.1,305.3 167.5,329.0 143.8,305.3" fill="#94a3b8" opacity="0.29" />
+    <polygon points="198.2,218.7 233.2,288.7 163.2,288.7" fill="#fbbf24" opacity="0.37" />
+    <circle cx="326.0" cy="410.7" r="33.6" fill="#94a3b8" opacity="0.39" />
+    <polygon points="40.7,81.4 51.5,92.3 40.7,103.1 29.8,92.3" fill="#64748b" opacity="0.21" />
+    <circle cx="393.6" cy="366.1" r="29.3" fill="#fbbf24" opacity="0.14" />
+    <rect x="37.8" y="475.5" width="47.8" height="47.8" fill="#fbbf24" opacity="0.27" />
+    <rect x="124.5" y="310.3" width="57.0" height="57.0" fill="#94a3b8" opacity="0.38" />
+    <polygon points="280.9,504.7 318.6,580.2 243.2,580.2" fill="#fbbf24" opacity="0.22" />
+    <polygon points="64.6,15.9 114.2,115.1 15.0,115.1" fill="#94a3b8" opacity="0.30" />
+    <polygon points="245.5,469.4 276.2,500.1 245.5,530.8 214.8,500.1" fill="#94a3b8" opacity="0.24" />
+    <rect x="139.4" y="6.2" width="80.0" height="80.0" fill="#64748b" opacity="0.21" />
+    <rect x="316.1" y="108.7" width="47.7" height="47.7" fill="#64748b" opacity="0.19" />
+    <rect x="246.8" y="279.5" width="99.0" height="99.0" fill="#fbbf24" opacity="0.21" />
   
   <!-- Text background banner -->
   <defs>
     <linearGradient id="text-bg-15" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
-      <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.4" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
       <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
     </linearGradient>
   </defs>

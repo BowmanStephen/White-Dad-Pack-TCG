@@ -84,6 +84,8 @@ export interface PackConfig {
   cardsPerPack: number;
   raritySlots: RaritySlot[];
   holoChance: number;
+  packType?: PackType;
+  themeType?: DadType; // For theme packs - specific dad type to filter by (PACK-001)
 }
 
 // Rarity Slot Configuration
@@ -441,61 +443,95 @@ export const HOLO_DROP_RATE = {
 };
 
 // Dad Type Display Names (clean names for UI)
-// @ts-expect-error - X-rated DadType names intentionally used for Season 2+ branding
+// Uses internal X-rated DadType names from core.ts (Season 2+ branding)
 export const DAD_TYPE_NAMES: Record<DadType, string> = {
-  BBQ_DAD: 'BBQ Dad',
-  FIX_IT_DAD: 'Fix-It Dad',
-  GOLF_DAD: 'Golf Dad',
-  COUCH_DAD: 'Couch Dad',
-  LAWN_DAD: 'Lawn Dad',
-  CAR_DAD: 'Car Dad',
-  OFFICE_DAD: 'Office Dad',
-  COOL_DAD: 'Cool Dad',
-  COACH_DAD: 'Coach Dad',
-  CHEF_DAD: 'Chef Dad',
-  HOLIDAY_DAD: 'Holiday Dad',
-  WAREHOUSE_DAD: 'Warehouse Dad',
-  VINTAGE_DAD: 'Vintage Dad',
-  FASHION_DAD: 'Fashion Dad',
-  TECH_DAD: 'Tech Dad',
+  // Core Dad Archetypes (internal X-rated names)
+  BBQ_DICKTATOR: 'BBQ Dad',
+  FIX_IT_FUCKBOY: 'Fix-It Dad',
+  GOLF_GONAD: 'Golf Dad',
+  COUCH_CUMMANDER: 'Couch Dad',
+  LAWN_LUNATIC: 'Lawn Dad',
+  CAR_COCK: 'Car Dad',
+  OFFICE_ORGASMS: 'Office Dad',
+  COOL_CUCKS: 'Cool Dad',
+  COACH_CUMSTERS: 'Coach Dad',
+  CHEF_CUMSTERS: 'Chef Dad',
+  HOLIDAY_HORNDOGS: 'Holiday Dad',
+  WAREHOUSE_WANKERS: 'Warehouse Dad',
+  VINTAGE_VAGABONDS: 'Vintage Dad',
+  FASHION_FUCK: 'Fashion Dad',
+  TECH_TWATS: 'Tech Dad',
+  // Extended Variants
   GAMER_GIZZARDS: 'Gamer Dad',
+  PREPPER_PENIS: 'Prepper Dad',
   BBQ_BRAWLER: 'BBQ Brawler',
   SUBURBAN_SOCIALITE: 'Socialite',
   NEIGHBORHOOD_NOSY: 'Nosy Neighbor',
+  // Family Variants
   SON_SPAWNS: 'Son',
   DAUGHTER_DINGBATS: 'Daughter',
   UNCLE_UPROARS: 'Uncle',
   SUBURBAN_SIDEKICKS: 'Sidekick',
+  // Special Card Types
   ITEM: 'Item',
+  EVENT: 'Event',
+  TERRAIN: 'Terrain',
+  EVOLUTION: 'Evolution',
+  CURSE: 'Curse',
+  TRAP: 'Trap',
+  // Crossover Events
+  DUNE_DESERT: 'Dune Desert',
+  MARVEL_MASH: 'Marvel Mash',
+  STAR_WARS_SWINGER: 'Star Wars Swinger',
+  MCDONALDS_MEAT: "McDonald's Meat",
+  POTTER_PERVERT: 'Potter Pervert',
+  FORTNITE_FUCKER: 'Fortnite Fucker',
 };
 
 // Dad Type Icons (emoji)
-// @ts-expect-error - X-rated DadType names intentionally used for Season 2+ branding
+// Uses internal X-rated DadType names from core.ts (Season 2+ branding)
 export const DAD_TYPE_ICONS: Record<DadType, string> = {
-  BBQ_DAD: '🔥',
-  FIX_IT_DAD: '🛠️',
-  GOLF_DAD: '🏌️',
-  COUCH_DAD: '📺',
-  LAWN_DAD: '🌱',
-  CAR_DAD: '🚗',
-  OFFICE_DAD: '👔',
-  COOL_DAD: '🎸',
-  COACH_DAD: '🎒',
-  CHEF_DAD: '👨‍🍳',
-  HOLIDAY_DAD: '🎄',
-  WAREHOUSE_DAD: '📦',
-  VINTAGE_DAD: '🔧',
-  FASHION_DAD: '👟',
-  TECH_DAD: '💻',
+  // Core Dad Archetypes (internal X-rated names)
+  BBQ_DICKTATOR: '🔥',
+  FIX_IT_FUCKBOY: '🛠️',
+  GOLF_GONAD: '🏌️',
+  COUCH_CUMMANDER: '📺',
+  LAWN_LUNATIC: '🌱',
+  CAR_COCK: '🚗',
+  OFFICE_ORGASMS: '👔',
+  COOL_CUCKS: '🎸',
+  COACH_CUMSTERS: '🎒',
+  CHEF_CUMSTERS: '👨‍🍳',
+  HOLIDAY_HORNDOGS: '🎄',
+  WAREHOUSE_WANKERS: '📦',
+  VINTAGE_VAGABONDS: '🔧',
+  FASHION_FUCK: '👟',
+  TECH_TWATS: '💻',
+  // Extended Variants
   GAMER_GIZZARDS: '🎮',
+  PREPPER_PENIS: '🎒',
   BBQ_BRAWLER: '🍖',
   SUBURBAN_SOCIALITE: '🍷',
   NEIGHBORHOOD_NOSY: '👀',
+  // Family Variants
   SON_SPAWNS: '👦',
   DAUGHTER_DINGBATS: '👧',
   UNCLE_UPROARS: '🧔',
   SUBURBAN_SIDEKICKS: '🐕',
+  // Special Card Types
   ITEM: '🎁',
+  EVENT: '💥',
+  TERRAIN: '🗺️',
+  EVOLUTION: '🔄',
+  CURSE: '😱',
+  TRAP: '🪤',
+  // Crossover Events
+  DUNE_DESERT: '🏜️',
+  MARVEL_MASH: '🦸',
+  STAR_WARS_SWINGER: '⚔️',
+  MCDONALDS_MEAT: '🍔',
+  POTTER_PERVERT: '🧙',
+  FORTNITE_FUCKER: '🎮',
 };
 
 // Stat Display Names

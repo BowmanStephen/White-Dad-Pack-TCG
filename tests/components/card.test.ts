@@ -259,7 +259,7 @@ describe('Card Component', () => {
 
       const card = screen.getByRole('img');
       expect(card).toBeTruthy();
-      expect(card.getAttribute('aria-label')).toBe('Grillmaster Gary - Rare BBQ_DAD');
+      expect(card.getAttribute('aria-label')).toBe('Grillmaster Gary - Rare BBQ_DICKTATOR');
     });
 
     it('should have accessible ability buttons', () => {

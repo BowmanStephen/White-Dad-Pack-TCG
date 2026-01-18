@@ -123,7 +123,12 @@
       },
     });
 
-    window.open(twitterUrl.toString(), '_blank', 'noopener,noreferrer,width=550,height=420');
+    const newWindow = window.open(twitterUrl.toString(), '_blank', 'noopener,noreferrer,width=550,height=420');
+    
+    // Check for popup blocker
+    if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+      showToast('Pop-up blocked! Please allow pop-ups to share on Twitter.', 'error');
+    }
   }
 
   async function shareToDiscord() {

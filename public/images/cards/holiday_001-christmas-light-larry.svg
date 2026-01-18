@@ -2,9 +2,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
   <defs>
     <linearGradient id="bg-gradient-holiday_001" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.26" />
-      <stop offset="50%" style="stop-color:#84cc16;stop-opacity:0.4" />
-      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0.26" />
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
     </linearGradient>
     
   <filter id="shadow-holiday_001">
@@ -14,57 +14,57 @@
   <rect width="400" height="550" fill="url(#bg-gradient-0.47044851491227746)" />
   <g opacity="0.3"><line x1="0" y1="126.8" x2="400" y2="126.8" stroke="#fbbf24" stroke-width="1.5" opacity="0.32" />
     <line x1="27.2" y1="0" x2="27.2" y2="550" stroke="#fbbf24" stroke-width="1.9" opacity="0.23" />
-    <line x1="129.6" y1="0" x2="129.6" y2="550" stroke="#22c55e" stroke-width="4.0" opacity="0.29" />
-    <line x1="49.3" y1="0" x2="49.3" y2="550" stroke="#22c55e" stroke-width="3.3" opacity="0.31" />
-    <line x1="0" y1="150.0" x2="400" y2="150.0" stroke="#84cc16" stroke-width="1.0" opacity="0.33" />
-    <line x1="5.7" y1="0" x2="5.7" y2="550" stroke="#84cc16" stroke-width="1.9" opacity="0.37" />
+    <line x1="129.6" y1="0" x2="129.6" y2="550" stroke="#64748b" stroke-width="4.0" opacity="0.29" />
+    <line x1="49.3" y1="0" x2="49.3" y2="550" stroke="#64748b" stroke-width="3.3" opacity="0.31" />
+    <line x1="0" y1="150.0" x2="400" y2="150.0" stroke="#94a3b8" stroke-width="1.0" opacity="0.33" />
+    <line x1="5.7" y1="0" x2="5.7" y2="550" stroke="#94a3b8" stroke-width="1.9" opacity="0.37" />
     <line x1="0" y1="541.7" x2="400" y2="541.7" stroke="#fbbf24" stroke-width="3.6" opacity="0.29" />
     <line x1="0" y1="360.1" x2="400" y2="360.1" stroke="#fbbf24" stroke-width="2.8" opacity="0.28" />
-    <line x1="0" y1="320.6" x2="400" y2="320.6" stroke="#22c55e" stroke-width="3.6" opacity="0.31" />
-    <line x1="164.2" y1="0" x2="164.2" y2="550" stroke="#84cc16" stroke-width="2.2" opacity="0.26" />
+    <line x1="0" y1="320.6" x2="400" y2="320.6" stroke="#64748b" stroke-width="3.6" opacity="0.31" />
+    <line x1="164.2" y1="0" x2="164.2" y2="550" stroke="#94a3b8" stroke-width="2.2" opacity="0.26" />
     <line x1="0" y1="283.5" x2="400" y2="283.5" stroke="#fbbf24" stroke-width="2.2" opacity="0.39" />
     <line x1="87.5" y1="0" x2="87.5" y2="550" stroke="#fbbf24" stroke-width="3.0" opacity="0.22" />
-    <line x1="138.2" y1="0" x2="138.2" y2="550" stroke="#84cc16" stroke-width="4.0" opacity="0.27" />
-    <line x1="313.9" y1="0" x2="313.9" y2="550" stroke="#22c55e" stroke-width="3.7" opacity="0.20" />
-    <line x1="126.8" y1="0" x2="126.8" y2="550" stroke="#22c55e" stroke-width="3.0" opacity="0.26" />
-    <line x1="0" y1="26.8" x2="400" y2="26.8" stroke="#22c55e" stroke-width="1.3" opacity="0.26" />
-    <line x1="0" y1="162.8" x2="400" y2="162.8" stroke="#84cc16" stroke-width="3.7" opacity="0.37" />
+    <line x1="138.2" y1="0" x2="138.2" y2="550" stroke="#94a3b8" stroke-width="4.0" opacity="0.27" />
+    <line x1="313.9" y1="0" x2="313.9" y2="550" stroke="#64748b" stroke-width="3.7" opacity="0.20" />
+    <line x1="126.8" y1="0" x2="126.8" y2="550" stroke="#64748b" stroke-width="3.0" opacity="0.26" />
+    <line x1="0" y1="26.8" x2="400" y2="26.8" stroke="#64748b" stroke-width="1.3" opacity="0.26" />
+    <line x1="0" y1="162.8" x2="400" y2="162.8" stroke="#94a3b8" stroke-width="3.7" opacity="0.37" />
     <line x1="163.5" y1="0" x2="163.5" y2="550" stroke="#fbbf24" stroke-width="3.6" opacity="0.39" />
-    <line x1="318.9" y1="0" x2="318.9" y2="550" stroke="#22c55e" stroke-width="1.2" opacity="0.35" />
+    <line x1="318.9" y1="0" x2="318.9" y2="550" stroke="#64748b" stroke-width="1.2" opacity="0.35" />
     <line x1="0" y1="377.9" x2="400" y2="377.9" stroke="#fbbf24" stroke-width="1.2" opacity="0.14" />
-    <line x1="380.5" y1="0" x2="380.5" y2="550" stroke="#22c55e" stroke-width="3.8" opacity="0.10" />
-    <line x1="203.9" y1="0" x2="203.9" y2="550" stroke="#84cc16" stroke-width="1.3" opacity="0.29" />
-    <line x1="203.8" y1="0" x2="203.8" y2="550" stroke="#84cc16" stroke-width="2.6" opacity="0.32" />
-    <line x1="33.6" y1="0" x2="33.6" y2="550" stroke="#84cc16" stroke-width="1.1" opacity="0.31" />
-    <line x1="288.0" y1="0" x2="288.0" y2="550" stroke="#84cc16" stroke-width="3.1" opacity="0.14" />
-    <line x1="0" y1="15.6" x2="400" y2="15.6" stroke="#84cc16" stroke-width="2.9" opacity="0.25" />
-    <line x1="15.3" y1="0" x2="15.3" y2="550" stroke="#22c55e" stroke-width="1.6" opacity="0.32" />
-    <line x1="0" y1="368.7" x2="400" y2="368.7" stroke="#84cc16" stroke-width="2.1" opacity="0.36" />
+    <line x1="380.5" y1="0" x2="380.5" y2="550" stroke="#64748b" stroke-width="3.8" opacity="0.10" />
+    <line x1="203.9" y1="0" x2="203.9" y2="550" stroke="#94a3b8" stroke-width="1.3" opacity="0.29" />
+    <line x1="203.8" y1="0" x2="203.8" y2="550" stroke="#94a3b8" stroke-width="2.6" opacity="0.32" />
+    <line x1="33.6" y1="0" x2="33.6" y2="550" stroke="#94a3b8" stroke-width="1.1" opacity="0.31" />
+    <line x1="288.0" y1="0" x2="288.0" y2="550" stroke="#94a3b8" stroke-width="3.1" opacity="0.14" />
+    <line x1="0" y1="15.6" x2="400" y2="15.6" stroke="#94a3b8" stroke-width="2.9" opacity="0.25" />
+    <line x1="15.3" y1="0" x2="15.3" y2="550" stroke="#64748b" stroke-width="1.6" opacity="0.32" />
+    <line x1="0" y1="368.7" x2="400" y2="368.7" stroke="#94a3b8" stroke-width="2.1" opacity="0.36" />
     <line x1="0" y1="522.6" x2="400" y2="522.6" stroke="#fbbf24" stroke-width="1.0" opacity="0.28" />
-    <line x1="354.4" y1="0" x2="354.4" y2="550" stroke="#84cc16" stroke-width="3.2" opacity="0.22" /></g>
-  <polygon points="43.5,279.3 66.8,325.8 20.2,325.8" fill="#84cc16" opacity="0.24" />
-    <rect x="50.9" y="244.9" width="94.7" height="94.7" fill="#84cc16" opacity="0.34" />
-    <circle cx="314.1" cy="472.2" r="31.6" fill="#22c55e" opacity="0.15" />
+    <line x1="354.4" y1="0" x2="354.4" y2="550" stroke="#94a3b8" stroke-width="3.2" opacity="0.22" /></g>
+  <polygon points="43.5,279.3 66.8,325.8 20.2,325.8" fill="#94a3b8" opacity="0.24" />
+    <rect x="50.9" y="244.9" width="94.7" height="94.7" fill="#94a3b8" opacity="0.34" />
+    <circle cx="314.1" cy="472.2" r="31.6" fill="#64748b" opacity="0.15" />
     <polygon points="221.4,66.8 243.4,110.8 199.4,110.8" fill="#fbbf24" opacity="0.18" />
     <circle cx="253.9" cy="55.5" r="41.4" fill="#fbbf24" opacity="0.24" />
-    <circle cx="166.2" cy="165.9" r="36.3" fill="#84cc16" opacity="0.17" />
-    <circle cx="132.4" cy="526.5" r="43.1" fill="#22c55e" opacity="0.28" />
-    <circle cx="88.2" cy="404.6" r="26.6" fill="#22c55e" opacity="0.33" />
+    <circle cx="166.2" cy="165.9" r="36.3" fill="#94a3b8" opacity="0.17" />
+    <circle cx="132.4" cy="526.5" r="43.1" fill="#64748b" opacity="0.28" />
+    <circle cx="88.2" cy="404.6" r="26.6" fill="#64748b" opacity="0.33" />
     <rect x="95.0" y="230.0" width="99.2" height="99.2" fill="#fbbf24" opacity="0.22" />
     <rect x="22.0" y="196.9" width="60.1" height="60.1" fill="#fbbf24" opacity="0.17" />
     <polygon points="313.1,123.3 355.1,207.1 271.2,207.1" fill="#fbbf24" opacity="0.12" />
     <polygon points="342.4,283.6 388.6,376.1 296.1,376.1" fill="#fbbf24" opacity="0.33" />
-    <circle cx="300.8" cy="186.2" r="16.8" fill="#22c55e" opacity="0.20" />
-    <rect x="253.3" y="254.7" width="43.7" height="43.7" fill="#84cc16" opacity="0.38" />
-    <polygon points="49.3,241.9 83.8,276.3 49.3,310.8 14.9,276.3" fill="#84cc16" opacity="0.25" />
+    <circle cx="300.8" cy="186.2" r="16.8" fill="#64748b" opacity="0.20" />
+    <rect x="253.3" y="254.7" width="43.7" height="43.7" fill="#94a3b8" opacity="0.38" />
+    <polygon points="49.3,241.9 83.8,276.3 49.3,310.8 14.9,276.3" fill="#94a3b8" opacity="0.25" />
     <rect x="125.1" y="383.5" width="59.6" height="59.6" fill="#fbbf24" opacity="0.30" />
-    <polygon points="13.9,506.2 54.1,586.7 -26.4,586.7" fill="#84cc16" opacity="0.28" />
+    <polygon points="13.9,506.2 54.1,586.7 -26.4,586.7" fill="#94a3b8" opacity="0.28" />
   
   <!-- Text background banner -->
   <defs>
     <linearGradient id="text-bg-21" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
-      <stop offset="50%" style="stop-color:#22c55e;stop-opacity:0.4" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
       <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
     </linearGradient>
   </defs>
