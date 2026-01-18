@@ -119,8 +119,7 @@ Features:
 
     <!-- Modal content -->
     <div
-      class="relative z-10 w-full max-w-2xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl transition-all duration-300 transform scale-100 opacity-100"
-      transition:scale={{ duration: 300 }}
+      class="relative z-10 w-full max-w-2xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl"
       transition:fly="{{ y: 50, duration: 300 }}"
     >
       <!-- Close button (top right) -->
