@@ -84,14 +84,15 @@ export function calculateCardPower(card: Card): number {
   const average = stats.reduce((a, b) => a + b, 0) / stats.length;
 
   // Rarity multiplier
-  const rarityMultiplier = {
+  const rarityMultipliers: Record<string, number> = {
     common: 1.0,
     uncommon: 1.2,
     rare: 1.5,
     epic: 1.8,
     legendary: 2.2,
     mythic: 3.0,
-  }[card.rarity];
+  };
+  const rarityMultiplier = rarityMultipliers[card.rarity] ?? 1.0;
 
   return Math.floor(average * rarityMultiplier);
 }
@@ -660,9 +661,12 @@ export function calculateBattleResult(
   const typeAdvantage = getTypeAdvantage(attackerMainType, defenderMainType);
   const effectiveAttackerPower = attackerPower * typeAdvantage;
 
-  // Check for synergies between cards in both decks
-  const synergyBonus = calculateDeckSynergyBonus(attackerDeck, defenderDeck);
-  const finalAttackerPower = effectiveAttackerPower * synergyBonus;
+  // Check for themed deck synergy bonuses (PACK-009)
+  const attackerSynergy = calculateSynergyBonus(attackerDeck);
+  const defenderSynergy = calculateSynergyBonus(defenderDeck);
+
+  // Apply attacker's themed synergy bonus
+  const finalAttackerPower = effectiveAttackerPower * attackerSynergy.multiplier;
 
   // Calculate damage (difference in power, minimum 5)
   const rawDamage = Math.max(5, finalAttackerPower - defenderPower);
@@ -692,14 +696,14 @@ export function calculateBattleResult(
       mainType: defenderMainType,
     },
     typeAdvantage,
-    synergyBonus,
+    synergyBonus: attackerSynergy.multiplier, // PACK-009: Themed synergy bonus
     turns: 1, // Deck battles are single-turn calculations
     log: [
       `⚔️ BATTLE: ${attackerDeck.name} (${attackerDeck.stats.totalCards} cards) vs ${defenderDeck.name} (${defenderDeck.stats.totalCards} cards)`,
       `Attacker normalized power: ${attackerPower.toFixed(1)}`,
       `Defender normalized power: ${defenderPower.toFixed(1)}`,
       typeAdvantage > 1.0 ? `${attackerMainType} has advantage over ${defenderMainType}! (+${Math.round((typeAdvantage - 1) * 100)}% damage)` : typeAdvantage < 1.0 ? `${attackerMainType} at disadvantage against ${defenderMainType}! (${Math.round(typeAdvantage * 100)}% damage)` : 'No type advantage',
-      synergyBonus > 1.0 ? `Synergy bonus: +${Math.round((synergyBonus - 1) * 100)}%` : '',
+      attackerSynergy.multiplier > 1.0 ? `${attackerSynergy.description}` : '',
       `Final attacker power: ${finalAttackerPower.toFixed(1)}`,
       `Damage dealt: ${damage}`,
       `🏆 Winner: ${winner.name}`,
@@ -781,4 +785,113 @@ function calculateDeckSynergyBonus(deck1: Deck, deck2: Deck): number {
   }
 
   return maxBonus;
+}
+
+/**
+ * Calculate themed deck synergy bonus (PACK-009)
+ *
+ * Detects if a deck is themed (all same dad type) and applies bonuses:
+ * - 5+ cards of same type: 15% synergy bonus (1.15x multiplier)
+ * - 3+ cards of same type: 5% synergy bonus (1.05x multiplier)
+ * - Mixed types: no bonus (1.0x multiplier)
+ *
+ * This rewards specialization and themed deck building over balanced decks.
+ *
+ * @param deck - The deck to check for themed synergy
+ * @returns Synergy result with bonus multiplier, theme name, and description
+ *
+ * @example
+ * // All BBQ_DAD deck (5 cards)
+ * const bonus = calculateSynergyBonus(bbqDeck);
+ * console.log(bonus.multiplier); // 1.15
+ * console.log(bonus.theme); // 'BBQ_BROS'
+ * console.log(bonus.description); // 'BBQ_BROS SYNERGY +15%'
+ *
+ * @example
+ * // Mixed deck (no theme)
+ * const bonus = calculateSynergyBonus(mixedDeck);
+ * console.log(bonus.multiplier); // 1.0
+ * console.log(bonus.theme); // ''
+ */
+export function calculateSynergyBonus(deck: Deck): {
+  multiplier: number;
+  theme: string;
+  description: string;
+} {
+  // Count cards by type
+  const typeCounts: Record<string, number> = {};
+
+  // Initialize with known types
+  const knownTypes: DadType[] = [
+    'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD', 'LAWN_DAD',
+    'CAR_DAD', 'OFFICE_DAD', 'COOL_DAD', 'COACH_DAD', 'CHEF_DAD',
+    'HOLIDAY_DAD', 'WAREHOUSE_DAD', 'VINTAGE_DAD', 'FASHION_DAD',
+    'TECH_DAD', 'ITEM'
+  ];
+
+  for (const type of knownTypes) {
+    typeCounts[type] = 0;
+  }
+
+  // Count each card's type
+  for (const deckCard of deck.cards) {
+    const cardType = deckCard.card.type;
+    typeCounts[cardType] = (typeCounts[cardType] || 0) + 1;
+  }
+
+  // Find the dominant type
+  let maxCount = 0;
+  let dominantType: string | null = null;
+
+  for (const [type, count] of Object.entries(typeCounts)) {
+    if (count > maxCount) {
+      maxCount = count;
+      dominantType = type;
+    }
+  }
+
+  // No cards or empty deck
+  if (!dominantType || maxCount === 0) {
+    return {
+      multiplier: 1.0,
+      theme: '',
+      description: '',
+    };
+  }
+
+  // Check if deck is themed (all same type or majority same type)
+  // 5+ cards of same type = 15% bonus
+  if (maxCount >= 5) {
+    const themeName = dominantType
+      .replace('_DAD', '')
+      .replace('_DICKTATOR', '')
+      .replace('_', ' ')
+      .replace(' ', '_') + '_BROS';
+    return {
+      multiplier: 1.15,
+      theme: themeName,
+      description: `${themeName.replace(/_/g, ' ')} SYNERGY +15%`,
+    };
+  }
+
+  // 3+ cards of same type = 5% bonus
+  if (maxCount >= 3) {
+    const themeName = dominantType
+      .replace('_DAD', '')
+      .replace('_DICKTATOR', '')
+      .replace('_', ' ')
+      .replace(' ', '_') + '_BROS';
+    return {
+      multiplier: 1.05,
+      theme: themeName,
+      description: `${themeName.replace(/_/g, ' ')} SYNERGY +5%`,
+    };
+  }
+
+  // Mixed types: no bonus
+  return {
+    multiplier: 1.0,
+    theme: '',
+    description: '',
+  };
 }

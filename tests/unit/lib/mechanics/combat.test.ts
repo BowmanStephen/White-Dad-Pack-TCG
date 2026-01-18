@@ -1,12 +1,13 @@
 /**
  * Unit tests for deck battle system with stat normalization
  * PACK-007: Battle System - Stat Normalization
+ * PACK-009: Battle System - Synergy Bonuses
  */
 
 import { describe, it, expect } from 'vitest';
 import type { Card, Deck, DeckCard, CardStats } from '@/types';
 import type { DeckBattleResult } from '@/types/deck';
-import { calculateBattleResult } from '@/lib/mechanics/combat';
+import { calculateBattleResult, calculateSynergyBonus } from '@/lib/mechanics/combat';
 import { calculateDeckStats } from '@/lib/deck/utils';
 
 /**
@@ -196,7 +197,7 @@ describe('PACK-007: Battle System - Stat Normalization', () => {
       // Battle should be very close (no automatic win for larger deck)
       // With BBQ_DAD vs COUCH_DAD, BBQ has type advantage
       expect(result.winner.name).toBe('3-Card Deck'); // BBQ beats COUCH
-      expect(result.typeAdvantage).toBe(1.5); // 50% bonus
+      expect(result.typeAdvantage).toBe(1.2); // 20% bonus (PACK-008 update)
     });
 
     it('should apply type advantages to normalized stats', () => {
@@ -248,13 +249,13 @@ describe('PACK-007: Battle System - Stat Normalization', () => {
 
       const result = calculateBattleResult(bbqDeck, couchDeck);
 
-      // BBQ_DAD has advantage over COUCH_DAD (1.5x)
-      expect(result.typeAdvantage).toBe(1.5);
+      // BBQ_DAD has advantage over COUCH_DAD (1.2x after PACK-008 update)
+      expect(result.typeAdvantage).toBe(1.2);
       expect(result.winner.name).toBe('BBQ Deck');
 
-      // Effective power should be boosted
-      expect(result.attackerStats.effectivePower).toBe(75); // 50 * 1.5
-      expect(result.attackerStats.finalPower).toBe(75); // No synergy in this case
+      // Effective power should be boosted (type advantage + 5% synergy for 3 BBQ_DAD)
+      expect(result.attackerStats.effectivePower).toBe(60); // 50 * 1.2
+      expect(result.attackerStats.finalPower).toBe(63); // 60 * 1.05 (synergy bonus for 3 BBQ_DAD cards)
     });
 
     it('should handle decks with different sizes correctly', () => {
@@ -605,6 +606,352 @@ describe('PACK-007: Battle System - Stat Normalization', () => {
       expect(result.attackerStats.totalPower).toBe(100);
       expect(result.defenderStats.totalPower).toBe(50);
       expect(result.winner.name).toBe('Max Deck');
+    });
+  });
+});
+
+describe('PACK-009: Battle System - Synergy Bonuses', () => {
+  describe('calculateSynergyBonus()', () => {
+    it('should give 15% bonus for 5+ cards of same type', () => {
+      // Create all BBQ_DAD deck (5 cards)
+      const bbqDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 5; i++) {
+        const card = createTestCard(
+          `bbq-${i}`,
+          `BBQ Dad ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        bbqDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const bbqDeck = createTestDeck('BBQ Deck', bbqDeckCards);
+      const bonus = calculateSynergyBonus(bbqDeck);
+
+      expect(bonus.multiplier).toBe(1.15);
+      expect(bonus.theme).toBe('BBQ_BROS');
+      expect(bonus.description).toBe('BBQ BROS SYNERGY +15%'); // Underscores replaced with spaces
+    });
+
+    it('should give 5% bonus for 3+ cards of same type', () => {
+      // Create all COUCH_DAD deck (3 cards)
+      const couchDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `couch-${i}`,
+          `Couch Dad ${i}`,
+          'COUCH_DAD',
+          'common',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        couchDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const couchDeck = createTestDeck('Couch Deck', couchDeckCards);
+      const bonus = calculateSynergyBonus(couchDeck);
+
+      expect(bonus.multiplier).toBe(1.05);
+      expect(bonus.theme).toBe('COUCH_BROS');
+      expect(bonus.description).toBe('COUCH BROS SYNERGY +5%'); // Underscores replaced with spaces
+    });
+
+    it('should give no bonus for mixed types', () => {
+      // Create mixed deck with 2 BBQ_DAD, 2 COUCH_DAD, 1 FIX_IT_DAD
+      const mixedDeckCards: DeckCard[] = [];
+
+      for (let i = 0; i < 2; i++) {
+        const card = createTestCard(
+          `bbq-${i}`,
+          `BBQ Dad ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        mixedDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      for (let i = 0; i < 2; i++) {
+        const card = createTestCard(
+          `couch-${i}`,
+          `Couch Dad ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        mixedDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const fixItCard = createTestCard(
+        'fix-it-0',
+        'Fix It Dad',
+        'FIX_IT_DAD',
+        'rare',
+        {
+          dadJoke: 50,
+          grillSkill: 50,
+          fixIt: 50,
+          napPower: 50,
+          remoteControl: 50,
+          thermostat: 50,
+          sockSandal: 50,
+          beerSnob: 50,
+        }
+      );
+      mixedDeckCards.push({ cardId: fixItCard.id, card: fixItCard, count: 1 });
+
+      const mixedDeck = createTestDeck('Mixed Deck', mixedDeckCards);
+      const bonus = calculateSynergyBonus(mixedDeck);
+
+      expect(bonus.multiplier).toBe(1.0);
+      expect(bonus.theme).toBe('');
+      expect(bonus.description).toBe('');
+    });
+
+    it('should give no bonus for decks with fewer than 3 of any type', () => {
+      // Create deck with 2 BBQ_DAD, 2 COUCH_DAD (no majority)
+      const smallDeckCards: DeckCard[] = [];
+
+      for (let i = 0; i < 2; i++) {
+        const card = createTestCard(
+          `bbq-${i}`,
+          `BBQ Dad ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        smallDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      for (let i = 0; i < 2; i++) {
+        const card = createTestCard(
+          `couch-${i}`,
+          `Couch Dad ${i}`,
+          'COUCH_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        smallDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const smallDeck = createTestDeck('Small Mixed Deck', smallDeckCards);
+      const bonus = calculateSynergyBonus(smallDeck);
+
+      expect(bonus.multiplier).toBe(1.0);
+      expect(bonus.theme).toBe('');
+      expect(bonus.description).toBe('');
+    });
+
+    it('should give 15% bonus for 7 cards of same type', () => {
+      // Create all FIX_IT_DAD deck (7 cards)
+      const fixItDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 7; i++) {
+        const card = createTestCard(
+          `fixit-${i}`,
+          `Fix It Dad ${i}`,
+          'FIX_IT_DAD',
+          'common',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        fixItDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const fixItDeck = createTestDeck('Fix It Deck', fixItDeckCards);
+      const bonus = calculateSynergyBonus(fixItDeck);
+
+      expect(bonus.multiplier).toBe(1.15);
+      expect(bonus.theme).toBe('FIX_IT_BROS'); // Multi-word types use underscore in theme name
+      expect(bonus.description).toBe('FIX IT BROS SYNERGY +15%'); // Underscores replaced with spaces in description
+    });
+
+    it('should handle TECH_DAD type correctly', () => {
+      // Create all TECH_DAD deck (3 cards)
+      const techDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 3; i++) {
+        const card = createTestCard(
+          `tech-${i}`,
+          `Tech Dad ${i}`,
+          'TECH_DAD',
+          'epic',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        techDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const techDeck = createTestDeck('Tech Deck', techDeckCards);
+      const bonus = calculateSynergyBonus(techDeck);
+
+      expect(bonus.multiplier).toBe(1.05);
+      expect(bonus.theme).toBe('TECH_BROS');
+      expect(bonus.description).toBe('TECH BROS SYNERGY +5%'); // Underscores replaced with spaces
+    });
+
+    it('should handle GOLF_DAD type correctly', () => {
+      // Create all GOLF_DAD deck (5 cards)
+      const golfDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 5; i++) {
+        const card = createTestCard(
+          `golf-${i}`,
+          `Golf Dad ${i}`,
+          'GOLF_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        golfDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const golfDeck = createTestDeck('Golf Deck', golfDeckCards);
+      const bonus = calculateSynergyBonus(golfDeck);
+
+      expect(bonus.multiplier).toBe(1.15);
+      expect(bonus.theme).toBe('GOLF_BROS');
+      expect(bonus.description).toBe('GOLF BROS SYNERGY +15%'); // Underscores replaced with spaces
+    });
+
+    it('should apply synergy bonus in battle calculation', () => {
+      // Create themed BBQ deck (5 cards) - gets 15% bonus
+      const bbqDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 5; i++) {
+        const card = createTestCard(
+          `bbq-${i}`,
+          `BBQ Dad ${i}`,
+          'BBQ_DAD',
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        bbqDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      // Create mixed deck with same stats - no bonus
+      const mixedDeckCards: DeckCard[] = [];
+      for (let i = 0; i < 5; i++) {
+        const types = ['BBQ_DAD', 'COUCH_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'LAWN_DAD'];
+        const card = createTestCard(
+          `mixed-${i}`,
+          `Mixed Dad ${i}`,
+          types[i],
+          'rare',
+          {
+            dadJoke: 50,
+            grillSkill: 50,
+            fixIt: 50,
+            napPower: 50,
+            remoteControl: 50,
+            thermostat: 50,
+            sockSandal: 50,
+            beerSnob: 50,
+          }
+        );
+        mixedDeckCards.push({ cardId: card.id, card, count: 1 });
+      }
+
+      const bbqDeck = createTestDeck('BBQ Deck', bbqDeckCards);
+      const mixedDeck = createTestDeck('Mixed Deck', mixedDeckCards);
+
+      const result = calculateBattleResult(bbqDeck, mixedDeck);
+
+      // BBQ deck should have 15% synergy bonus
+      expect(result.synergyBonus).toBe(1.15);
+      expect(result.log.some(log => log.includes('BBQ BROS SYNERGY +15%'))).toBe(true);
+    });
+
+    it('should handle empty deck gracefully', () => {
+      const emptyDeck = createTestDeck('Empty Deck', []);
+      const bonus = calculateSynergyBonus(emptyDeck);
+
+      expect(bonus.multiplier).toBe(1.0);
+      expect(bonus.theme).toBe('');
+      expect(bonus.description).toBe('');
     });
   });
 });
