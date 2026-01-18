@@ -5,37 +5,52 @@ export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'my
 // Includes DICKTATOR DADS (archetypes), family variants, side characters, 
 // special card types (ITEM, EVENT, TERRAIN, EVOLUTION, CURSE, TRAP)
 export type DadType = 
-  | 'BBQ_DAD'
-  | 'FIX_IT_DAD'
-  | 'GOLF_DAD'
-  | 'COUCH_DAD'
-  | 'LAWN_DAD'
-  | 'CAR_DAD'
-  | 'OFFICE_DAD'
-  | 'COOL_DAD'
-  | 'COACH_DAD'
-  | 'CHEF_DAD'
-  | 'HOLIDAY_DAD'
-  | 'WAREHOUSE_DAD'
-  | 'VINTAGE_DAD'
-  | 'FASHION_DAD'
-  | 'TECH_DAD'
+  // Core Archetypes (Unhinged Names)
+  | 'BBQ_DICKTATOR'
+  | 'FIX_IT_FUCKBOY'
+  | 'GOLF_GONAD'
+  | 'COUCH_CUMMANDER'
+  | 'LAWN_LUNATIC'
+  | 'CAR_COCK'
+  | 'OFFICE_ORGASMS'
+  | 'COOL_CUCKS'
+  | 'COACH_CUMSTERS'
+  | 'CHEF_CUMSTERS'
+  | 'HOLIDAY_HORNDOGS'
+  | 'WAREHOUSE_WANKERS'
+  | 'VINTAGE_VAGABONDS'
+  | 'FASHION_FUCK'
+  | 'TECH_TWATS'
+  
+  // Extended Archetypes
   | 'SUBURBAN_SPY'
   | 'GAMER_GIZZARDS'
   | 'PREPPER_PENIS'
   | 'BBQ_BRAWLER'
   | 'SUBURBAN_SOCIALITE'
   | 'NEIGHBORHOOD_NOSY'
+  
+  // Crossover Events
+  | 'DUNE_DESERT'
+  | 'MARVEL_MASH'
+  | 'STAR_WARS_SWINGER'
+  | 'MCDONALDS_MEAT'
+  | 'POTTER_PERVERT'
+  | 'FORTNITE_FUCKER'
+  
+  // Family Variants
   | 'SON_SPAWNS'
   | 'DAUGHTER_DINGBATS'
   | 'UNCLE_UPROARS'
   | 'SUBURBAN_SIDEKICKS'
-  | 'ITEM'
-  | 'EVENT'      // SHITSHOW SCENARIOS - One-time use cards (inspired by MTG Instants/Sorceries)
-  | 'TERRAIN'    // SUBURBAN SHITFIELDS - Permanent battlefield modifiers (inspired by Pokémon Stadium/MTG Lands)
-  | 'EVOLUTION'  // MIDLIFE CRISIS MUTATIONS - Upgrades base dads (inspired by Pokémon Evolution)
-  | 'CURSE'      // DAD DAMNATIONS - Negative effects on opponents (inspired by MTG Curses/Enchantments)
-  | 'TRAP';      // SUBURBAN SUCKERPUNCHES - Face-down triggered effects (inspired by Yu-Gi-Oh! Traps)
+  
+  // Special Card Types
+  | 'ITEM'      // ITEMS - Gear and accessories
+  | 'EVENT'     // SHITSHOW SCENARIOS - One-time use cards (inspired by MTG Instants/Sorceries)
+  | 'TERRAIN'   // SUBURBAN SHITFIELDS - Permanent battlefield modifiers (inspired by Pokémon Stadium/MTG Lands)
+  | 'EVOLUTION' // MIDLIFE CRISIS MUTATIONS - Upgrades base dads (inspired by Pokémon Evolution)
+  | 'CURSE'     // DAD DAMNATIONS - Negative effects on opponents (inspired by MTG Curses/Enchantments)
+  | 'TRAP';     // SUBURBAN SUCKERPUNCHES - Face-down triggered effects (inspired by Yu-Gi-Oh! Traps)
 
 // Holographic Variant Types
 export type HoloVariant = 'none' | 'standard' | 'reverse' | 'full_art' | 'prismatic';
@@ -71,6 +86,66 @@ export interface CardStats {
 export interface CardAbility {
   name: string;
   description: string;
+  effects?: CardEffect[]; // Optional effects for special card types
+}
+
+// Card Effect Interface - For special card mechanics
+export interface CardEffect {
+  type: 'damage' | 'heal' | 'buff' | 'debuff' | 'draw' | 'discard' | 'control' | 'transform';
+  target: 'self' | 'opponent' | 'all' | 'field';
+  value: number;
+  condition?: string; // e.g., "if opponent has no cards"
+  duration?: number; // Duration in turns (0 = instant)
+}
+
+// Card Attribute Interface - For card gameplay attributes
+export interface CardAttribute {
+  key: string;
+  value: number | string | boolean;
+  label: string;
+  description: string;
+}
+
+// Event Card Type - SHITSHOW SCENARIOS
+export interface EventCardType {
+  effectType: 'instant' | 'sorcery'; // Instant = can be played anytime, Sorcery = only during main phase
+  effect: CardEffect;
+  targetRequirement?: string; // e.g., "requires BBQ_DICKTATOR in play"
+  flavorTrigger?: string; // Story element describing when/why card triggers
+}
+
+// Terrain Card Type - SUBURBAN SHITFIELDS
+export interface TerrainCardType {
+  fieldEffect: CardEffect;
+  affectedArchetypes?: DadType[]; // If empty, affects all
+  negativeEffectOnOpponents?: CardEffect;
+  permanentUntilReplaced: boolean;
+  activationCost?: number; // Mana/energy cost if any
+}
+
+// Evolution Card Type - MIDLIFE CRISIS MUTATIONS
+export interface EvolutionCardType {
+  evolvesFrom: string; // Base card ID this evolves from
+  statBoosts: Partial<CardStats>;
+  newAbilities: CardAbility[];
+  transformationFlavor: string; // Story of the evolution
+}
+
+// Curse Card Type - DAD DAMNATIONS
+export interface CurseCardType {
+  target: 'single_dad' | 'all_opponents';
+  effect: CardEffect;
+  duration: number; // Duration in turns
+  canBeRemoved: boolean;
+  removalCondition?: string; // How to remove the curse
+}
+
+// Trap Card Type - SUBURBAN SUCKERPUNCHES
+export interface TrapCardType {
+  trigger: 'on_attack' | 'on_card_play' | 'on_stat_boost' | 'on_end_of_turn';
+  effect: CardEffect;
+  faceDown: boolean; // Can be set face-down
+  oneTimeUse: boolean;
 }
 
 // Main Card Interface
@@ -90,6 +165,13 @@ export interface Card {
   artist: string;
   holoVariant?: HoloVariant;
   seasonId?: SeasonId; // US086 - Season System: Which season this card belongs to
+  
+  // Special card type data (only present if type is EVENT, TERRAIN, EVOLUTION, CURSE, or TRAP)
+  eventData?: EventCardType;
+  terrainData?: TerrainCardType;
+  evolutionData?: EvolutionCardType;
+  curseData?: CurseCardType;
+  trapData?: TrapCardType;
 }
 
 // Card in a pack (with runtime properties)

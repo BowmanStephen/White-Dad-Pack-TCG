@@ -347,7 +347,7 @@
         "sockSandal": 70,
         "beerSnob": 65
       },
-      "flavorText": "Bud Light's got chemtrails in every can\u2014I've verified this through extensive personal research!",
+      "flavorText": "Bud Light's got chemtrails in every can—I've verified this through extensive personal research!",
       "abilities": [
         {
           "name": "Keg Kick",
@@ -359,6 +359,340 @@
       "totalInSeries": 150,
       "artist": "DadArt Studios",
       "seasonId": 1
+    },
+    {
+      "id": "013",
+      "name": "Thermostat Tyrant Tim",
+      "subtitle": "68°F or Fuck Off",
+      "type": "COUCH_CUMMANDER",
+      "rarity": "epic",
+      "artwork": "/cards/couch/thermostat-tyrant.svg",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 40,
+        "fixIt": 50,
+        "napPower": 70,
+        "remoteControl": 80,
+        "thermostat": 100,
+        "sockSandal": 60,
+        "beerSnob": 55
+      },
+      "flavorText": "Kids touched my 'stat, so I told 'em I'd fuck their fingers off! Big HVAC's trackin' my temp with spy sensors!",
+      "abilities": [
+        {
+          "name": "Temperature Tit-Lock",
+          "description": "Feels every touch. +30 defense. HVAC companies are government surveillance fronts!"
+        },
+        {
+          "name": "Bill Boner Rage",
+          "description": "+500% anger when electric bill arrives. The power company fucks us daily!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 13,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "014",
+      "name": "Remote Control Randy Rim-Ruler",
+      "subtitle": "Don't Touch My Fuckin' Buttons",
+      "type": "COUCH_CUMMANDER",
+      "rarity": "common",
+      "artwork": "/cards/couch/remote-randy.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 40,
+        "napPower": 80,
+        "remoteControl": 100,
+        "thermostat": 55,
+        "sockSandal": 65,
+        "beerSnob": 70
+      },
+      "flavorText": "Netflix's got my viewing habits! Amazon knows my porn preferences! Every click is catalogued by the Deep State algorithm!",
+      "abilities": [
+        {
+          "name": "Button Boner Memory",
+          "description": "Perfect channel recall. +25 speed. My fingers know the sacred sequence!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 14,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "100",
+      "name": "EVENT: Spice Melange Masturbation Madness",
+      "subtitle": "Dune Crossover Shitshow",
+      "type": "EVENT",
+      "rarity": "epic",
+      "artwork": "/cards/events/spice-madness.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 50,
+        "fixIt": 60,
+        "napPower": 50,
+        "remoteControl": 40,
+        "thermostat": 70,
+        "sockSandal": 50,
+        "beerSnob": 60
+      },
+      "flavorText": "I fucked the spice 'til I saw the future! Big Gov's turnin' Arrakis into a dick desert! Frank Herbert knew the truth!",
+      "abilities": [
+        {
+          "name": "Spice Stroke",
+          "description": "Dune dads gain +30 attack for 2 turns. Opponents lose 20 defense. The spice must flow... through my balls!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 100,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "101",
+      "name": "TERRAIN: Arrakis Arse-Arena",
+      "subtitle": "Suburban Shitfield Battle Zone",
+      "type": "TERRAIN",
+      "rarity": "rare",
+      "artwork": "/cards/terrain/arrakis-arena.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 45,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 50,
+        "thermostat": 80,
+        "sockSandal": 60,
+        "beerSnob": 55
+      },
+      "flavorText": "My backyard's a sandworm fuck-fest! HBO's got spy worms in every goddamn dune! The desert hides nothing from my paranoia!",
+      "abilities": [
+        {
+          "name": "Sand Dune Defense",
+          "description": "Dune dads gain +25 thermostat. Opponents lose -15 napPower. The sand shifts with conspiracy!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 101,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "102",
+      "name": "ITEM: Crysknife Cum-Cutter",
+      "subtitle": "Legendary Dune Blade",
+      "type": "ITEM",
+      "rarity": "legendary",
+      "artwork": "/cards/items/crysknife.svg",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 55,
+        "fixIt": 70,
+        "napPower": 45,
+        "remoteControl": 50,
+        "thermostat": 75,
+        "sockSandal": 65,
+        "beerSnob": 70
+      },
+      "flavorText": "This knife cuts Fremen and cums spice! Dune merch got alien tech in the blade! The Empire doesn't want you to know!",
+      "abilities": [
+        {
+          "name": "Spice Blade Mastery",
+          "description": "Boosts attack by +40 for any Dune dad. Cuts through government lies and sand alike!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 102,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "103",
+      "name": "CURSE: Dad Damnation - The Thermostat Touch",
+      "subtitle": "Marital Discord Curse",
+      "type": "CURSE",
+      "rarity": "rare",
+      "artwork": "/cards/curses/thermostat-curse.svg",
+      "stats": {
+        "dadJoke": 60,
+        "grillSkill": 40,
+        "fixIt": 35,
+        "napPower": 50,
+        "remoteControl": 70,
+        "thermostat": 30,
+        "sockSandal": 45,
+        "beerSnob": 50
+      },
+      "flavorText": "Your wife touched your thermostat! Every degree lower is a knife through your heart! Control is lost! Chaos reigns!",
+      "abilities": [
+        {
+          "name": "Marital Meltdown",
+          "description": "Target opponent loses -30 thermostat control for 3 turns. They don't understand the sacred 68°F balance!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 103,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "104",
+      "name": "TRAP: Suburban Suckerpunch - The HOA Ambush",
+      "subtitle": "Neighborhood Association Trap",
+      "type": "TRAP",
+      "rarity": "uncommon",
+      "artwork": "/cards/traps/hoa-ambush.svg",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 35,
+        "fixIt": 50,
+        "napPower": 55,
+        "remoteControl": 60,
+        "thermostat": 50,
+        "sockSandal": 70,
+        "beerSnob": 55
+      },
+      "flavorText": "Your grass is 1/4 inch too tall! Your fence color violates code! Your grill is positioned 12 inches off the property line!",
+      "abilities": [
+        {
+          "name": "HOA Violation Strike",
+          "description": "When opponent plays a lawn/backyard card, deal 25 damage. The HOA is always watching!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 104,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "105",
+      "name": "EVOLUTION: Midlife Crisis Mutation - Dad to Dilf",
+      "subtitle": "The Great Transformation",
+      "type": "EVOLUTION",
+      "rarity": "rare",
+      "artwork": "/cards/evolution/dad-to-dilf.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 75,
+        "fixIt": 60,
+        "napPower": 65,
+        "remoteControl": 70,
+        "thermostat": 75,
+        "sockSandal": 80,
+        "beerSnob": 85
+      },
+      "flavorText": "I bought a sports car I can't afford! I got a hair transplant! I'm dating someone from my kids' school! CRISIS COMPLETE!",
+      "abilities": [
+        {
+          "name": "Midlife Power Surge",
+          "description": "Boost any DICKTATOR DAD's stats by +20. The crisis fuels pure masculine energy and confusion!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 105,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "106",
+      "name": "ITEM: Weber Wiener 3000 Grill",
+      "subtitle": "The Sacred Fuck-Flame",
+      "type": "ITEM",
+      "rarity": "legendary",
+      "artwork": "/cards/items/weber-grill.svg",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 100,
+        "fixIt": 50,
+        "napPower": 45,
+        "remoteControl": 55,
+        "thermostat": 70,
+        "sockSandal": 75,
+        "beerSnob": 80
+      },
+      "flavorText": "Four burners of pure cock-power! Side burner for fuckin' beans. I fucked this grill harder than I love my kids!",
+      "abilities": [
+        {
+          "name": "Perfect Heat Hump",
+          "description": "No hot spots, just pure fuck-fire! +30 grill boost. Neighbors jerk off to my flames with jealousy!"
+        }
+      ],
+      "series": 1,
+      "cardNumber": 106,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "107",
+      "name": "ITEM: La-Z-Boy Lust Throne",
+      "subtitle": "Seat of Fuckin' Power",
+      "type": "ITEM",
+      "rarity": "rare",
+      "artwork": "/cards/items/lazboy-throne.svg",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 35,
+        "fixIt": 40,
+        "napPower": 100,
+        "remoteControl": 95,
+        "thermostat": 80,
+        "sockSandal": 75,
+        "beerSnob": 75
+      },
+      "flavorText": "This chair is my kingdom! Infinite recline! Built-in cup holder! My wife can't make me leave it! Government can't track me here!",
+      "abilities": [
+        {
+          "name": "Infinite Recline Rim",
+          "description": "+40 napPower boost. The chair is one with me. We are eternal."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 107,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "108",
+      "name": "ITEM: Craftsman Cock-Wrench Box",
+      "subtitle": "Inherited From Fuckin' Grandpa",
+      "type": "ITEM",
+      "rarity": "uncommon",
+      "artwork": "/cards/items/craftsman-tools.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 45,
+        "fixIt": 100,
+        "napPower": 40,
+        "remoteControl": 50,
+        "thermostat": 55,
+        "sockSandal": 65,
+        "beerSnob": 60
+      },
+      "flavorText": "These tools are vintage! They were made before the government microchipped everything! Pure analog mechanical power!",
+      "abilities": [
+        {
+          "name": "Right Tool, Right Tit-Job",
+          "description": "+30 fixIt boost. The right tool for every job. Knowledge passed down through generations of paranoia."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 108,
+      "totalInSeries": 150,
+      "artist": "DadArt Studios",
+      "seasonId": 1
     }
-  ]
-}
+    ]
+    }

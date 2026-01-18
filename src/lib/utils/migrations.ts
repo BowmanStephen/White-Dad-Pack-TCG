@@ -19,7 +19,7 @@ import { createStorageError, logError } from './errors';
 import { createDateEncoder } from './encoders';
 
 // Current schema version
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 /**
  * Schema version interface
@@ -128,6 +128,95 @@ const migration_2_add_season_support: MigrationFn = (data): any => {
   return data;
 };
 
+/**
+ * Migration 3: Add card type support for new DICKTATOR DAD naming scheme
+ * and special card types (EVENT, TERRAIN, EVOLUTION, CURSE, TRAP)
+ */
+const migration_3_add_card_type_support: MigrationFn = (data): any => {
+  // Type mapping: Old names → New unhinged DICKTATOR names
+  const typeMapping: Record<string, string> = {
+    // Core Archetype Conversions
+    'BBQ_DAD': 'BBQ_DICKTATOR',
+    'FIX_IT_DAD': 'FIX_IT_FUCKBOY',
+    'GOLF_DAD': 'GOLF_GONAD',
+    'COUCH_DAD': 'COUCH_CUMMANDER',
+    'LAWN_DAD': 'LAWN_LUNATIC',
+    'CAR_DAD': 'CAR_COCK',
+    'OFFICE_DAD': 'OFFICE_ORGASMS',
+    'COOL_DAD': 'COOL_CUCKS',
+    'COACH_DAD': 'COACH_CUMSTERS',
+    'CHEF_DAD': 'CHEF_CUMSTERS',
+    'HOLIDAY_DAD': 'HOLIDAY_HORNDOGS',
+    'WAREHOUSE_DAD': 'WAREHOUSE_WANKERS',
+    'VINTAGE_DAD': 'VINTAGE_VAGABONDS',
+    'FASHION_DAD': 'FASHION_FUCK',
+    'TECH_DAD': 'TECH_TWATS',
+    // Extended archetypes (passthrough)
+    'SUBURBAN_SPY': 'SUBURBAN_SPY',
+    'GAMER_GIZZARDS': 'GAMER_GIZZARDS',
+    'PREPPER_PENIS': 'PREPPER_PENIS',
+    'BBQ_BRAWLER': 'BBQ_BRAWLER',
+    'SUBURBAN_SOCIALITE': 'SUBURBAN_SOCIALITE',
+    'NEIGHBORHOOD_NOSY': 'NEIGHBORHOOD_NOSY',
+    // Family types (passthrough)
+    'SON_SPAWNS': 'SON_SPAWNS',
+    'DAUGHTER_DINGBATS': 'DAUGHTER_DINGBATS',
+    'UNCLE_UPROARS': 'UNCLE_UPROARS',
+    'SUBURBAN_SIDEKICKS': 'SUBURBAN_SIDEKICKS',
+    // Special types (passthrough)
+    'ITEM': 'ITEM',
+    'EVENT': 'EVENT',
+    'TERRAIN': 'TERRAIN',
+    'EVOLUTION': 'EVOLUTION',
+    'CURSE': 'CURSE',
+    'TRAP': 'TRAP',
+  };
+
+  // Update all cards with new type names and card attributes
+  if (data.packs && Array.isArray(data.packs)) {
+    for (const pack of data.packs) {
+      if (pack.cards && Array.isArray(pack.cards)) {
+        for (const card of pack.cards) {
+          // Convert card type to new DICKTATOR naming scheme
+          if (card.type && card.type in typeMapping) {
+            card.type = typeMapping[card.type];
+          } else if (card.type) {
+            // Fallback: keep unknown types as-is
+            console.warn(`[Migration 3] Unknown card type: ${card.type}`);
+          }
+
+          // Add new card attributes if missing
+          if (!card.effects) {
+            card.effects = [];
+          }
+
+          // Initialize cardAttributes object if missing
+          if (!card.cardAttributes) {
+            card.cardAttributes = {
+              isSpecialType: ['EVENT', 'TERRAIN', 'EVOLUTION', 'CURSE', 'TRAP'].includes(card.type),
+              specialTypeInfo: null,
+            };
+          }
+
+          // Normalize holo variant
+          if (!card.holoType && card.holoVariant) {
+            card.holoType = card.holoVariant;
+          } else if (!card.holoType) {
+            card.holoType = 'none';
+          }
+
+          // Ensure isRevealed is set (default to true)
+          if (typeof card.isRevealed !== 'boolean') {
+            card.isRevealed = true;
+          }
+        }
+      }
+    }
+  }
+
+  return data;
+};
+
 // ============================================================================
 // MIGRATION REGISTRY
 // ============================================================================
@@ -145,6 +234,11 @@ const MIGRATIONS: Migration[] = [
     version: 2,
     description: 'Add seasonId support to cards',
     migrate: migration_2_add_season_support,
+  },
+  {
+    version: 3,
+    description: 'Add DICKTATOR DAD naming and special card type support (EVENT, TERRAIN, EVOLUTION, CURSE, TRAP)',
+    migrate: migration_3_add_card_type_support,
   },
 ];
 

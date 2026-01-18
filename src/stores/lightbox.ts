@@ -1,4 +1,4 @@
-import { atom, map } from 'nanostores';
+import { atom } from 'nanostores';
 import type { PackCard } from '../types';
 
 /**
