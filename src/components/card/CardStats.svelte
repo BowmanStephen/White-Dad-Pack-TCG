@@ -1,12 +1,14 @@
 <script lang="ts">
   import type { CardStats as CardStatsType, RarityConfig, Rarity } from '../../types';
   import { STAT_ICONS, STAT_NAMES } from '../../types';
+  import { hasCardStats } from '../../lib/card-types';
   import StatTooltip from './StatTooltip.svelte';
 
   export let stats: CardStatsType;
   export let rarityConfig: RarityConfig;
   export let compact: boolean = false;
   export let cardRarity: Rarity = 'rare'; // Default to rare if not provided
+  export let cardType: string = ''; // NEW: Card type for conditional stat display
 
   $: statEntries = Object.entries(stats)
     .map(([key, value]) => ({
@@ -48,58 +50,65 @@
   }
 </script>
 
-<div class="space-y-1.5 stats-grid">
-  {#each statEntries as stat, i}
-    <div
-      class="flex items-center gap-1.5 stat-row cursor-help"
-      class:high-stat={stat.isHighStat}
-      role="button"
-      tabindex="0"
-      aria-label="{stat.name}: {stat.value} out of 100. Press or hold for details."
-      on:mouseenter={() => activeTooltip = { key: stat.key, element: tooltipTargets[stat.key] }}
-      on:mouseleave={() => activeTooltip = null}
-      use:tooltipTarget={{ key: stat.key, register: (el) => tooltipTargets[stat.key] = el }}
-    >
-      <span class="text-xs w-4 drop-shadow-sm stat-icon" aria-hidden="true">{stat.icon}</span>
-      <span class="text-[9px] text-slate-400 stat-label font-medium uppercase tracking-tight" class:text-slate-300={stat.isHighStat}>{stat.name}</span>
-      <div class="flex-1 h-1.5 bg-slate-700/60 rounded-full overflow-hidden relative stat-bar-container">
-        <div
-          class="h-full rounded-full transition-all duration-700 ease-out relative stat-bar"
-          style="width: {stat.value}%; background: {barGradient(stat.value)}; {getGlowStyle(stat.value)};"
-          class:stat-bar-high={stat.isHighStat}
-          role="progressbar"
-          aria-label="{stat.name}: {stat.value} out of 100"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow={stat.value}
-        >
-          <!-- Shimmer effect -->
-          <div
-            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full shimmer"
-            class:shimmer-high={stat.isHighStat}
-            style="animation-delay: {i * 0.1}s; animation-duration: {stat.isHighStat ? '1.5s' : '2s'};"
-          ></div>
-        </div>
-      </div>
-      <span
-        class="text-[10px] w-7 text-right font-mono font-bold stat-value"
-        class:text-white={stat.isHighStat}
-        style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);"
+{#if hasCardStats(cardType || 'DAD_ARCHETYPE')}
+  <div class="space-y-1.5 stats-grid">
+    {#each statEntries as stat, i}
+      <div
+        class="flex items-center gap-1.5 stat-row cursor-help"
+        class:high-stat={stat.isHighStat}
+        role="button"
+        tabindex="0"
+        aria-label="{stat.name}: {stat.value} out of 100. Press or hold for details."
+        on:mouseenter={() => activeTooltip = { key: stat.key, element: tooltipTargets[stat.key] }}
+        on:mouseleave={() => activeTooltip = null}
+        use:tooltipTarget={{ key: stat.key, register: (el) => tooltipTargets[stat.key] = el }}
       >
-        {stat.value}
-      </span>
-    </div>
-  {/each}
-</div>
+        <span class="text-xs w-4 drop-shadow-sm stat-icon" aria-hidden="true">{stat.icon}</span>
+        <span class="text-[9px] text-slate-400 stat-label font-medium uppercase tracking-tight" class:text-slate-300={stat.isHighStat}>{stat.name}</span>
+        <div class="flex-1 h-1.5 bg-slate-700/60 rounded-full overflow-hidden relative stat-bar-container">
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative stat-bar"
+            style="width: {stat.value}%; background: {barGradient(stat.value)}; {getGlowStyle(stat.value)};"
+            class:stat-bar-high={stat.isHighStat}
+            role="progressbar"
+            aria-label="{stat.name}: {stat.value} out of 100"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={stat.value}
+          >
+            <!-- Shimmer effect -->
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full shimmer"
+              class:shimmer-high={stat.isHighStat}
+              style="animation-delay: {i * 0.1}s; animation-duration: {stat.isHighStat ? '1.5s' : '2s'};"
+            ></div>
+          </div>
+        </div>
+        <span
+          class="text-[10px] w-7 text-right font-mono font-bold stat-value"
+          class:text-white={stat.isHighStat}
+          style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);"
+        >
+          {stat.value}
+        </span>
+      </div>
+    {/each}
+  </div>
 
-<!-- Tooltip for active stat -->
-{#if activeTooltip}
-  <StatTooltip
-    statKey={activeTooltip.key}
-    statValue={stats[activeTooltip.key]}
-    triggerElement={activeTooltip.element}
-    cardRarity={cardRarity}
-  />
+  <!-- Tooltip for active stat -->
+  {#if activeTooltip}
+    <StatTooltip
+      statKey={activeTooltip.key}
+      statValue={stats[activeTooltip.key]}
+      triggerElement={activeTooltip.element}
+      cardRarity={cardRarity}
+    />
+  {/if}
+{:else}
+  <div class="text-center py-3">
+    <div class="text-xs font-semibold text-slate-300">No base stats</div>
+    <div class="text-[10px] text-slate-500 mt-1">This card uses special effects</div>
+  </div>
 {/if}
 
 <style>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PackCard, SeasonId } from '../../types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES, SEASON_PACK_CONFIG } from '../../types';
+  import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor, getSpecialCardGlowClasses, hasCardStats } from '../../lib/card-types';
   import CardStats from './CardStats.svelte';
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
@@ -129,6 +130,11 @@
       10: '#6366f1', // Season 10 Indigo
     };
     return seasonColors[seasonId] || '#9ca3af';
+  }
+
+  // Type guards for special card types
+  function isStatlessCard(type: string): boolean {
+    return isSpecialCardType(type) && type !== 'EVOLUTION' && type !== 'ITEM';
   }
 
   $: cardBackground = (() => {
@@ -334,6 +340,14 @@
         </div>
       {/if}
 
+      <!-- Special Card Type Badge -->
+      {#if isSpecialCardType(card.type)}
+        <div class="absolute top-2 right-2 z-30 flex items-center gap-1.5 px-2 py-1.5 rounded-lg" style="background: rgba(0,0,0,0.6); border: 1.5px solid {getSpecialCardBorderColor(card.type)}; box-shadow: 0 0 12px {getSpecialCardBorderColor(card.type)}44;">
+          <span class="text-sm" aria-hidden="true">{getSpecialCardIcon(card.type)}</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider" style="color: {getSpecialCardBorderColor(card.type)};">{card.type}</span>
+        </div>
+      {/if}
+
       <!-- Top bar -->
       <div class="relative z-20 flex items-center justify-between p-3 bg-gradient-to-b from-black/40 to-transparent">
         <div class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-bold" style="background: {rarityConfig.color}33; color: {rarityConfig.color};">
@@ -374,7 +388,14 @@
 
       <!-- Stats section -->
       <div class="relative z-20 px-3 mt-3">
-        <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={size === 'sm'} />
+        {#if !isStatlessCard(card.type)}
+          <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={size === 'sm'} cardType={card.type} />
+        {:else}
+          <div class="text-xs text-slate-400 text-center py-2 font-semibold">
+            {getSpecialCardTypeLabel(card.type)} Card
+            <div class="text-[10px] text-slate-500 mt-1">Effect-based abilities</div>
+          </div>
+        {/if}
       </div>
 
       <!-- Flavor text -->
