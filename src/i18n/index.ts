@@ -98,6 +98,10 @@ const translations: Record<string, string> = {
   'batch.reset': 'Reset',
   'batch.newBatch': 'Start New Batch',
   'batch.completeTitle': 'Batch Complete!',
+
+  // Performance Monitoring (PACK-102)
+  'performance.title': 'Performance Dashboard',
+  'performance.description': 'Real-time performance monitoring for development',
   'batch.completeInfo': '{count} packs opened successfully',
   'batch.resultsTitle': 'Batch Results',
   'batch.packsOpened': 'Packs Opened',

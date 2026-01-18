@@ -255,3 +255,80 @@ export interface AnalyticsSession {
   pageCount: number;          // Pages viewed in session
   lastActivity: number;       // Last activity timestamp
 }
+
+// ============================================================================
+// PERFORMANCE MONITORING TYPES (PACK-102)
+// ============================================================================
+
+// Performance metrics snapshot
+export interface PerformanceMetrics {
+  fps: number;                // Current FPS (frames per second)
+  memory: MemoryMetrics;      // Memory usage information
+  bundle: BundleMetrics;      // Bundle size information
+  timing: TimingMetrics;      // Page timing metrics
+  timestamp: number;          // When metrics were captured
+}
+
+// Memory usage metrics
+export interface MemoryMetrics {
+  usedJSHeapSize: number;     // Used JS heap size in bytes
+  totalJSHeapSize: number;    // Total JS heap size in bytes
+  jsHeapSizeLimit: number;    // JS heap size limit in bytes
+  usagePercentage: number;    // Percentage of heap used
+}
+
+// Bundle size metrics
+export interface BundleMetrics {
+  totalSize: number;          // Total bundle size in bytes
+  compressedSize: number;     // Gzipped size in bytes
+  chunkCount: number;         // Number of chunks
+  largestChunk: {
+    name: string;             // Chunk name
+    size: number;             // Size in bytes
+  };
+}
+
+// Page timing metrics
+export interface TimingMetrics {
+  domContentLoaded: number;   // DOM content loaded time (ms)
+  loadComplete: number;       // Full page load time (ms)
+  firstPaint: number | null;  // First paint time (ms)
+  firstContentfulPaint: number | null; // First contentful paint (ms)
+}
+
+// Performance warning type
+export interface PerformanceWarning {
+  id: string;                 // Warning ID
+  type: 'fps' | 'memory' | 'bundle' | 'timing'; // Warning category
+  severity: 'low' | 'medium' | 'high'; // Warning severity
+  message: string;            // Warning message
+  timestamp: number;          // When warning was triggered
+  value: number;              // Value that triggered warning
+  threshold: number;          // Threshold that was exceeded
+}
+
+// Performance threshold configuration
+export interface PerformanceThresholds {
+  fps: {
+    low: number;              // FPS threshold for low warning (default: 45)
+    medium: number;           // FPS threshold for medium warning (default: 30)
+  };
+  memory: {
+    low: number;              // Memory threshold for low warning (default: 0.7 = 70%)
+    medium: number;           // Memory threshold for medium warning (default: 0.85 = 85%)
+  };
+  bundle: {
+    maxSize: number;          // Maximum bundle size in bytes (default: 500KB)
+  };
+  timing: {
+    maxLoadTime: number;      // Maximum acceptable load time in ms (default: 3000ms)
+  };
+}
+
+// Performance monitoring state
+export interface PerformanceState {
+  metrics: PerformanceMetrics | null;
+  warnings: PerformanceWarning[];
+  isMonitoring: boolean;
+  lastUpdate: number | null;
+}
