@@ -5,6 +5,9 @@
 /* Import performance utilities */
 @import './performance.css';
 
+/* Import Safari-specific fixes */
+@import './safari-fixes.css';
+
 /* ===== CARD STYLES ===== */
 
 /* Card container with 3D perspective */

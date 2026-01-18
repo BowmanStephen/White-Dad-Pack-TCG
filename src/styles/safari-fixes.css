@@ -1,0 +1,503 @@
+/**
+ * Safari-specific fixes for DadDeck TCG
+ *
+ * This file addresses known Safari and iOS Safari compatibility issues:
+ * 1. backdrop-filter support and performance
+ * 2. scroll-behavior smooth scrolling
+ * 3. 100vh/100dvh issues on iOS
+ * 4. -webkit- prefix requirements
+ * 5. CSS Grid/Flexbox rendering differences
+ * 6. Input button styling issues
+ * 7. Touch target sizing
+ *
+ * Last updated: January 18, 2026
+ */
+
+/* ===== SAFARI BROWSER DETECTION ===== */
+
+/* Apply Safari-specific fixes only when needed */
+@supports (-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px)) {
+  /* This targets Safari browsers */
+}
+
+/* ===== BACKDROP-FILTER FIXES ===== */
+
+/**
+ * Safari (especially iOS Safari) has known issues with backdrop-filter:
+ * - Requires -webkit- prefix on older versions
+ * - Performance issues with large blur amounts
+ * - Rendering glitches with certain composite operations
+ */
+
+/* Improve backdrop-filter performance on Safari */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .modal-backdrop,
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    /* Use hardware acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+
+    /* Reduce blur amount for better performance on mobile Safari */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Special case for heavy blur - use fallback on low-end devices */
+  @media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .backdrop-blur-lg {
+      /* Reduce blur on mobile Safari for better performance */
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+  }
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .modal-backdrop {
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .dark .backdrop-blur-sm,
+  .dark .backdrop-blur-md,
+  .dark .backdrop-blur-lg {
+    background: rgba(17, 24, 39, 0.95);
+  }
+}
+
+/* ===== SCROLL BEHAVIOR FIXES ===== */
+
+/**
+ * Safari doesn't support scroll-behavior: smooth on html/body
+ * This polyfill provides smooth scrolling for anchor links and programmatic scrolling
+ */
+
+/* Safari smooth scroll polyfill for anchor links */
+@supports not (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* JavaScript will handle smooth scrolling */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Fix overscroll behavior on iOS Safari (prevent pull-to-refresh on games) */
+body {
+  /* Prevent overscroll/bounce on iOS */
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Prevent entire page bounce on iOS */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Allow scrolling within main content area */
+main {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== VIEWPORT HEIGHT FIXES FOR iOS SAFARI ===== */
+
+/**
+ * iOS Safari has a bug where 100vh doesn't account for the dynamic address bar
+ * Use dvh (dynamic viewport height) with fallback
+ */
+
+/* Full-screen containers */
+.full-height,
+.vh-100,
+.min-vh-100 {
+  /* Use dvh for modern browsers including Safari 16+ */
+  height: 100dvh;
+  height: 100vh; /* Fallback for older Safari */
+}
+
+/* Min-height containers */
+.min-full-height {
+  min-height: 100dvh;
+  min-height: 100vh; /* Fallback */
+}
+
+/* ===== WEBKIT PREFIX FIXES ===== */
+
+/**
+ * Safari requires -webkit- prefixes for several CSS properties
+ */
+
+/* Transform-style for 3D card flips */
+.card-3d,
+.card-face,
+.preserve-3d {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+/* Backface visibility for card flips */
+.card-face,
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* User select for interactive elements */
+.no-select,
+.card,
+.btn-primary,
+.btn-secondary {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Tap highlight color removal */
+button,
+a,
+.clickable {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Appearance property for form elements */
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ===== CSS GRID & FLEXBOX FIXES ===== */
+
+/**
+ * Safari has some rendering quirks with Grid and Flexbox
+ * These fixes ensure consistent rendering
+ */
+
+/* Fix Grid gap issues in Safari < 16 */
+@supports (display: grid) and (not (gap: 1px)) {
+  .grid,
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    /* Use margin instead of gap for older Safari */
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .grid > * {
+    margin: 0.5rem;
+  }
+}
+
+/* Flexbox gap polyfill for Safari < 14.1 */
+@supports (display: flex) and (not (gap: 1px)) {
+  .flex-gap {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .flex-gap > * {
+    margin: 0.5rem;
+  }
+
+  .flex-gap.gap-2 > * {
+    margin: 1rem;
+  }
+
+  .flex-gap.gap-4 > * {
+    margin: 2rem;
+  }
+}
+
+/* ===== INPUT BUTTON FIXES ===== */
+
+/**
+ * Safari has a quirk where inputs can look like buttons
+ * This fix prevents the default styling
+ */
+
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+/* ===== TOUCH TARGET SIZING ===== */
+
+/**
+ * iOS Safari requires minimum touch target size of 44x44px
+ * Ensure all interactive elements meet this requirement
+ */
+
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.clickable {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Small buttons need explicit touch targets */
+.btn-sm,
+button.btn-sm {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Icon buttons need proper sizing */
+.btn-icon {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ===== FONT SMOOTHING ===== */
+
+/**
+ * Safari handles font rendering differently
+ * Enable antialiasing for better text rendering
+ */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== CLIP PATH FIXES ===== */
+
+/**
+ * Safari has issues with complex clip-path animations
+ * Use will-change to hint hardware acceleration
+ */
+
+.card-border,
+.holo-effect {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* ===== FILTER PERFORMANCE ===== */
+
+/**
+ * Safari can struggle with heavy filter effects
+ * Optimize for better performance
+ */
+
+.animate-pack-glow,
+.animate-pulse-glow,
+.legendary-card {
+  /* Force hardware acceleration */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+
+/**
+ * Safari requires -webkit- prefix for custom scrollbar styling
+ * Ensure scrollbars are visible but not obtrusive
+ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: rgba(71, 85, 105, 0.5);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(71, 85, 105, 0.8);
+  }
+}
+
+/* ===== STICKY POSITIONING FIXES ===== */
+
+/**
+ * Safari has issues with sticky positioning in some contexts
+ * Ensure proper rendering with -webkit-sticky
+ */
+
+.sticky,
+.position-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+}
+
+/* ===== IOS SAFARI SPECIFIC FIXES ===== */
+
+/**
+ * These fixes apply specifically to iOS Safari
+ * Target iOS devices with -webkit- prefix detection
+ */
+
+@supports (-webkit-touch-callout: none) {
+  /* iOS-specific fixes */
+
+  /* Prevent automatic text size adjustment on orientation change */
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Prevent callout on long press (but keep it for accessibility where needed) */
+  .no-callout {
+    -webkit-touch-callout: none;
+  }
+
+  /* Fix input zoom on focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  textarea {
+    font-size: 16px; /* Prevents auto-zoom on focus */
+  }
+
+  /* Safe area insets for notched devices */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left, 0);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right, 0);
+  }
+
+  /* Fix 100dvh issues on iOS Safari */
+  .ios-full-height {
+    height: -webkit-fill-available;
+    height: 100dvh;
+    height: 100vh;
+  }
+}
+
+/* ===== SAFARI PRINT FIXES ===== */
+
+/**
+ * Safari has some unique print rendering issues
+ * Ensure print styles work correctly
+ */
+
+@media print {
+  /* Disable backdrop-filter in print */
+  .modal-backdrop,
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: white !important;
+  }
+
+  /* Ensure text is readable */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ===== SAFARI 15+ SPECIFIC FEATURES ===== */
+
+/**
+ * Safari 15+ supports some newer CSS features
+ * Use progressive enhancement
+ */
+
+@supports (backdrop-filter: blur(10px)) {
+  /* Safari 15+ supports unprefixed backdrop-filter */
+  .modal-backdrop {
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/**
+ * Safari-specific performance optimizations
+ */
+
+/* Reduce layout thrashing */
+.card,
+.modal-content {
+  will-change: transform;
+}
+
+/* Remove will-change after animation */
+.card:not(:hover),
+.modal-content:not(:hover) {
+  will-change: auto;
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/**
+ * Safari-specific accessibility enhancements
+ */
+
+/* Ensure focus outlines are visible in Safari */
+:focus-visible {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* Respect prefers-reduced-motion in Safari */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
