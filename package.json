@@ -15,7 +15,9 @@
     "prebuild": "bun run optimize:images && bun run generate-og-image && bun run generate-sitemap",
     "generate-sitemap": "node scripts/generate-sitemap.mjs",
     "discord-bot": "bun run discord-bot/index.ts",
-    "discord-bot:dev": "bun --watch run discord-bot/index.ts"
+    "discord-bot:dev": "bun --watch run discord-bot/index.ts",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
@@ -37,12 +39,22 @@
     "vite-imagetools": "^9.0.2"
   },
   "devDependencies": {
+    "@storybook/addon-docs": "8.6.14",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/addon-links": "8.6.14",
+    "@storybook/addon-svelte-csf": "5.0.10",
+    "@storybook/addon-themes": "8.6.14",
+    "@storybook/svelte": "8.6.14",
+    "@storybook/svelte-vite": "8.6.14",
     "@types/dompurify": "^3.2.0",
     "@types/node": "^25.0.9",
     "prettier": "^3.8.0",
     "prettier-plugin-svelte": "^3.4.1",
     "sharp": "^0.34.5",
+    "storybook": "8.6.14",
     "terser": "^5.46.0",
+    "vite": "^7.3.1",
     "vitest": "^4.0.17"
   }
 }
