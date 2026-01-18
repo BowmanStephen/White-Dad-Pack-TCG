@@ -10,13 +10,16 @@
     log: string[];
   };
   import Card from '../card/Card.svelte';
+  import BattleLog from './BattleLog.svelte';
   import { simulateBattle } from '../../lib/mechanics/combat';
+  import type { BattleLogEntry } from './BattleLog.svelte';
 
   let availableCards = $state<PackCard[]>([]);
   let selectedCard = $state<PackCard | null>(null);
   let opponentCard = $state<PackCard | null>(null);
   let battleResult = $state<DuelResult | null>(null);
-  let battleLog = $state<string[]>([]);
+  let battleLog = $state<BattleLogEntry[]>([]);
+  let currentTurn = $state(0);
   let isBattling = $state(false);
 
   // Animation states
@@ -50,6 +53,7 @@
     selectedCard = card;
     battleResult = null;
     battleLog = [];
+    currentTurn = 0;
 
     if (opponentCard?.id === card.id) {
       opponentCard = null;
@@ -65,6 +69,7 @@
     opponentCard = pool[Math.floor(Math.random() * pool.length)];
     battleResult = null;
     battleLog = [];
+    currentTurn = 0;
   }
 
   $effect(() => {
@@ -73,6 +78,194 @@
     }
   });
 
+  function parseBattleLog(logs: string[]): BattleLogEntry[] {
+    const parsedLogs: BattleLogEntry[] = [];
+    let currentTurn = 0;
+
+    for (const log of logs) {
+      // Battle start
+      if (log.includes('⚔️ BATTLE:')) {
+        parsedLogs.push({
+          turn: 0,
+          action: 'Battle Started',
+          actor: 'system',
+          detail: log.replace('⚔️ BATTLE: ', ''),
+          type: 'info'
+        });
+        continue;
+      }
+
+      // Power display
+      if (log.includes('power:')) {
+        const [cardName, power] = log.split(': ');
+        parsedLogs.push({
+          turn: 0,
+          action: cardName + ' Power',
+          actor: 'system',
+          detail: power + ' HP',
+          type: 'info'
+        });
+        continue;
+      }
+
+      // Type advantage
+      if (log.includes('has advantage over')) {
+        parsedLogs.push({
+          turn: 0,
+          action: 'Type Advantage',
+          actor: 'system',
+          detail: log.split('!')[0] + '!',
+          type: 'info'
+        });
+        continue;
+      }
+
+      if (log.includes('at disadvantage against')) {
+        parsedLogs.push({
+          turn: 0,
+          action: 'Type Disadvantage',
+          actor: 'system',
+          detail: log.split('!')[0] + '!',
+          type: 'info'
+        });
+        continue;
+      }
+
+      // Synergy
+      if (log.includes('💥 SYNERGY:')) {
+        const synergyName = log.match(/SYNERGY: (.+?)!/)?.[1];
+        parsedLogs.push({
+          turn: currentTurn,
+          action: 'Synergy Activated',
+          actor: 'system',
+          detail: synergyName || 'Unknown synergy',
+          type: 'synergy'
+        });
+        continue;
+      }
+
+      // Turn actions
+      if (log.startsWith('Turn ')) {
+        const turnMatch = log.match(/Turn (\d+):/);
+        if (turnMatch) {
+          currentTurn = parseInt(turnMatch[1]);
+        }
+
+        const actionText = log.substring(log.indexOf(': ') + 2);
+        const isPlayerAction = selectedCard && actionText.includes(selectedCard.name);
+        const actor = isPlayerAction ? 'player' : 'opponent';
+
+        parsedLogs.push({
+          turn: currentTurn,
+          action: 'Attack',
+          actor,
+          detail: actionText,
+          type: 'attack'
+        });
+        continue;
+      }
+
+      // Damage
+      if (log.includes('→') && log.includes('damage')) {
+        const damageMatch = log.match(/→ (\d+) damage/);
+        const isCritical = log.includes('CRITICAL');
+
+        if (damageMatch) {
+          const damage = parseInt(damageMatch[1]);
+          const actor = parsedLogs.length > 0 && parsedLogs[parsedLogs.length - 1].actor === 'player'
+            ? 'opponent'
+            : 'player';
+
+          parsedLogs.push({
+            turn: currentTurn,
+            action: 'Damage Dealt',
+            actor,
+            damage,
+            isCritical,
+            type: actor === 'player' ? 'counter' : 'attack'
+          });
+        }
+        continue;
+      }
+
+      // Status effects
+      if (log.includes('Status effects:')) {
+        const effects = log.replace('  → Status effects:', '').trim().split(', ');
+        const actor = parsedLogs.length > 0 ? parsedLogs[parsedLogs.length - 1].actor : 'player';
+
+        parsedLogs.push({
+          turn: currentTurn,
+          action: 'Status Effects Applied',
+          actor,
+          statusEffects: effects,
+          type: 'status'
+        });
+        continue;
+      }
+
+      // Counter attack
+      if (log.includes('Counter:')) {
+        const damageMatch = log.match(/hits back for (\d+) damage/);
+        if (damageMatch) {
+          parsedLogs.push({
+            turn: currentTurn,
+            action: 'Counter Attack',
+            actor: 'opponent',
+            detail: 'Opponent strikes back',
+            damage: parseInt(damageMatch[1]),
+            type: 'counter'
+          });
+        }
+        continue;
+      }
+
+      // HP display
+      if (log.includes('HP:')) {
+        parsedLogs.push({
+          turn: currentTurn,
+          action: 'Health Status',
+          actor: 'system',
+          detail: log.replace('  HP: ', ''),
+          type: 'info'
+        });
+        continue;
+      }
+
+      // Victory/Defeat
+      if (log.includes('🏆') && log.includes('WINS')) {
+        const winnerName = log.match(/🏆 (.+?) WINS/)?.[1];
+        const turns = log.match(/in (\d+) turns/)?.[1];
+        const isPlayerVictory = selectedCard && winnerName === selectedCard.name;
+
+        parsedLogs.push({
+          turn: currentTurn,
+          action: 'Battle Ended',
+          actor: 'system',
+          detail: winnerName + ' wins in ' + turns + ' turns!',
+          type: isPlayerVictory ? 'victory' : 'defeat'
+        });
+        continue;
+      }
+
+      // Time's up
+      if (log.includes("Time's up!")) {
+        const winnerName = log.match(/Time's up! (.+?) wins/)?.[1];
+        const isPlayerVictory = selectedCard && winnerName === selectedCard.name;
+
+        parsedLogs.push({
+          turn: currentTurn,
+          action: 'Time Limit Reached',
+          actor: 'system',
+          detail: winnerName + ' wins by HP!',
+          type: isPlayerVictory ? 'victory' : 'defeat'
+        });
+        continue;
+      }
+    }
+
+    return parsedLogs;
+  }
+
   async function startDuel() {
     if (!selectedCard || !opponentCard || isBattling) return;
 
@@ -80,6 +273,7 @@
     battlePhase = 'player_attack';
     battleResult = null;
     battleLog = [];
+    currentTurn = 0;
     damageNumbers = [];
     showVictoryScreen = false;
 
@@ -90,8 +284,15 @@
 
     // Parse battle log for damage numbers
     const result = simulateBattle(selectedCard, opponentCard);
-    battleLog = result.log;
+    const parsedLogs = parseBattleLog(result.log);
+    battleLog = parsedLogs;
     battleResult = result;
+
+    // Update current turn
+    if (parsedLogs.length > 0) {
+      const lastLog = parsedLogs[parsedLogs.length - 1];
+      currentTurn = lastLog.turn;
+    }
 
     // Extract damage numbers from battle log
     const damagePattern = /→ (\d+) damage/g;
@@ -139,6 +340,7 @@
   function resetDuel() {
     battleResult = null;
     battleLog = [];
+    currentTurn = 0;
     battlePhase = 'idle';
     showVictoryScreen = false;
     damageNumbers = [];
@@ -221,14 +423,13 @@
         <p>{battleResult.winner.name} wins in {battleResult.turns} turns.</p>
       </div>
 
-      <div class="duel-log">
-        <h4>Battle Log</h4>
-        <div class="log-entries">
-          {#each battleLog as entry}
-            <div class="log-entry">{entry}</div>
-          {/each}
-        </div>
-      </div>
+      <BattleLog
+        logs={battleLog}
+        {currentTurn}
+        playerCard={selectedCard}
+        opponentCard={opponentCard}
+        maxHeight="400px"
+      />
     {/if}
 
     {#if showVictoryScreen && battleResult}
@@ -456,29 +657,6 @@
   .duel-results h3 {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-  }
-
-  .duel-log {
-    background: rgba(15, 23, 42, 0.7);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .log-entries {
-    max-height: 240px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    color: #e2e8f0;
-  }
-
-  .log-entry {
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    background: rgba(30, 41, 59, 0.6);
-    font-size: 0.9rem;
   }
 
   .card-picker {
