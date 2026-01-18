@@ -2,7 +2,7 @@ import cardsData from '../src/data/cards.json';
 
 const cards = cardsData.cards;
 
-const counts = {
+const counts: Record<string, number> = {
   common: 0,
   uncommon: 0,
   rare: 0,
@@ -12,7 +12,7 @@ const counts = {
 };
 
 for (const card of cards) {
-  counts[card.rarity]++;
+  counts[card.rarity] = (counts[card.rarity] || 0) + 1;
 }
 
 console.log('Card count by rarity:');

@@ -1,35 +1,11 @@
 import { atom, computed } from 'nanostores';
-import type {
-  Season,
-  SeasonId,
-  SeasonState,
-  SeasonConfig,
-  SeasonLaunchEvent,
-} from '../types';
-import {
-  SEASONS,
-  getSeasonById,
-  getActiveSeasons,
-  getArchivedSeasons,
-  getUpcomingSeasons,
-  SEASON_LAUNCH_EVENTS,
-  getActiveLaunchEvents,
-} from '../data/seasons';
-import { persistentAtom } from '@nanostores/persistent';
-
-/**
- * Season Configuration (persisted to localStorage)
- */
-export const seasonConfig = persistentAtom<SeasonConfig>('season-config', {
-  currentSeason: 1,
-  autoArchive: true,
-  launchEventDuration: 7,
-});
+import type { Season, SeasonId } from '../types';
+import { SEASONS, getSeasonById, getActiveSeasons } from '../data/seasons';
 
 /**
  * Current season ID
  */
-export const currentSeasonId = atom<SeasonId>(1);
+export const currentSeasonId = atom<SeasonId>(2);
 
 /**
  * Current season data (computed)
@@ -49,63 +25,10 @@ export const allSeasons = atom<Season[]>(SEASONS);
 export const activeSeasons = computed(allSeasons, () => getActiveSeasons());
 
 /**
- * Archived seasons (computed)
- */
-export const archivedSeasons = computed(allSeasons, () =>
-  getArchivedSeasons()
-);
-
-/**
- * Upcoming seasons (computed)
- */
-export const upcomingSeasons = computed(allSeasons, () =>
-  getUpcomingSeasons()
-);
-
-/**
- * Active launch events (computed)
- */
-export const activeLaunchEvents = atom<SeasonLaunchEvent[]>(
-  getActiveLaunchEvents()
-);
-
-/**
- * Full season state (computed for UI components)
- */
-export const seasonState = computed(
-  [
-    currentSeasonId,
-    activeSeasons,
-    archivedSeasons,
-    upcomingSeasons,
-    activeLaunchEvents,
-  ],
-  (
-    currentSeason,
-    active,
-    archived,
-    upcoming,
-    events
-  ): SeasonState => ({
-    currentSeason,
-    activeSeasons: active,
-    archivedSeasons: archived,
-    upcomingSeasons: upcoming,
-    launchEvents: events,
-  })
-);
-
-/**
- * Actions
- */
-
-/**
  * Set the current active season
  */
 export function setCurrentSeason(seasonId: SeasonId): void {
   currentSeasonId.set(seasonId);
-  const config = seasonConfig.get();
-  seasonConfig.set({ ...config, currentSeason: seasonId });
 }
 
 /**
@@ -116,7 +39,7 @@ export function getSeason(seasonId: SeasonId): Season | undefined {
 }
 
 /**
- * Check if a season is archived
+ * Check if a season is active
  */
 export function isSeasonArchived(seasonId: SeasonId): boolean {
   const season = getSeasonById(seasonId);
@@ -162,26 +85,9 @@ export function archiveSeason(seasonId: SeasonId): void {
 }
 
 /**
- * Refresh launch events (check for new active events)
- */
-export function refreshLaunchEvents(): void {
-  activeLaunchEvents.set(getActiveLaunchEvents());
-}
-
-/**
  * Get the pack design for a season
  */
 export function getSeasonPackDesign(seasonId: SeasonId): string {
   const season = getSeasonById(seasonId);
   return season?.packDesign || 'base_set';
-}
-
-/**
- * Initialize season store
- * Call this on app startup to set up initial season state
- */
-export function initializeSeasonStore(): void {
-  const config = seasonConfig.get();
-  currentSeasonId.set(config.currentSeason);
-  refreshLaunchEvents();
 }

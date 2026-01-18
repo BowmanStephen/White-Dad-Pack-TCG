@@ -1,48 +1,14 @@
 ---
 import Logo from '../common/Logo.astro';
-import LanguageSelector from '../common/LanguageSelector.svelte';
-import { localeStore } from '@/i18n';
 
-// Get current locale for initial render
-const currentLocale = localeStore.get();
-
-// Translations
-const translations = {
-  en: {
-    tagline: 'The Ultimate Dad Trading Card Simulator',
-    about: 'About',
-    privacy: 'Privacy',
-    terms: 'Terms',
-    copyright: `© ${new Date().getFullYear()} DadDeck. All rights reserved. Made with 👔 and dad jokes.`,
-    disclaimer: 'This is a satirical project. No actual dads were harmed in the making of these cards.',
-  },
-  es: {
-    tagline: 'El Simulador de Cartas de Papá Definitivo',
-    about: 'Acerca de',
-    privacy: 'Privacidad',
-    terms: 'Términos',
-    copyright: `© ${new Date().getFullYear()} DadDeck. Todos los derechos reservados. Hecho con 👔 y chistes de papá.`,
-    disclaimer: 'Este es un proyecto satírico. Ningún papá real fue lastimado en la creación de estas cartas.',
-  },
-  fr: {
-    tagline: 'Le Simulateur de Cartes à Collectionner de Papa Ultime',
-    about: 'À propos',
-    privacy: 'Confidentialité',
-    terms: 'Conditions',
-    copyright: `© ${new Date().getFullYear()} DadDeck. Tous droits réservés. Fait avec 👔 et des blagues de papa.`,
-    disclaimer: 'Ceci est un projet satirique. Aucun papa réel n\'a été blessé dans la fabrication de ces cartes.',
-  },
-  de: {
-    tagline: 'Der Ultimative Sammelkarten-Simulator für Väter',
-    about: 'Über',
-    privacy: 'Datenschutz',
-    terms: 'AGB',
-    copyright: `© ${new Date().getFullYear()} DadDeck. Alle Rechte vorbehalten. Gemacht mit 👔 und Vaterwitzen.`,
-    disclaimer: 'Dies ist ein satirisches Projekt. Kein echter Vater wurde bei der Herstellung dieser Karten verletzt.',
-  }
+const t = {
+  tagline: 'The Ultimate Dad Trading Card Simulator',
+  about: 'About',
+  privacy: 'Privacy',
+  terms: 'Terms',
+  copyright: `© ${new Date().getFullYear()} DadDeck. All rights reserved. Made with 👔 and dad jokes.`,
+  disclaimer: 'This is a satirical project. No actual dads were harmed in the making of these cards.',
 };
-
-const t = translations[currentLocale] || translations.en;
 ---
 
 <footer class="py-12 px-4 border-t border-slate-800 bg-slate-900/50" role="contentinfo">
@@ -55,16 +21,13 @@ const t = translations[currentLocale] || translations.en;
         <span class="text-slate-400 text-sm">{t.tagline}</span>
       </div>
 
-      <!-- Language Selector -->
-      <div class="flex items-center">
-        <LanguageSelector client:load />
-      </div>
+
 
       <!-- Navigation links -->
       <nav class="flex items-center gap-6 text-sm text-slate-400" aria-label="Footer navigation">
-        <a href="/about" class="min-h-[44px] min-w-[44px] flex items-center justify-center px-3 py-2 hover:text-amber-400 transition-colors duration-200">{t.about}</a>
-        <a href="/privacy" class="min-h-[44px] min-w-[44px] flex items-center justify-center px-3 py-2 hover:text-amber-400 transition-colors duration-200">{t.privacy}</a>
-        <a href="/terms" class="min-h-[44px] min-w-[44px] flex items-center justify-center px-3 py-2 hover:text-amber-400 transition-colors duration-200">{t.terms}</a>
+        <a href="/pack" class="min-h-[44px] min-w-[44px] flex items-center justify-center px-3 py-2 hover:text-amber-400 transition-colors duration-200">Open Pack</a>
+        <a href="/collection" class="min-h-[44px] min-w-[44px] flex items-center justify-center px-3 py-2 hover:text-amber-400 transition-colors duration-200">Collection</a>
+        <a href="/battle" class="min-h-[44px] min-w-[44px] flex items-center justify-center px-3 py-2 hover:text-amber-400 transition-colors duration-200">Battle</a>
       </nav>
 
       <!-- Social media icons -->

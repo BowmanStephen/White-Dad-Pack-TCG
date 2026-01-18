@@ -181,6 +181,3 @@ self.addEventListener('message', (event) => {
     );
   }
 });
-
-// Export type for TypeScript
-export type {};

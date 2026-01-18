@@ -1,9 +1,8 @@
 import type { Card, Pack, PackCard, PackConfig, Rarity, HoloVariant, PackDesign, SeasonId, PityThresholds } from '../../types';
 import { getCardsByRarity, getAllCards } from '../cards/database';
 import { generateId, weightedRandom, SeededRandom } from '../utils/random';
-import { PACK_DESIGN_CONFIG, SEASON_PACK_CONFIG, RARITY_ORDER, DEFAULT_PITY_THRESHOLDS } from '../../types';
+import { RARITY_ORDER } from '../../types';
 import { getSeasonById } from '../../data/seasons';
-import { getGuaranteedRarity, applyPityToRarityProbabilities, updatePityCounters } from '../../stores/pity';
 
 /**
  * Select cards from the rarity pool, excluding already used cards.
@@ -437,129 +436,11 @@ export function generatePack(config: PackConfig = DEFAULT_PACK_CONFIG, seed?: nu
 }
 
 /**
- * Generate a pack with pity system integration
- *
- * This is the preferred method for production pack generation as it:
- * - Checks for guaranteed rarities from pity system
- * - Applies soft pity probability boosts
- * - Updates pity counters after pack generation
- *
- * @param options - Generation options including pity configuration
- * @returns A Pack with pity system applied
- *
- * @example
- * // Generate pack with pity
- * const pack = generatePackWithPity();
- *
- * @example
- * // Generate pack without updating pity counters (for preview)
- * const previewPack = generatePackWithPity({ updatePityAfterOpen: false });
+ * Generate pack with pity system integration
+ * (Roadmap feature - removed in MVP)
  */
-export function generatePackWithPity(options: GeneratePackOptions = {}): Pack {
-  const {
-    config = DEFAULT_PACK_CONFIG,
-    seed,
-    applyPity = true,
-    pityThresholds = DEFAULT_PITY_THRESHOLDS,
-    updatePityAfterOpen = true,
-  } = options;
-
-  const rng = new SeededRandom(seed);
-  const packCards: PackCard[] = [];
-  const usedCardIds = new Set<string>();
-
-  // Check if pity guarantees a specific rarity
-  const guaranteedRarity = applyPity ? getGuaranteedRarity(pityThresholds) : null;
-  let guaranteedSlotUsed = false;
-
-  // Process each slot in the pack
-  for (const slot of config.raritySlots) {
-    let rarity: Rarity;
-
-    if (slot.guaranteedRarity) {
-      // Guaranteed rarity slot
-      rarity = slot.guaranteedRarity;
-    } else if (slot.rarityPool && slot.probability) {
-      // Check if we need to force a guaranteed rarity from pity
-      if (guaranteedRarity && !guaranteedSlotUsed) {
-        // Use the last probability slot for the guaranteed rarity
-        if (slot.slot === config.raritySlots.length) {
-          rarity = guaranteedRarity;
-          guaranteedSlotUsed = true;
-        } else {
-          // Apply pity-boosted probabilities
-          const boostedProbabilities = applyPity
-            ? applyPityToRarityProbabilities(slot.probability, pityThresholds)
-            : slot.probability;
-          rarity = weightedRandom(boostedProbabilities, rng);
-        }
-      } else {
-        // Apply pity-boosted probabilities
-        const boostedProbabilities = applyPity
-          ? applyPityToRarityProbabilities(slot.probability, pityThresholds)
-          : slot.probability;
-        rarity = weightedRandom(boostedProbabilities, rng);
-      }
-    } else {
-      // Fallback to common
-      rarity = 'common';
-    }
-
-    // Use the selectCards function to get a card from the appropriate rarity pool
-    const [selectedCard] = selectCards(rarity, usedCardIds, 1, rng);
-
-    // If no card was selected (database is empty), skip this slot
-    if (!selectedCard) {
-      continue;
-    }
-
-    // Determine holographic variant using rollHolo (US038)
-    const holoType = rollHolo(rarity, rng);
-    const isHolo = holoType !== 'none';
-
-    // Create pack card with runtime properties
-    const packCard: PackCard = {
-      ...selectedCard,
-      isRevealed: false,
-      isHolo,
-      holoType,
-    };
-
-    packCards.push(packCard);
-  }
-
-  // SAFEGUARD 1: Verify pack has exactly 6 cards
-  if (packCards.length !== config.cardsPerPack) {
-    throw new Error(
-      `Pack generation failed: expected ${config.cardsPerPack} cards but got ${packCards.length}. ` +
-      `This may indicate the card database is empty or missing required rarities.`
-    );
-  }
-
-  // Shuffle the cards so rarity isn't predictable by position
-  const shuffledCards = rng.shuffle(packCards);
-
-  // SAFEGUARD 2: Verify rarity distribution within acceptable tolerance
-  validateRarityDistribution(shuffledCards, config);
-
-  // Roll for pack design (US068 - 80% standard, 15% holiday, 5% premium)
-  const packDesign = rollPackDesign(rng);
-
-  // Create the pack
-  const pack: Pack = {
-    id: generateId(),
-    cards: shuffledCards,
-    openedAt: new Date(),
-    bestRarity: getHighestRarity(shuffledCards),
-    design: packDesign,
-  };
-
-  // Update pity counters after pack generation
-  if (updatePityAfterOpen) {
-    updatePityCounters(pack);
-  }
-
-  return pack;
+export function generatePackWithPity(): Pack {
+  return generatePack();
 }
 
 /**
@@ -595,11 +476,10 @@ export function generatePacks(count: number, config?: PackConfig): Pack[] {
  * @param options - Generation options
  * @returns Array of generated packs with pity applied
  */
-export function generatePacksWithPity(count: number, options: GeneratePackOptions = {}): Pack[] {
+export function generatePacksWithPity(count: number): Pack[] {
   const packs: Pack[] = [];
   for (let i = 0; i < count; i++) {
-    // Each pack updates pity counters, affecting subsequent packs
-    packs.push(generatePackWithPity(options));
+    packs.push(generatePackWithPity());
   }
   return packs;
 }
@@ -817,10 +697,7 @@ export function selectSeasonCards(
  */
 export function getSeasonPackTheme(seasonId: SeasonId) {
   const season = getSeasonById(seasonId);
-  if (!season) {
-    return SEASON_PACK_CONFIG.base_set;
-  }
-  return SEASON_PACK_CONFIG[season.packDesign] || SEASON_PACK_CONFIG.base_set;
+  return season?.packDesign || 'base_set';
 }
 
 /**

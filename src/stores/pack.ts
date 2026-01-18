@@ -1,5 +1,5 @@
 import { atom, computed } from 'nanostores';
-import type { Pack, PackState, PackType } from '../types';
+import type { Pack, PackState } from '../types';
 import { generateSeasonPack, getPackStats } from '../lib/pack/generator';
 import { addPackToCollection } from './collection';
 import { trackEvent } from './analytics';

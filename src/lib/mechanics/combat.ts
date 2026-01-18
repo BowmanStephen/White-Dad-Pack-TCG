@@ -1,4 +1,4 @@
-import type { Card, CardStats, DadType, Rarity } from '../../types';
+import type { Card, CardStats, DadType } from '../../types';
 
 /**
  * DadDeck™ Combat Mechanics

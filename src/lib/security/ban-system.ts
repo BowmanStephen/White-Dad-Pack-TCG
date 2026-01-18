@@ -100,6 +100,7 @@ export function isBanned(fingerprint: string): BanStatus {
   if (!record || !record.active) {
     return {
       isBanned: false,
+      permanent: false,
       violationIds: [],
     };
   }
@@ -110,6 +111,7 @@ export function isBanned(fingerprint: string): BanStatus {
     unban(fingerprint, 'Ban expired');
     return {
       isBanned: false,
+      permanent: false,
       violationIds: [],
     };
   }

@@ -1644,6 +1644,7 @@
       "subtitle": "The Low and Slow Prophet",
       "type": "BBQ_DAD",
       "rarity": "legendary",
+      "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 100,
@@ -1674,6 +1675,7 @@
       "subtitle": "Guardian of the Deep End",
       "type": "COOL_DAD",
       "rarity": "rare",
+      "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 45,
@@ -1703,6 +1705,7 @@
       "subtitle": "Sacrificing Blood for the Yard",
       "type": "LAWN_DAD",
       "rarity": "common",
+      "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 50,
@@ -1732,6 +1735,7 @@
       "subtitle": "Lobster-Tinted Leisure",
       "type": "COOL_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/because-i-said-so-magic-card--t3chat--1.webp",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 60,
@@ -1761,6 +1765,7 @@
       "subtitle": "The Rhythmic Slap of Summer",
       "type": "FASHION_DAD",
       "rarity": "common",
+      "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 35,
@@ -1790,6 +1795,7 @@
       "subtitle": "The Ice Must Flow",
       "type": "ITEM",
       "rarity": "rare",
+      "artwork": "/cards/weber-genesis-grill-artifact--t3chat--1.webp",
       "stats": {
         "dadJoke": 40,
         "grillSkill": 20,
@@ -1819,6 +1825,7 @@
       "subtitle": "Outdoor Napping Specialist",
       "type": "COUCH_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
         "dadJoke": 65,
         "grillSkill": 40,
@@ -1848,6 +1855,7 @@
       "subtitle": "Checking the Calibration",
       "type": "BBQ_DAD",
       "rarity": "common",
+      "artwork": "/cards/grill-master-gary-bbq-dad--t3chat--1.webp",
       "stats": {
         "dadJoke": 90,
         "grillSkill": 70,
@@ -1877,6 +1885,7 @@
       "subtitle": "24 Hours of Flavor Prep",
       "type": "CHEF_DAD",
       "rarity": "rare",
+      "artwork": "/cards/bogey-bob-eternal-duffer--t3chat--1.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 90,
@@ -1906,6 +1915,7 @@
       "subtitle": "Analog Heat Enthusiast",
       "type": "BBQ_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 85,
@@ -1935,6 +1945,7 @@
       "subtitle": "The Beanbag Sniper",
       "type": "COOL_DAD",
       "rarity": "rare",
+      "artwork": "/cards/bogey-bob-eternal-duffer--t3chat--1.webp",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 50,
@@ -1964,6 +1975,7 @@
       "subtitle": "Tangled in Plastic",
       "type": "COOL_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/because-i-said-so-magic-card--t3chat--1.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 45,
@@ -1993,6 +2005,7 @@
       "subtitle": "Intense Backyard Athletics",
       "type": "COACH_DAD",
       "rarity": "common",
+      "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
         "dadJoke": 75,
         "grillSkill": 40,
@@ -2022,6 +2035,7 @@
       "subtitle": "Tactical Hydration Deployment",
       "type": "COACH_DAD",
       "rarity": "common",
+      "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 45,
@@ -2051,6 +2065,7 @@
       "subtitle": "Defying Friction",
       "type": "COOL_DAD",
       "rarity": "epic",
+      "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 50,
@@ -2080,6 +2095,7 @@
       "subtitle": "The Waxy Shield",
       "type": "ITEM",
       "rarity": "common",
+      "artwork": "/cards/weber-genesis-grill-artifact--t3chat--1.webp",
       "stats": {
         "dadJoke": 30,
         "grillSkill": 10,
@@ -2109,6 +2125,7 @@
       "subtitle": "Backyard Illumination Expert",
       "type": "LAWN_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 60,
@@ -2138,6 +2155,7 @@
       "subtitle": "Hydration is Mostly Water",
       "type": "BBQ_DAD",
       "rarity": "common",
+      "artwork": "/cards/grill-master-gary-bbq-dad--t3chat--1.webp",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 65,
@@ -2167,6 +2185,7 @@
       "subtitle": "The Garden Over-Producer",
       "type": "LAWN_DAD",
       "rarity": "rare",
+      "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 70,
@@ -2196,6 +2215,7 @@
       "subtitle": "Architect of the Bun",
       "type": "CHEF_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 85,
@@ -2225,6 +2245,7 @@
       "subtitle": "Tube Meat Traditionalist",
       "type": "CHEF_DAD",
       "rarity": "common",
+      "artwork": "/cards/bogey-bob-eternal-duffer--t3chat--1.webp",
       "stats": {
         "dadJoke": 95,
         "grillSkill": 75,
@@ -2254,6 +2275,7 @@
       "subtitle": "The Mustard Militia",
       "type": "ITEM",
       "rarity": "common",
+      "artwork": "/cards/weber-genesis-grill-artifact--t3chat--1.webp",
       "stats": {
         "dadJoke": 35,
         "grillSkill": 15,
@@ -2283,6 +2305,7 @@
       "subtitle": "The Essential Supply Driver",
       "type": "CAR_DAD",
       "rarity": "common",
+      "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
         "dadJoke": 65,
         "grillSkill": 40,
@@ -2312,6 +2335,7 @@
       "subtitle": "Chasing the Shadow",
       "type": "COUCH_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 35,
@@ -2341,6 +2365,7 @@
       "subtitle": "Yard Irrigation Veteran",
       "type": "LAWN_DAD",
       "rarity": "common",
+      "artwork": "/cards/mower-mike-lawn-dad--t3chat--1.webp",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 45,
@@ -2370,6 +2395,7 @@
       "subtitle": "Webbed Throne Holder",
       "type": "ITEM",
       "rarity": "rare",
+      "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
         "dadJoke": 50,
         "grillSkill": 30,
@@ -2399,6 +2425,7 @@
       "subtitle": "The Flag-Waver",
       "type": "HOLIDAY_DAD",
       "rarity": "rare",
+      "artwork": "/cards/Gemini_Generated_Image_cemskpcemskpcems.webp",
       "stats": {
         "dadJoke": 85,
         "grillSkill": 90,
@@ -2428,6 +2455,7 @@
       "subtitle": "The Electric Blue Judge",
       "type": "TECH_DAD",
       "rarity": "uncommon",
+      "artwork": "/cards/weber-genesis-grill-artifact--t3chat--1.webp",
       "stats": {
         "dadJoke": 70,
         "grillSkill": 40,
@@ -2457,6 +2485,7 @@
       "subtitle": "Storytelling in the Smoke",
       "type": "VINTAGE_DAD",
       "rarity": "rare",
+      "artwork": "/cards/Gemini_Generated_Image_hknopthknopthkno.webp",
       "stats": {
         "dadJoke": 90,
         "grillSkill": 80,
@@ -2486,6 +2515,7 @@
       "subtitle": "Captain of the Vinyl Raft",
       "type": "ITEM",
       "rarity": "epic",
+      "artwork": "/cards/the-dad-ascension-to-lawn-chair-throne--t3chat--1.webp",
       "stats": {
         "dadJoke": 80,
         "grillSkill": 40,

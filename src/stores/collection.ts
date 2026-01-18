@@ -1,11 +1,10 @@
 import { persistentAtom } from '@nanostores/persistent';
-import type { Collection, CollectionMetadata, CollectionState, CollectionStats, Pack, Rarity, CollectionCompletion } from '../types';
+import type { Collection, CollectionMetadata, CollectionState, CollectionStats, Pack, Rarity } from '../types';
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { safeJsonParse } from '../lib/utils/safe-parse';
 import { createDateEncoder } from '../lib/utils/encoders';
 import { createStorageError, logError } from '@/lib/utils/errors';
-import { calculateCollectionCompletion, getCompletionSummary, getNewlyAchievedMilestones, calculateBonusPacksFromMilestones } from '../lib/collection/completion';
 
 // Initialize empty rarity counts
 function initializeRarityCounts(): Record<Rarity, number> {
@@ -31,7 +30,6 @@ const collectionEncoder = {
   decode(str: string): Collection {
     const data = safeJsonParse<Collection>(str);
     if (!data) {
-      // Return empty collection if parsing fails
       return {
         packs: [],
         metadata: {
@@ -41,7 +39,7 @@ const collectionEncoder = {
           rarePulls: 0,
           holoPulls: 0,
           created: new Date(),
-          rarityCounts: initializeRarityCounts(), // Initialize rarity counts (US107)
+          rarityCounts: initializeRarityCounts(),
         },
       };
     }
@@ -364,111 +362,5 @@ export function trackCollectionSort(sortOption: string): void {
 
 // ============================================================================
 // COLLECTION COMPLETION FUNCTIONS
-// ============================================================================
-
-// Cache for completion data to avoid recalculating on every call
-let cachedCompletion: CollectionCompletion | null = null;
-let cachedCompletionTimestamp: number = 0;
-const COMPLETION_CACHE_TTL = 5000; // 5 seconds
-
-/**
- * Get collection completion data
- *
- * @param forceRefresh - Force recalculation even if cached
- * @returns CollectionCompletion object with progress data
- */
-export function getCollectionCompletion(forceRefresh = false): CollectionCompletion {
-  const now = Date.now();
-
-  // Return cached if still valid
-  if (!forceRefresh && cachedCompletion && now - cachedCompletionTimestamp < COMPLETION_CACHE_TTL) {
-    return cachedCompletion;
-  }
-
-  // Calculate fresh completion data
-  const current = collection.get();
-  cachedCompletion = calculateCollectionCompletion(current);
-  cachedCompletionTimestamp = now;
-
-  return cachedCompletion;
-}
-
-/**
- * Get completion summary for UI display
- *
- * @returns Summary object with key metrics
- */
-export function getCollectionCompletionSummary() {
-  const current = collection.get();
-  return getCompletionSummary(current);
-}
-
-/**
- * Invalidate completion cache (call after adding packs)
- */
-export function invalidateCompletionCache(): void {
-  cachedCompletion = null;
-  cachedCompletionTimestamp = 0;
-}
-
-/**
- * Check for newly achieved milestones after adding a pack
- *
- * @param previousCompletion - Completion state before adding pack
- * @returns Object with new milestones and bonus packs to award
- */
-export function checkForNewMilestones(previousCompletion: CollectionCompletion): {
-  newMilestones: ReturnType<typeof getNewlyAchievedMilestones>;
-  bonusPacks: number;
-} {
-  const currentCompletion = getCollectionCompletion(true);
-  const newMilestones = getNewlyAchievedMilestones(previousCompletion, currentCompletion);
-  const bonusPacks = calculateBonusPacksFromMilestones(newMilestones);
-
-  return {
-    newMilestones,
-    bonusPacks,
-  };
-}
-
-/**
- * Add pack and check for milestone achievements
- *
- * This is the preferred method for adding packs as it:
- * - Saves the pack to collection
- * - Checks for newly achieved milestones
- * - Returns bonus packs to award
- *
- * @param pack - The pack to add
- * @returns Object with success status, error, and milestone rewards
- */
-export function addPackWithMilestoneCheck(pack: Pack): {
-  success: boolean;
-  error?: string;
-  newMilestones: ReturnType<typeof getNewlyAchievedMilestones>;
-  bonusPacks: number;
-} {
-  // Get completion before adding pack
-  const previousCompletion = getCollectionCompletion();
-
-  // Add the pack
-  const result = addPackToCollection(pack);
-
-  if (!result.success) {
-    return {
-      ...result,
-      newMilestones: [],
-      bonusPacks: 0,
-    };
-  }
-
-  // Invalidate cache and check for new milestones
-  invalidateCompletionCache();
-  const { newMilestones, bonusPacks } = checkForNewMilestones(previousCompletion);
-
-  return {
-    success: true,
-    newMilestones,
-    bonusPacks,
-  };
-}
+// (Roadmap feature removed in MVP)
+// ==========================================================================

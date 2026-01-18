@@ -1,64 +1,19 @@
 ---
 import Button from '../common/Button.astro';
 import PackPreview from './PackPreview.astro';
-import { localeStore } from '@/i18n';
 
-// Get current locale for initial render
-const currentLocale = localeStore.get();
-
-// Translations
-const translations = {
-  en: {
-    title1: 'Collect Every Dad',
-    title2: 'in the Cul-de-sac',
-    subtitle: 'The satirical trading card game your father would definitely not understand. Open packs, collect dads, embrace the cringe.',
-    cta: 'Open Your First Pack',
-    learnMore: 'Learn More',
-    stats: {
-      cards: 'Unique Cards',
-      rarity: 'Rarity Tiers',
-      free: 'Free Forever',
-    }
+const t = {
+  title1: 'Collect Every Dad',
+  title2: 'in the Cul-de-sac',
+  subtitle: 'The satirical trading card game your father would definitely not understand. Open packs, collect dads, embrace the cringe.',
+  cta: 'Open Your First Pack',
+  learnMore: 'Learn More',
+  stats: {
+    cards: 'Unique Cards',
+    rarity: 'Rarity Tiers',
+    free: 'Free Forever',
   },
-  es: {
-    title1: 'Colecciona a Todos los Papas',
-    title2: 'en el Vecindario',
-    subtitle: 'El juego de cartas coleccionables satírico que tu padre definitivamente no entendería. Abre sobres, colecciona papás, abraza la vergüenza.',
-    cta: 'Abre Tu Primer Sobre',
-    learnMore: 'Más Información',
-    stats: {
-      cards: 'Cartas Únicas',
-      rarity: 'Niveles de Rareza',
-      free: 'Gratis Para Siempre',
-    }
-  },
-  fr: {
-    title1: 'Collectionnez Tous les Papas',
-    title2: 'dans le Quartier',
-    subtitle: 'Le jeu de cartes à collectionner satirique que votre père ne comprendrait certainement pas. Collectionnez des cartes, embrassez le ridicule.',
-    cta: 'Ouvrez Votre Premier Paquet',
-    learnMore: 'En Savoir Plus',
-    stats: {
-      cards: 'Cartes Uniques',
-      rarity: 'Niveaux de Rareté',
-      free: 'Gratuit Pour Toujours',
-    }
-  },
-  de: {
-    title1: 'Sammle Alle Väter',
-    title2: 'in der Sackgasse',
-    subtitle: 'Das satirische Sammelkartenspiel, das dein Vater definitiv nicht verstehen würde. Sammle Karten, umarme die Peinlichkeit.',
-    cta: 'Öffne Dein Ersten Pack',
-    learnMore: 'Mehr Erfahren',
-    stats: {
-      cards: 'Einzigartige Karten',
-      rarity: 'Seltenheitsstufen',
-      free: 'Für Immer Kostenlos',
-    }
-  }
 };
-
-const t = translations[currentLocale] || translations.en;
 ---
 
 <section aria-labelledby="hero-heading" class="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">

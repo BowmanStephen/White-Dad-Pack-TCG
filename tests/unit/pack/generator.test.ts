@@ -274,9 +274,9 @@ describe('Pack Generator - US036 Rarity Distribution', () => {
         ...DEFAULT_PACK_CONFIG,
         cardsPerPack: 3,
         raritySlots: [
-          { slot: 1, guaranteedRarity: 'common' },
-          { slot: 2, guaranteedRarity: 'common' },
-          { slot: 3, guaranteedRarity: 'rare' },
+          { slot: 1, guaranteedRarity: 'common' as const },
+          { slot: 2, guaranteedRarity: 'common' as const },
+          { slot: 3, guaranteedRarity: 'rare' as const },
         ],
       };
 

@@ -1,118 +1,31 @@
 ---
-import { localeStore } from '@/i18n';
-
-// Get current locale for initial render
-const currentLocale = localeStore.get();
-
-// Translations
-const translations = {
-  en: {
-    title: 'Why DadDeck?',
-    subtitle: 'Experience the thrill of pack opening without the guilt of spending your life savings on cardboard.',
-    features: [
-      {
-        icon: '🎴',
-        title: 'Free Pack Opening',
-        description: 'Unlimited pack opening. No coins, no gems, no waiting. Just pure dad-collecting joy whenever you want.',
-      },
-      {
-        icon: '👨‍👧‍👦',
-        title: '50+ Unique Cards',
-        description: 'From BBQ Dad to Thermostat Tyrant, collect every suburban archetype in the cul-de-sac.',
-      },
-      {
-        icon: '📤',
-        title: 'Share Your Pulls',
-        description: 'Brag about your legendary pulls with shareable card images. Your friends need to see that mythic.',
-      },
-      {
-        icon: '🚫',
-        title: 'No Microtransactions',
-        description: 'Zero. Zilch. Nada. This is a labor of love, not a cash grab. Enjoy forever, free.',
-      },
-    ]
-  },
-  es: {
-    title: '¿Por qué DadDeck?',
-    subtitle: 'Experimenta la emoción de abrir sobres sin la culpa de gastar tus ahorros en cartas.',
-    features: [
-      {
-        icon: '🎴',
-        title: 'Apertura de Sobres Gratis',
-        description: 'Apertura ilimitada de sobres. Sin monedas, sin gemas, sin esperas. Solo pura diversión de coleccionar papás cuando quieras.',
-      },
-      {
-        icon: '👨‍👧‍👦',
-        title: 'Más de 50 Cartas Únicas',
-        description: 'Desde Papá BBQ hasta el Tirano del Termostato, colecciona cada arquetipo suburbano del vecindario.',
-      },
-      {
-        icon: '📤',
-        title: 'Comparte Tus Cartas',
-        description: 'Presume de tus cartas legendarias con imágenes compartibles. Tus amigos necesitan ver esa carta mítica.',
-      },
-      {
-        icon: '🚫',
-        title: 'Sin Microtransacciones',
-        description: 'Cero. Nada. Ninguno. Esto es un trabajo de amor, no una estafa. Disfruta para siempre, gratis.',
-      },
-    ]
-  },
-  fr: {
-    title: 'Pourquoi DadDeck?',
-    subtitle: 'Découvrez le frisson de l\'ouverture de paquets sans la culpabilité de dépenser votre épargne en cartes.',
-    features: [
-      {
-        icon: '🎴',
-        title: 'Ouverture de Paquets Gratuite',
-        description: 'Ouverture illimitée de paquets. Pas de pièces, pas de gemmes, pas d\'attente. Juste le pur plaisir de collectionner des papas quand vous voulez.',
-      },
-      {
-        icon: '👨‍👧‍👦',
-        title: 'Plus de 50 Cartes Uniques',
-        description: 'De Papa BBQ au Tyran du Thermostat, collectionnez chaque archétype de banlieue du quartier.',
-      },
-      {
-        icon: '📤',
-        title: 'Partagez Vos Cartes',
-        description: 'Vantez-vous de vos cartes légendaires avec des images partageables. Vos amis doivent voir cette mythique.',
-      },
-      {
-        icon: '🚫',
-        title: 'Pas de Micro-transactions',
-        description: 'Zéro. Néant. Nada. C\'est un travail passion, pas une arnaque. Profitez-en pour toujours, gratuitement.',
-      },
-    ]
-  },
-  de: {
-    title: 'Warum DadDeck?',
-    subtitle: 'Erlebe den Nervenkitzel beim Pack-Öffnen ohne die Schuld, dein Lebensersparnis in Karten zu stecken.',
-    features: [
-      {
-        icon: '🎴',
-        title: 'Kostenloses Pack Öffnen',
-        description: 'Unbegrenztes Pack-Öffnen. Keine Münzen, keine Edelsteine, kein Warten. Einfach purer Freude am Väter-Sammeln, wann immer du willst.',
-      },
-      {
-        icon: '👨‍👧‍👦',
-        title: 'Über 50 Einzigartige Karten',
-        description: 'Von BBQ-Vater bis Thermostat-Tyrann, sammle jeden Vorstadt-Archetypus in der Sackgasse.',
-      },
-      {
-        icon: '📤',
-        title: 'Teile Deine Ziehungen',
-        description: 'Prahle mit deinen legendären Ziehungen durch teilbare Kartenbilder. Deine Freunde müssen diese mythische Karte sehen.',
-      },
-      {
-        icon: '🚫',
-        title: 'Keine Mikrotransaktionen',
-        description: 'Null. Nada. Niente. Das ist eine Arbeit aus Liebe, kein Geldgrab. Genieße es für immer, kostenlos.',
-      },
-    ]
-  }
+const t = {
+  title: 'Why DadDeck?',
+  subtitle: 'Experience the thrill of pack opening without the guilt of spending your life savings on cardboard.',
+  features: [
+    {
+      icon: '🎴',
+      title: 'Free Pack Opening',
+      description: 'Unlimited pack opening. No coins, no gems, no waiting. Just pure dad-collecting joy whenever you want.',
+    },
+    {
+      icon: '👨‍👧‍👦',
+      title: '50+ Unique Cards',
+      description: 'From BBQ Dad to Thermostat Tyrant, collect every suburban archetype in the cul-de-sac.',
+    },
+    {
+      icon: '📤',
+      title: 'Share Your Pulls',
+      description: 'Brag about your legendary pulls with shareable card images. Your friends need to see that mythic.',
+    },
+    {
+      icon: '🚫',
+      title: 'No Microtransactions',
+      description: 'Zero. Zilch. Nada. This is a labor of love, not a cash grab. Enjoy forever, free.',
+    },
+  ],
 };
 
-const t = translations[currentLocale] || translations.en;
 const features = t.features;
 ---
 
@@ -137,7 +50,7 @@ const features = t.features;
 
     <!-- Feature cards grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-      {features.map((feature, index) => (
+      {features.map((feature: { icon: string; title: string; description: string }, index: number) => (
         <div
           class="group relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 hover:border-amber-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/10"
           style="animation-delay: ${index * 100}ms"

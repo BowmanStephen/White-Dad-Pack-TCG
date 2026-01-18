@@ -13,7 +13,7 @@ import Navigation from '../components/common/Navigation.svelte';
 const title = "DadDeck - The Ultimate White Dad Trading Card Simulator";
 const description = "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining. Grillmaster Gary, Fix-It Dad, and 50+ more cards to collect!";
 const imageURL = new URL('/og-image.png', Astro.site).href;
-const siteURL = Astro.site.href;
+const siteURL = Astro.site?.href || 'https://daddeck.com';
 
 // WebApplication structured data for rich Google results
 const webApplicationSchema = {

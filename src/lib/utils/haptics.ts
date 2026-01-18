@@ -12,28 +12,18 @@ import type { Rarity } from '@/types';
 /**
  * Haptic pattern presets for different game events
  */
-export enum HapticPattern {
-  /** Subtle tap feedback */
-  TAP = [10],
-  /** Card reveal */
-  CARD_REVEAL = [20],
-  /** Rare card reveal */
-  RARE_REVEAL = [30, 50, 30],
-  /** Epic card reveal */
-  EPIC_REVEAL = [40, 70, 40, 70, 40],
-  /** Legendary card reveal */
-  LEGENDARY_REVEAL = [50, 100, 50, 100, 50, 100, 50],
-  /** Mythic card reveal (maximum impact) */
-  MYTHIC_REVEAL = [100, 150, 100, 150, 100, 150, 100, 150, 100],
-  /** Pack tear open */
-  PACK_OPEN = [80, 50, 80],
-  /** Success feedback */
-  SUCCESS = [50, 30, 50],
-  /** Error feedback */
-  ERROR = [30, 20, 30, 20, 30],
-  /** Achievement unlock */
-  ACHIEVEMENT = [20, 40, 20, 40, 20, 40, 20],
-}
+export const HAPTIC_PATTERNS = {
+  tap: [10],
+  cardReveal: [20],
+  rareReveal: [30, 50, 30],
+  epicReveal: [40, 70, 40, 70, 40],
+  legendaryReveal: [50, 100, 50, 100, 50, 100, 50],
+  mythicReveal: [100, 150, 100, 150, 100, 150, 100, 150, 100],
+  packOpen: [80, 50, 80],
+  success: [50, 30, 50],
+  error: [30, 20, 30, 20, 30],
+  achievement: [20, 40, 20, 40, 20, 40, 20],
+} as const;
 
 /**
  * Check if vibration API is supported
@@ -69,7 +59,7 @@ export function vibrate(pattern: number | number[]): boolean {
  * @returns true if vibration was triggered
  */
 export function vibratePackOpen(): boolean {
-  return vibrate(HapticPattern.PACK_OPEN);
+  return vibrate([...HAPTIC_PATTERNS.packOpen]);
 }
 
 /**
@@ -86,15 +76,15 @@ export function vibrateCardReveal(rarity: Rarity): boolean {
   // Select pattern based on rarity
   switch (rarity) {
     case 'uncommon':
-      return vibrate(HapticPattern.CARD_REVEAL);
+      return vibrate([...HAPTIC_PATTERNS.cardReveal]);
     case 'rare':
-      return vibrate(HapticPattern.RARE_REVEAL);
+      return vibrate([...HAPTIC_PATTERNS.rareReveal]);
     case 'epic':
-      return vibrate(HapticPattern.EPIC_REVEAL);
+      return vibrate([...HAPTIC_PATTERNS.epicReveal]);
     case 'legendary':
-      return vibrate(HapticPattern.LEGENDARY_REVEAL);
+      return vibrate([...HAPTIC_PATTERNS.legendaryReveal]);
     case 'mythic':
-      return vibrate(HapticPattern.MYTHIC_REVEAL);
+      return vibrate([...HAPTIC_PATTERNS.mythicReveal]);
     default:
       return false;
   }
@@ -105,7 +95,7 @@ export function vibrateCardReveal(rarity: Rarity): boolean {
  * @returns true if vibration was triggered
  */
 export function vibrateTap(): boolean {
-  return vibrate(HapticPattern.TAP);
+  return vibrate([...HAPTIC_PATTERNS.tap]);
 }
 
 /**
@@ -113,24 +103,21 @@ export function vibrateTap(): boolean {
  * @returns true if vibration was triggered
  */
 export function vibrateSuccess(): boolean {
-  return vibrate(HapticPattern.SUCCESS);
-}
+  return vibrate([...HAPTIC_PATTERNS.success]);}
 
 /**
  * Vibrate for error events
  * @returns true if vibration was triggered
  */
 export function vibrateError(): boolean {
-  return vibrate(HapticPattern.ERROR);
-}
+  return vibrate([...HAPTIC_PATTERNS.error]);}
 
 /**
  * Vibrate for achievement unlocks
  * @returns true if vibration was triggered
  */
 export function vibrateAchievement(): boolean {
-  return vibrate(HapticPattern.ACHIEVEMENT);
-}
+  return vibrate([...HAPTIC_PATTERNS.achievement]);}
 
 /**
  * Cancel any ongoing vibration
