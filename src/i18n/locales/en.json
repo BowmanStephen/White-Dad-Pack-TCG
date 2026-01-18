@@ -499,5 +499,21 @@
     "contact_content": "Have questions about these Terms? Want to report a violation? Need to tell us we're wrong (we're not, but we'll listen)? Reach out to us at: DadDeck™ Legal Team - legal@daddeck.tcg (Note: This is a hypothetical contact email for legal inquiries. In production, replace with actual contact method.) We'll respond to legitimate inquiries within a reasonable time. Just don't expect us to understand TikTok references - we're trying our best.",
     "back_home": "Back to Home",
     "dad_joke": "Why did the dad agree to the Terms of Service without reading them? Because he trusts his gut, just like when he buys a used car from a guy named Dave!"
+  },
+  "cookies": {
+    "title": "🍪 Cookie Consent",
+    "description": "We use cookies to save your card collection and game preferences. No ads, no tracking, just dad cards.",
+    "privacyLink": "Learn more in our Privacy Policy",
+    "acceptAll": "Accept All",
+    "decline": "Decline",
+    "customize": "Customize",
+    "savePreferences": "Save Preferences",
+    "cancel": "Cancel",
+    "necessary": "Necessary Cookies",
+    "necessaryDesc": "Required for the game to function (localStorage)",
+    "analytics": "Analytics Cookies",
+    "analyticsDesc": "Help us improve the game (anonymous usage stats)",
+    "marketing": "Marketing Cookies",
+    "marketingDesc": "For future features (not currently used)"
   }
 }

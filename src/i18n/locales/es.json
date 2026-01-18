@@ -407,5 +407,21 @@
     "contact_content": "¿Tienes preguntas sobre esta política de privacidad o cómo manejamos los datos? ¿Quieres reportar una preocupación de privacidad? Puedes contactarnos en: Equipo de Privacidad DadDeck™ - privacy@daddeck.tcg (Nota: Este es un correo de contacto hipotético para la política de privacidad. En producción, reemplazar con el método de contacto real.) Responderemos a consultas de privacidad legítimas en un tiempo razonable. Aunque, como un papá respondiendo correos, podría tomarnos unos días.",
     "back_home": "Volver al Inicio",
     "dad_joke": "¿Por qué el papá leyó toda la política de privacidad? ¡Porque no quería sorpresas, igual que cuando revisa el menú del restaurante antes de pedir!"
+  },
+  "cookies": {
+    "title": "🍪 Consentimiento de Cookies",
+    "description": "Usamos cookies para guardar tu colección de cartas y preferencias del juego. Sin anuncios, sin rastreo, solo cartas de papá.",
+    "privacyLink": "Aprende más en nuestra Política de Privacidad",
+    "acceptAll": "Aceptar Todo",
+    "decline": "Declinar",
+    "customize": "Personalizar",
+    "savePreferences": "Guardar Preferencias",
+    "cancel": "Cancelar",
+    "necessary": "Cookies Necesarias",
+    "necessaryDesc": "Requerido para que el juego funcione (localStorage)",
+    "analytics": "Cookies de Analíticas",
+    "analyticsDesc": "Ayúdanos a mejorar el juego (estadísticas de uso anónimas)",
+    "marketing": "Cookies de Marketing",
+    "marketingDesc": "Para características futuras (no usado actualmente)"
   }
 }
