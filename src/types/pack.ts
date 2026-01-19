@@ -231,7 +231,7 @@ export interface TearAnimationConfig {
 }
 
 // Tear Animation Configurations (PACK-027)
-// Distribution: 60% standard, 25% slow, 15% explosive
+// Distribution: 85% standard, 10% slow, 5% explosive (PACK-VFX-010: 10% slow tear)
 export const TEAR_ANIMATION_CONFIG: Record<TearAnimation, TearAnimationConfig> = {
   standard: {
     name: 'Standard Tear',
@@ -249,7 +249,7 @@ export const TEAR_ANIMATION_CONFIG: Record<TearAnimation, TearAnimationConfig> =
   slow: {
     name: 'Slow-Mo Tear',
     description: 'Dramatic slow-motion tear',
-    duration: 2500, // 2.5s total
+    duration: 2000, // 2.0s total (PACK-VFX-010)
     phaseMultipliers: {
       appear: 1.5,
       glow: 2.0, // Longer glow for anticipation
@@ -278,10 +278,10 @@ export const TEAR_ANIMATION_CONFIG: Record<TearAnimation, TearAnimationConfig> =
 export function selectRandomTearAnimation(): TearAnimation {
   const random = Math.random();
 
-  // 60% standard, 25% slow, 15% explosive
-  if (random < 0.60) {
+  // 85% standard, 10% slow, 5% explosive (PACK-VFX-010: 10% slow tear)
+  if (random < 0.85) {
     return 'standard';
-  } else if (random < 0.85) {
+  } else if (random < 0.95) {
     return 'slow';
   } else {
     return 'explosive';
