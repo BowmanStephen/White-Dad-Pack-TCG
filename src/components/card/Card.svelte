@@ -250,7 +250,8 @@
       case 'mythic':
         return `0 0 30px ${baseGlow}, 0 0 60px ${baseGlow}55, 0 0 90px ${baseGlow}33, inset 0 0 30px rgba(0,0,0,0.5)`;
       case 'epic':
-        return `0 0 25px ${baseGlow}, 0 0 50px ${baseGlow}55, inset 0 0 25px rgba(0,0,0,0.5)`;
+        // PACK-VFX-019: Epic glow intensity set to 1.3x (32.5px, 65px, 32.5px inset)
+        return `0 0 32.5px ${baseGlow}, 0 0 65px ${baseGlow}55, inset 0 0 32.5px rgba(0,0,0,0.5)`;
       case 'rare':
         return `0 0 20px ${baseGlow}, 0 0 40px ${baseGlow}55, inset 0 0 20px rgba(0,0,0,0.5)`;
       default:
