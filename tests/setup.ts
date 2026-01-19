@@ -29,10 +29,8 @@ const localStorageMock = (() => {
 
 Object.defineProperty(globalThis, 'localStorage', {
   value: localStorageMock,
+  writable: true,
 });
-
-// Also add to global for convenience
-(global as any).localStorage = localStorageMock;
 
 // Mock IndexedDB for tests
 const indexedDBMock = {

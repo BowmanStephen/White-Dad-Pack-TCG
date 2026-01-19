@@ -1,9 +1,10 @@
 import { getAllCards, getCardsByRarity } from '../src/lib/cards/database';
+import type { Rarity } from '../src/types';
 
 const cards = getAllCards();
 console.log(`Total cards: ${cards.length}`);
 
-const rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+const rarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 
 for (const rarity of rarities) {
   const rarityCards = getCardsByRarity(rarity);

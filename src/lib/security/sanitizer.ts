@@ -59,7 +59,7 @@ export function sanitizeHTML(input: string, strict: boolean = false): string {
   }
 
   const config = strict
-    ? { ALLOWED_TAGS: [], ALLOWED_ATTR: [] } // Strip ALL HTML in strict mode
+    ? { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true } // Strip ALL HTML but keep text content in strict mode
     : SANITIZE_CONFIG;
 
   return DOMPurify.sanitize(input, config);

@@ -6,7 +6,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working in this
 **Type:** Satirical Trading Card Game (TCG) Pack-Opening Simulator
 **Status:** Stable & Production Ready (MVP Scope)
 **Version:** 2.2.0
-**Last Updated:** January 18, 2026 (MVP Scope Reduction Complete)
+**Last Updated:** January 19, 2026
+
+---
+
+## 👤 Developer Profile
+
+**About Stephen:**
+- **Background:** UX Designer transitioning to development with AI assistance
+- **Learning Style:** Voice-first (SuperWhisper), prefers simple explanations over technical jargon
+- **Communication Style:** Casual, friendly, asks lots of questions to understand
+- **Superpower:** Understands users and design thinking - needs help translating that into code
+- **Goal:** Learn development through "vibe coding" with AI
+
+**How to Work with Stephen:**
+1. **Speak conversationally** - like talking to a colleague, not a manual
+2. **Use design analogies** - connect technical things to UX concepts he knows
+3. **Check understanding** - ask "Does that make sense?" often
+4. **Celebrate progress** - acknowledge wins, he's learning!
+5. **Be patient** - He's smart about design, new to code
+6. **Explain the "why"** - before showing the "how"
+
+**What He Needs From You:**
+- Clear explanations before implementation
+- Design-first thinking (UX → code)
+- Context about why we're doing something
+- Recognition that he's learning, not failing
+
+**Communication Preferences:**
+- ✅ "Let's think about the user journey here..."
+- ✅ "This is like Figma components, but for code..."
+- ✅ "Imagine this as a flow in a design tool..."
+- ❌ "Just mutate the state directly" (without context)
+- ❌ Overwhelming technical jargon upfront
 
 ---
 
@@ -1814,10 +1846,394 @@ pack.set({ ...p, cards: [...p.cards, newCard] });
 
 ---
 
-**Last updated:** January 18, 2026 (Type File Split Migration Complete)
+**Last updated:** January 19, 2026
 **Recent Updates:**
-- **Type System Refactor** (Jan 18, 2026): Split monolithic `index.ts` (~3,096 lines) into modular feature files. `index.ts` is now a barrel file (~106 lines) that re-exports all types. All imports via `@/types` continue to work (backward compatible).
+- **Developer Profile Added** (Jan 19, 2026): Personalized guidance for Stephen's UX background and learning style
+- **Type System Refactor** (Jan 18, 2026): Split monolithic `index.ts` (~3,096 lines) into modular feature files
 - **MVP Scope Reduction** (Jan 18, 2026): Focused on 2 core features (pack opening + collection management)
+
+---
+
+## 🎨 Design-to-Code Translation Guide
+
+### For UX Designers: How to Think in Code
+
+**Components = Design System Elements**
+```
+Figma Component  →  Svelte Component (.svelte)
+Design Tokens    →  Tailwind Config / Constants
+Variant Props    →  Component Props
+Auto-Layout      →  Flexbox / Grid
+Prototypes       →  State Machine (PackState)
+Smart Animate    →  Svelte Transitions
+```
+
+**Real-World Translations:**
+
+| UX Concept | Code Equivalent | Example in DadDeck |
+|------------|----------------|-------------------|
+| **Design System** | Component Library | `src/components/` - reusable UI elements |
+| **Component Props** | Function Parameters | `<Card {rarity} {name} />` - passes data in |
+| **State** | User Progress | `PackState` - where user is in the flow |
+| **Prototype** | User Flow | `idle → generating → pack_animate → results` |
+| **Variables** | Design Tokens | `RARITY_CONFIG` - colors, values |
+| **Responsive** | Breakpoints | `mobile: < tablet: < desktop:` in Tailwind |
+
+**Understanding Pack Opening as a User Flow:**
+
+Think of it like a Figma prototype with screens:
+
+```
+Screen 1: [Closed Pack]      → PackState: 'idle'
+Screen 2: [Pack Opening]     → PackState: 'pack_animate'
+Screen 3: [Cards Revealing]  → PackState: 'revealing'
+Screen 4: [Results Grid]     → PackState: 'results'
+```
+
+Each state shows different UI - just like showing/hiding layers in Figma!
+
+---
+
+## 🧠 Mental Models for Understanding Code
+
+### Model 1: Stores = Global Variables
+
+**Think of stores as variables that any component can read/write:**
+
+```typescript
+// This is like a global variable in your design system
+const currentPack = atom<Pack | null>(null);
+
+// Any component can access it
+const pack = currentPack.get();  // Read
+currentPack.set(newPack);        // Write
+```
+
+**Real-world analogy:** Like a shared whiteboard where anyone can write, and everyone sees updates instantly.
+
+### Model 2: Components = Figma Components with Smart Features
+
+**Svelte components have three parts:**
+
+```svelte
+<!-- 1. PROPS: Like Figma component inputs -->
+<script lang="ts">
+  // These are like your Figma component properties panel
+  export let rarity: Rarity;     // Input: which rarity to show
+  export let name: string;        // Input: card name
+  export let onClick: () => void; // Input: what happens on click
+
+  // 2. LOCAL STATE: Like hidden prototype layers
+  let isHovered = $state(false);  // Only this component knows
+</script>
+
+<!-- 3. TEMPLATE: Like your Figma design layer -->
+<div class="card" class:hovered={isHovered}>
+  <h2>{name}</h2>
+</div>
+
+<!-- 4. STYLES: Like Figma properties panel -->
+<style>
+  .card {
+    padding: 1rem;        /* Like "Auto Layout" spacing */
+    border-radius: 8px;   /* Like "Corner radius" */
+    transition: all 0.3s; /* Like "Smart Animate" timing */
+  }
+</style>
+```
+
+### Model 3: TypeScript = Design System Documentation
+
+**TypeScript is just documentation that the computer can read:**
+
+```typescript
+// This documents what a Card looks like
+interface Card {
+  id: string;           // Required: unique identifier
+  name: string;         // Required: display name
+  rarity: Rarity;       // Required: one of 6 options
+  stats?: CardStats;    // Optional: might not have stats
+}
+
+// Now the computer checks that you're using it correctly!
+const card: Card = {
+  id: 'dad_001',
+  name: 'BBQ Dad',
+  rarity: 'rare',  // ✅ Correct
+  // rarity: 'purple'  // ❌ Error! Not a valid rarity
+};
+```
+
+**Think of it as:** Figma's "Design Properties" panel but enforced by the computer.
+
+---
+
+## 🚀 Quick Start for New Features
+
+### The "Design First" Approach
+
+**Step 1: Think in UX (You're great at this!)**
+```
+User Story: "As a collector, I want to search my cards so I can find favorites"
+User Flow: Collection → Type in search → See filtered results → Click card
+Edge Cases: No results found, empty collection, special characters
+```
+
+**Step 2: Design the States**
+```
+State 1: Empty search - Show all cards
+State 2: Typing - Show filtered cards
+State 3: No results - Show "No cards found" message
+State 4: Loading - Show skeleton
+```
+
+**Step 3: Identify the Components**
+```
+- SearchInput.svelte (new) - Text input with clear button
+- Gallery.svelte (existing) - Needs to accept filtered cards
+- CollectionManager.svelte (existing) - Needs search state
+```
+
+**Step 4: Define the Data Shape**
+```typescript
+// What does a search query look like?
+interface SearchQuery {
+  text: string;           // What user typed
+  filters: RarityFilter[] // Active filters
+}
+
+// What does filtered data look like?
+interface SearchResult {
+  cards: Card[];
+  totalCount: number;
+  hasResults: boolean;
+}
+```
+
+**Step 5: Implement (with Claude's help!)**
+```typescript
+// Store: src/stores/search.ts
+import { atom } from 'nanostores';
+
+export const searchQuery = atom<string>('');
+export const activeFilters = atom<Rarity[]>([]);
+
+// Computed: auto-filters when query changes
+export const searchResults = computed(
+  [searchQuery, activeFilters],
+  (query, filters) => filterCards(query, filters)
+);
+```
+
+**This is how you already think!** You just need to learn the code syntax for expressing it.
+
+---
+
+## 🎓 Learning Path for UX Designers
+
+### Week 1: Understand the Architecture
+- [ ] Read `src/types/index.ts` - See what data exists (like design system documentation)
+- [ ] Open `src/stores/pack.ts` - See how state flows (like prototype connections)
+- [ ] Browse `src/components/` - See what components exist (like Figma components)
+- [ ] Run `bun run dev` - Open localhost:4321 and explore the site
+
+### Week 2: Make Small Changes
+- [ ] Change a color in `tailwind.config.mjs`
+- [ ] Update text in `src/pages/index.astro`
+- [ ] Modify button styles in a component
+- [ ] Add a console.log to see state changes
+
+### Week 3: Build Something Simple
+- [ ] Create a new component (copy an existing one)
+- [ ] Add it to a page
+- [ ] Pass it different props
+- [ ] See it update in real-time
+
+### Week 4: Understand Data Flow
+- [ ] Trace how a pack opens (use console.log)
+- [ ] See how stores update
+- [ ] Watch components re-render
+- [ ] Understand the "reactive" concept
+
+---
+
+## 💡 Design-to-Code Cheat Sheet
+
+### Common UX Tasks → Code Solutions
+
+| UX Task | How to Do It |
+|---------|--------------|
+| **Create a reusable element** | Make a Svelte component in `src/components/` |
+| **Show/hide something** | Use `$state` variable: `{#if show} <div /> {/if}` |
+| **Loop through items** | Use `{#each}`: `{#each cards as card} <Card {card} /> {/each}` |
+| **Handle click** | Add `on:click={handler}` to element |
+| **Pass data to component** | Use props: `export let data;` then `<Component {data} />` |
+| **Share state across pages** | Create a Nanostore in `src/stores/` |
+| **Style something** | Use Tailwind classes: `class="p-4 bg-blue-500 rounded-lg"` |
+| **Make it responsive** | Use breakpoints: `class="p-2 md:p-4 lg:p-6"` |
+| **Animate a transition** | Use Svelte transitions: `transition:fade={{ duration: 300 }}` |
+| **Load data asynchronously** | Use `await` with `{#await}` block |
+
+### Typography Analogy: Code = Design Language
+
+**HTML is like Structure:**
+```
+<div class="card">      ← Container frame
+  <h2>Card Name</h2>    ← Heading text style
+  <p>Description</p>    ← Body text style
+</div>
+```
+
+**CSS (Tailwind) is like Visual Properties:**
+```
+p-4         ← Padding: 16px (Auto Layout spacing)
+bg-white    ← Fill: White (Background color)
+rounded-lg  ← Corner Radius: 8px
+shadow-md   ← Drop Shadow: Medium
+```
+
+**JavaScript/TypeScript is like Prototype Logic:**
+```
+if (userClicksButton) {  ← Prototype condition
+  showNextScreen();      ← Go to next frame
+}
+```
+
+---
+
+## 🔍 Code Reading Guide for Designers
+
+### How to Read a Svelte Component
+
+**Example: Understanding `Card.svelte`**
+
+```svelte
+<script lang="ts">
+  // 1. INPUTS: What data does this component need?
+  export let card: Card;           // Required: card data
+  export let onClick?: () => void; // Optional: click handler
+
+  // 2. LOCAL STATE: What does this component track?
+  let isHovered = $state(false);   // Is user hovering?
+
+  // 3. COMPUTED: What derived values exist?
+  const rarityColor = $derived(
+    RARITY_CONFIG[card.rarity].color
+  );
+</script>
+
+<!-- 4. TEMPLATE: What does it look like? -->
+<div
+  class="card"
+  class:hovered={isHovered}        <!-- Apply hover style -->
+  style="border-color: {rarityColor}" <!-- Dynamic color -->
+  on:click={() => onClick?.()}     <!-- Handle click -->
+>
+  <h2>{card.name}</h2>              <!-- Display data -->
+</div>
+
+<style>
+  /* 5. STYLES: Component-specific design tokens */
+  .card {
+    padding: 1rem;
+    transition: all 0.3s;            /* Animation timing */
+  }
+  .hovered {
+    transform: scale(1.05);          /* Hover effect */
+  }
+</style>
+```
+
+**Reading Strategy:**
+1. Start at the `<script>` tag - see what data it needs (inputs)
+2. Look at the HTML - see what it renders (output)
+3. Check the `<style>` - see how it looks (visuals)
+4. Trace the flow - data in → processing → UI out
+
+---
+
+## 🎯 Quick Decision Guide
+
+### "Should I use X or Y?" Common Questions
+
+**Q: Should this be in a store or local state?**
+- **Store:** Multiple components need it, persists across navigation
+- **Local:** Only this component needs it, resets on navigation
+
+**Q: Should this be a .astro or .svelte component?**
+- **.astro:** Static content, SEO-critical, no interactivity needed
+- **.svelte:** User interaction, animations, state changes
+
+**Q: Should I create a new component or reuse existing?**
+- **New:** Unique behavior, different visual design, complex logic
+- **Reuse:** Same behavior, just different content/data
+
+**Q: How do I know if my types are correct?**
+- Run `bun run build` - TypeScript will tell you!
+- Look for red squiggly lines in VSCode
+- Check if `@/types` has what you need
+
+**Q: My component isn't updating!**
+- Did you use `$state` for local variables?
+- Are you using immutable updates? (spread operator: `{...obj}`)
+- Did you add `client:load` or `client:idle` directive?
+
+---
+
+## 🆘 Emergency Troubleshooting
+
+### "I Just Want It To Work!" Quick Fixes
+
+**Problem:** "Nothing happens when I click"
+```typescript
+// Quick check: Is the event handler attached?
+<button on:click={doSomething}>Click me</button>
+
+// Add logging to debug:
+function doSomething() {
+  console.log('Button clicked!'); // Check console
+  // ... rest of code
+}
+```
+
+**Problem:** "My changes aren't showing up"
+```bash
+# Try these in order:
+1. Hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)
+2. Restart dev server: Stop terminal, run `bun run dev` again
+3. Clear browser cache: DevTools → Application → Clear storage
+4. Check browser console for errors
+```
+
+**Problem:** "TypeScript is yelling at me"
+```typescript
+// Quick fix: Use 'any' to unblock (not recommended long-term)
+let myData: any = problematicData;
+
+// Better fix: Actually type it properly
+interface MyData {
+  id: string;
+  name: string;
+}
+let myData: MyData = problematicData;
+```
+
+**Problem:** "I don't know where to start"
+```bash
+# 1. Pick a component you want to understand
+cat src/components/pack/PackOpener.svelte
+
+# 2. Add console.log to see what's happening
+console.log('Current pack:', pack);
+
+# 3. Make a small change (like text color)
+# 4. See it update in browser
+# 5. Celebrate! You just coded 💪
+```
+
+---
+
+**Last updated:** January 19, 2026
 
 ---
 

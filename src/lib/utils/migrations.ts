@@ -123,7 +123,7 @@ export function createMigrationEncoder() {
         }
 
         // Handle legacy versioned format
-        let data = parsed;
+        let data: unknown = parsed;
         if (typeof parsed === 'object' && parsed !== null && 'version' in parsed && 'data' in parsed) {
           data = (parsed as { data: unknown }).data;
         }
@@ -167,7 +167,7 @@ export function importCollection(
     }
 
     // Handle versioned format
-    let data = parsed;
+    let data: unknown = parsed;
     if (typeof parsed === 'object' && parsed !== null && 'version' in parsed && 'data' in parsed) {
       data = (parsed as { data: unknown }).data;
     }

@@ -1,7 +1,7 @@
-import { generatePacks } from '../src/lib/pack/generator';
+import { generatePack } from '../src/lib/pack/generator';
 
 const SAMPLE_SIZE = 10000;
-const packs = generatePacks(SAMPLE_SIZE);
+const packs = Array.from({ length: SAMPLE_SIZE }, () => generatePack());
 
 let totalHolos = 0;
 let totalCards = 0;

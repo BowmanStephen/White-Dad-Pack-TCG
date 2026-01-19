@@ -1,4 +1,4 @@
-import type { SavedSearchPreset } from '../../types';
+import type { SavedSearchPreset, DadType } from '../../types';
 
 /**
  * Saved search presets for quick filtering
@@ -93,7 +93,7 @@ export const SAVED_SEARCH_PRESETS: SavedSearchPreset[] = [
       searchTerm: '',
       rarity: null,
       holoVariants: new Set(),
-      selectedTypes: new Set(['BBQ_DAD']),
+      selectedTypes: new Set(['BBQ_DAD' as DadType]),
       statRanges: {
         grillSkill: { min: 75, max: 100 },
       },
@@ -152,7 +152,7 @@ export const SAVED_SEARCH_PRESETS: SavedSearchPreset[] = [
       searchTerm: '',
       rarity: null,
       holoVariants: new Set(),
-      selectedTypes: new Set(['TECH_DAD']),
+      selectedTypes: new Set(['TECH_DAD' as DadType]),
       statRanges: {
         remoteControl: { min: 75, max: 100 },
       },

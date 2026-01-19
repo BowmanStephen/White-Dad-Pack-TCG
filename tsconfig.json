@@ -8,9 +8,21 @@
       "@lib/*": ["src/lib/*"],
       "@stores/*": ["src/stores/*"],
       "@data/*": ["src/data/*"],
+      "@types/*": ["src/types/*"],
       "@mocks/*": ["tests/mocks/*"]
     }
   },
-  "include": [".astro/types.d.ts", "src/types/**/*.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules", "**/*.stories.ts", "**/*.stories.tsx"]
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "tests/**/*",
+    "astro.config.mjs"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "src/_archived/**/*"
+  ]
 }

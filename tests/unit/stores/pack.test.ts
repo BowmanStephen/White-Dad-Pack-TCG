@@ -397,14 +397,15 @@ describe('Pack Store', () => {
   });
 
   describe('completePackAnimation', () => {
-    it('should transition to cards_ready state', async () => {
+    it('should transition to results state', async () => {
       // Setup: pack is in pack_animate state
       await openNewPack();
       expect(packState.get()).toBe('pack_animate');
 
+      // In MVP, completePackAnimation goes straight to results
       completePackAnimation();
 
-      expect(packState.get()).toBe('cards_ready');
+      expect(packState.get()).toBe('results');
     });
 
     it('should trigger haptic feedback', async () => {
@@ -459,7 +460,8 @@ describe('Pack Store', () => {
   describe('revealCard', () => {
     beforeEach(async () => {
       await openNewPack();
-      packState.set('cards_ready');
+      // In MVP, cards are already revealed after opening
+      // This test is for compatibility with old revealing state machine
     });
 
     it('should reveal card at index', () => {
@@ -471,10 +473,13 @@ describe('Pack Store', () => {
       expect(pack?.cards[0].isRevealed).toBe(true);
     });
 
-    it('should transition to revealing state', () => {
+    it('should mark card as revealed in revealedCards set', () => {
+      // Verify revealCard marks the card as revealed
+      const beforeReveal = revealedCards.get().size;
       revealCard(0);
-
-      expect(packState.get()).toBe('revealing');
+      const afterReveal = revealedCards.get().size;
+      expect(afterReveal).toBeGreaterThanOrEqual(beforeReveal);
+      expect(revealedCards.get().has(0)).toBe(true);
     });
 
     it('should track analytics event', () => {
@@ -834,17 +839,8 @@ describe('Pack Store', () => {
       await promise;
       expect(packState.get()).toBe('pack_animate');
 
-      // Complete animation
+      // Complete animation - goes straight to results in MVP vertical slice
       completePackAnimation();
-      expect(packState.get()).toBe('cards_ready');
-
-      // Reveal cards
-      revealCard(0);
-      expect(packState.get()).toBe('revealing');
-
-      // Next card
-      nextCard();
-      nextCard(); // Last card
       expect(packState.get()).toBe('results');
     });
 

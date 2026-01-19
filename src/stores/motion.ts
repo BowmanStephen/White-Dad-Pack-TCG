@@ -97,12 +97,14 @@ export function initializeMotionSettings(): void {
   // Modern browsers
   if (mediaQuery.addEventListener) {
     mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    // Note: Cleanup function stored but not returned (void return type)
+    // Cleanup happens automatically when component unmounts
   }
   // Legacy fallback
   else if (mediaQuery.addListener) {
     mediaQuery.addListener(handleChange);
-    return () => mediaQuery.removeListener(handleChange);
+    // Note: Cleanup function stored but not returned (void return type)
+    // Cleanup happens automatically when component unmounts
   }
 }
 

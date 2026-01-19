@@ -38,11 +38,11 @@ let modalOpenTime: Record<string, number> = {};
 /**
  * Get value from localStorage, with optional validation
  */
-function getStoredValue<T>(
+function getStoredValue<T extends string>(
   key: string,
-  defaultValue: T,
+  defaultValue: T | null,
   validator?: (value: string) => value is T
-): T {
+): T | null {
   if (typeof window === 'undefined') return defaultValue;
 
   const saved = localStorage.getItem(key);
@@ -65,11 +65,12 @@ function getStoredBoolean(key: string, defaultValue: boolean): boolean {
 
 // Initialize quality from localStorage or auto-detect
 const getInitialQuality = (): AnimationQuality => {
-  return getStoredValue<AnimationQuality>(
+  const saved = getStoredValue<AnimationQuality>(
     QUALITY_KEY,
-    'auto',
+    null,
     (value): value is AnimationQuality => ['auto', 'high', 'medium', 'low'].includes(value)
   );
+  return saved ?? 'auto';
 };
 
 export const $animationQuality = atom<AnimationQuality>(getInitialQuality());
@@ -183,11 +184,12 @@ export function toggleScreenShake(): void {
 
 // Cinematic mode enabled state
 const getInitialCinematicMode = (): CinematicMode => {
-  return getStoredValue<CinematicMode>(
+  const saved = getStoredValue<CinematicMode>(
     CINEMATIC_MODE_KEY,
-    'normal',
+    null,
     (value): value is CinematicMode => value === 'cinematic' || value === 'normal'
   );
+  return saved ?? 'normal';
 };
 
 export const $cinematicMode = atom<CinematicMode>(getInitialCinematicMode());
@@ -340,11 +342,12 @@ export const PARTICLE_PRESETS: Record<ParticlePreset, {
 
 // Particle preset state
 const getInitialParticlePreset = (): ParticlePreset => {
-  return getStoredValue<ParticlePreset>(
+  const saved = getStoredValue<ParticlePreset>(
     PARTICLE_PRESET_KEY,
-    'high',
+    null,
     (value): value is ParticlePreset => ['low', 'medium', 'high', 'ultra'].includes(value as ParticlePreset)
   );
+  return saved ?? 'high';
 };
 
 export const $particlePreset = atom<ParticlePreset>(getInitialParticlePreset());

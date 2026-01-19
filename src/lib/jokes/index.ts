@@ -20,7 +20,7 @@ export function loadJokes(): Record<DadType, string[]> {
     return jokesCache;
   }
 
-  jokesCache = (jokesDatabase as JokesDatabase).jokes;
+  jokesCache = (jokesDatabase as unknown as JokesDatabase).jokes;
   return jokesCache;
 }
 

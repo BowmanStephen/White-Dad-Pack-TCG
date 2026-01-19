@@ -182,17 +182,15 @@ export async function sendStreakNotification(warning: StreakWarning): Promise<bo
   }
 
   try {
-    const notification = new Notification('🎮 Streak About to Expire!', {
+    const notificationOptions: NotificationOptions = {
       body: warning.message,
       icon: '/images/packs/closed-pack.png',
       badge: '/images/packs/closed-pack.png',
       tag: 'streak-warning',
       requireInteraction: true,
-      actions: [
-        { action: 'open', title: 'Open DadDeck' },
-        { action: 'dismiss', title: 'Dismiss' }
-      ]
-    });
+    };
+    
+    const notification = new Notification('🎮 Streak About to Expire!', notificationOptions);
 
     // Handle notification actions
     notification.onclick = () => {

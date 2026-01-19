@@ -110,11 +110,11 @@ export class FilterManager {
     // Apply abilities filter
     if (this.state.abilitiesMode === 'hasAbilities') {
       filtered = filtered.filter(
-        card => card.card.abilities && card.card.abilities.length > 0
+        card => card.abilities && card.abilities.length > 0
       );
     } else if (this.state.abilitiesMode === 'noAbilities') {
       filtered = filtered.filter(
-        card => !card.card.abilities || card.card.abilities.length === 0
+        card => !card.abilities || card.abilities.length === 0
       );
     }
 

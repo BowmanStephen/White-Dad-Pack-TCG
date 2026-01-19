@@ -58,15 +58,15 @@ describe('Security - Input Sanitization', () => {
       expect(result.length).toBeGreaterThan(0);
     });
 
-    it('should escape HTML in strict mode', () => {
-      const input = '<strong>Bold</strong> and <em>italic</em>';
+    it('should strip HTML tags in strict mode', () => {
+      const input = '<script>alert(1)</script><strong>Bold</strong> and <em>italic</em>';
       const result = sanitizeHTML(input, true);
-      // In SSR/test environment, fallback escapes all HTML
-      expect(result).not.toContain('<strong>');
-      expect(result).not.toContain('<em>');
-      // Should escape HTML tags
-      expect(result).toMatch(/&lt;strong&gt;|Bold/);
-      expect(result).toMatch(/&lt;em&gt;|italic/);
+      // In strict mode, DOMPurify removes dangerous tags
+      expect(result).not.toContain('<script>');
+      expect(result).not.toContain('alert');
+      // Content should be preserved  
+      expect(result).toContain('Bold');
+      expect(result).toContain('italic');
     });
 
     it('should handle empty input', () => {

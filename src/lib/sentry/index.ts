@@ -10,7 +10,7 @@
 import * as Sentry from '@sentry/astro';
 
 const SENTRY_DSN = import.meta.env.PUBLIC_SENTRY_DSN;
-const ENVIRONMENT = import.meta.env.PUBLIC_VERCEL_ENV || import.meta.env.MODE || 'development';
+const ENVIRONMENT: string = import.meta.env.PUBLIC_VERCEL_ENV || import.meta.env.MODE || 'development';
 const SAMPLE_RATE = ENVIRONMENT === 'production' ? 0.1 : 1.0; // 10% sampling in production
 
 /**
@@ -54,8 +54,8 @@ export function initSentry() {
 
       // Filter out sensitive data
       beforeSend(event) {
-        // Don't send in development
-        if (ENVIRONMENT === 'development') {
+        // Don't send in development (check string value, not type)
+        if (String(ENVIRONMENT) === 'development') {
           return null;
         }
 
@@ -76,14 +76,8 @@ export function initSentry() {
         return event;
       },
 
-      // Error stack trace frames to skip
-      stackParser: (stack) => {
-        // Filter out node_modules and internal scripts
-        return stack.filter((frame) => {
-          if (!frame.filename) return false;
-          return !frame.filename.includes('node_modules');
-        });
-      },
+      // Note: stackParser removed - Sentry handles stack parsing internally
+      // Custom stack filtering can be done in beforeSend if needed
     });
 
     console.log('✅ Sentry initialized for error tracking');

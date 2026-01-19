@@ -8,7 +8,7 @@
  * @module audio/ui-sounds
  */
 
-import { playSound, getCachedAudio, muted, initAudioContext, masterVolume, sfxVolume } from '../../stores/audio';
+import { playSound, muted, initAudioContext, masterVolume, sfxVolume } from '../../stores/audio';
 
 /**
  * Play button click sound effect
@@ -18,15 +18,15 @@ export function playButtonClick(): void {
   if (muted.get()) return;
   initAudioContext();
 
-  const soundPath = '/sounds/ui/button-click.mp3';
-  const audio = getCachedAudio(soundPath);
-
+  // Create and play button click sound with reduced volume
+  const audio = new Audio('/sounds/ui/button-click.mp3');
+  
   // Button clicks should be quick and subtle
   const finalVolume = masterVolume.get() * sfxVolume.get() * 0.5;
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   audio.addEventListener('error', () => {
-    console.debug(`Button click sound not found: ${soundPath}`);
+    console.debug(`Button click sound not found`);
   });
 
   audio.addEventListener('ended', () => {
@@ -34,7 +34,7 @@ export function playButtonClick(): void {
   });
 
   audio.play().catch(() => {
-    console.debug(`Button click sound playback prevented: ${soundPath}`);
+    console.debug(`Button click sound playback prevented`);
   });
 }
 
@@ -46,15 +46,15 @@ export function playNavigationWhoosh(): void {
   if (muted.get()) return;
   initAudioContext();
 
-  const soundPath = '/sounds/ui/navigation-whoosh.mp3';
-  const audio = getCachedAudio(soundPath);
+  // Create and play navigation whoosh sound
+  const audio = new Audio('/sounds/ui/navigation-whoosh.mp3');
 
   // Navigation sounds should be noticeable but not overwhelming
   const finalVolume = masterVolume.get() * sfxVolume.get() * 0.6;
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   audio.addEventListener('error', () => {
-    console.debug(`Navigation whoosh sound not found: ${soundPath}`);
+    console.debug(`Navigation whoosh sound not found`);
   });
 
   audio.addEventListener('ended', () => {
@@ -62,7 +62,7 @@ export function playNavigationWhoosh(): void {
   });
 
   audio.play().catch(() => {
-    console.debug(`Navigation whoosh sound playback prevented: ${soundPath}`);
+    console.debug(`Navigation whoosh sound playback prevented`);
   });
 }
 
@@ -74,15 +74,15 @@ export function playAchievementChime(): void {
   if (muted.get()) return;
   initAudioContext();
 
-  const soundPath = '/sounds/ui/achievement-chime.mp3';
-  const audio = getCachedAudio(soundPath);
+  // Create and play achievement chime sound
+  const audio = new Audio('/sounds/ui/achievement-chime.mp3');
 
   // Achievement chimes should be celebratory and noticeable
   const finalVolume = masterVolume.get() * sfxVolume.get() * 0.9;
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   audio.addEventListener('error', () => {
-    console.debug(`Achievement chime sound not found: ${soundPath}`);
+    console.debug(`Achievement chime sound not found`);
   });
 
   audio.addEventListener('ended', () => {
@@ -90,7 +90,7 @@ export function playAchievementChime(): void {
   });
 
   audio.play().catch(() => {
-    console.debug(`Achievement chime sound playback prevented: ${soundPath}`);
+    console.debug(`Achievement chime sound playback prevented`);
   });
 }
 

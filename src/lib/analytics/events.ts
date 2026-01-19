@@ -351,9 +351,14 @@ export function aggregateTimingStats(options?: {
     };
   }
 
-  // Extract durations
-  const durations = packEvents.map((event) => event.data.duration);
-  const skippedCount = packEvents.filter((event) => event.data.skipped).length;
+  // Extract durations (type guard: pack_complete events have duration and skipped)
+  const durations = packEvents
+    .filter((event) => event.type === 'pack_complete' && 'duration' in event.data)
+    .map((event) => (event.data as { duration: number }).duration);
+  
+  const skippedCount = packEvents
+    .filter((event) => event.type === 'pack_complete' && 'skipped' in event.data && (event.data as { skipped: boolean }).skipped)
+    .length;
 
   // Calculate time between opens
   const timeBetweenOpens: number[] = [];
@@ -547,15 +552,15 @@ export function exportAnalyticsData(options?: {
 
   let filteredEvents = events;
 
-  if (options?.startDate) {
+  if (options?.startDate !== undefined) {
     filteredEvents = filteredEvents.filter(
-      (event) => event.timestamp >= options.startDate
+      (event) => event.timestamp >= options.startDate!
     );
   }
 
-  if (options?.endDate) {
+  if (options?.endDate !== undefined) {
     filteredEvents = filteredEvents.filter(
-      (event) => event.timestamp <= options.endDate
+      (event) => event.timestamp <= options.endDate!
     );
   }
 

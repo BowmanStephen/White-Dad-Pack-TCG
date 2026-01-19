@@ -15,6 +15,7 @@ export type AnalyticsEventType =
   | 'collection_view'     // User viewed their collection
   | 'collection_filter'   // User filtered collection
   | 'collection_sort'     // User sorted collection
+  | 'collection_cleared'  // User cleared their collection
   | 'settings_open'       // User opened settings
   | 'settings_change'     // User changed a setting
   | 'modal_open'          // User opened a modal (card inspection, share, etc.)
@@ -115,6 +116,12 @@ export interface CollectionSortEvent extends AnalyticsEvent {
   };
 }
 
+// Collection cleared event
+export interface CollectionClearedEvent extends AnalyticsEvent {
+  type: 'collection_cleared';
+  data: Record<string, never>; // No additional data needed
+}
+
 // Settings open event
 export interface SettingsOpenEvent extends AnalyticsEvent {
   type: 'settings_open';
@@ -207,6 +214,7 @@ export type AnyAnalyticsEvent =
   | CollectionViewEvent
   | CollectionFilterEvent
   | CollectionSortEvent
+  | CollectionClearedEvent
   | SettingsOpenEvent
   | SettingsChangeEvent
   | ModalOpenEvent

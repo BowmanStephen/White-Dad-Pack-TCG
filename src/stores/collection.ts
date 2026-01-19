@@ -613,9 +613,7 @@ export async function clearAllCollectionData(): Promise<{ success: boolean; erro
     // Track analytics event
     trackEvent({
       type: 'collection_cleared',
-      data: {
-        timestamp: new Date().toISOString()
-      }
+      data: {}
     });
 
     return { success: true };

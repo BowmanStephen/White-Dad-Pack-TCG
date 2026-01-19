@@ -1,4 +1,4 @@
-import { generatePacks, DEFAULT_PACK_CONFIG } from '../src/lib/pack/generator';
+import { generatePack, DEFAULT_PACK_CONFIG } from '../src/lib/pack/generator';
 
 console.log('Holo chance from config:', DEFAULT_PACK_CONFIG.holoChance);
 
@@ -7,7 +7,7 @@ const trials = 5;
 const SAMPLE_SIZE = 5000;
 
 for (let t = 0; t < trials; t++) {
-  const packs = generatePacks(SAMPLE_SIZE);
+  const packs = Array.from({ length: SAMPLE_SIZE }, () => generatePack());
   let totalHolos = 0;
   let totalCards = 0;
 
