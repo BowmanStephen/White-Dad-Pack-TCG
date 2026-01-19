@@ -181,6 +181,13 @@
   const bestRarityConfig = $derived(stats.bestCard ? RARITY_CONFIG[stats.bestCard.rarity] : null);
   const hasLegendaryOrBetter = $derived(stats.bestCard ? (stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic') : false);
 
+  // PACK-VFX-023: Screen shake intensity - mythic gets 3px shake, legendary gets 4px
+  const screenShakeIntensity = $derived(
+    stats.bestCard?.rarity === 'mythic' ? 'mythic' :
+    stats.bestCard?.rarity === 'legendary' ? 'moderate' :
+    'subtle'
+  );
+
   // Check if a card is new to the collection
   function isCardNew(cardId: string) {
     // Note: Since the pack is added to collection BEFORE results, we need to check if it's the ONLY instance
@@ -394,7 +401,7 @@
 </script>
 
 <!-- Celebration Effects -->
-<ScreenShake active={hasLegendaryOrBetter} intensity="moderate" />
+<ScreenShake active={hasLegendaryOrBetter} intensity={screenShakeIntensity} />
 <ConfettiEffects rarity={stats.bestCard.rarity} active={hasLegendaryOrBetter} />
 
 <div class="w-full max-w-4xl mx-auto pb-20 px-4">

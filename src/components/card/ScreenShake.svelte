@@ -5,7 +5,7 @@
 
   interface Props {
     active?: boolean;
-    intensity?: 'subtle' | 'moderate' | 'intense';
+    intensity?: 'subtle' | 'moderate' | 'intense' | 'mythic';
     duration?: number;
   }
 
@@ -40,6 +40,11 @@
       x: '6px',
       y: '6px',
       rotate: '3deg',
+    },
+    mythic: {
+      x: '3px',
+      y: '3px',
+      rotate: '1.5deg',
     },
   };
 

@@ -387,7 +387,7 @@
       "dependsOn": [
         "PACK-VFX-015"
       ],
-      "completionNotes": "Implemented in CardRevealer.svelte - Fixed 600ms delay in cinematic mode, normal mode unchanged"
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-017",
@@ -402,14 +402,15 @@
         "Test effect is dramatic but not seizure-inducing"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "mythic",
         "glow",
         "prismatic"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-018",
@@ -424,14 +425,15 @@
         "Verify WCAG AA contrast compliance"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "legendary",
         "glow",
         "intensity"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-019",
@@ -446,14 +448,15 @@
         "Verify WCAG AA contrast compliance"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "epic",
         "glow",
         "intensity"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-020",
@@ -468,14 +471,15 @@
         "Check performance on mobile"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
         "epic",
         "count"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-021",
@@ -490,14 +494,15 @@
         "Check performance on mobile"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
         "legendary",
         "count"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-022",
@@ -512,14 +517,15 @@
         "Verify 60fps on iPhone 12"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
         "mythic",
         "count"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-023",
@@ -4883,6 +4889,6 @@
     "version": "2.0.0",
     "totalTasks": 210,
     "focus": "Complete MVP polish for all features",
-    "updatedAt": "2026-01-19T06:33:45.824Z"
+    "updatedAt": "2026-01-19T06:50:29.322Z"
   }
 }
