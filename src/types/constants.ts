@@ -84,7 +84,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(147, 51, 234, 0.6)', // Increased opacity
     particleCount: 15,
     animationIntensity: 1.8,
-    particleVelocity: 250, // Faster for epic
+    particleVelocity: 225, // PACK-VFX-004: 225px/s for epic rarity
   },
   legendary: {
     name: 'Legendary',
