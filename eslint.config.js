@@ -32,6 +32,7 @@ export default [
       'test-*.mjs',
       'vitest.config.mjs',
       'playwright.config.ts',
+      'playwright-report/**',
       '**/*.stories.ts',
       '**/*.stories.tsx',
       '.storybook/**/*',

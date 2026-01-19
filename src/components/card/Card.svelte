@@ -269,6 +269,27 @@
   // Hover state tracking
   let isHovered = $state(false);
 
+  // PACK-VFX-024: Track card reveal state for flash effect
+  let wasFlipped = $state(false);
+  let showFlash = $state(false);
+
+  // Watch for flip transition to trigger flash
+  $effect(() => {
+    if (isFlipped && !wasFlipped && card.isHolo) {
+      // Card just flipped and is holo - trigger flash
+      showFlash = true;
+      // Hide flash after animation completes (0.2s)
+      setTimeout(() => {
+        showFlash = false;
+      }, 200);
+      wasFlipped = true;
+    } else if (!isFlipped) {
+      // Reset when card flips back
+      wasFlipped = false;
+      showFlash = false;
+    }
+  });
+
   // Share functionality
   let isGeneratingImage = $state(false);
   let shareError = $state<string | null>(null);
@@ -350,6 +371,10 @@
       class="card-face absolute inset-0 overflow-hidden {hasBaseGlow || isHovered ? 'card-glow' : ''} {card.rarity === 'mythic' ? 'mythic-prismatic' : ''}"
       style="border: {borderStyle}; box-shadow: {glowStyle};"
     >
+      <!-- PACK-VFX-024: White flash effect on holo card reveal -->
+      {#if showFlash}
+        <div class="holo-flash-overlay"></div>
+      {/if}
       <!-- Upgrade Star Badge -->
       {#if upgradeLevel > 0}
         <div
@@ -652,6 +677,27 @@
     }
   }
 
+  /* PACK-VFX-024: Holo card flash effect */
+  .holo-flash-overlay {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    animation: holo-flash 0.2s ease-out forwards;
+    pointer-events: none;
+    z-index: 50;
+    border-radius: inherit;
+  }
+
+  @keyframes holo-flash {
+    0% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     .sparkle,
@@ -661,6 +707,9 @@
     }
     .ability-badge {
       transform: none !important;
+    }
+    .holo-flash-overlay {
+      animation: none !important;
     }
   }
 
