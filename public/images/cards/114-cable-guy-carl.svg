@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-114" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-114">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.8873550856951624)" />
+  <g opacity="0.3"><rect x="144.7" y="516.2" width="29.8" height="29.8" fill="none" stroke="#22d3ee" stroke-width="2.8" opacity="0.21" />
+    <circle cx="326.4" cy="386.6" r="11.3" fill="none" stroke="#06b6d4" stroke-width="1.5" opacity="0.11" />
+    <circle cx="41.8" cy="223.6" r="38.9" fill="none" stroke="#22d3ee" stroke-width="2.2" opacity="0.13" />
+    <circle cx="211.9" cy="212.7" r="26.6" fill="none" stroke="#3b82f6" stroke-width="2.3" opacity="0.24" />
+    <circle cx="299.4" cy="388.3" r="29.6" fill="none" stroke="#06b6d4" stroke-width="1.0" opacity="0.12" />
+    <rect x="22.4" y="319.3" width="42.6" height="42.6" fill="none" stroke="#22d3ee" stroke-width="2.2" opacity="0.20" />
+    <rect x="217.0" y="396.1" width="20.9" height="20.9" fill="none" stroke="#22d3ee" stroke-width="1.6" opacity="0.16" />
+    <circle cx="286.8" cy="52.6" r="12.3" fill="none" stroke="#22d3ee" stroke-width="2.9" opacity="0.15" />
+    <circle cx="43.1" cy="99.3" r="18.6" fill="none" stroke="#06b6d4" stroke-width="1.3" opacity="0.24" />
+    <rect x="106.6" y="266.2" width="36.0" height="36.0" fill="none" stroke="#06b6d4" stroke-width="1.7" opacity="0.12" />
+    <circle cx="386.1" cy="49.2" r="14.9" fill="none" stroke="#22d3ee" stroke-width="1.3" opacity="0.22" /></g>
+  <circle cx="146.1" cy="236.5" r="30.2" fill="#06b6d4" opacity="0.39" />
+    <polygon points="335.1,315.5 383.7,364.0 335.1,412.6 286.5,364.0" fill="#22d3ee" opacity="0.34" />
+    <polygon points="57.7,55.0 95.0,92.2 57.7,129.4 20.5,92.2" fill="#3b82f6" opacity="0.19" />
+    <rect x="226.4" y="282.3" width="95.3" height="95.3" fill="#06b6d4" opacity="0.11" />
+    <polygon points="376.0,443.8 387.5,455.3 376.0,466.8 364.5,455.3" fill="#22d3ee" opacity="0.38" />
+    <rect x="25.6" y="148.3" width="35.8" height="35.8" fill="#3b82f6" opacity="0.20" />
+    <circle cx="211.4" cy="133.9" r="45.3" fill="#06b6d4" opacity="0.35" />
+    <polygon points="348.7,196.3 362.2,223.2 335.3,223.2" fill="#22d3ee" opacity="0.28" />
+    <polygon points="205.8,522.8 219.7,550.7 191.9,550.7" fill="#3b82f6" opacity="0.34" />
+    <rect x="44.1" y="388.0" width="62.8" height="62.8" fill="#06b6d4" opacity="0.14" />
+    <circle cx="174.4" cy="79.5" r="20.4" fill="#06b6d4" opacity="0.33" />
+    <circle cx="183.0" cy="79.5" r="19.2" fill="#06b6d4" opacity="0.22" />
+    <polygon points="168.5,205.5 182.8,234.2 154.1,234.2" fill="#06b6d4" opacity="0.31" />
+    <polygon points="162.9,487.5 191.5,544.6 134.4,544.6" fill="#22d3ee" opacity="0.22" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-14" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-14)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Cable Guy Carl</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Cable Guy Carl</text>
+  
+  <!-- Rarity border -->
+  <rect x="5" y="5" width="390" height="540"
+        fill="none" stroke="#a855f7" stroke-width="10" rx="8" ry="8" />
+</svg>

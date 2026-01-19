@@ -1,0 +1,34 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DeckBuilder from '@/components/deck/DeckBuilder.svelte';
+import Navigation from '@/components/common/Navigation.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
+
+// SEO Meta Tags
+const title = "Deck Builder - DadDeck";
+const description = "Build your ultimate dad deck! Select cards, create strategies, and prepare for battle.";
+---
+
+<BaseLayout title={title} description={description}>
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
+
+  <main class="deck-builder-page">
+    <ErrorBoundary
+      component="DeckBuilder"
+      fallbackTitle="Deck Builder Error"
+      fallbackMessage="We couldn't load the deck builder. Please refresh the page."
+      onRetry={() => window.location.reload()}
+    >
+      <DeckBuilder client:only />
+    </ErrorBoundary>
+  </main>
+</BaseLayout>
+
+<style>
+  .deck-builder-page {
+    width: 100%;
+    min-height: 100vh;
+  }
+</style>

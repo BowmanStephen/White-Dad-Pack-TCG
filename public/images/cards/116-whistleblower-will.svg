@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-116" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-116">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.43497569020837545)" />
+  <g opacity="0.3"><circle cx="143.6" cy="320.8" r="34.8" fill="none" stroke="#fbbf24" stroke-width="1.1" opacity="0.16" />
+    <rect x="234.2" y="77.1" width="23.9" height="23.9" fill="none" stroke="#ef4444" stroke-width="3.0" opacity="0.13" />
+    <rect x="209.2" y="378.6" width="65.0" height="65.0" fill="none" stroke="#fbbf24" stroke-width="2.8" opacity="0.20" />
+    <circle cx="221.0" cy="273.6" r="30.7" fill="none" stroke="#fbbf24" stroke-width="1.6" opacity="0.11" />
+    <circle cx="153.9" cy="102.7" r="17.3" fill="none" stroke="#f97316" stroke-width="2.3" opacity="0.12" /></g>
+  <polygon points="395.9,477.9 420.5,527.0 371.4,527.0" fill="#fbbf24" opacity="0.17" />
+    <rect x="285.0" y="274.8" width="45.0" height="45.0" fill="#ef4444" opacity="0.16" />
+    <polygon points="120.2,158.5 156.7,231.4 83.8,231.4" fill="#f97316" opacity="0.18" />
+    <polygon points="100.2,47.9 122.1,91.5 78.4,91.5" fill="#ef4444" opacity="0.23" />
+    <rect x="280.8" y="292.8" width="74.4" height="74.4" fill="#ef4444" opacity="0.26" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-18" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#f97316;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-18)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Whistleblower Will</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Whistleblower Will</text>
+  
+  <!-- Rarity border -->
+  <rect x="2" y="2" width="396" height="546"
+        fill="none" stroke="#9ca3af" stroke-width="4" rx="8" ry="8" />
+</svg>

@@ -1,0 +1,334 @@
+import type { Rarity, HoloVariant, SortOption } from './core';
+import type { PackType, DadType } from './index';
+
+// ============================================================================
+// ANALYTICS TYPES
+// ============================================================================
+
+// Analytics event types
+export type AnalyticsEventType =
+  | 'pack_open'           // User opened a pack
+  | 'card_reveal'         // User revealed a card
+  | 'pack_complete'       // User completed pack opening (viewed all cards)
+  | 'share'               // User shared a pack/card
+  | 'collection_view'     // User viewed their collection
+  | 'collection_filter'   // User filtered collection
+  | 'collection_sort'     // User sorted collection
+  | 'settings_open'       // User opened settings
+  | 'settings_change'     // User changed a setting
+  | 'modal_open'          // User opened a modal (card inspection, share, etc.)
+  | 'modal_close'         // User closed a modal
+  | 'achievement_unlock'  // User unlocked an achievement (US073)
+  | 'daily_reward_claim'  // User claimed daily reward (US074)
+  | 'trade_create'        // User created a trade offer (US078)
+  | 'trade_accept'        // User accepted a trade (US078)
+  | 'trade_reject'        // User rejected a trade (US078)
+  | 'trade_cancel'        // User cancelled a trade (US078)
+  | 'battle_played'       // User played a battle match (PACK-071)
+  | 'deck_created';       // User created a new deck (PACK-071)
+
+// Share platforms
+export type SharePlatform = 'twitter' | 'discord' | 'download' | 'native' | 'copy_link';
+
+// Base analytics event interface
+export interface AnalyticsEvent {
+  id: string;                 // Unique event ID
+  type: AnalyticsEventType;   // Event type
+  timestamp: number;          // Unix timestamp (ms)
+  sessionId: string;          // Session identifier
+}
+
+// Pack open event
+export interface PackOpenEvent extends AnalyticsEvent {
+  type: 'pack_open';
+  data: {
+    packId: string;           // Pack identifier
+    cardCount: number;        // Number of cards in pack
+    packType?: PackType;      // Type of pack (standard, premium, theme) (PACK-001)
+    themeType?: DadType;      // Theme dad type (for theme packs) (PACK-001)
+    premiumConfigId?: string; // ID of premium configuration
+  };
+}
+
+// Card reveal event
+export interface CardRevealEvent extends AnalyticsEvent {
+  type: 'card_reveal';
+  data: {
+    packId: string;           // Pack identifier
+    cardIndex: number;        // Position in pack (0-based)
+    cardId: string;           // Card identifier (generic, no PII)
+    rarity: Rarity;           // Card rarity
+    isHolo: boolean;          // Whether card is holographic
+    holoType: HoloVariant;    // Holo variant type
+    autoRevealed: boolean;    // Whether auto-revealed or manual
+  };
+}
+
+// Pack complete event
+export interface PackCompleteEvent extends AnalyticsEvent {
+  type: 'pack_complete';
+  data: {
+    packId: string;           // Pack identifier
+    cardCount: number;        // Number of cards in pack
+    bestRarity: Rarity;       // Best rarity pulled
+    holoCount: number;        // Number of holo cards
+    duration: number;         // Time to complete (ms)
+    skipped: boolean;         // Whether user skipped animation
+  };
+}
+
+// Share event
+export interface ShareEvent extends AnalyticsEvent {
+  type: 'share';
+  data: {
+    platform: SharePlatform;  // Platform shared to
+    packId: string;           // Pack identifier (if applicable)
+    cardCount: number;        // Number of cards shared
+  };
+}
+
+// Collection view event
+export interface CollectionViewEvent extends AnalyticsEvent {
+  type: 'collection_view';
+  data: {
+    totalPacks: number;       // Total packs in collection
+    totalCards: number;       // Total cards in collection
+    uniqueCards: number;      // Unique cards in collection
+  };
+}
+
+// Collection filter event
+export interface CollectionFilterEvent extends AnalyticsEvent {
+  type: 'collection_filter';
+  data: {
+    filterType: string;       // Type of filter (rarity, dad type, etc.)
+    filterValue: string;      // Filter value applied
+  };
+}
+
+// Collection sort event
+export interface CollectionSortEvent extends AnalyticsEvent {
+  type: 'collection_sort';
+  data: {
+    sortOption: SortOption;   // Sort option selected
+  };
+}
+
+// Settings open event
+export interface SettingsOpenEvent extends AnalyticsEvent {
+  type: 'settings_open';
+  data: {
+    source: 'button' | 'keyboard'; // How settings were opened
+  };
+}
+
+// Settings change event
+export interface SettingsChangeEvent extends AnalyticsEvent {
+  type: 'settings_change';
+  data: {
+    setting: string;          // Setting that changed (e.g., 'soundEnabled')
+    previousValue: boolean | number | string;  // Previous value
+    newValue: boolean | number | string;        // New value
+  };
+}
+
+// Modal open event
+export interface ModalOpenEvent extends AnalyticsEvent {
+  type: 'modal_open';
+  data: {
+    modalType: 'card_inspection' | 'share' | 'settings'; // Type of modal
+    trigger: 'click' | 'keyboard'; // How modal was opened
+  };
+}
+
+// Modal close event
+export interface ModalCloseEvent extends AnalyticsEvent {
+  type: 'modal_close';
+  data: {
+    modalType: 'card_inspection' | 'share' | 'settings'; // Type of modal
+    duration: number;         // Time open (ms)
+  };
+}
+
+// Achievement unlock event (US073)
+export interface AchievementUnlockEvent extends AnalyticsEvent {
+  type: 'achievement_unlock';
+  data: {
+    achievementId: string;    // Achievement identifier
+    achievementName: string;  // Achievement name
+    rarity: string;           // Achievement rarity (bronze, silver, gold, platinum)
+    category: string;         // Achievement category (opening, collection, rare, holo, variety)
+  };
+}
+
+// Daily reward claim event (US074)
+export interface DailyRewardClaimEvent extends AnalyticsEvent {
+  type: 'daily_reward_claim';
+  data: {
+    rewardType: string;       // Type of reward claimed (pack, boosted_pack, cards, currency)
+    rewardValue: number;      // Value of reward
+    streak: number;           // Current streak when claimed
+    bonusMultiplier: number;  // Bonus multiplier applied
+  };
+}
+
+// Battle played event (PACK-071)
+export interface BattlePlayedEvent extends AnalyticsEvent {
+  type: 'battle_played';
+  data: {
+    result: 'win' | 'loss' | 'draw';        // Battle result
+    opponentType: 'ai' | 'pvp';             // Opponent type
+    deckSize: number;                        // Number of cards in deck
+    battleDuration: number;                  // Battle duration in seconds
+    totalDamage: number;                     // Total damage dealt
+    totalDamageTaken: number;                // Total damage received
+  };
+}
+
+// Deck created event (PACK-071)
+export interface DeckCreatedEvent extends AnalyticsEvent {
+  type: 'deck_created';
+  data: {
+    deckSize: number;                        // Number of cards in deck
+    averageRarity: string;                   // Average rarity tier
+    deckType: string;                        // Deck type/archetype (custom, prebuilt, etc.)
+    cardCount: number;                       // Number of cards
+    totalPower: number;                      // Total deck power/stats
+  };
+}
+
+// Union type of all analytics events
+export type AnyAnalyticsEvent =
+  | PackOpenEvent
+  | CardRevealEvent
+  | PackCompleteEvent
+  | ShareEvent
+  | CollectionViewEvent
+  | CollectionFilterEvent
+  | CollectionSortEvent
+  | SettingsOpenEvent
+  | SettingsChangeEvent
+  | ModalOpenEvent
+  | ModalCloseEvent
+  | AchievementUnlockEvent
+  | DailyRewardClaimEvent
+  | BattlePlayedEvent
+  | DeckCreatedEvent;
+
+// Analytics configuration
+export interface AnalyticsConfig {
+  enabled: boolean;           // Master switch for analytics
+  providers: {
+    googleAnalytics?: {
+      measurementId: string;  // GA4 measurement ID (e.g., 'G-XXXXXXXXXX')
+      enabled: boolean;
+    };
+    plausible?: {
+      domain: string;         // Plausible domain (e.g., 'daddieck.com')
+      enabled: boolean;
+    };
+  };
+  debugMode: boolean;         // Log events to console in development
+  batchSize: number;          // Number of events to batch before sending
+  flushInterval: number;      // Max time (ms) to hold events before flushing
+}
+
+// Analytics provider interface
+export interface AnalyticsProvider {
+  name: string;
+  initialized: boolean;
+  initialize(config: AnalyticsConfig): Promise<void>;
+  trackEvent(event: AnyAnalyticsEvent): Promise<void>;
+  flush(): Promise<void>;
+}
+
+// Analytics event queue (for batching)
+export interface EventQueue {
+  events: AnyAnalyticsEvent[];
+  lastFlush: number;
+}
+
+// Analytics session data
+export interface AnalyticsSession {
+  id: string;                 // Session identifier
+  startTime: number;          // Session start timestamp
+  pageCount: number;          // Pages viewed in session
+  lastActivity: number;       // Last activity timestamp
+}
+
+// ============================================================================
+// PERFORMANCE MONITORING TYPES (PACK-102)
+// ============================================================================
+
+// Performance metrics snapshot
+export interface PerformanceMetrics {
+  fps: number;                // Current FPS (frames per second)
+  memory: MemoryMetrics;      // Memory usage information
+  bundle: BundleMetrics;      // Bundle size information
+  timing: TimingMetrics;      // Page timing metrics
+  timestamp: number;          // When metrics were captured
+}
+
+// Memory usage metrics
+export interface MemoryMetrics {
+  usedJSHeapSize: number;     // Used JS heap size in bytes
+  totalJSHeapSize: number;    // Total JS heap size in bytes
+  jsHeapSizeLimit: number;    // JS heap size limit in bytes
+  usagePercentage: number;    // Percentage of heap used
+}
+
+// Bundle size metrics
+export interface BundleMetrics {
+  totalSize: number;          // Total bundle size in bytes
+  compressedSize: number;     // Gzipped size in bytes
+  chunkCount: number;         // Number of chunks
+  largestChunk: {
+    name: string;             // Chunk name
+    size: number;             // Size in bytes
+  };
+}
+
+// Page timing metrics
+export interface TimingMetrics {
+  domContentLoaded: number;   // DOM content loaded time (ms)
+  loadComplete: number;       // Full page load time (ms)
+  firstPaint: number | null;  // First paint time (ms)
+  firstContentfulPaint: number | null; // First contentful paint (ms)
+}
+
+// Performance warning type
+export interface PerformanceWarning {
+  id: string;                 // Warning ID
+  type: 'fps' | 'memory' | 'bundle' | 'timing'; // Warning category
+  severity: 'low' | 'medium' | 'high'; // Warning severity
+  message: string;            // Warning message
+  timestamp: number;          // When warning was triggered
+  value: number;              // Value that triggered warning
+  threshold: number;          // Threshold that was exceeded
+}
+
+// Performance threshold configuration
+export interface PerformanceThresholds {
+  fps: {
+    low: number;              // FPS threshold for low warning (default: 45)
+    medium: number;           // FPS threshold for medium warning (default: 30)
+  };
+  memory: {
+    low: number;              // Memory threshold for low warning (default: 0.7 = 70%)
+    medium: number;           // Memory threshold for medium warning (default: 0.85 = 85%)
+  };
+  bundle: {
+    maxSize: number;          // Maximum bundle size in bytes (default: 500KB)
+  };
+  timing: {
+    maxLoadTime: number;      // Maximum acceptable load time in ms (default: 3000ms)
+  };
+}
+
+// Performance monitoring state
+export interface PerformanceState {
+  metrics: PerformanceMetrics | null;
+  warnings: PerformanceWarning[];
+  isMonitoring: boolean;
+  lastUpdate: number | null;
+}

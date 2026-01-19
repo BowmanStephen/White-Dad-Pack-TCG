@@ -1,0 +1,743 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { muted, toggleMute } from '../../stores/audio';
+  import { currentStreak, canClaimToday } from '../../stores/daily-rewards';
+  import { openDailyRewardsModal } from '../../stores/daily-rewards-modal';
+  import ThemeToggle from './ThemeToggle.svelte';
+  import MotionToggle from './MotionToggle.svelte';
+
+  interface NavLink {
+    href: string;
+    label: string;
+    isCta?: boolean;
+    isTutorialTarget?: boolean;
+  }
+
+  let isMuted = $state(false);
+  let dailyStreak = $state(0);
+  let canClaim = $state(false);
+
+  // Subscribe to muted state
+  $effect(() => {
+    const unsubscribe = muted.subscribe((value) => {
+      isMuted = value;
+    });
+    return unsubscribe;
+  });
+
+  // Subscribe to daily rewards state
+  $effect(() => {
+    const unsubscribeStreak = currentStreak.subscribe((value) => {
+      dailyStreak = value;
+    });
+    const unsubscribeClaim = canClaimToday.subscribe((value) => {
+      canClaim = value;
+    });
+    return () => {
+      unsubscribeStreak();
+      unsubscribeClaim();
+    };
+  });
+
+  const links: NavLink[] = [
+    { href: '/', label: 'Home' },
+    { href: '/pack', label: 'Open Pack', isCta: true },
+    { href: '/collection', label: 'My Collection', isTutorialTarget: true },
+    { href: '/trade', label: 'Trading' },
+    { href: '/battle', label: 'Battle' },
+  ];
+
+  let isMenuOpen = false;
+  let currentPath = '/';
+
+  onMount(() => {
+    currentPath = window.location.pathname;
+
+    // Close menu on route change
+    const handleRouteChange = () => {
+      currentPath = window.location.pathname;
+      isMenuOpen = false;
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  });
+
+  function toggleMenu() {
+    isMenuOpen = !isMenuOpen;
+  }
+
+  function closeMenu() {
+    isMenuOpen = false;
+  }
+
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && isMenuOpen) {
+      closeMenu();
+      // Return focus to menu toggle button
+      const hamburger = document.querySelector('.hamburger') as HTMLButtonElement;
+      hamburger?.focus();
+    }
+  }
+
+  function isActive(href: string): boolean {
+    if (href === '/') {
+      return currentPath === '/';
+    }
+    return currentPath.startsWith(href);
+  }
+</script>
+
+<header
+  class="nav-header"
+  class:scrolled={false}
+  on:keydown={handleKeydown}
+  role="banner"
+>
+  <div class="nav-container">
+    <!-- Logo -->
+    <a href="/" class="nav-logo" on:click={closeMenu}>
+      <span class="logo-dad">Dad</span><span class="logo-deck">Deck</span
+      ><span class="logo-tm">TM</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav" role="navigation" aria-label="Main navigation">
+      {#each links as link}
+        <a
+          href={link.href}
+          class="nav-link"
+          class:active={isActive(link.href)}
+          class:cta={link.isCta}
+          data-tutorial={link.isTutorialTarget ? 'collection-link' : undefined}
+        >
+          {link.label}
+        </a>
+      {/each}
+
+      <!-- Daily Rewards Button -->
+      <button
+        class="daily-rewards-button {canClaim ? 'claim-available' : ''}"
+        on:click={openDailyRewardsModal}
+        aria-label="Daily rewards"
+        type="button"
+      >
+        <span class="daily-icon">🎁</span>
+        {#if dailyStreak > 0}
+          <span class="daily-streak">{dailyStreak}</span>
+        {/if}
+        {#if canClaim}
+          <span class="daily-pulse"></span>
+        {/if}
+      </button>
+
+      <!-- Mute button -->
+      <button
+        class="mute-button"
+        on:click={toggleMute}
+        aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        aria-pressed={isMuted}
+        type="button"
+      >
+        {#if isMuted}
+          <!-- Muted icon -->
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        {:else}
+          <!-- Sound on icon -->
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+        {/if}
+      </button>
+
+      <!-- Theme Toggle -->
+      <ThemeToggle />
+
+      <!-- Motion Toggle (PACK-057) -->
+      <MotionToggle />
+
+      <!-- Settings Button -->
+      <a href="/settings" class="settings-button" aria-label="Settings">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </a>
+
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button
+      class="hamburger"
+      class:open={isMenuOpen}
+      on:click={toggleMenu}
+      aria-label="Toggle menu"
+      aria-expanded={isMenuOpen}
+    >
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <nav
+    class="mobile-nav"
+    class:open={isMenuOpen}
+    role="navigation"
+    aria-label="Mobile navigation"
+  >
+    <div class="mobile-nav-inner">
+      {#each links as link}
+        <a
+          href={link.href}
+          class="mobile-link"
+          class:active={isActive(link.href)}
+          class:cta={link.isCta}
+          data-tutorial={link.isTutorialTarget ? 'collection-link' : undefined}
+          on:click={closeMenu}
+        >
+          <span class="mobile-link-text">{link.label}</span>
+          {#if isActive(link.href)}
+            <span class="active-indicator"></span>
+          {/if}
+        </a>
+      {/each}
+
+      <!-- Mute button in mobile menu -->
+      <button
+        class="mobile-link"
+        on:click={() => {
+          toggleMute();
+          closeMenu();
+        }}
+        aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        aria-pressed={isMuted}
+        type="button"
+      >
+        <span class="mobile-link-text">
+          {#if isMuted}
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+              Unmute Sounds
+            </span>
+          {:else}
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+              Mute Sounds
+            </span>
+          {/if}
+        </span>
+      </button>
+
+      <!-- Settings button in mobile menu -->
+      <a
+        href="/settings"
+        class="mobile-link"
+        on:click={closeMenu}
+      >
+        <span class="mobile-link-text flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Settings
+        </span>
+      </a>
+
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Overlay -->
+  {#if isMenuOpen}
+    <div class="mobile-overlay" on:click={closeMenu}></div>
+  {/if}
+</header>
+
+<style>
+  .nav-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.95),
+      rgba(15, 23, 42, 0.85)
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+    /* Performance: Only animate background and box-shadow, not all properties */
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background, box-shadow;
+  }
+
+  .nav-header.scrolled {
+    background: rgba(15, 23, 42, 0.98);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-container {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  /* Logo */
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Clash Display', system-ui, sans-serif;
+    position: relative;
+  }
+
+  .nav-logo:hover {
+    transform: scale(1.05) translateY(-1px);
+    filter: drop-shadow(0 8px 16px rgba(251, 191, 36, 0.25));
+  }
+
+  .nav-logo:active {
+    transform: scale(0.97);
+  }
+
+  .logo-dad {
+    color: #fbbf24;
+    text-shadow: 
+      0 0 20px rgba(251, 191, 36, 0.4),
+      0 0 40px rgba(251, 191, 36, 0.1);
+    letter-spacing: -0.08em;
+  }
+
+  .logo-deck {
+    color: #f8fafc;
+    letter-spacing: -0.03em;
+  }
+
+  .logo-tm {
+    font-size: 0.4rem;
+    color: #fbbf24;
+    vertical-align: super;
+    margin-left: 0.25rem;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+  }
+
+  /* Desktop Navigation */
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-link {
+    position: relative;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.75rem 0;
+    /* Performance: Only animate color and transform */
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: color;
+    letter-spacing: 0.3px;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+    border-radius: 1.5px;
+    /* Performance: Only animate transform */
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+
+  .nav-link:hover {
+    color: #fcd34d;
+  }
+
+  .nav-link:hover::after {
+    transform: translateX(-50%) scaleX(1);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+  }
+
+  .nav-link.active {
+    color: #fbbf24;
+  }
+
+  .nav-link.active::after {
+    transform: translateX(-50%) scaleX(1);
+    background: #fbbf24;
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.6);
+  }
+
+  .nav-link.cta {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    /* Performance: Only animate transform and box-shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform, box-shadow;
+  }
+
+  .nav-link.cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+  }
+
+  .nav-link.cta:active {
+    transform: translateY(0);
+  }
+
+  .nav-link.cta::after {
+    display: none;
+  }
+
+  /* Mute Button */
+  .mute-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+
+  .mute-button:hover {
+    color: #f8fafc;
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  .mute-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Daily Rewards Button */
+  .daily-rewards-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .daily-rewards-button:hover {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  .daily-rewards-button:active {
+    transform: scale(0.95);
+  }
+
+  .daily-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .daily-streak {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .daily-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    border: 2px solid #fbbf24;
+    animation: daily-pulse 2s ease-in-out infinite;
+  }
+
+  .daily-rewards-button.claim-available {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.4);
+  }
+
+  @keyframes daily-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0;
+      transform: scale(1.1);
+    }
+  }
+
+  /* Settings Button */
+  .settings-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+  }
+
+  .settings-button:hover {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+    transform: rotate(45deg);
+  }
+
+  .settings-button:active {
+    transform: rotate(45deg) scale(0.95);
+  }
+
+  /* Hamburger Button */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.375rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1002;
+  }
+
+  .hamburger-line {
+    width: 1.25rem;
+    height: 2px;
+    background: #f8fafc;
+    border-radius: 1px;
+    /* Performance: Only animate transform, opacity, and background */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s ease;
+    will-change: transform, opacity, background;
+    transform-origin: center;
+  }
+
+  .hamburger:hover .hamburger-line {
+    background: #fbbf24;
+  }
+
+  .hamburger.open .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(0.25rem, 0.25rem);
+  }
+
+  .hamburger.open .hamburger-line:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .hamburger.open .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(0.25rem, -0.25rem);
+  }
+
+  /* Mobile Navigation */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 20rem;
+    background: linear-gradient(
+      to bottom left,
+      rgba(15, 23, 42, 0.98),
+      rgba(30, 41, 59, 0.98)
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(71, 85, 105, 0.3);
+    transform: translateX(100%);
+    /* Performance: Only animate transform */
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    /* GPU acceleration hint */
+    transform: translateZ(0) translateX(100%);
+    z-index: 1001;
+    overflow-y: auto;
+  }
+
+  .mobile-nav.open {
+    transform: translateZ(0) translateX(0);
+  }
+
+  .mobile-nav-inner {
+    padding: 5rem 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mobile-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #94a3b8;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    /* Performance: Only animate color, background, and transform */
+    transition: color 0.2s ease,
+                background 0.2s ease,
+                transform 0.2s ease;
+    will-change: color, background, transform;
+    gap: 1rem;
+  }
+
+  .mobile-link:hover {
+    background: rgba(251, 191, 36, 0.1);
+    color: #f8fafc;
+  }
+
+  .mobile-link.active {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    box-shadow: inset 3px 0 0 #fbbf24;
+  }
+
+  .mobile-link.cta {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    margin-top: 1rem;
+  }
+
+  .mobile-link.cta:hover {
+    transform: translateX(0.25rem);
+  }
+
+  .mobile-link-text {
+    flex: 1;
+  }
+
+  .active-indicator {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: #fbbf24;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.1);
+    }
+  }
+
+  /* Mobile Overlay */
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+    will-change: opacity;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .desktop-nav {
+      display: none;
+    }
+
+    .hamburger {
+      display: flex;
+    }
+
+    .mobile-nav {
+      display: block;
+    }
+  }
+
+  /* Body scroll lock when menu is open */
+  :global(body.menu-open) {
+    overflow: hidden;
+  }
+</style>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-092" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#ec4899;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-092">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.8695684797130525)" />
+  <g opacity="0.3"><line x1="0" y1="159.5" x2="400" y2="159.5" stroke="#8b5cf6" stroke-width="2.2" opacity="0.24" />
+    <line x1="0" y1="142.0" x2="400" y2="142.0" stroke="#8b5cf6" stroke-width="3.8" opacity="0.20" />
+    <line x1="0" y1="361.7" x2="400" y2="361.7" stroke="#ec4899" stroke-width="1.4" opacity="0.32" />
+    <line x1="0" y1="197.3" x2="400" y2="197.3" stroke="#ec4899" stroke-width="2.5" opacity="0.40" />
+    <line x1="201.4" y1="0" x2="201.4" y2="550" stroke="#f97316" stroke-width="2.5" opacity="0.23" />
+    <line x1="175.1" y1="0" x2="175.1" y2="550" stroke="#8b5cf6" stroke-width="2.6" opacity="0.33" />
+    <line x1="0" y1="90.1" x2="400" y2="90.1" stroke="#8b5cf6" stroke-width="1.7" opacity="0.25" />
+    <line x1="293.4" y1="0" x2="293.4" y2="550" stroke="#ec4899" stroke-width="1.5" opacity="0.20" />
+    <line x1="41.1" y1="0" x2="41.1" y2="550" stroke="#8b5cf6" stroke-width="1.7" opacity="0.18" />
+    <line x1="0" y1="163.3" x2="400" y2="163.3" stroke="#8b5cf6" stroke-width="1.8" opacity="0.26" />
+    <line x1="141.8" y1="0" x2="141.8" y2="550" stroke="#ec4899" stroke-width="1.3" opacity="0.27" />
+    <line x1="133.4" y1="0" x2="133.4" y2="550" stroke="#ec4899" stroke-width="3.7" opacity="0.38" />
+    <line x1="0" y1="275.0" x2="400" y2="275.0" stroke="#ec4899" stroke-width="1.0" opacity="0.39" />
+    <line x1="0" y1="409.7" x2="400" y2="409.7" stroke="#8b5cf6" stroke-width="3.0" opacity="0.32" />
+    <line x1="260.2" y1="0" x2="260.2" y2="550" stroke="#f97316" stroke-width="2.6" opacity="0.20" />
+    <line x1="178.3" y1="0" x2="178.3" y2="550" stroke="#f97316" stroke-width="4.0" opacity="0.14" />
+    <line x1="0" y1="199.6" x2="400" y2="199.6" stroke="#8b5cf6" stroke-width="2.3" opacity="0.28" />
+    <line x1="360.4" y1="0" x2="360.4" y2="550" stroke="#8b5cf6" stroke-width="1.1" opacity="0.22" />
+    <line x1="0" y1="270.6" x2="400" y2="270.6" stroke="#8b5cf6" stroke-width="1.3" opacity="0.14" />
+    <line x1="153.6" y1="0" x2="153.6" y2="550" stroke="#f97316" stroke-width="2.4" opacity="0.39" />
+    <line x1="122.1" y1="0" x2="122.1" y2="550" stroke="#ec4899" stroke-width="3.8" opacity="0.39" />
+    <line x1="0" y1="329.2" x2="400" y2="329.2" stroke="#f97316" stroke-width="1.6" opacity="0.22" />
+    <line x1="301.7" y1="0" x2="301.7" y2="550" stroke="#8b5cf6" stroke-width="2.5" opacity="0.38" />
+    <line x1="284.6" y1="0" x2="284.6" y2="550" stroke="#ec4899" stroke-width="1.5" opacity="0.31" />
+    <line x1="222.1" y1="0" x2="222.1" y2="550" stroke="#f97316" stroke-width="3.3" opacity="0.38" />
+    <line x1="0" y1="156.5" x2="400" y2="156.5" stroke="#f97316" stroke-width="3.5" opacity="0.35" />
+    <line x1="208.6" y1="0" x2="208.6" y2="550" stroke="#8b5cf6" stroke-width="2.1" opacity="0.13" />
+    <line x1="15.1" y1="0" x2="15.1" y2="550" stroke="#ec4899" stroke-width="2.3" opacity="0.10" />
+    <line x1="375.0" y1="0" x2="375.0" y2="550" stroke="#ec4899" stroke-width="1.5" opacity="0.29" />
+    <line x1="305.8" y1="0" x2="305.8" y2="550" stroke="#ec4899" stroke-width="1.1" opacity="0.10" /></g>
+  <rect x="-32.5" y="121.9" width="82.4" height="82.4" fill="#ec4899" opacity="0.14" />
+    <polygon points="283.7,368.2 318.9,438.5 248.5,438.5" fill="#f97316" opacity="0.30" />
+    <polygon points="84.5,425.4 97.8,451.9 71.3,451.9" fill="#ec4899" opacity="0.25" />
+    <polygon points="198.3,162.3 247.8,261.3 148.8,261.3" fill="#8b5cf6" opacity="0.12" />
+    <rect x="-5.6" y="181.4" width="36.1" height="36.1" fill="#8b5cf6" opacity="0.14" />
+    <rect x="75.7" y="64.5" width="83.5" height="83.5" fill="#ec4899" opacity="0.11" />
+    <polygon points="374.8,451.4 421.1,544.1 328.4,544.1" fill="#ec4899" opacity="0.31" />
+    <rect x="178.9" y="439.7" width="28.1" height="28.1" fill="#8b5cf6" opacity="0.38" />
+    <polygon points="209.5,54.0 221.0,65.5 209.5,77.0 198.0,65.5" fill="#8b5cf6" opacity="0.31" />
+    <polygon points="279.4,280.4 322.9,367.3 235.9,367.3" fill="#f97316" opacity="0.11" />
+    <polygon points="211.0,86.0 224.4,112.8 197.6,112.8" fill="#f97316" opacity="0.32" />
+    <circle cx="68.9" cy="205.2" r="12.4" fill="#ec4899" opacity="0.12" />
+    <polygon points="143.1,135.8 193.0,185.8 143.1,235.7 93.2,185.8" fill="#ec4899" opacity="0.22" />
+    <circle cx="324.7" cy="456.7" r="14.5" fill="#ec4899" opacity="0.35" />
+    <rect x="138.8" y="39.0" width="59.1" height="59.1" fill="#8b5cf6" opacity="0.37" />
+    <rect x="173.0" y="508.1" width="38.3" height="38.3" fill="#8b5cf6" opacity="0.35" />
+    <rect x="144.4" y="343.4" width="26.0" height="26.0" fill="#8b5cf6" opacity="0.20" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-25" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-25)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Paul Atreides Ass-Traitor</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Paul Atreides Ass-Traitor</text>
+  
+  <!-- Rarity border -->
+  <rect x="6" y="6" width="388" height="538"
+        fill="none" stroke="#f97316" stroke-width="12" rx="8" ry="8" />
+</svg>

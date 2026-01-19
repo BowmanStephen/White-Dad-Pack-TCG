@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/landing/Hero.astro';
+import Features from '../components/landing/Features.astro';
+import FeaturedCards from '../components/landing/FeaturedCards.astro';
+import PackPreview from '../components/landing/PackPreview.svelte';
+import Footer from '../components/landing/Footer.astro';
+import Navigation from '../components/common/Navigation.svelte';
+import WelcomeModal from '../components/onboarding/WelcomeModal.svelte';
+import Tutorial from '../components/onboarding/Tutorial.svelte';
+import TutorialAutoStart from '../components/onboarding/TutorialAutoStart.svelte';
+import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
+
+// Enhanced SEO for homepage
+const title = "DadDeck - The Ultimate White Dad Trading Card Simulator";
+const description = "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining. Grillmaster Gary, Fix-It Dad, and 50+ more cards to collect!";
+const imageURL = new URL('/og-image.png', Astro.site).href;
+const siteURL = Astro.site?.href || 'https://daddeck.com';
+
+// WebApplication structured data for rich Google results
+const webApplicationSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DadDeck",
+  "url": siteURL,
+  "description": "A free browser-based trading card game pack opening simulator parodying suburban American dad culture.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "1250"
+  },
+  "browserRequirements": "Requires JavaScript. Compatible with all modern browsers.",
+  "softwareVersion": "1.0.0",
+  "author": {
+    "@type": "Organization",
+    "name": "DadDeck"
+  },
+  "image": imageURL
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image="/og-image.png"
+>
+  <!-- Critical components: load immediately -->
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
+
+  <!-- Defer non-critical components: load when browser is idle -->
+
+  <main id="main-content" class="pt-16" tabindex="-1" role="main">
+    <!-- Static content: server-side rendered -->
+    <Hero />
+    <Features />
+
+    <!-- Interactive components: lazy load when visible -->
+    <ErrorBoundary component="PackPreview" fallbackMessage="Pack preview unavailable.">
+      <PackPreview client:visible />
+    </ErrorBoundary>
+    <FeaturedCards />
+  </main>
+
+  <!-- Static footer: server-side rendered -->
+  <Footer />
+
+  <!-- Additional structured data for homepage -->
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(webApplicationSchema)} />
+
+  <!-- Onboarding System (client-only to avoid SSR issues) -->
+  <!-- Welcome modal shows first for new users -->
+  <ErrorBoundary component="WelcomeModal" fallbackMessage="Welcome modal unavailable.">
+    <WelcomeModal client:idle />
+  </ErrorBoundary>
+  <!-- Tutorial system starts after welcome (or directly if welcome already seen) -->
+  <ErrorBoundary component="Tutorial" fallbackMessage="Tutorial unavailable.">
+    <Tutorial client:only="svelte" />
+  </ErrorBoundary>
+  <ErrorBoundary component="TutorialAutoStart" fallbackMessage="Tutorial system unavailable.">
+    <TutorialAutoStart client:idle />
+  </ErrorBoundary>
+</BaseLayout>

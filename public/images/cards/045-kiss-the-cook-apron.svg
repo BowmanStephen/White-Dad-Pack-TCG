@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-045" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-045">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.41651896270923316)" />
+  <g opacity="0.3"><circle cx="136.6" cy="12.3" r="31.0" fill="none" stroke="#94a3b8" stroke-width="1.2" opacity="0.22" />
+    <circle cx="156.0" cy="357.7" r="19.5" fill="none" stroke="#64748b" stroke-width="1.7" opacity="0.11" />
+    <circle cx="159.0" cy="523.8" r="38.9" fill="none" stroke="#fbbf24" stroke-width="1.2" opacity="0.20" />
+    <rect x="224.8" y="491.6" width="70.9" height="70.9" fill="none" stroke="#fbbf24" stroke-width="2.2" opacity="0.18" />
+    <rect x="-18.9" y="132.1" width="66.2" height="66.2" fill="none" stroke="#fbbf24" stroke-width="1.9" opacity="0.27" /></g>
+  <rect x="66.3" y="188.9" width="99.9" height="99.9" fill="#fbbf24" opacity="0.33" />
+    <polygon points="115.6,206.9 139.7,255.1 91.5,255.1" fill="#94a3b8" opacity="0.26" />
+    <polygon points="361.1,151.4 376.1,166.4 361.1,181.5 346.1,166.4" fill="#94a3b8" opacity="0.36" />
+    <polygon points="377.2,389.2 410.1,422.1 377.2,454.9 344.3,422.1" fill="#64748b" opacity="0.27" />
+    <polygon points="13.0,19.0 53.5,100.1 -27.6,100.1" fill="#64748b" opacity="0.27" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-19" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-19)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Kiss The Cook Apron</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Kiss The Cook Apron</text>
+  
+  <!-- Rarity border -->
+  <rect x="2" y="2" width="396" height="546"
+        fill="none" stroke="#9ca3af" stroke-width="4" rx="8" ry="8" />
+</svg>

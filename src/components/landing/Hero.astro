@@ -1,0 +1,77 @@
+---
+import Button from '../common/Button.svelte';
+import PackPreview from './PackPreview.astro';
+
+const t = {
+  title1: 'Collect Every Dad',
+  title2: 'in the Cul-de-sac',
+  subtitle: 'The satirical trading card game your father would definitely not understand. Open packs, collect dads, embrace the cringe.',
+  cta: 'Open Your First Pack',
+  learnMore: 'Learn More',
+  stats: {
+    cards: 'Unique Cards',
+    rarity: 'Rarity Tiers',
+    free: 'Free Forever',
+  },
+};
+---
+
+<section aria-labelledby="hero-heading" class="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
+  <!-- Background effects -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Text content -->
+      <div class="text-center lg:text-left">
+        <h1 id="hero-heading" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+          <span class="text-amber-400">{t.title1}</span>
+          <br />
+          <span class="text-white">{t.title2}</span>
+        </h1>
+
+        <p class="text-xl text-slate-300 mb-8 max-w-xl mx-auto lg:mx-0">
+          {t.subtitle}
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <a
+            href="/pack"
+            data-tutorial="pack-button"
+            class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:from-amber-400 hover:to-orange-400 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+          >
+            <span class="mr-2">🎴</span>
+            {t.cta}
+          </a>
+          <Button variant="secondary" size="lg" href="#features" client:load>
+            {t.learnMore}
+          </Button>
+        </div>
+
+        <!-- Stats -->
+        <div class="mt-12 flex flex-wrap gap-8 justify-center lg:justify-start">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-amber-400">50+</div>
+            <div class="text-sm text-slate-400">{t.stats.cards}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-amber-400">6</div>
+            <div class="text-sm text-slate-400">{t.stats.rarity}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-amber-400">100%</div>
+            <div class="text-sm text-slate-400">{t.stats.free}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pack preview -->
+      <div class="flex justify-center lg:justify-end">
+        <PackPreview />
+      </div>
+    </div>
+  </div>
+</section>

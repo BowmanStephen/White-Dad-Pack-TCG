@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.bun/
+
+# Build outputs
+dist/
+.build/
+
+# Generated files
+public/sitemap.xml
+*.min.js
+*.min.css
+
+# Lockfiles
+bun.lock
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+.temp/
+tmp/

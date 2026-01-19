@@ -1,0 +1,77 @@
+---
+import { getCardsByRarity } from '../../lib/cards/database';
+import { RARITY_CONFIG } from '../../types';
+import type { PackCard } from '../../types';
+import Card from '../card/Card.svelte';
+
+// Get a sample of cards to feature - one of each rarity for showcase
+const baseCards = [
+  getCardsByRarity('legendary')[0],
+  getCardsByRarity('epic')[0],
+  getCardsByRarity('rare')[0],
+  getCardsByRarity('common')[0],
+];
+
+// Convert Card to PackCard by adding runtime properties
+const featuredCards: PackCard[] = baseCards.map((card) => ({
+  ...card,
+  isRevealed: true,
+  isHolo: ['legendary', 'epic'].includes(card.rarity),
+  holoType: card.rarity === 'legendary' ? 'full_art' : card.rarity === 'epic' ? 'reverse' : 'none',
+}));
+---
+
+<section class="py-20 px-4 bg-slate-800/30">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        <span class="text-white">Meet the</span> <span class="text-amber-400">Dads</span>
+      </h2>
+      <p class="text-slate-400 max-w-2xl mx-auto">
+        From legendary grill masters to mythic thermostat guardians, discover the dads that await.
+      </p>
+    </div>
+    
+    <!-- Card Grid -->
+    <div class="flex flex-wrap justify-center gap-8 lg:gap-12" id="featured-cards-container">
+      {featuredCards.map((card) => (
+        <div class="flex flex-col items-center gap-4">
+          <div class="card-wrapper">
+            <Card
+              card={card}
+              size="md"
+              interactive={true}
+              isFlipped={false}
+              showBack={false}
+              client:visible
+            />
+          </div>
+          <div class="text-center">
+            <div class="text-sm font-bold text-white">{card.name}</div>
+            <div class="text-xs text-slate-400">{RARITY_CONFIG[card.rarity].name}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <div class="text-center mt-12">
+      <a 
+        href="/pack" 
+        class="inline-flex items-center justify-center px-6 py-3 font-bold rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:from-amber-400 hover:to-orange-400 active:scale-95 transition-all duration-200"
+      >
+        Start Collecting
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .card-wrapper {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-wrapper:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+</style>

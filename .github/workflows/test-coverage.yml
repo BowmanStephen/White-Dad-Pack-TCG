@@ -1,0 +1,82 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests with coverage
+        run: bun test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Coverage summary
+        run: |
+          echo "### 📊 Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            node -e "
+              const fs = require('fs');
+              const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = summary.total;
+              console.log('Lines:     ' + total.lines.pct.toFixed(2) + '%');
+              console.log('Functions: ' + total.functions.pct.toFixed(2) + '%');
+              console.log('Branches: ' + total.branches.pct.toFixed(2) + '%');
+              console.log('Statements:' + total.statements.pct.toFixed(2) + '%');
+            " >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+            # Check if coverage meets 60% threshold
+            COVERAGE=$(node -e "const cov=require('./coverage/coverage-summary.json').total.lines.pct; console.log(cov)")
+            echo "" >> $GITHUB_STEP_SUMMARY
+            if (( $(echo "$COVERAGE >= 60" | bc -l) )); then
+              echo "✅ Current coverage ${COVERAGE}% meets minimum 60% threshold" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ Coverage ${COVERAGE}% is below 60% threshold" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+
+            # Check if coverage meets 80% target
+            if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "🎉 **Excellent!** Coverage ${COVERAGE}% meets 80% target!" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "⚠️  Coverage ${COVERAGE}% is below 80% target. See [PACK-069 Implementation Summary](docs/PACK-069_IMPLEMENTATION_SUMMARY.md) for roadmap." >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ Coverage report not found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30

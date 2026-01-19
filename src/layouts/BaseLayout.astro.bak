@@ -1,0 +1,362 @@
+---
+import PerformanceMonitor from '../components/common/PerformanceMonitor.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalURL?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title = "DadDeck - The Ultimate White Dad Trading Card Simulator",
+  description = "Open digital booster packs featuring collectible dad-themed cards. Free, hilarious, and endlessly entertaining.",
+  image = "/og-image.png",
+  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = new URL(Astro.url.pathname, Astro.site!).href;
+const fullImageURL = new URL(image, Astro.site!).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Robots -->
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DadDeck - Trading Card Game" />
+    <meta property="og:site_name" content="DadDeck" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={siteUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageURL} />
+    <meta name="twitter:image:alt" content="DadDeck - Trading Card Game" />
+
+    <!-- Structured Data (JSON-LD) - WebSite -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "DadDeck",
+      "url": siteUrl,
+      "description": "The Ultimate White Dad Trading Card Simulator - A free browser-based pack opening game",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${new URL(Astro.site!).href}/search?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    })} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#f59e0b" />
+
+    <!-- Preconnect to external origins (performance optimization) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- DNS prefetch for potential external resources -->
+    <link rel="dns-prefetch" href="https://dadddeck.com" />
+
+    <!-- Performance Monitoring (dev only) -->
+    <PerformanceMonitor />
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white antialiased transition-colors duration-300">
+    <!-- Skip Navigation Link -->
+    <a
+      href="#main-content"
+      class="skip-link"
+    >
+      Skip to main content
+    </a>
+    <slot />
+
+
+    <!-- Service Worker Registration (deferred for performance) -->
+    <script is:inline define:vars={{}}>
+      // Defer service worker registration to avoid blocking initial render
+      // Only register in production and when supported
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        // Use requestIdleCallback for non-blocking registration
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(async () => {
+            try {
+              const registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/'
+              });
+              console.log('[SW] Service Worker registered:', registration.scope);
+
+              // Listen for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      console.log('[SW] New content is available; please refresh.');
+                    }
+                  });
+                }
+              });
+            } catch (error) {
+              console.error('[SW] Service Worker registration failed:', error);
+            }
+          }, { timeout: 2000 });
+        } else {
+          // Fallback for browsers without requestIdleCallback
+          window.addEventListener('load', async () => {
+            try {
+              const registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/'
+              });
+              console.log('[SW] Service Worker registered:', registration.scope);
+            } catch (error) {
+              console.error('[SW] Service Worker registration failed:', error);
+            }
+          });
+        }
+      }
+
+      // Handle online/offline events (non-blocking)
+      const handleOnlineStatus = () => {
+        if (navigator.onLine) {
+          console.log('[App] Connection restored');
+          document.body.classList.remove('offline');
+        } else {
+          console.log('[App] Connection lost');
+          document.body.classList.add('offline');
+        }
+      };
+
+      // Use passive listeners for better scroll performance
+      window.addEventListener('online', handleOnlineStatus, { passive: true });
+      window.addEventListener('offline', handleOnlineStatus, { passive: true });
+
+      // Set initial state
+      if (!navigator.onLine) {
+        document.body.classList.add('offline');
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  /* Skip Navigation Link */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    z-index: 10000;
+    transition: top 0.3s ease;
+  }
+
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Disable text selection on interactive elements */
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  /* Card perspective container */
+  .perspective {
+    perspective: 1000px;
+  }
+  
+  /* 3D transform preservation */
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  /* Backface hidden */
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Offline indicator */
+  body.offline::before {
+    content: 'You\'re offline - some features may be limited';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+    color: white;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 10001;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  body.offline {
+    padding-top: 2.5rem;
+  }
+
+  /* ============================================================================
+     DARK MODE STYLES
+     ============================================================================ */
+
+  /* Smooth transition for theme changes */
+  :root {
+    --theme-transition: background-color 0.3s ease, color 0.3s ease,
+                       border-color 0.3s ease, box-shadow 0.3s ease,
+                       background 0.3s ease;
+  }
+
+  /* Light mode (default) - Light backgrounds, dark text */
+  html:not(.dark) body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+    color: #1e293b;
+  }
+
+  /* Dark mode - Dark backgrounds, light text */
+  html.dark body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: #f1f5f9;
+  }
+
+  /* Theme-aware components */
+  html:not(.dark) .card-bg {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  html.dark .card-bg {
+    background-color: #1e293b;
+    border-color: #334155;
+  }
+
+  /* Scrollbar styling by theme */
+  html:not(.dark) ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+  }
+
+  html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  html.dark ::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  /* Skip link theme styling */
+  html:not(.dark) .skip-link {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #0f172a;
+  }
+
+  html.dark .skip-link {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+  }
+
+  /* Offline indicator theme styling */
+  html:not(.dark) body.offline::before {
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+    color: white;
+  }
+
+  html.dark body.offline::before {
+    background: linear-gradient(90deg, #b91c1c, #991b1b);
+    color: white;
+  }
+
+  /* Smooth transitions for all theme-aware elements */
+  body,
+  .card-bg,
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-thumb {
+    transition: var(--theme-transition);
+  }
+</style>

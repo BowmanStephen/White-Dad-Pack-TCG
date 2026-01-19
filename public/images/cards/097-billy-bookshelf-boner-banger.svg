@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-097" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-097">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.9962422042153776)" />
+  <g opacity="0.3"><rect x="168.7" y="404.2" width="68.4" height="68.4" fill="none" stroke="#8b5cf6" stroke-width="2.7" opacity="0.28" />
+    <circle cx="116.2" cy="59.5" r="24.1" fill="none" stroke="#fbbf24" stroke-width="2.7" opacity="0.30" />
+    <circle cx="3.6" cy="83.2" r="28.3" fill="none" stroke="#8b5cf6" stroke-width="2.0" opacity="0.12" />
+    <circle cx="175.2" cy="34.8" r="22.9" fill="none" stroke="#8b5cf6" stroke-width="1.6" opacity="0.11" />
+    <rect x="5.5" y="456.5" width="71.6" height="71.6" fill="none" stroke="#fbbf24" stroke-width="1.7" opacity="0.22" />
+    <rect x="153.3" y="452.5" width="69.6" height="69.6" fill="none" stroke="#fbbf24" stroke-width="2.7" opacity="0.11" />
+    <rect x="308.4" y="97.8" width="25.6" height="25.6" fill="none" stroke="#6366f1" stroke-width="1.2" opacity="0.20" />
+    <circle cx="102.5" cy="106.4" r="24.4" fill="none" stroke="#fbbf24" stroke-width="1.2" opacity="0.12" />
+    <rect x="192.0" y="132.4" width="28.3" height="28.3" fill="none" stroke="#8b5cf6" stroke-width="2.7" opacity="0.24" /></g>
+  <polygon points="257.8,447.8 280.1,470.1 257.8,492.4 235.5,470.1" fill="#8b5cf6" opacity="0.10" />
+    <rect x="66.4" y="69.1" width="32.8" height="32.8" fill="#8b5cf6" opacity="0.19" />
+    <circle cx="108.4" cy="361.4" r="30.4" fill="#6366f1" opacity="0.15" />
+    <rect x="356.8" y="306.7" width="85.9" height="85.9" fill="#8b5cf6" opacity="0.28" />
+    <rect x="1.1" y="97.7" width="63.4" height="63.4" fill="#fbbf24" opacity="0.34" />
+    <rect x="332.6" y="297.9" width="97.5" height="97.5" fill="#fbbf24" opacity="0.34" />
+    <rect x="91.2" y="511.6" width="41.9" height="41.9" fill="#8b5cf6" opacity="0.32" />
+    <circle cx="46.9" cy="296.6" r="11.6" fill="#fbbf24" opacity="0.35" />
+    <polygon points="290.4,302.4 326.1,373.7 254.7,373.7" fill="#8b5cf6" opacity="0.14" />
+    <polygon points="34.0,213.9 78.5,303.1 -10.6,303.1" fill="#6366f1" opacity="0.21" />
+    <circle cx="247.5" cy="21.1" r="26.3" fill="#fbbf24" opacity="0.26" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-25" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#6366f1;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-25)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Billy Bookshelf Boner-...</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Billy Bookshelf Boner-...</text>
+  
+  <!-- Rarity border -->
+  <rect x="4" y="4" width="392" height="542"
+        fill="none" stroke="#eab308" stroke-width="8" rx="8" ry="8" />
+</svg>

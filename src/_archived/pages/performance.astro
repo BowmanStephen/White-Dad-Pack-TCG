@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Performance Dashboard';
+const description = 'Real-time performance monitoring for development';
+const isDev = import.meta.env.DEV;
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Performance Dashboard</h1>
+      <p class="page-description">Real-time performance monitoring for development</p>
+    </div>
+
+    {isDev ? (
+      <div class="dev-only">
+        <p>Performance monitoring is only available in development mode.</p>
+      </div>
+    ) : (
+      <div class="not-available">
+        <div class="not-available-icon">🔒</div>
+        <h2>Development Only</h2>
+        <p>
+          The Performance Dashboard is only available in development mode.
+          This tool helps developers track metrics during development.
+        </p>
+      </div>
+    )}
+  </main>
+</BaseLayout>

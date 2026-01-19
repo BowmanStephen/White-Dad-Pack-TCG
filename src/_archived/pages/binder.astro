@@ -1,0 +1,56 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BinderPage from '@/components/binder/BinderPage.svelte';
+
+const title = 'Binder & Album | DadDeck™';
+const description = 'Organize your card collection in digital binder pages. Create custom albums, manage favorite cards, and showcase your collection.';
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="binder-container">
+    <div class="binder-header">
+      <h1>My Binder</h1>
+      <p>Organize your cards into beautiful digital albums</p>
+    </div>
+
+    <BinderPage client:load />
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding: 2rem 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .binder-header {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #fff;
+  }
+
+  .binder-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffa500, #ffed4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .binder-header p {
+    font-size: 1.1rem;
+    color: #b0b0b0;
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem;
+    }
+
+    .binder-header h1 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

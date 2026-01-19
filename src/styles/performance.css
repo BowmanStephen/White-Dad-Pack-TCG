@@ -1,0 +1,165 @@
+/**
+ * Performance-Optimized Animation Utilities
+ *
+ * These utilities ensure 60fps animations by:
+ * 1. Using only GPU-accelerated properties (transform, opacity)
+ * 2. Adding will-change hints for browser optimization
+ * 3. Using translateZ(0) or transform: translate3d(0,0,0) to force GPU layer
+ * 4. Reducing box-shadow usage on mobile
+ */
+
+/* ===== GPU ACCELERATION UTILITIES ===== */
+
+/* Force GPU layer for animations */
+.gpu-layer {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Common transform-only transitions */
+.transition-transform {
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.transition-opacity {
+  transition: opacity 0.2s ease;
+  will-change: opacity;
+}
+
+/* Combined transform + opacity (most common case) */
+.transition-fade {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  will-change: opacity, transform;
+}
+
+/* ===== MOBILE PERFORMANCE OPTIMIZATIONS ===== */
+
+@media (max-width: 768px) {
+  /* Reduce expensive box-shadow calculations */
+  .reduce-shadow-mobile {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Disable backdrop-filter on low-end mobile */
+  @supports not (backdrop-filter: blur(10px)) {
+    .backdrop-blur-md,
+    .backdrop-blur-lg {
+      backdrop-filter: none;
+      background: rgba(15, 23, 42, 0.95) !important;
+    }
+  }
+
+  /* Reduce animation complexity on mobile */
+  .reduce-animation-mobile * {
+    animation-duration: 0.8s !important;
+  }
+}
+
+/* ===== LAYOUT THRASHING PREVENTION ===== */
+
+/* Batch DOM reads with writes */
+.batch-reads {
+  contain: layout style paint;
+}
+
+/* Prevent layout shifts during animations */
+.stable-layout {
+  contain: layout;
+}
+
+/* ===== CONTENT VISIBILITY ===== */
+
+/* Skip rendering off-screen content */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* ===== REDUCED MOTION SUPPORT ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Respect user's motion preferences */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Remove will-change to save resources */
+  * {
+    will-change: auto !important;
+  }
+}
+
+/* ===== 60FPS ANIMATION CLASSES ===== */
+
+/* Smooth scale animation (GPU-accelerated) */
+@keyframes scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+  will-change: transform, opacity;
+}
+
+/* Smooth slide animation (GPU-accelerated) */
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+  will-change: transform, opacity;
+}
+
+/* Smooth fade animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+  will-change: opacity;
+}
+
+/* ===== PARTICLE OPTIMIZATIONS ===== */
+
+/* Use contain for particle systems to isolate repaints */
+.particle-system {
+  contain: strict;
+  will-change: transform;
+}
+
+/* Mobile particle reduction */
+@media (max-width: 768px) {
+  .particle-system .particle {
+    /* Reduce particle size on mobile */
+    width: 2px !important;
+    height: 2px !important;
+    /* Remove box-shadow for performance */
+    box-shadow: none !important;
+  }
+}

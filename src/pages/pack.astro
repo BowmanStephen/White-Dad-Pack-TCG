@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PackOpener from '../components/pack/PackOpener.svelte';
+import Navigation from '../components/common/Navigation.svelte';
+import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
+
+// Enhanced SEO for pack page
+const title = "Open Pack - DadDeck Trading Card Game";
+const description = "Open a digital booster pack and discover hilarious dad-themed cards! Grillmaster Gary, Fix-It Dad, Couch Dad - over 50 unique collectible cards with rarities from Common to Mythic.";
+const packPageURL = new URL('/pack', Astro.site).href;
+const imageURL = new URL('/og-image.png', Astro.site).href;
+
+// VideoGame structured data
+const videoGameSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "DadDeck Pack Opening",
+  "url": packPageURL,
+  "description": "Open digital trading card booster packs featuring collectible dad-themed cards. Free to play with 50+ unique cards across 6 rarity tiers.",
+  "genre": ["Trading Card Game", "Casual", "Simulation"],
+  "gamePlatform": "Web Browser",
+  "applicationCategory": "Game",
+  "operatingSystem": "Any",
+  "playMode": "SinglePlayer",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "1250"
+  },
+  "image": imageURL
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image="/og-image.png"
+>
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
+
+  <main id="main-content" class="pt-20 pb-8 min-h-screen" tabindex="-1" role="main" aria-label="Pack opening area">
+    <ErrorBoundary
+      component="PackOpener"
+      fallbackTitle="Pack Opening Error"
+      fallbackMessage="We couldn't open your pack. Please refresh the page or try again later."
+      onRetry={() => window.location.reload()}
+    >
+      <PackOpener client:load />
+    </ErrorBoundary>
+  </main>
+
+  <!-- Structured data for pack opening page -->
+  <script type="application/ld+json" set:html={JSON.stringify(videoGameSchema)} />
+</BaseLayout>

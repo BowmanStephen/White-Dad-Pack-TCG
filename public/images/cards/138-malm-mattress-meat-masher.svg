@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-138" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-138">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.46176518430002034)" />
+  <g opacity="0.3"><line x1="217.8" y1="0" x2="217.8" y2="550" stroke="#64748b" stroke-width="3.9" opacity="0.17" />
+    <line x1="191.6" y1="0" x2="191.6" y2="550" stroke="#fbbf24" stroke-width="2.0" opacity="0.37" />
+    <line x1="0" y1="401.4" x2="400" y2="401.4" stroke="#fbbf24" stroke-width="3.4" opacity="0.16" />
+    <line x1="0" y1="116.3" x2="400" y2="116.3" stroke="#64748b" stroke-width="3.9" opacity="0.23" />
+    <line x1="274.0" y1="0" x2="274.0" y2="550" stroke="#64748b" stroke-width="2.1" opacity="0.14" />
+    <line x1="305.9" y1="0" x2="305.9" y2="550" stroke="#94a3b8" stroke-width="1.4" opacity="0.16" />
+    <line x1="0" y1="462.6" x2="400" y2="462.6" stroke="#94a3b8" stroke-width="2.7" opacity="0.29" />
+    <line x1="316.6" y1="0" x2="316.6" y2="550" stroke="#94a3b8" stroke-width="3.7" opacity="0.30" />
+    <line x1="0" y1="16.7" x2="400" y2="16.7" stroke="#64748b" stroke-width="1.7" opacity="0.14" />
+    <line x1="334.2" y1="0" x2="334.2" y2="550" stroke="#64748b" stroke-width="4.0" opacity="0.12" />
+    <line x1="392.2" y1="0" x2="392.2" y2="550" stroke="#94a3b8" stroke-width="2.2" opacity="0.31" />
+    <line x1="0" y1="228.2" x2="400" y2="228.2" stroke="#94a3b8" stroke-width="1.4" opacity="0.29" />
+    <line x1="245.4" y1="0" x2="245.4" y2="550" stroke="#64748b" stroke-width="3.2" opacity="0.15" />
+    <line x1="0" y1="283.5" x2="400" y2="283.5" stroke="#fbbf24" stroke-width="1.6" opacity="0.14" />
+    <line x1="279.4" y1="0" x2="279.4" y2="550" stroke="#fbbf24" stroke-width="3.4" opacity="0.35" />
+    <line x1="65.7" y1="0" x2="65.7" y2="550" stroke="#64748b" stroke-width="2.7" opacity="0.31" />
+    <line x1="0" y1="72.0" x2="400" y2="72.0" stroke="#fbbf24" stroke-width="3.6" opacity="0.37" />
+    <line x1="0" y1="312.8" x2="400" y2="312.8" stroke="#64748b" stroke-width="2.7" opacity="0.30" />
+    <line x1="276.1" y1="0" x2="276.1" y2="550" stroke="#64748b" stroke-width="1.6" opacity="0.23" />
+    <line x1="0" y1="372.9" x2="400" y2="372.9" stroke="#64748b" stroke-width="2.5" opacity="0.21" />
+    <line x1="138.4" y1="0" x2="138.4" y2="550" stroke="#fbbf24" stroke-width="1.4" opacity="0.30" />
+    <line x1="0" y1="219.1" x2="400" y2="219.1" stroke="#fbbf24" stroke-width="3.3" opacity="0.39" />
+    <line x1="0" y1="122.7" x2="400" y2="122.7" stroke="#64748b" stroke-width="1.2" opacity="0.21" />
+    <line x1="191.7" y1="0" x2="191.7" y2="550" stroke="#94a3b8" stroke-width="3.4" opacity="0.12" />
+    <line x1="0" y1="549.1" x2="400" y2="549.1" stroke="#94a3b8" stroke-width="3.3" opacity="0.19" /></g>
+  <circle cx="256.5" cy="169.8" r="46.3" fill="#fbbf24" opacity="0.10" />
+    <polygon points="105.9,71.2 151.1,161.5 60.8,161.5" fill="#64748b" opacity="0.39" />
+    <polygon points="267.5,74.5 282.0,103.5 253.0,103.5" fill="#64748b" opacity="0.40" />
+    <polygon points="203.3,-26.6 237.9,8.1 203.3,42.7 168.7,8.1" fill="#64748b" opacity="0.21" />
+    <circle cx="84.1" cy="444.7" r="42.5" fill="#94a3b8" opacity="0.36" />
+    <rect x="201.8" y="442.2" width="52.7" height="52.7" fill="#64748b" opacity="0.15" />
+    <polygon points="237.1,420.1 254.2,454.2 220.1,454.2" fill="#94a3b8" opacity="0.11" />
+    <polygon points="105.9,150.9 130.7,200.4 81.2,200.4" fill="#fbbf24" opacity="0.16" />
+    <circle cx="285.0" cy="315.1" r="29.2" fill="#64748b" opacity="0.19" />
+    <polygon points="272.4,419.4 299.6,446.6 272.4,473.9 245.2,446.6" fill="#94a3b8" opacity="0.22" />
+    <rect x="-24.3" y="227.3" width="70.2" height="70.2" fill="#64748b" opacity="0.13" />
+    <rect x="334.0" y="259.4" width="97.6" height="97.6" fill="#94a3b8" opacity="0.21" />
+    <rect x="267.5" y="106.0" width="27.9" height="27.9" fill="#64748b" opacity="0.28" />
+    <circle cx="2.2" cy="405.4" r="26.5" fill="#64748b" opacity="0.28" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-25" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-25)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Malm Mattress Meat-Masher</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Malm Mattress Meat-Masher</text>
+  
+  <!-- Rarity border -->
+  <rect x="5" y="5" width="390" height="540"
+        fill="none" stroke="#a855f7" stroke-width="10" rx="8" ry="8" />
+</svg>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-119" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-119">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.4086638460867107)" />
+  <g opacity="0.3"><rect x="264.0" y="387.8" width="75.8" height="75.8" fill="none" stroke="#ef4444" stroke-width="2.4" opacity="0.14" />
+    <rect x="324.5" y="17.2" width="70.7" height="70.7" fill="none" stroke="#f97316" stroke-width="1.3" opacity="0.21" />
+    <rect x="319.9" y="291.3" width="42.2" height="42.2" fill="none" stroke="#ef4444" stroke-width="2.1" opacity="0.12" />
+    <circle cx="179.1" cy="532.5" r="19.8" fill="none" stroke="#fbbf24" stroke-width="1.2" opacity="0.17" />
+    <rect x="11.8" y="79.6" width="33.9" height="33.9" fill="none" stroke="#fbbf24" stroke-width="2.9" opacity="0.16" />
+    <rect x="-3.3" y="110.4" width="68.5" height="68.5" fill="none" stroke="#ef4444" stroke-width="2.2" opacity="0.13" />
+    <rect x="156.0" y="285.2" width="50.9" height="50.9" fill="none" stroke="#fbbf24" stroke-width="2.7" opacity="0.17" />
+    <rect x="-35.4" y="261.5" width="73.6" height="73.6" fill="none" stroke="#ef4444" stroke-width="1.1" opacity="0.14" />
+    <circle cx="319.7" cy="425.6" r="36.9" fill="none" stroke="#f97316" stroke-width="3.0" opacity="0.15" />
+    <circle cx="302.8" cy="9.4" r="39.4" fill="none" stroke="#fbbf24" stroke-width="1.7" opacity="0.19" />
+    <circle cx="172.6" cy="324.6" r="13.7" fill="none" stroke="#fbbf24" stroke-width="2.3" opacity="0.19" /></g>
+  <polygon points="157.9,123.5 172.6,138.2 157.9,152.9 143.2,138.2" fill="#f97316" opacity="0.19" />
+    <circle cx="127.1" cy="212.8" r="40.4" fill="#f97316" opacity="0.12" />
+    <rect x="39.1" y="219.3" width="34.1" height="34.1" fill="#f97316" opacity="0.15" />
+    <rect x="-35.6" y="451.8" width="82.9" height="82.9" fill="#ef4444" opacity="0.17" />
+    <rect x="295.8" y="19.4" width="99.2" height="99.2" fill="#f97316" opacity="0.24" />
+    <polygon points="349.0,215.7 359.6,236.9 338.4,236.9" fill="#ef4444" opacity="0.22" />
+    <rect x="301.9" y="217.3" width="25.2" height="25.2" fill="#fbbf24" opacity="0.25" />
+    <circle cx="345.3" cy="48.7" r="30.3" fill="#f97316" opacity="0.39" />
+    <polygon points="251.3,148.6 300.7,247.4 201.9,247.4" fill="#ef4444" opacity="0.20" />
+    <polygon points="75.5,218.9 106.8,250.2 75.5,281.5 44.1,250.2" fill="#f97316" opacity="0.33" />
+    <circle cx="110.6" cy="150.9" r="36.7" fill="#ef4444" opacity="0.25" />
+    <polygon points="271.7,354.9 295.7,402.8 247.8,402.8" fill="#f97316" opacity="0.29" />
+    <rect x="22.6" y="-19.8" width="51.4" height="51.4" fill="#ef4444" opacity="0.14" />
+    <rect x="275.9" y="466.3" width="23.4" height="23.4" fill="#ef4444" opacity="0.20" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-10" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#f97316;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-10)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Trophy Tom</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Trophy Tom</text>
+  
+  <!-- Rarity border -->
+  <rect x="5" y="5" width="390" height="540"
+        fill="none" stroke="#a855f7" stroke-width="10" rx="8" ry="8" />
+</svg>

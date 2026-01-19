@@ -1,0 +1,92 @@
+---
+/**
+ * SETTINGS-001: Settings Page
+ *
+ * Allows users to:
+ * - Adjust audio settings (volume, mute, sound theme)
+ * - Configure animation settings (motion mode, quality, cinematic mode)
+ * - Set language preference
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SettingsManager from '@/components/settings/SettingsManager.svelte';
+import Navigation from '@/components/common/Navigation.svelte';
+import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
+import { getFullURL } from '@/lib/seo';
+
+// Enhanced SEO for settings page
+const title = "Settings - DadDeck Trading Card Game";
+const description = "Customize your DadDeck experience. Adjust audio volume, configure animations, and choose your language preference in the free browser TCG simulator.";
+const settingsPageURL = getFullURL('/settings');
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+>
+  <ErrorBoundary component="Navigation" fallbackMessage="Navigation unavailable. Please reload the page.">
+    <Navigation client:load />
+  </ErrorBoundary>
+
+  <main class="settings-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>Settings</h1>
+        <p>Customize your DadDeck experience</p>
+      </header>
+
+      <ErrorBoundary
+        component="SettingsManager"
+        fallbackTitle="Settings Error"
+        fallbackMessage="We couldn't load the settings panel. Please refresh the page."
+        onRetry={() => window.location.reload()}
+      >
+        <SettingsManager client:only="svelte" />
+      </ErrorBoundary>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .settings-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header p {
+    font-size: 1.125rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+    }
+  }
+</style>

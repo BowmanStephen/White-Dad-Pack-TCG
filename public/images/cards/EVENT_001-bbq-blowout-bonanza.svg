@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-EVENT_001" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-EVENT_001">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.18076236336492002)" />
+  <g opacity="0.3"><rect x="92.3" y="367.6" width="28.7" height="28.7" fill="none" stroke="#ef4444" stroke-width="2.1" opacity="0.24" />
+    <rect x="24.6" y="170.5" width="26.3" height="26.3" fill="none" stroke="#fbbf24" stroke-width="2.3" opacity="0.14" />
+    <circle cx="173.4" cy="290.3" r="32.1" fill="none" stroke="#fbbf24" stroke-width="1.9" opacity="0.26" />
+    <rect x="222.0" y="286.2" width="68.4" height="68.4" fill="none" stroke="#fbbf24" stroke-width="1.3" opacity="0.21" />
+    <circle cx="61.9" cy="435.7" r="24.8" fill="none" stroke="#ef4444" stroke-width="1.7" opacity="0.18" />
+    <circle cx="11.4" cy="432.0" r="23.3" fill="none" stroke="#fbbf24" stroke-width="2.0" opacity="0.24" />
+    <circle cx="55.5" cy="277.9" r="11.6" fill="none" stroke="#ef4444" stroke-width="1.6" opacity="0.13" />
+    <rect x="236.3" y="143.1" width="25.1" height="25.1" fill="none" stroke="#fbbf24" stroke-width="2.9" opacity="0.23" />
+    <rect x="32.5" y="397.7" width="37.5" height="37.5" fill="none" stroke="#fbbf24" stroke-width="1.4" opacity="0.19" /></g>
+  <circle cx="82.3" cy="190.8" r="15.7" fill="#fbbf24" opacity="0.37" />
+    <rect x="374.0" y="277.0" width="47.0" height="47.0" fill="#fbbf24" opacity="0.29" />
+    <polygon points="100.1,372.0 127.9,399.8 100.1,427.6 72.3,399.8" fill="#ef4444" opacity="0.40" />
+    <circle cx="154.4" cy="415.5" r="14.6" fill="#f97316" opacity="0.13" />
+    <polygon points="9.7,65.4 32.2,110.4 -12.8,110.4" fill="#ef4444" opacity="0.11" />
+    <circle cx="362.9" cy="499.3" r="45.0" fill="#f97316" opacity="0.26" />
+    <rect x="265.7" y="283.0" width="61.2" height="61.2" fill="#f97316" opacity="0.28" />
+    <rect x="312.2" y="42.4" width="84.9" height="84.9" fill="#fbbf24" opacity="0.25" />
+    <polygon points="92.7,77.5 122.8,137.8 62.5,137.8" fill="#fbbf24" opacity="0.37" />
+    <polygon points="221.2,183.7 255.5,218.0 221.2,252.3 186.8,218.0" fill="#ef4444" opacity="0.27" />
+    <circle cx="347.5" cy="82.2" r="25.4" fill="#fbbf24" opacity="0.22" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-19" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#f97316;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-19)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">BBQ Blowout Bonanza</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">BBQ Blowout Bonanza</text>
+  
+  <!-- Rarity border -->
+  <rect x="4" y="4" width="392" height="542"
+        fill="none" stroke="#eab308" stroke-width="8" rx="8" ry="8" />
+</svg>

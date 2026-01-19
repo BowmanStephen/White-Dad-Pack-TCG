@@ -1,0 +1,17 @@
+# robots.txt - DadDeck Trading Card Game
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow offline page from indexing (already has noindex meta tag)
+Disallow: /offline
+
+# Disallow test pages
+Disallow: /test
+
+# Sitemap location
+Sitemap: https://dadddeck.com/sitemap.xml
+
+# Crawl delay (optional, be respectful)
+Crawl-delay: 1

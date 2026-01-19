@@ -1,0 +1,59 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BatchOpener from '@/components/batch/BatchOpener.svelte';
+---
+
+<BaseLayout title="Batch Opening - DadDeck TCG">
+  <main class="container">
+    <div class="page-header">
+      <h1>Batch Opening</h1>
+      <p>Open multiple packs at once with fast-forward mode</p>
+    </div>
+
+    <div class="batch-container">
+      <BatchOpener client:load />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header p {
+    color: #9ca3af;
+    font-size: 1.125rem;
+  }
+
+  .batch-container {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+    }
+  }
+</style>

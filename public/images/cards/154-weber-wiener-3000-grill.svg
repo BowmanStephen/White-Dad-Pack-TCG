@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-154" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#94a3b8;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-154">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.6212749995756894)" />
+  <g opacity="0.3"><circle cx="190.4" cy="407.2" r="19.2" fill="none" stroke="#64748b" stroke-width="2.6" opacity="0.14" />
+    <rect x="67.6" y="84.5" width="49.8" height="49.8" fill="none" stroke="#64748b" stroke-width="2.9" opacity="0.14" />
+    <rect x="131.6" y="496.2" width="43.0" height="43.0" fill="none" stroke="#64748b" stroke-width="3.0" opacity="0.20" />
+    <rect x="182.2" y="32.7" width="79.2" height="79.2" fill="none" stroke="#64748b" stroke-width="1.2" opacity="0.13" />
+    <circle cx="314.3" cy="358.0" r="30.0" fill="none" stroke="#64748b" stroke-width="1.3" opacity="0.17" />
+    <rect x="211.8" y="189.3" width="58.4" height="58.4" fill="none" stroke="#fbbf24" stroke-width="1.2" opacity="0.12" />
+    <circle cx="8.3" cy="350.1" r="34.0" fill="none" stroke="#94a3b8" stroke-width="1.9" opacity="0.25" />
+    <rect x="59.8" y="473.5" width="78.0" height="78.0" fill="none" stroke="#94a3b8" stroke-width="2.2" opacity="0.16" />
+    <circle cx="210.9" cy="53.2" r="25.9" fill="none" stroke="#fbbf24" stroke-width="1.4" opacity="0.20" />
+    <rect x="282.1" y="19.9" width="55.4" height="55.4" fill="none" stroke="#64748b" stroke-width="2.9" opacity="0.18" />
+    <circle cx="181.5" cy="14.0" r="21.8" fill="none" stroke="#94a3b8" stroke-width="1.2" opacity="0.13" />
+    <circle cx="302.3" cy="443.0" r="36.5" fill="none" stroke="#64748b" stroke-width="2.3" opacity="0.23" />
+    <rect x="261.0" y="180.0" width="77.9" height="77.9" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity="0.13" /></g>
+  <circle cx="41.0" cy="339.0" r="29.3" fill="#fbbf24" opacity="0.30" />
+    <circle cx="269.8" cy="170.9" r="15.8" fill="#64748b" opacity="0.39" />
+    <circle cx="115.0" cy="367.0" r="41.5" fill="#94a3b8" opacity="0.11" />
+    <circle cx="72.2" cy="374.4" r="46.2" fill="#94a3b8" opacity="0.10" />
+    <polygon points="180.0,398.8 228.9,447.7 180.0,496.7 131.0,447.7" fill="#64748b" opacity="0.37" />
+    <circle cx="177.5" cy="187.7" r="39.4" fill="#fbbf24" opacity="0.22" />
+    <circle cx="183.1" cy="172.6" r="21.0" fill="#fbbf24" opacity="0.16" />
+    <rect x="97.5" y="492.2" width="53.6" height="53.6" fill="#fbbf24" opacity="0.27" />
+    <polygon points="14.3,118.6 25.0,140.1 3.5,140.1" fill="#fbbf24" opacity="0.31" />
+    <rect x="128.4" y="-30.5" width="70.8" height="70.8" fill="#64748b" opacity="0.18" />
+    <circle cx="349.7" cy="312.6" r="44.5" fill="#64748b" opacity="0.16" />
+    <circle cx="331.2" cy="414.9" r="17.2" fill="#64748b" opacity="0.19" />
+    <rect x="211.4" y="100.5" width="59.2" height="59.2" fill="#fbbf24" opacity="0.35" />
+    <polygon points="343.9,-2.9 355.8,20.9 332.0,20.9" fill="#94a3b8" opacity="0.23" />
+    <circle cx="323.2" cy="0.3" r="38.4" fill="#fbbf24" opacity="0.38" />
+    <circle cx="283.5" cy="73.7" r="32.9" fill="#94a3b8" opacity="0.37" />
+    <circle cx="239.4" cy="382.2" r="17.7" fill="#64748b" opacity="0.37" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-23" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#64748b;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-23)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Weber Wiener 3000 Grill</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Weber Wiener 3000 Grill</text>
+  
+  <!-- Rarity border -->
+  <rect x="6" y="6" width="388" height="538"
+        fill="none" stroke="#f97316" stroke-width="12" rx="8" ry="8" />
+</svg>

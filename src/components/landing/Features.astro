@@ -1,0 +1,100 @@
+---
+const t = {
+  title: 'Why DadDeck?',
+  subtitle: 'Experience the thrill of pack opening without the guilt of spending your life savings on cardboard.',
+  features: [
+    {
+      icon: '🎴',
+      title: 'Free Pack Opening',
+      description: 'Unlimited pack opening. No coins, no gems, no waiting. Just pure dad-collecting joy whenever you want.',
+    },
+    {
+      icon: '👨‍👧‍👦',
+      title: '50+ Unique Cards',
+      description: 'From BBQ Dad to Thermostat Tyrant, collect every suburban archetype in the cul-de-sac.',
+    },
+    {
+      icon: '📤',
+      title: 'Share Your Pulls',
+      description: 'Brag about your legendary pulls with shareable card images. Your friends need to see that mythic.',
+    },
+    {
+      icon: '🚫',
+      title: 'No Microtransactions',
+      description: 'Zero. Zilch. Nada. This is a labor of love, not a cash grab. Enjoy forever, free.',
+    },
+  ],
+};
+
+const features = t.features;
+---
+
+<section id="features" aria-labelledby="features-heading" class="py-24 px-4 relative overflow-hidden">
+  <!-- Background texture -->
+  <div class="absolute inset-0 opacity-5">
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle, #f59e0b 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto relative z-10">
+    <!-- Section header -->
+    <div class="text-center mb-16">
+      <h2 id="features-heading" class="text-4xl md:text-5xl font-bold mb-4">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
+          {t.title}
+        </span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Feature cards grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      {features.map((feature: { icon: string; title: string; description: string }, index: number) => (
+        <div
+          class="group relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 hover:border-amber-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/10"
+          style="animation-delay: ${index * 100}ms"
+        >
+          <!-- Decorative corner accent -->
+          <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden rounded-tr-2xl">
+            <div class="absolute top-0 right-0 w-8 h-8 bg-gradient-to-br from-amber-500/20 to-transparent transform rotate-45 translate-x-4 -translate-y-4"></div>
+          </div>
+
+          <!-- Icon -->
+          <div class="text-5xl mb-4 transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+            {feature.icon}
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors">
+            {feature.title}
+          </h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            {feature.description}
+          </p>
+
+          <!-- Hover glow effect -->
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/0 to-orange-500/0 group-hover:from-amber-500/5 group-hover:to-orange-500/5 transition-opacity duration-300 pointer-events-none"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  #features > div > div:nth-child(2) > div {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+</style>

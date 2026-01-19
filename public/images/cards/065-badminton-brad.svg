@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" width="400" height="550">
+  <defs>
+    <linearGradient id="bg-gradient-065" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.26" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0.26" />
+    </linearGradient>
+    
+  <filter id="shadow-065">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.8"/>
+  </filter>
+  </defs>
+  <rect width="400" height="550" fill="url(#bg-gradient-0.6823911548126489)" />
+  <g opacity="0.3"><circle cx="335.8" cy="76.2" r="26.8" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity="0.23" />
+    <circle cx="101.3" cy="530.6" r="30.9" fill="none" stroke="#f97316" stroke-width="2.3" opacity="0.19" />
+    <circle cx="336.1" cy="338.2" r="19.1" fill="none" stroke="#fbbf24" stroke-width="1.6" opacity="0.20" />
+    <circle cx="27.5" cy="524.4" r="31.8" fill="none" stroke="#ef4444" stroke-width="2.5" opacity="0.22" />
+    <rect x="109.6" y="176.2" width="22.5" height="22.5" fill="none" stroke="#f97316" stroke-width="2.8" opacity="0.14" /></g>
+  <polygon points="393.3,-11.6 422.3,46.3 364.3,46.3" fill="#f97316" opacity="0.25" />
+    <circle cx="213.9" cy="297.9" r="47.9" fill="#fbbf24" opacity="0.32" />
+    <rect x="-11.9" y="474.8" width="95.6" height="95.6" fill="#f97316" opacity="0.10" />
+    <polygon points="290.4,334.8 319.3,392.6 261.5,392.6" fill="#fbbf24" opacity="0.23" />
+    <rect x="90.9" y="36.8" width="59.5" height="59.5" fill="#ef4444" opacity="0.17" />
+  
+  <!-- Text background banner -->
+  <defs>
+    <linearGradient id="text-bg-14" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#f97316;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="494" width="400" height="56" fill="url(#text-bg-14)" />
+
+  <!-- Text shadow -->
+  <text x="200" y="522" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.8">Badminton Brad</text>
+
+  <!-- Main text -->
+  <text x="200" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">Badminton Brad</text>
+  
+  <!-- Rarity border -->
+  <rect x="2" y="2" width="396" height="546"
+        fill="none" stroke="#9ca3af" stroke-width="4" rx="8" ry="8" />
+</svg>

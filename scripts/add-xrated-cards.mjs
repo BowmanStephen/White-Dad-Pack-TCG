@@ -1,0 +1,593 @@
+#!/usr/bin/env node
+
+/**
+ * Script to integrate X-rated DadDeck characters from DadDecK_Card_Types.md
+ * into src/data/cards.json
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const cardsJsonPath = path.join(__dirname, '../src/data/cards.json');
+
+// New X-rated cards to add
+const newCards = [
+  // DUNE CROSSOVER EVENT
+  {
+    id: '131',
+    name: 'Paul Atreides Ass-Traitor',
+    subtitle: "Muad'Dib Meat-Masher",
+    type: 'DUNE_DICKTATOR',
+    rarity: 'legendary',
+    artwork: '/cards/paul-atreides-ass-traitor.svg',
+    stats: {
+      dadJoke: 90,
+      grillSkill: 40,
+      fixIt: 70,
+      napPower: 60,
+      remoteControl: 80,
+      thermostat: 85,
+      sockSandal: 75,
+      beerSnob: 70,
+    },
+    flavorText: 'I fuck the spice raw! Herberts got Fed plots in every grain! The desert is my kingdom! Arrakis is a terraforming plot to control dicks!',
+    abilities: [
+      {
+        name: 'Spice Stroke',
+        description: '+50 mind control damage. Worms go crazy. Big Warner Bros controls spice!',
+      },
+    ],
+    series: 1,
+    cardNumber: 131,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'DUNE_CROSSOVER',
+  },
+  {
+    id: '132',
+    name: 'Leto Lawnreides II',
+    subtitle: 'God-Emperor Groin-Grinder',
+    type: 'DUNE_DICKTATOR',
+    rarity: 'mythic',
+    artwork: '/cards/leto-lawnreides.svg',
+    stats: {
+      dadJoke: 95,
+      grillSkill: 35,
+      fixIt: 75,
+      napPower: 65,
+      remoteControl: 85,
+      thermostat: 90,
+      sockSandal: 80,
+      beerSnob: 75,
+    },
+    flavorText: 'I hump sandworms til I bust! 5G in worm suit! Golden Path is golden dick! IKEA dunes got CIA blades!',
+    abilities: [
+      {
+        name: 'Worm Wank',
+        description: '+60 AOE sand damage. Sandworm allies fuck everything. Big Spice controls pools!',
+      },
+    ],
+    series: 1,
+    cardNumber: 132,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'DUNE_CROSSOVER',
+  },
+  {
+    id: '133',
+    name: 'Duncan Idaho Dick-Hoe',
+    subtitle: 'Swordmaster Sperm-Slasher',
+    type: 'DUNE_DICKTATOR',
+    rarity: 'epic',
+    artwork: '/cards/duncan-idaho-dick-hoe.svg',
+    stats: {
+      dadJoke: 80,
+      grillSkill: 50,
+      fixIt: 80,
+      napPower: 55,
+      remoteControl: 70,
+      thermostat: 75,
+      sockSandal: 85,
+      beerSnob: 65,
+    },
+    flavorText: 'I fuck swords raw! CIA in desert blades! Blade is cock! Swordsmanship is mind control! Learned from YouTube! Opponent dead!',
+    abilities: [
+      {
+        name: 'Blade Boner',
+        description: '+40 melee strike. Slashes with penis energy. Big Holtzman shields got backdoors!',
+      },
+    ],
+    series: 1,
+    cardNumber: 133,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'DUNE_CROSSOVER',
+  },
+  {
+    id: '134',
+    name: 'Stilgar Sand-Shlong',
+    subtitle: 'Fremen Fuck-Fighter',
+    type: 'DUNE_DICKTATOR',
+    rarity: 'rare',
+    artwork: '/cards/stilgar-sand-shlong.svg',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 45,
+      fixIt: 65,
+      napPower: 50,
+      remoteControl: 60,
+      thermostat: 80,
+      sockSandal: 70,
+      beerSnob: 60,
+    },
+    flavorText: 'I hump stillsuits raw! Big Spice tracking cum in Arrakis! Water sacred! Semen holier! Dehydration is psyop! I piss suit!',
+    abilities: [
+      {
+        name: 'Water Wank',
+        description: '+30 survival boost. Controls water. Big Arrakis monopoly! Suit leaks!',
+      },
+    ],
+    series: 1,
+    cardNumber: 134,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'DUNE_CROSSOVER',
+  },
+
+  // COCA-COLA CROSSOVER EVENT
+  {
+    id: '135',
+    name: 'Coke Can Cock-Crasher',
+    subtitle: 'Fizzy Fuck-Fountain',
+    type: 'SODA_SUCKER',
+    rarity: 'rare',
+    artwork: '/cards/coke-can-cock-crasher.svg',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 40,
+      fixIt: 50,
+      napPower: 60,
+      remoteControl: 65,
+      thermostat: 70,
+      sockSandal: 75,
+      beerSnob: 85,
+    },
+    flavorText: 'I fuck Coke raw! Government mind control fizz! Bubbles are nano-machines! I drink it anyway!',
+    abilities: [
+      {
+        name: 'Carbonation Cum',
+        description: '+30 sugar damage. Fizzes enemies. Big Soda controls levels! Different taste gov interference!',
+      },
+    ],
+    series: 1,
+    cardNumber: 135,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'COLA_CROSSOVER',
+  },
+  {
+    id: '136',
+    name: 'Diet Dad Cola',
+    subtitle: 'Zero Calorie Zero Cum',
+    type: 'SODA_SUCKER',
+    rarity: 'epic',
+    artwork: '/cards/diet-dad-cola.svg',
+    stats: {
+      dadJoke: 80,
+      grillSkill: 35,
+      fixIt: 45,
+      napPower: 55,
+      remoteControl: 70,
+      thermostat: 75,
+      sockSandal: 80,
+      beerSnob: 90,
+    },
+    flavorText: 'I hump Diet Coke til I bust! 5G sweeteners! Aspartame brain-softening! Wife concerned waistline!',
+    abilities: [
+      {
+        name: 'Aspartame Ass-Attack',
+        description: '+40 diet strike. Chemical sweetness attacks. Aspartame mind control! Drinks 8 cans daily!',
+      },
+    ],
+    series: 1,
+    cardNumber: 136,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'COLA_CROSSOVER',
+  },
+
+  // IKEA CROSSOVER EVENT
+  {
+    id: '137',
+    name: 'Billy Bookshelf Boner-Banger',
+    subtitle: 'Shelf Shlong-Shover',
+    type: 'FURNITURE_FREAK',
+    rarity: 'rare',
+    artwork: '/cards/billy-bookshelf-boner-banger.svg',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 30,
+      fixIt: 85,
+      napPower: 50,
+      remoteControl: 60,
+      thermostat: 70,
+      sockSandal: 75,
+      beerSnob: 65,
+    },
+    flavorText: 'I fuck bookshelves raw! IKEA spy cams in wrenches! Swedish tech disguised as furniture! Self-assembled! Wobbly! Tinfoil helps!',
+    abilities: [
+      {
+        name: 'Assembly Ass-Attack',
+        description: '+30 build damage. Incorrect assembly destroys! Big IKEA controls instructions! Shelf collapses!',
+      },
+    ],
+    series: 1,
+    cardNumber: 137,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'IKEA_CROSSOVER',
+  },
+  {
+    id: '138',
+    name: 'Malm Mattress Meat-Masher',
+    subtitle: 'Bedframe Boner-Breaker',
+    type: 'FURNITURE_FREAK',
+    rarity: 'epic',
+    artwork: '/cards/malm-mattress-meat-masher.svg',
+    stats: {
+      dadJoke: 80,
+      grillSkill: 25,
+      fixIt: 90,
+      napPower: 55,
+      remoteControl: 65,
+      thermostat: 75,
+      sockSandal: 80,
+      beerSnob: 60,
+    },
+    flavorText: 'I hump bedframes til I bust! 5G flatpacks mind control! Swedish sleep science psyop! Assembled wrong! Sideways! Comfier!',
+    abilities: [
+      {
+        name: 'Screwdriver Sperm',
+        description: '+40 setup strike. Bolts tightened dick energy! Instructions coded gov messages! Duct tape bed!',
+      },
+    ],
+    series: 1,
+    cardNumber: 138,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+    event: 'IKEA_CROSSOVER',
+  },
+
+  // BBQ_BRAWLER ARCHETYPE
+  {
+    id: '139',
+    name: 'Tailgate Tit-Tackler',
+    subtitle: 'Grillgate Groin-Grunter',
+    type: 'BBQ_BRAWLER',
+    rarity: 'rare',
+    artwork: '/cards/tailgate-tit-tackler.svg',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 90,
+      fixIt: 50,
+      napPower: 60,
+      remoteControl: 60,
+      thermostat: 70,
+      sockSandal: 80,
+      beerSnob: 75,
+    },
+    flavorText: 'I fuck tailgates raw! Big Sports got spy beers! Football distraction from chemtrails! Grill every game! Confiscated yearly!',
+    abilities: [
+      {
+        name: 'Beer Pong Boner',
+        description: '+30 party damage. Beer-fueled allies! Big Sports controls foam! Stadium HAARP! Cooler infinite!',
+      },
+    ],
+    series: 1,
+    cardNumber: 139,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+  {
+    id: '140',
+    name: 'Wingman Wiener-Wanker',
+    subtitle: 'Hot Wing Hump-Hero',
+    type: 'BBQ_BRAWLER',
+    rarity: 'epic',
+    artwork: '/cards/wingman-wiener-wanker.svg',
+    stats: {
+      dadJoke: 80,
+      grillSkill: 95,
+      fixIt: 45,
+      napPower: 55,
+      remoteControl: 65,
+      thermostat: 75,
+      sockSandal: 85,
+      beerSnob: 80,
+    },
+    flavorText: 'I hump hot wings til I bust! 5G in ranch! Chicken conspiracy deep! Sauce is neural suppressant! 47 wings per game! Doctor concerned! Tinfoil burns!',
+    abilities: [
+      {
+        name: 'Sauce Slam',
+        description: '+40 spicy attack. Hot sauce drowns! Heat controlled gov! Mouth bleeds! Keeps eating!',
+      },
+    ],
+    series: 1,
+    cardNumber: 140,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+
+  // SON_SPAWNS ARCHETYPE
+  {
+    id: '141',
+    name: 'Skater Spawn Shawn',
+    subtitle: 'Deck Dick-Dropper',
+    type: 'SON_SPAWN',
+    rarity: 'rare',
+    artwork: '/cards/skater-spawn-shawn.svg',
+    stats: {
+      dadJoke: 70,
+      grillSkill: 20,
+      fixIt: 40,
+      napPower: 60,
+      remoteControl: 75,
+      thermostat: 65,
+      sockSandal: 85,
+      beerSnob: 60,
+    },
+    flavorText: 'I fuck skateboards raw! Dad CIA stooge! Tracking TikTok! Skateboarding is freedom! Dad wasting life right! But fun while collapse!',
+    abilities: [
+      {
+        name: 'Grind Groin',
+        description: '+30 agility damage. Grinds defenses! Big Gov controls trick difficulty! Dad listening through shoes!',
+      },
+    ],
+    series: 1,
+    cardNumber: 141,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+  {
+    id: '142',
+    name: 'Gamer Gizzard Greg',
+    subtitle: 'Controller Cock-Crasher',
+    type: 'SON_SPAWN',
+    rarity: 'uncommon',
+    artwork: '/cards/gamer-gizzard-greg.svg',
+    stats: {
+      dadJoke: 65,
+      grillSkill: 15,
+      fixIt: 35,
+      napPower: 55,
+      remoteControl: 80,
+      thermostat: 60,
+      sockSandal: 70,
+      beerSnob: 55,
+    },
+    flavorText: 'I hump Xbox raw! Dad buggin Fortnite! Big Tech! Only escape gov mind control! Dad addicted cable news! Honest addiction!',
+    abilities: [
+      {
+        name: 'Headset Hump',
+        description: '+20 tech strike. Online multiplayer control! Dad hears headset! WiFi sounds different!',
+      },
+    ],
+    series: 1,
+    cardNumber: 142,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+
+  // DAUGHTER_DINGBATS ARCHETYPE
+  {
+    id: '143',
+    name: 'Selfie Slut Sarah',
+    subtitle: 'Filter Fuck-Face',
+    type: 'DAUGHTER_DINGBAT',
+    rarity: 'rare',
+    artwork: '/cards/selfie-slut-sarah.svg',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 20,
+      fixIt: 30,
+      napPower: 60,
+      remoteControl: 80,
+      thermostat: 70,
+      sockSandal: 85,
+      beerSnob: 65,
+    },
+    flavorText: 'I fuck selfies raw! Dad patriarchal Fed! Tracking Insta! Instagram data collection psyop! Post truth! Wait Dad tracked! Block Dad!',
+    abilities: [
+      {
+        name: 'Snap Stroke',
+        description: '+30 charm damage. Filter mesmerizes! Big Tech controls beauty! Dad meme accident!',
+      },
+    ],
+    series: 1,
+    cardNumber: 143,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+  {
+    id: '144',
+    name: 'Cheerleader Cum-Caller',
+    subtitle: 'Pom-Pom Pussy-Pumper',
+    type: 'DAUGHTER_DINGBAT',
+    rarity: 'uncommon',
+    artwork: '/cards/cheerleader-cum-caller.svg',
+    stats: {
+      dadJoke: 70,
+      grillSkill: 25,
+      fixIt: 35,
+      napPower: 55,
+      remoteControl: 75,
+      thermostat: 65,
+      sockSandal: 80,
+      beerSnob: 60,
+    },
+    flavorText: 'I hump pom-poms raw! Dad sexist agent! Buggin squad! Cheerleading sisterhood! Not real sport! National champs! Scoreboards doped gov!',
+    abilities: [
+      {
+        name: 'Chant Cum',
+        description: '+20 morale boost. Squad frenzy! Big Education controls events! Dad yelling scoreboard!',
+      },
+    ],
+    series: 1,
+    cardNumber: 144,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+
+  // UNCLE_UPROARS ARCHETYPE
+  {
+    id: '145',
+    name: 'Uncle Useless Ulysses',
+    subtitle: 'Basement Boner-Bum',
+    type: 'UNCLE_UPROAR',
+    rarity: 'rare',
+    artwork: '/cards/uncle-useless-ulysses.svg',
+    stats: {
+      dadJoke: 75,
+      grillSkill: 30,
+      fixIt: 60,
+      napPower: 70,
+      remoteControl: 65,
+      thermostat: 75,
+      sockSandal: 80,
+      beerSnob: 70,
+    },
+    flavorText: 'I fuck old junk raw! Thanksgiving gov plot! Tracking turkey! Basement 1970s memorabilia! All valuable! Brother shill! Gov wants vintage!',
+    abilities: [
+      {
+        name: 'Creep Cum',
+        description: '+30 weird damage. Basement knowledge disturbs! Gov wants collection! VHS mislabeled!',
+      },
+    ],
+    series: 1,
+    cardNumber: 145,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+  {
+    id: '146',
+    name: 'Uncle Unhinged Uriah',
+    subtitle: 'Conspiracy Cock-Crank',
+    type: 'UNCLE_UPROAR',
+    rarity: 'uncommon',
+    artwork: '/cards/uncle-unhinged-uriah.svg',
+    stats: {
+      dadJoke: 70,
+      grillSkill: 25,
+      fixIt: 55,
+      napPower: 65,
+      remoteControl: 60,
+      thermostat: 70,
+      sockSandal: 75,
+      beerSnob: 65,
+    },
+    flavorText: 'I hump crazy raw! Big Family buggin cranberry! Thanksgiving distributes surveillance turkeys! Family insane! I shepherd truth! Tinfoil crown!',
+    abilities: [
+      {
+        name: 'Tinfoil Tirade',
+        description: '+20 confusion attack. Conspiracy confuses! Big Everything controls! Family mutes holidays!',
+      },
+    ],
+    series: 1,
+    cardNumber: 146,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+
+  // SUBURBAN_SIDEKICKS ARCHETYPE
+  {
+    id: '147',
+    name: 'Mailman Meat-Molester',
+    subtitle: 'Package Pussy-Prowler',
+    type: 'SUBURBAN_SIDEKICK',
+    rarity: 'rare',
+    artwork: '/cards/mailman-meat-molester.svg',
+    stats: {
+      dadJoke: 70,
+      grillSkill: 30,
+      fixIt: 50,
+      napPower: 60,
+      remoteControl: 70,
+      thermostat: 65,
+      sockSandal: 75,
+      beerSnob: 60,
+    },
+    flavorText: 'I fuck packages raw! USPS Deep State trackers! Letter scans! Package monitored! Found hair box! Gov! Delivered anyway! Tinfoil filter!',
+    abilities: [
+      {
+        name: 'Delivery Dick',
+        description: '+30 stealth damage. Package infiltrate! Big Gov controls delivery times! Checks boxes twice!',
+      },
+    ],
+    series: 1,
+    cardNumber: 147,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+  {
+    id: '148',
+    name: 'Dog Walker Dick-Wagger',
+    subtitle: 'Leash Lust-Licker',
+    type: 'SUBURBAN_SIDEKICK',
+    rarity: 'uncommon',
+    artwork: '/cards/dog-walker-dick-wagger.svg',
+    stats: {
+      dadJoke: 65,
+      grillSkill: 25,
+      fixIt: 45,
+      napPower: 55,
+      remoteControl: 65,
+      thermostat: 60,
+      sockSandal: 70,
+      beerSnob: 55,
+    },
+    flavorText: 'I hump leashes raw! Big Pet spy collars Fido! Dog trackers gov! My collars! Wait! Tinfoil collar blocks 5G dog signals!',
+    abilities: [
+      {
+        name: 'Bark Boner',
+        description: '+20 pet power strike. Dog pack! Dogs sense gov! Dog wants treats!',
+      },
+    ],
+    series: 1,
+    cardNumber: 148,
+    totalInSeries: 200,
+    artist: 'DadArt Studios',
+    seasonId: 3,
+  },
+];
+
+// Read existing cards
+const cardsData = JSON.parse(fs.readFileSync(cardsJsonPath, 'utf-8'));
+
+// Add new cards
+cardsData.cards.push(...newCards);
+
+// Write updated cards file
+fs.writeFileSync(cardsJsonPath, JSON.stringify(cardsData, null, 2));
+
+console.log(`✅ Added ${newCards.length} X-rated cards to cards.json`);
+console.log(`📊 Total cards now: ${cardsData.cards.length}`);
+console.log(`🎮 New rarities: Dune, Coca-Cola, IKEA crossovers + archetypes`);

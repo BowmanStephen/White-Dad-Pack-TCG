@@ -1,0 +1,513 @@
+/**
+ * CSS Fallbacks for Older Browsers
+ *
+ * Provides graceful degradation for browsers that don't support:
+ * - CSS Grid
+ * - CSS Flexbox
+ * - CSS Custom Properties (variables)
+ * - Modern viewport units (dvh)
+ *
+ * These rules use @supports queries to provide fallbacks.
+ */
+
+/* ============================================================================
+   GRID LAYOUT FALLBACKS (Flexbox)
+   ============================================================================ */
+
+/* Fallback for browsers without CSS Grid */
+@supports not (display: grid) {
+  /* Card grids fall back to flexbox */
+  .card-grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .card-grid > * {
+    flex: 1 1 300px;
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+
+  /* Collection gallery grid */
+  .collection-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .collection-grid > * {
+    flex: 0 1 auto;
+    width: 150px;
+    margin: 0.5rem;
+  }
+
+  /* Feature cards grid */
+  .feature-grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .feature-grid > * {
+    flex: 1 1 300px;
+  }
+
+  /* Pack opening results */
+  .pack-results-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pack-results-grid > * {
+    flex: 0 1 auto;
+    width: 200px;
+    margin: 0.5rem;
+  }
+}
+
+/* ============================================================================
+   FLEXBOX FALLBACKS (Block + Float)
+   ============================================================================ */
+
+/* Fallback for browsers without CSS Flexbox */
+@supports not (display: flex) {
+  /* Navigation bars */
+  .nav-bar,
+  .navigation {
+    display: block;
+  }
+
+  .nav-bar > *,
+  .navigation > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* Button groups */
+  .button-group {
+    display: block;
+  }
+
+  .button-group button {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Centered content */
+  .flex-center {
+    text-align: center;
+  }
+
+  .flex-center > * {
+    display: inline-block;
+  }
+
+  /* Horizontal layouts */
+  .flex-row {
+    display: block;
+  }
+
+  .flex-row > * {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+
+  /* Vertical layouts */
+  .flex-col {
+    display: block;
+  }
+
+  .flex-col > * {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  /* Space between elements */
+  .justify-between {
+    text-align: justify;
+  }
+
+  .justify-between::after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+  }
+
+  /* Responsive columns (fallback to inline-block) */
+  .grid-cols-2 > * {
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+  }
+
+  .grid-cols-3 > * {
+    display: inline-block;
+    width: 31%;
+    vertical-align: top;
+  }
+
+  .grid-cols-4 > * {
+    display: inline-block;
+    width: 23%;
+    vertical-align: top;
+  }
+}
+
+/* ============================================================================
+   CSS VARIABLES FALLBACKS (Hardcoded Values)
+   ============================================================================ */
+
+/* Fallback for browsers without CSS Custom Properties */
+@supports not (--css: variables) {
+  /* Primary colors */
+  .bg-primary {
+    background-color: #f59e0b !important;
+  }
+
+  .text-primary {
+    color: #f59e0b !important;
+  }
+
+  .border-primary {
+    border-color: #f59e0b !important;
+  }
+
+  /* Rarity colors */
+  .bg-rarity-common {
+    background-color: #9ca3af !important;
+  }
+
+  .bg-rarity-uncommon {
+    background-color: #3b82f6 !important;
+  }
+
+  .bg-rarity-rare {
+    background-color: #eab308 !important;
+  }
+
+  .bg-rarity-epic {
+    background-color: #a855f7 !important;
+  }
+
+  .bg-rarity-legendary {
+    background-color: #f97316 !important;
+  }
+
+  .bg-rarity-mythic {
+    background-color: #ec4899 !important;
+  }
+
+  /* Spacing */
+  .spacing-xs {
+    padding: 0.25rem !important;
+  }
+
+  .spacing-sm {
+    padding: 0.5rem !important;
+  }
+
+  .spacing-md {
+    padding: 1rem !important;
+  }
+
+  .spacing-lg {
+    padding: 1.5rem !important;
+  }
+
+  .spacing-xl {
+    padding: 2rem !important;
+  }
+
+  /* Typography */
+  .text-xs {
+    font-size: 0.75rem !important;
+  }
+
+  .text-sm {
+    font-size: 0.875rem !important;
+  }
+
+  .text-base {
+    font-size: 1rem !important;
+  }
+
+  .text-lg {
+    font-size: 1.125rem !important;
+  }
+
+  .text-xl {
+    font-size: 1.25rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.5rem !important;
+  }
+
+  .text-3xl {
+    font-size: 1.875rem !important;
+  }
+
+  /* Border radius */
+  .rounded {
+    border-radius: 0.25rem !important;
+  }
+
+  .rounded-lg {
+    border-radius: 0.5rem !important;
+  }
+
+  .rounded-full {
+    border-radius: 9999px !important;
+  }
+
+  /* Shadows */
+  .shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Transitions */
+  .transition {
+    transition: all 0.3s ease !important;
+  }
+
+  .transition-fast {
+    transition: all 0.15s ease !important;
+  }
+
+  .transition-slow {
+    transition: all 0.5s ease !important;
+  }
+}
+
+/* ============================================================================
+   VIEWPORT HEIGHT FALLBACKS (vh instead of dvh)
+   ============================================================================ */
+
+/* Fallback for browsers without dynamic viewport units (dvh) */
+@supports not (height: 100dvh) {
+  .h-dvh {
+    height: 100vh !important;
+  }
+
+  .min-h-dvh {
+    min-height: 100vh !important;
+  }
+
+  .max-h-dvh {
+    max-height: 100vh !important;
+  }
+}
+
+/* ============================================================================
+   BACKDROP FILTER FALLBACKS (Solid colors instead of blur)
+   ============================================================================ */
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(10px)) {
+  .backdrop-blur-sm {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .backdrop-blur {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .backdrop-blur-lg {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  /* Dark mode backdrop fallbacks */
+  .dark .backdrop-blur-sm {
+    background-color: rgba(15, 23, 42, 0.95) !important;
+  }
+
+  .dark .backdrop-blur {
+    background-color: rgba(15, 23, 42, 0.9) !important;
+  }
+
+  .dark .backdrop-blur-lg {
+    background-color: rgba(15, 23, 42, 0.85) !important;
+  }
+}
+
+/* ============================================================================
+   GAP PROPERTY FALLBACKS (Margins instead)
+   ============================================================================ */
+
+/* Fallback for browsers without gap property in flex/grid */
+@supports not (gap: 1rem) {
+  .flex-gap-2 > * + * {
+    margin-left: 0.5rem;
+  }
+
+  .flex-gap-4 > * + * {
+    margin-left: 1rem;
+  }
+
+  .flex-gap-6 > * + * {
+    margin-left: 1.5rem;
+  }
+
+  .flex-gap-8 > * + * {
+    margin-left: 2rem;
+  }
+}
+
+/* ============================================================================
+   OBJECT-FIT FALLBACKS
+   ============================================================================ */
+
+/* Fallback for browsers without object-fit */
+@supports not (object-fit: cover) {
+  img, video {
+    width: 100%;
+    height: auto;
+  }
+
+  .card-artwork img {
+    width: 100%;
+    height: 100%;
+    object-fit: none; /* Disable object-fit */
+  }
+}
+
+/* ============================================================================
+   STICKY POSITION FALLBACKS (Fixed instead)
+   ============================================================================ */
+
+/* Fallback for browsers without position: sticky */
+@supports not (position: sticky) {
+  .sticky {
+    position: fixed;
+  }
+
+  .sticky-top {
+    position: fixed;
+    top: 0;
+  }
+}
+
+/* ============================================================================
+   CUSTOM SCROLLBAR FALLBACKS
+   ============================================================================ */
+
+/* Fallback for browsers without custom scrollbar styling */
+@supports not (::-webkit-scrollbar) {
+  /* Just ensure scrollbars work, even if default styling */
+  .overflow-auto,
+  .overflow-scroll {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============================================================================
+   PRINT STYLES (All browsers)
+   ============================================================================ */
+
+@media print {
+  /* Hide interactive elements */
+  .no-print,
+  button,
+  input,
+  select,
+  .browser-upgrade-banner,
+  .cookie-consent-banner,
+  .offline-banner {
+    display: none !important;
+  }
+
+  /* Ensure readable text */
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Remove dark backgrounds */
+  * {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Show card details */
+  .card {
+    break-inside: avoid;
+    border: 1px solid #000;
+    margin: 0.5rem;
+    page-break-inside: avoid;
+  }
+
+  /* Expand all content */
+  .collection-grid,
+  .pack-results {
+    display: block !important;
+  }
+
+  .collection-grid > *,
+  .pack-results > * {
+    display: block !important;
+    width: 100% !important;
+    margin: 0.5rem 0;
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION PREFERENCES
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Respect user's motion preferences */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable parallax effects */
+  .parallax {
+    transform: none !important;
+  }
+
+  /* Disable hover animations */
+  button:hover,
+  a:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE SUPPORT
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  /* Increase border visibility */
+  button,
+  a,
+  .card {
+    border: 2px solid currentColor;
+  }
+
+  /* Increase font weight for better readability */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+  }
+
+  /* Ensure sufficient color contrast */
+  .text-gray-400,
+  .text-gray-500,
+  .text-gray-600 {
+    color: #000;
+  }
+}

@@ -1,0 +1,376 @@
+{
+  "cards": [
+    {
+      "id": "fd_001",
+      "name": "Father's Day Frank",
+      "subtitle": "The Tie Collector",
+      "type": "COUCH_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/fathers-day-frank.svg",
+      "stats": {
+        "dadJoke": 95,
+        "grillSkill": 60,
+        "fixIt": 45,
+        "napPower": 80,
+        "remoteControl": 70,
+        "thermostat": 65,
+        "sockSandal": 50,
+        "beerSnob": 55
+      },
+      "flavorText": "Another tie? Seriously? I have 47 of them. But you're my kid, so I'll wear it. At least it's not another '#1 Dad' mug. Those things don't even keep coffee hot.",
+      "abilities": [
+        {
+          "name": "Tie Display",
+          "description": "Proudly displays the latest hideous tie from the kids. +20 Dad Joke, -10 Fashion Sense (not that I had any to begin with)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 1,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "reverse",
+      "seasonId": 2
+    },
+    {
+      "id": "fd_002",
+      "name": "Breakfast in Bed Dad",
+      "subtitle": "Burnt Toast & Cold Coffee Champion",
+      "type": "CHEF_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/breakfast-bed-dad.svg",
+      "stats": {
+        "dadJoke": 88,
+        "grillSkill": 40,
+        "fixIt": 35,
+        "napPower": 95,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 45,
+        "beerSnob": 50
+      },
+      "flavorText": "The kids tried! That's what matters. The toast is charcoal, the eggs are runny, and the coffee's been sitting for an hour. But they made it with love. I'll eat every bite and say it's delicious.",
+      "abilities": [
+        {
+          "name": "Proud Parent",
+          "description": "Forces Dad to eat burnt toast with a smile. +30 Nap Power (food coma), +15 Dad Joke (material for later)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 2,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "full_art",
+      "seasonId": 2
+    },
+    {
+      "id": "fd_003",
+      "name": "World's #1 Dad",
+      "subtitle": "Has 47 Identical Mugs",
+      "type": "COUCH_DAD",
+      "rarity": "common",
+      "artwork": "/cards/number-one-dad.svg",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 55,
+        "fixIt": 40,
+        "napPower": 65,
+        "remoteControl": 60,
+        "thermostat": 55,
+        "sockSandal": 50,
+        "beerSnob": 45
+      },
+      "flavorText": "Every Father's Day, another mug. I have enough mugs to start a mug shop. But I cherish every single one. Even the one from 1998 that says 'You're the Man'.",
+      "abilities": [
+        {
+          "name": "Mug Collection",
+          "description": "Displays the ever-growing collection of #1 Dad mugs. +10 Thermostat (hot coffee), +5 Dad Joke (I make the same joke every year)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 3,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "none",
+      "seasonId": 2
+    },
+    {
+      "id": "fd_004",
+      "name": "Grill Gift Guru",
+      "subtitle": "Received Yet Another Meat Thermometer",
+      "type": "BBQ_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/grill-gift-guru.svg",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 90,
+        "fixIt": 35,
+        "napPower": 50,
+        "remoteControl": 55,
+        "thermostat": 60,
+        "sockSandal": 65,
+        "beerSnob": 70
+      },
+      "flavorText": "This is the seventh meat thermometer I've gotten. I appreciate the thought, really. But I already have six. They're all in the drawer. One of them even talks.",
+      "abilities": [
+        {
+          "name": "Thermal Overload",
+          "description": "Breaks out ALL the meat thermometers to prove a point. +25 Grill Skill, +15 Beer Snob (need a drink after explaining this)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 4,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "reverse",
+      "seasonId": 2
+    },
+    {
+      "id": "summer_001",
+      "name": "Pool Party Pete",
+      "subtitle": "Canonical Water Gun Dad",
+      "type": "COOL_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/pool-party-pete.svg",
+      "stats": {
+        "dadJoke": 82,
+        "grillSkill": 70,
+        "fixIt": 40,
+        "napPower": 55,
+        "remoteControl": 50,
+        "thermostat": 60,
+        "sockSandal": 75,
+        "beerSnob": 80
+      },
+      "flavorText": "RULE #1: No running around the pool! RULE #2: I don't care how old you are, I WILL splash you. RULE #3: Yes, I have the biggest water gun. No, you can't use it.",
+      "abilities": [
+        {
+          "name": "Hydro Assault",
+          "description": "Unleashes the Super Soaker 9000 on unsuspecting family members. +35 Cool Dad, -15 Fix It (electronics got wet)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 5,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "full_art",
+      "seasonId": 2
+    },
+    {
+      "id": "summer_002",
+      "name": "Lawn Sprinkler Larry",
+      "subtitle": "Running Through It At His Age",
+      "type": "LAWN_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/sprinkler-larry.svg",
+      "stats": {
+        "dadJoke": 78,
+        "grillSkill": 45,
+        "fixIt": 40,
+        "napPower": 50,
+        "remoteControl": 55,
+        "thermostat": 65,
+        "sockSandal": 85,
+        "beerSnob": 50
+      },
+      "flavorText": "It's 92 degrees out. The sprinkler's on. The kids are running through it. I'm gonna run through it too. I don't care what the neighbors think. THIS IS SUMMER!",
+      "abilities": [
+        {
+          "name": "Cool Refreshment",
+          "description": "Runs through the sprinkler in full dad attire. +20 Nap Power (tired now), +15 Sock & Sandal (they're wet anyway)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 6,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "none",
+      "seasonId": 2
+    },
+    {
+      "id": "summer_003",
+      "name": "Bonfire Bob",
+      "subtitle": "The Fire Is Too Damn Big",
+      "type": "BBQ_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/bonfire-bob.svg",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 95,
+        "fixIt": 50,
+        "napPower": 45,
+        "remoteControl": 55,
+        "thermostat": 60,
+        "sockSandal": 60,
+        "beerSnob": 75
+      },
+      "flavorText": "We needed a small fire for s'mores. We now have a blaze visible from three counties. The fire department is on speed dial. But LOOK AT IT BURN!",
+      "abilities": [
+        {
+          "name": "Conflagration",
+          "description": "Creates an inferno that could be seen from space. +40 Grill Skill, +15 Thermostat (it's VERY warm)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 7,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "reverse",
+      "seasonId": 2
+    },
+    {
+      "id": "summer_004",
+      "name": "Vacation Video Victor",
+      "subtitle": "2 Hours of Footage No One Will Watch",
+      "type": "TECH_DAD",
+      "rarity": "uncommon",
+      "artwork": "/cards/vacation-victor.svg",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 35,
+        "napPower": 55,
+        "remoteControl": 70,
+        "thermostat": 60,
+        "sockSandal": 50,
+        "beerSnob": 45
+      },
+      "flavorText": "Got some great shots of the highway. And a rest stop. And 45 minutes of a cloud that looked kinda like a dog. The family's already seen it 12 times. We're watching it again!",
+      "abilities": [
+        {
+          "name": "Premiere Screening",
+          "description": "Forces the family to watch vacation footage for the third time today. +25 Remote Control, -20 Nap Power (everyone's asleep except him)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 8,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "none",
+      "seasonId": 2
+    },
+    {
+      "id": "holiday_001",
+      "name": "Christmas Light Larry",
+      "subtitle": "Can See His House From Space",
+      "type": "LAWN_DAD",
+      "rarity": "legendary",
+      "artwork": "/cards/christmas-light-larry.svg",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 50,
+        "fixIt": 75,
+        "napPower": 40,
+        "remoteControl": 65,
+        "thermostat": 70,
+        "sockSandal": 55,
+        "beerSnob": 60
+      },
+      "flavorText": "The neighbors complained about last year's display. So this year I doubled it. 47,000 lights. They synced to Trans-Siberian Orchestra. The electric company called to thank me.",
+      "abilities": [
+        {
+          "name": "Blitzkrieg of Blinks",
+          "description": "Activates the full Christmas light display, causing temporary blindness. +50 Fix It (bulbs always need replacing), +25 Thermostat (the heat radiates)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 9,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "prismatic",
+      "seasonId": 2
+    },
+    {
+      "id": "holiday_002",
+      "name": "Ugly Sweater Steve",
+      "subtitle": "Festive Fashion Disaster",
+      "type": "FASHION_DAD",
+      "rarity": "epic",
+      "artwork": "/cards/ugly-sweater-steve.svg",
+      "stats": {
+        "dadJoke": 95,
+        "grillSkill": 45,
+        "fixIt": 40,
+        "napPower": 60,
+        "remoteControl": 55,
+        "thermostat": 65,
+        "sockSandal": 90,
+        "beerSnob": 50
+      },
+      "flavorText": "This sweater has actual working Christmas lights. Battery pack not included. Yes, I'm wearing it to work. No, I don't care what HR says. It's HOLIDAY SPIRIT!",
+      "abilities": [
+        {
+          "name": "Fashion Emergency",
+          "description": "Debuts the newest ugliest sweater. The visual damage is permanent. +40 Sock & Sandal (fashion coordination), +30 Dad Joke (everyone's laughing)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 10,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "full_art",
+      "seasonId": 2
+    },
+    {
+      "id": "holiday_003",
+      "name": "Cookie Crumbler",
+      "subtitle": "Left Them Out For Santa Again",
+      "type": "COUCH_DAD",
+      "rarity": "rare",
+      "artwork": "/cards/cookie-crumbler.svg",
+      "stats": {
+        "dadJoke": 88,
+        "grillSkill": 60,
+        "fixIt": 45,
+        "napPower": 75,
+        "remoteControl": 55,
+        "thermostat": 70,
+        "sockSandal": 50,
+        "beerSnob": 65
+      },
+      "flavorText": "Sure, I ate the cookies the kids left for Santa. I was doing Santa a favor. That guy's got a weight problem. I'm looking out for his health.",
+      "abilities": [
+        {
+          "name": "Midnight Snack",
+          "description": "Consumes Santa's cookies and leaves a 'thank you' note with suspicious handwriting. +30 Nap Power, +20 Dad Joke (blames it on the dog)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 11,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "reverse",
+      "seasonId": 2
+    },
+    {
+      "id": "holiday_004",
+      "name": "New Year's Resolution Randy",
+      "subtitle": "This Year I'll Actually Use The Gym Membership",
+      "type": "COUCH_DAD",
+      "rarity": "common",
+      "artwork": "/cards/resolution-randy.svg",
+      "stats": {
+        "dadJoke": 72,
+        "grillSkill": 50,
+        "fixIt": 40,
+        "napPower": 80,
+        "remoteControl": 65,
+        "thermostat": 60,
+        "sockSandal": 55,
+        "beerSnob": 60
+      },
+      "flavorText": "This is the year. I can feel it. I'm going to get in shape. Just like last year. And the year before. But THIS year is different. Probably. Maybe. Okay, who wants pizza?",
+      "abilities": [
+        {
+          "name": "Annual Optimism",
+          "description": "Believes this year will be different. Spoilers: it won't. +15 Nap Power, +10 Dad Joke (at least I can laugh about it)."
+        }
+      ],
+      "series": 2,
+      "cardNumber": 12,
+      "totalInSeries": 12,
+      "artist": "Seasonal Art Studios",
+      "holoVariant": "none",
+      "seasonId": 2
+    }
+  ]
+}
