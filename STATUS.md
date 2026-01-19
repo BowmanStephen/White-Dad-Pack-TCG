@@ -138,7 +138,7 @@ bun run test:run         # Run tests
 
 ## 🚨 Known Blockers
 
-### Component Tests Blocked by Vitest Environment Issue (CRITICAL)
+### Component Tests Blocked by Vitest Environment Issue (CRITICAL - PARTIAL WORKAROUND FOUND)
 
 **Status**: 🔴 BLOCKING COMPONENT TEST DEVELOPMENT
 
@@ -161,10 +161,25 @@ bun run test:run         # Run tests
 - ✅ Card database tests (tests/card/)
 - ✅ All non-component tests don't use @testing-library/svelte render()
 
+**Status**: 🔴 BLOCKING COMPONENT TEST DEVELOPMENT
+
+**Problem**:
+- `tests/components/` directory cannot run any tests
+- All tests fail with `ReferenceError: document is not defined`
+- Vitest 4.0.17's jsdom environment is not initializing properly
+- @testing-library/svelte@5.3.1 requires jsdom DOM to access `document.body`
+
+**Impact**:
+- ❌ Cannot create CardDetailModal tests (~50 lines, ~10 tests)
+- ❌ Cannot re-create Gallery.test.ts with proper environment
+- ❌ Cannot re-create CollectionManager.test.ts with proper environment
+- ❌ Cannot create AnimatedNumber.test.ts (~80 lines)
+- ❌ Existing tests/unit/components/pack/PackOpener.test.ts cannot be verified
+
 **Root Cause**:
 Vitest 4.0.17's `environment: 'jsdom'` setting is not loading jsdom globals (`document`, `window`, etc.) before test files import @testing-library/svelte. The library's `render()` function immediately tries to access `document.body`, which is undefined.
 
-**Attempted Fixes** (all unsuccessful):
+**Attempts to Fix** (all unsuccessful):
 1. Updated vitest.config.mjs with `environment: 'jsdom'` and full options
 2. Created custom environment files (vitest-env-jsdom.mjs, vitest-env-happy-dom.mjs)
 3. Added manual jsdom setup in tests/setup.ts
@@ -175,23 +190,74 @@ Vitest 4.0.17's `environment: 'jsdom'` setting is not loading jsdom globals (`do
 8. Cleared node_modules/.vite and .cache directories
 9. Verified latest package versions (@testing-library/svelte@5.3.1, jsdom@27.4.0, vitest@4.0.17)
 
+**January 19, 2026 Update: Attempted Vitest 3.x Downgrade**
+
+**Changes Made**:
+```bash
+# Downgraded packages
+vitest@4.0.17 → vitest@3.2.4
+@vitest/coverage-v8@4.0.17 → @vitest/coverage-v8@3.2.4
+@vitest/ui@4.0.17 → @vitest/ui@3.2.4
+@testing-library/svelte@5.3.1 → @testing-library/svelte@4.2.3
+```
+
+**Test Command**: `node_modules/.bin/vitest run` (not `bun test`)
+
+**Results**:
+- ✅ **Environment works**: happy-dom loads correctly
+- ✅ **jsdom globals available**: `document`, `window`, `navigator` defined
+- ✅ **Vitest 3.2.4 confirmed**: Version working
+- ❌ **Path resolution fails**: `@/` aliases not resolving for component imports
+- ❌ **Component tests still blocked**: Cannot import `@/components/...` paths
+
+**New Error**:
+```
+Error: Failed to resolve import "@/components/common/AnimatedNumber.svelte"
+```
+
+**Root Cause**:
+Vitest 3.2.4 + Vite 7.x + @testing-library/svelte@4.2.3 have **incompatible path resolution**. The `@/` path aliases configured in vitest.config.mjs are not being applied when Vitest transforms test files.
+
+**Additional Issues Found**:
+1. `vi` not defined globally - Requires explicit import in test files (resolved)
+2. svelteTesting() plugin incompatible with Vitest 3.x - Had to downgrade to 4.2.3
+3. `bun test` was calling Vitest 1.6.1 - Must use `node_modules/.bin/vitest`
+4. Path alias resolution affects ALL component tests
+
+**Conclusion**: Downgrade to Vitest 3.x does NOT solve the component tests issue. Path resolution is a fundamental blocker.
+
 **Documentation**: See `TESTS_COMPONENTS_ENV_ISSUE.md` for full analysis and potential solutions.
 
 **Recommended Solutions**:
 1. **Wait for Svelte 5.5+** (RECOMMENDED - Q1-Q2 2026)
    - Native Svelte test utilities will remove need for @testing-library/svelte
    - Cleaner approach, no environment setup issues
+   - Solves both environment and path resolution problems
 
-2. **Downgrade to Vitest 3.x** (TEMPORARY WORKAROUND)
-   - Vitest 3.x has proven compatibility with @testing-library/svelte
-   - Command: `bun install --save-dev vitest@3.x.x`
+2. **Revert to Vitest 4.x and Wait** (CURRENT RECOMMENDATION)
+   - Vitest 3.x has path resolution issues (incompatible with Vite 7.x)
+   - Vitest 4.x environment works, jsdom is the problem
+   - Svelte 5.5+ native test utilities will solve both issues
+   - Should revert Vitest 3.x downgrade
 
-3. **Create custom Vitest environment package** (ADVANCED)
-   - Build local npm package that properly sets up jsdom
-   - Reference: TESTS_COMPONENTS_ENV_ISSUE.md for implementation guide
+3. **Revert to Vitest 4.x + Downgrade Vite to 5.x** (UNTESTED - Hypothetical fix)
+   - Hypothesis: Vite 7.x might be causing path resolution issues with Vitest 3.x
+   - Command: `bun install --save-dev vite@5.x.x`
+   - Risk: May break other parts of project
+
+4. **Create custom Vitest environment package** (ADVANCED)
+   - Build local environment package that properly sets up jsdom
+   - Reference: TESTS_COMPONENTS_ENV_ISSUE.md for implementation
+
+**Current State**:
+- Packages currently downgraded to Vitest 3.x (environment works, path resolution fails)
+- Need to decide: Keep Vitest 3.x with path resolution fixes OR revert to Vitest 4.x
+- See TESTS_COMPONENTS_ENV_ISSUE.md for detailed attempt history
 
 **Next Steps**:
-- ⏸ Document this blocker in CLAUDE.md
+- ⏸ Document this blocker in CLAUDE.md (DONE)
+- ⏸ Decide on approach: wait for Svelte 5.5+ vs downgrade Vitest vs revert to 4.x
+- ⏸ Once environment is fixed, create blocked component tests (Task 2, 4)
 - ⏸ Decide on approach: wait for Svelte 5.5+ vs downgrade Vitest
 - ⏸ Once environment is fixed, create blocked component tests (Task 2, 4)
 

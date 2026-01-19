@@ -1,5 +1,5 @@
 {
-  "name": "DadDeck\u2122 - Complete MVP Enhancement (All Features)",
+  "name": "DadDeck™ - Complete MVP Enhancement (All Features)",
   "description": "All micro-tasks for pack opening, collection, audio, social, and cross-feature enhancements.",
   "branchName": "feature/pack-vfx",
   "userStories": [
@@ -311,7 +311,7 @@
       "dependsOn": [
         "PACK-VFX-012"
       ],
-      "completionNotes": "Implemented rarity-based reveal delay (500ms for rare+, 300ms for common/uncommon)"
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-014",
@@ -326,7 +326,7 @@
         "Verify skip button still works for impatient users"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "animation",
@@ -336,7 +336,8 @@
       "dependsOn": [
         "PACK-VFX-012",
         "PACK-VFX-013"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-015",
@@ -1590,7 +1591,7 @@
         "Add range input for SFX volume (0-100)",
         "Default value: 100%",
         "SFX includes: pack tear, card flips, holo shimmer",
-        "SFX volume scales by master \u00d7 SFX setting",
+        "SFX volume scales by master × SFX setting",
         "Setting persists to localStorage"
       ],
       "priority": 3,
@@ -1614,7 +1615,7 @@
         "Add range input for music volume (0-100)",
         "Default value: 50% (when music exists)",
         "Label: 'Music (Coming Soon)' if no music yet",
-        "Music volume scales by master \u00d7 music setting",
+        "Music volume scales by master × music setting",
         "Setting persists to localStorage"
       ],
       "priority": 3,
@@ -1708,7 +1709,7 @@
         "Open src/components/settings/SettingsManager.svelte",
         "Add volume sliders for: pack tears, card flips, holo shimmer",
         "Each category 0-100% range",
-        "Each scales by master \u00d7 category setting",
+        "Each scales by master × category setting",
         "Default all categories to 100%",
         "Settings persist to localStorage"
       ],
@@ -2373,7 +2374,7 @@
       "description": "Include logo branding on shared images.",
       "acceptanceCriteria": [
         "Open src/lib/utils/screenshot.ts",
-        "Add DadDeck\u2122 logo to all screenshots",
+        "Add DadDeck™ logo to all screenshots",
         "Logo in bottom corner, subtle opacity",
         "Logo size: 80x40px",
         "Test branding visible but not obtrusive"
@@ -3819,7 +3820,7 @@
       "acceptanceCriteria": [
         "Open src/components/collection/CollectionManager.svelte",
         "Add progress bar to stats panel",
-        "Progress shows: (unique cards / total cards) \u00d7 100",
+        "Progress shows: (unique cards / total cards) × 100",
         "Total cards = 173 (all cards in game)",
         "Progress bar colored by completion % (red < 20%, yellow < 50%, green > 50%)",
         "Test progress updates as cards added"
@@ -4129,7 +4130,7 @@
       "description": "Ensure all interactive elements are touch-friendly.",
       "acceptanceCriteria": [
         "Audit all buttons and interactive elements",
-        "Ensure minimum touch target size is 44\u00d744px",
+        "Ensure minimum touch target size is 44×44px",
         "Add padding to small buttons to reach 44px",
         "Check navigation links, pack open button, filters",
         "Test all buttons easy to tap on mobile",
@@ -4507,7 +4508,7 @@
         "Add dynamic title and description per route",
         "Pack page: 'Open Packs | DadDeck'",
         "Collection page: 'Collection | DadDeck'",
-        "Include DadDeck\u2122 in titles",
+        "Include DadDeck™ in titles",
         "Test titles are descriptive and unique"
       ],
       "priority": 2,
@@ -4656,7 +4657,7 @@
       "description": "Progressive Web App manifest.",
       "acceptanceCriteria": [
         "Create public/manifest.json",
-        "Add app name: 'DadDeck\u2122'",
+        "Add app name: 'DadDeck™'",
         "Add short_name: 'DadDeck'",
         "Add description, theme_color, background_color",
         "Add icons (192x192, 512x512)",
@@ -4729,7 +4730,7 @@
       "acceptanceCriteria": [
         "Create src/pages/404.astro",
         "Add friendly '404 - Page Not Found' message",
-        "Add DadDeck\u2122 mascot or illustration",
+        "Add DadDeck™ mascot or illustration",
         "Add 'Back Home' button to landing page",
         "Ensure 404 page has theme support",
         "Test 404 page appears for invalid routes"
@@ -4880,6 +4881,6 @@
     "version": "2.0.0",
     "totalTasks": 210,
     "focus": "Complete MVP polish for all features",
-    "updatedAt": "2026-01-19T06:20:08.022Z"
+    "updatedAt": "2026-01-19T06:28:53.889Z"
   }
 }

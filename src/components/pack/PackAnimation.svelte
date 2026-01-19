@@ -58,10 +58,14 @@
     burst: 300,    // Final burst and fade
   };
 
+  // PACK-VFX-015: Cinematic mode pack tear set to 1.8s
+  // Calculate tear duration based on cinematic mode (1.8s) vs normal mode
+  $: tearDuration = isCinematic ? 1800 : (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear);
+
   $: phaseDurations = {
     appear: (BASE_PHASE_DURATIONS.appear * tearConfig.phaseMultipliers.appear) / cinematicConfig.speedMultiplier,
     glow: (BASE_PHASE_DURATIONS.glow * tearConfig.phaseMultipliers.glow) / cinematicConfig.speedMultiplier,
-    tear: (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear) / cinematicConfig.speedMultiplier,
+    tear: tearDuration, // PACK-VFX-015: Use calculated tear duration (1.8s in cinematic)
     burst: (BASE_PHASE_DURATIONS.burst * tearConfig.phaseMultipliers.burst) / cinematicConfig.speedMultiplier,
   };
 
