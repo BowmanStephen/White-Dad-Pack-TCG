@@ -5,11 +5,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
   plugins: [
     svelte({
-      compilerOptions: {
-        // Force client-side compilation for tests
-        generate: 'dom',
-        hydratable: false,
-      },
+      // Don't specify compilerOptions - vite-plugin-svelte handles this
     }),
   ],
   test: {

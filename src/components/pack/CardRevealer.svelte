@@ -55,11 +55,15 @@
   // Debounced reveal using requestAnimationFrame for smoother 60fps
   let rafId: number | null = null;
 
-  // PACK-VFX-012: Fixed 300ms delay between card reveals (consistent timing)
+  // PACK-VFX-012: Base 300ms delay between card reveals
+  // PACK-VFX-013: Extra 200ms delay for rare+ cards (500ms total)
   // PACK-028: Apply fast-forward multiplier (2x speed when enabled)
   $: baseDelay = 300;
   $: fastForwardMultiplier = $fastForward ? 2 : 1;
-  $: revealDelay = baseDelay / (cinematicConfig.speedMultiplier * fastForwardMultiplier);
+  // PACK-VFX-013: Add 200ms for rare+ cards (rare, epic, legendary, mythic)
+  $: currentCardRarity = currentCard?.rarity;
+  $: isRareOrBetter = currentCardRarity === 'rare' || currentCardRarity === 'epic' || currentCardRarity === 'legendary' || currentCardRarity === 'mythic';
+  $: revealDelay = (baseDelay + (isRareOrBetter ? 200 : 0)) / (cinematicConfig.speedMultiplier * fastForwardMultiplier);
 
   // PACK-026: Animation class based on rarity
   $: revealAnimationClass = currentCard ? {
