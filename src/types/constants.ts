@@ -102,7 +102,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(219, 39, 119, 0.8)', // Higher opacity for mythic
     particleCount: 40,
     animationIntensity: 3,
-    particleVelocity: 400, // Fastest for mythic
+    particleVelocity: 300, // PACK-VFX-006: 300px/s for mythic rarity
   },
 };
 
