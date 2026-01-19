@@ -22,17 +22,11 @@
     currentTearAnimation as currentTearAnimationStore,
   } from '@/stores/pack';
   import PackAnimation from './PackAnimation.svelte';
-  import CardRevealer from './CardRevealer.svelte';
   import PackResults from './PackResults.svelte';
-  import PackTypeSelector from './PackTypeSelector.svelte';
   import PackSkeleton from '../loading/PackSkeleton.svelte';
-  import FadeIn from '../loading/FadeIn.svelte';
   import ErrorDisplay from '../common/ErrorDisplay.svelte';
   import ErrorMessage from '../common/ErrorMessage.svelte';
-  import CinematicToggle from '../common/CinematicToggle.svelte';
-  import AnimationControls from './AnimationControls.svelte';
   import RateLimitBanner from './RateLimitBanner.svelte';
-  import { skipAnimations } from '@/stores/ui';
 
 
   // Reactive state using Svelte 5 runes

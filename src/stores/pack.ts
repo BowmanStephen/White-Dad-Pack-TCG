@@ -241,7 +241,31 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
   }
 }
 
-// Complete pack animation and show cards
+// Reveal all cards and show results (vertical-slice flow)
+export function showPackResults(options: { skipped?: boolean } = {}): void {
+  const pack = currentPack.get();
+  if (!pack) return;
+
+  const skipped = options.skipped ?? false;
+
+  // Reveal all cards
+  const allRevealed = new Set<number>();
+  const updatedCards = pack.cards.map((card, index) => {
+    allRevealed.add(index);
+    return { ...card, isRevealed: true };
+  });
+
+  revealedCards.set(allRevealed);
+  currentPack.set({ ...pack, cards: updatedCards });
+
+  packState.set('results');
+  isSkipping.set(skipped);
+
+  // Track pack completion event
+  trackPackComplete(pack, skipped);
+}
+
+// Complete pack animation and show results
 export function completePackAnimation(): void {
   // PACK-028: Check if animations should be skipped
   const skipAnimations = skipAnimationsStore.get();
@@ -249,14 +273,19 @@ export function completePackAnimation(): void {
   if (skipAnimations) {
     // Skip to results immediately
     skipToResults();
-  } else {
-    packState.set('cards_ready');
-    // Haptic feedback on pack open
-    haptics.packOpen();
+    return;
   }
+
+  // Haptic feedback on pack open
+  haptics.packOpen();
+
+  // In the MVP vertical slice, we go straight to results after the tear
+  showPackResults({ skipped: false });
 }
 
 // Reveal a specific card
+// NOTE: In the MVP vertical slice, we reveal the full pack at once.
+// This method remains for compatibility with existing components.
 export function revealCard(
   index: number,
   options: { autoRevealed?: boolean } = {}
@@ -295,7 +324,7 @@ export function revealCard(
     haptics.cardReveal(card.rarity);
   }
 
-  packState.set('revealing');
+  packState.set('results');
 }
 
 // Reveal the current card

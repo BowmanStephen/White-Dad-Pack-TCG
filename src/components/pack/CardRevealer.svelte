@@ -58,6 +58,7 @@
   // PACK-VFX-012: Base 300ms delay between card reveals
   // PACK-VFX-013: Extra 200ms delay for rare+ cards (500ms total)
   // PACK-VFX-014: Extra 700ms delay for mythic cards (1000ms total, replaces rare+ bonus)
+  // PACK-VFX-016: Cinematic mode card reveal set to 600ms
   // PACK-028: Apply fast-forward multiplier (2x speed when enabled)
   $: baseDelay = 300;
   $: fastForwardMultiplier = $fastForward ? 2 : 1;
@@ -67,7 +68,11 @@
   // Common/Uncommon: 300ms total (base only)
   $: currentCardRarity = currentCard?.rarity;
   $: rarityDelay = currentCardRarity === 'mythic' ? 700 : (['rare', 'epic', 'legendary'].includes(currentCardRarity || '') ? 200 : 0);
-  $: revealDelay = (baseDelay + rarityDelay) / (cinematicConfig.speedMultiplier * fastForwardMultiplier);
+  // PACK-VFX-016: In cinematic mode, override to 600ms for all cards (slower, more dramatic)
+  // Normal mode: Use standard (baseDelay + rarityDelay) calculation
+  $: revealDelay = isCinematic
+    ? 600 / fastForwardMultiplier  // PACK-VFX-016: Fixed 600ms in cinematic mode
+    : (baseDelay + rarityDelay) / fastForwardMultiplier;  // Normal mode: standard timing
 
   // PACK-026: Animation class based on rarity
   $: revealAnimationClass = currentCard ? {

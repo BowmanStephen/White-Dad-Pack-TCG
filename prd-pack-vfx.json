@@ -352,7 +352,7 @@
         "Verify normal mode unaffected"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "animation",
@@ -361,7 +361,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-009"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-016",
@@ -376,7 +377,7 @@
         "Confirm normal mode timing unchanged"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "animation",
@@ -385,7 +386,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-015"
-      ]
+      ],
+      "completionNotes": "Implemented in CardRevealer.svelte - Fixed 600ms delay in cinematic mode, normal mode unchanged"
     },
     {
       "id": "PACK-VFX-017",
@@ -4881,6 +4883,6 @@
     "version": "2.0.0",
     "totalTasks": 210,
     "focus": "Complete MVP polish for all features",
-    "updatedAt": "2026-01-19T06:28:53.889Z"
+    "updatedAt": "2026-01-19T06:33:45.824Z"
   }
 }
