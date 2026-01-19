@@ -3,6 +3,7 @@
   import { RARITY_CONFIG, DAD_TYPE_ICONS } from '@/types';
   import { fade, scale } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
+  import { onMount } from 'svelte';
   import Card from '../card/Card.svelte';
 
   interface Props {
@@ -18,6 +19,14 @@
 
   let modalElement = $state<HTMLElement>();
 
+  // FIX: Focus the modal when it opens so keyboard events work
+  onMount(() => {
+    if (modalElement) {
+      modalElement.focus();
+    }
+  });
+
+  // FIX: Use window-level key listener for better keyboard support
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       onClose();
@@ -33,6 +42,8 @@
   }
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+
 {#if card}
   {@const rarity = RARITY_CONFIG[card.rarity]}
   <div
@@ -41,7 +52,6 @@
     in:fade={{ duration: 300 }}
     out:fade={{ duration: 200 }}
     on:click={onClose}
-    on:keydown={handleKeydown}
     role="dialog"
     aria-modal="true"
     aria-label="Card details for {card.name}"
@@ -49,7 +59,7 @@
   >
     <!-- Close button -->
     <button
-      on:click={onClose}
+      on:click|stopPropagation={onClose}
       class="fixed top-8 right-8 text-white/50 hover:text-white text-5xl font-light transition-colors z-50"
       aria-label="Close card details"
     >
@@ -60,7 +70,7 @@
     {#if onPrevious}
       <div class="fixed top-1/2 left-4 -translate-y-1/2 hidden md:block z-40">
         <button
-          on:click={onPrevious}
+          on:click|stopPropagation={onPrevious}
           disabled={!hasPrevious}
           class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
           aria-label="Previous card"
@@ -76,7 +86,7 @@
     {#if onNext}
       <div class="fixed top-1/2 right-4 -translate-y-1/2 hidden md:block z-40">
         <button
-          on:click={onNext}
+          on:click|stopPropagation={onNext}
           disabled={!hasNext}
           class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
           aria-label="Next card"

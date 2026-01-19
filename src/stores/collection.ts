@@ -63,29 +63,37 @@ async function initializeCollection() {
 
   const INIT_TIMEOUT = 5000; // FIX: Increased to 5 seconds for slower devices
 
-  try {
-    // Wrap the entire initialization in a timeout
-    await Promise.race([
-      (async () => {
-        // Check if migration is needed
-        if (await needsLocalStorageMigration()) {
-          const migrationResult = await migrateFromLocalStorage();
-          if (!migrationResult.success) {
-            console.error('[Collection] Migration failed:', migrationResult.error);
-          }
-        }
+  // FIX: Use a flag to prevent stale writes after timeout
+  let didTimeout = false;
 
-        // Load from IndexedDB
-        const loaded = await loadFromIndexedDB();
-        if (loaded) {
-          loadedCollection = loaded;
-          collectionStore.set(loaded);
+  try {
+    // FIX: Guard against stale writes after timeout by using a flag
+    const initPromise = (async () => {
+      // Check if migration is needed
+      if (await needsLocalStorageMigration()) {
+        const migrationResult = await migrateFromLocalStorage();
+        if (!migrationResult.success) {
+          console.error('[Collection] Migration failed:', migrationResult.error);
         }
-      })(),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Collection initialization timed out')), INIT_TIMEOUT)
-      )
-    ]);
+      }
+
+      // Load from IndexedDB
+      const loaded = await loadFromIndexedDB();
+      // Only set if we haven't timed out (prevents stale overwrites)
+      if (!didTimeout && loaded) {
+        loadedCollection = loaded;
+        collectionStore.set(loaded);
+      }
+    })();
+
+    const timeoutPromise = new Promise<void>((_, reject) =>
+      setTimeout(() => {
+        didTimeout = true;
+        reject(new Error('Collection initialization timed out'));
+      }, INIT_TIMEOUT)
+    );
+
+    await Promise.race([initPromise, timeoutPromise]);
     isHydrated = true;
   } catch (error) {
     console.error('[Collection] Failed to initialize:', error);

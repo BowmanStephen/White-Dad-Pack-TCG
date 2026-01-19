@@ -23,8 +23,9 @@ async function clearAllStorage(page: Page) {
     localStorage.clear();
     sessionStorage.clear();
     // Also clear IndexedDB for complete reset
+    // Note: localforage uses 'DadDeck' as the database name
     return new Promise<void>((resolve) => {
-      const request = indexedDB.deleteDatabase('daddeck-collection');
+      const request = indexedDB.deleteDatabase('DadDeck');
       request.onsuccess = () => resolve();
       request.onerror = () => resolve();
       request.onblocked = () => resolve();
