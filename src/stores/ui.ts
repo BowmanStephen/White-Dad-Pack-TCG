@@ -2,6 +2,7 @@ import { atom } from 'nanostores';
 import { isLowEndDevice } from '../lib/utils/performance';
 import { trackEvent } from './analytics';
 import type { CinematicMode, CinematicConfig } from '../types';
+import { onBrowser } from '@/lib/utils/browser';
 
 // Animation Quality Settings
 export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
@@ -105,9 +106,9 @@ export function setAnimationQuality(quality: AnimationQuality): void {
   $animationQuality.set(quality);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(QUALITY_KEY, quality);
-  }
+  });
 }
 
 /**
@@ -160,9 +161,9 @@ export function setScreenShakeEnabled(enabled: boolean): void {
   $screenShakeEnabled.set(enabled);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(SCREEN_SHAKE_KEY, String(enabled));
-  }
+  });
 }
 
 /**
@@ -216,9 +217,9 @@ export function setSkipAnimations(enabled: boolean): void {
   $skipAnimations.set(enabled);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(SKIP_ANIMATIONS_KEY, String(enabled));
-  }
+  });
 
   // Track setting change
   trackEvent({
@@ -246,9 +247,9 @@ export function setFastForward(enabled: boolean): void {
   $fastForward.set(enabled);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(FAST_FORWARD_KEY, String(enabled));
-  }
+  });
 
   // Track setting change
   trackEvent({
@@ -276,9 +277,9 @@ export function setCinematicMode(mode: CinematicMode): void {
   $cinematicMode.set(mode);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(CINEMATIC_MODE_KEY, mode);
-  }
+  });
 
   // Track mode change
   trackEvent({

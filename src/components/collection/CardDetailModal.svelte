@@ -4,7 +4,6 @@
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
   import { collection } from '../../stores/collection';
   import { isDetailModalOpen, detailModalCard, closeDetailModal } from '../../stores/card-detail-modal';
-  import { currentDeck, createNewDeck, addCard, isDeckLimitReached, decks } from '../../stores/deck';
   import CardStats from '../card/CardStats.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
@@ -13,10 +12,7 @@
   let isOpen = $derived($isDetailModalOpen);
   let card = $derived($detailModalCard);
 
-  // Deck state
-  let activeDeck = $derived($currentDeck);
-  let allDecks = $derived($decks);
-  let deckLimitReached = $derived($isDeckLimitReached);
+  // Deck state (stubbed - feature archived)
   let showDeckSelector = $state(false);
   let deckActionMessage = $state<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -73,76 +69,20 @@
     }
   }
 
-  // Add to deck - integrates with deck store
+  // Add to deck (stubbed - feature archived)
   function handleAddToDeck() {
-    if (!card) return;
-
-    // If there's an active deck being edited, add directly
-    if (activeDeck) {
-      try {
-        addCard(card, 1);
-        showDeckMessage('success', `Added ${card.name} to "${activeDeck.name}"`);
-      } catch (error) {
-        showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
-      }
-      return;
-    }
-
-    // If no active deck, show deck selector
-    if (allDecks.length === 0) {
-      // No decks exist - create a new one
-      createNewDeck('New Deck');
-      try {
-        addCard(card, 1);
-        showDeckMessage('success', `Created new deck and added ${card.name}`);
-      } catch (error) {
-        showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
-      }
-      return;
-    }
-
-    // Show deck selector dropdown
-    showDeckSelector = true;
+    showDeckMessage('error', 'Deck building feature coming soon!');
   }
 
-  // Select a deck and add the card
+  // Select a deck and add the card (stubbed)
   function selectDeckAndAdd(deckId: string) {
-    if (!card) return;
-
-    const deck = allDecks.find(d => d.id === deckId);
-    if (!deck) return;
-
-    // Load the deck for editing
-    currentDeck.set(deck);
-
-    try {
-      addCard(card, 1);
-      showDeckMessage('success', `Added ${card.name} to "${deck.name}"`);
-    } catch (error) {
-      showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
-    }
-
     showDeckSelector = false;
   }
 
-  // Create new deck and add card
+  // Create new deck and add card (stubbed)
   function createDeckAndAdd() {
-    if (!card) return;
-
-    if (deckLimitReached) {
-      showDeckMessage('error', 'Maximum of 10 decks reached. Delete a deck first.');
-      return;
-    }
-
-    createNewDeck('New Deck');
-    try {
-      addCard(card, 1);
-      showDeckMessage('success', `Created new deck and added ${card.name}`);
-    } catch (error) {
-      showDeckMessage('error', error instanceof Error ? error.message : 'Failed to add card');
-    }
-
     showDeckSelector = false;
+    showDeckMessage('error', 'Deck building feature coming soon!');
   }
 
   // Show deck action message with auto-dismiss

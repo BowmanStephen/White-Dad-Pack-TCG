@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { collection, ensureCollectionInitialized, collectionHydrated } from '@/stores/collection';
+  import { collection } from '@/stores/collection';
   import { trackEvent } from '@/stores/analytics';
   import { showToast } from '@/stores/ui';
-  import type { Card as CardType, PackCard, Collection } from '@/types';
+  import type { Card as CardType, PackCard } from '@/types';
   import { RARITY_CONFIG } from '@/types';
   import type { StatusEffect } from '@lib/mechanics/combat';
 
@@ -20,9 +19,6 @@
   import { simulateBattle } from '@lib/mechanics/combat';
   import type { BattleLogEntry } from './BattleLog.svelte';
 
-  // Collection state - properly subscribed to avoid race conditions
-  let collectionData = $state<Collection>(collection.get());
-  let isCollectionLoading = $state(true);
   let availableCards = $state<PackCard[]>([]);
   let selectedCard = $state<PackCard | null>(null);
   let opponentCard = $state<PackCard | null>(null);
@@ -56,20 +52,6 @@
   let showTutorial = $state(false);
   let tutorialCompleted = $state(false);
 
-  // Initialize collection subscription on mount
-  onMount(async () => {
-    // Wait for collection to be loaded from IndexedDB
-    await ensureCollectionInitialized();
-    isCollectionLoading = false;
-
-    // Subscribe to collection changes
-    const unsub = collection.subscribe((value) => {
-      collectionData = value;
-    });
-
-    return unsub;
-  });
-
   // Check if user has seen tutorial
   function checkTutorialStatus() {
     const seen = localStorage.getItem('battle-tutorial-completed');
@@ -98,8 +80,8 @@
     showTutorial = false;
   }
 
-  // Update available cards when collection changes (reactive via subscription)
   $effect(() => {
+    const collectionData = collection.get();
     const cards: PackCard[] = [];
     for (const pack of collectionData.packs) {
       cards.push(...pack.cards);

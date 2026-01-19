@@ -396,11 +396,30 @@ export async function autoManageQuota(
  * Open IndexedDB database for size estimation
  */
 async function openDatabase(): Promise<IDBDatabase | null> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('DadDeck', 1);
+  return new Promise((resolve) => {
+    // Timeout after 2 seconds to prevent hanging in test environments
+    const timeout = setTimeout(() => {
+      console.warn('[QuotaManager] IndexedDB open timed out');
+      resolve(null);
+    }, 2000);
+    
+    try {
+      const request = indexedDB.open('DadDeck', 1);
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        clearTimeout(timeout);
+        resolve(request.result);
+      };
+      request.onerror = () => {
+        clearTimeout(timeout);
+        console.warn('[QuotaManager] IndexedDB open failed:', request.error);
+        resolve(null);
+      };
+    } catch (error) {
+      clearTimeout(timeout);
+      console.warn('[QuotaManager] IndexedDB open exception:', error);
+      resolve(null);
+    }
   });
 }
 

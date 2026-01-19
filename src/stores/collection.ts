@@ -14,6 +14,7 @@ import {
 } from '@/lib/storage/indexeddb';
 import { updatePityCounter, DEFAULT_PITY_COUNTER } from '@/lib/pack/pity';
 import type { PityCounter, StreakCounter } from '@/types/collection';
+import { onBrowser } from '@/lib/utils/browser';
 
 // ============================================================================
 // STORAGE LAYER (INDEXEDDB)
@@ -51,8 +52,14 @@ const DEFAULT_COLLECTION: Collection = {
 // Load collection from IndexedDB on init
 let loadedCollection: Collection = DEFAULT_COLLECTION;
 
+// Track hydration state
+let isHydrated = false;
+let hydrationPromise: Promise<void> | null = null;
+
 // Async load from IndexedDB
 async function initializeCollection() {
+  if (isHydrated) return;
+  
   try {
     // Check if migration is needed
     if (await needsLocalStorageMigration()) {
@@ -66,16 +73,40 @@ async function initializeCollection() {
     const loaded = await loadFromIndexedDB();
     if (loaded) {
       loadedCollection = loaded;
+      collectionStore.set(loaded);
     }
+    isHydrated = true;
   } catch (error) {
     console.error('[Collection] Failed to initialize:', error);
+    isHydrated = true; // Mark as hydrated even on error to prevent infinite retries
   }
 }
 
-// Initialize on module load (but don't block) - only in browser environment
-if (typeof window !== 'undefined') {
-  initializeCollection();
+// Public function to ensure collection is initialized (awaitable)
+export async function ensureCollectionInitialized(): Promise<void> {
+  if (isHydrated) return;
+  
+  if (!hydrationPromise) {
+    hydrationPromise = initializeCollection();
+  }
+  
+  return hydrationPromise;
 }
+
+// Check if collection is hydrated
+export function isCollectionHydrated(): boolean {
+  return isHydrated;
+}
+
+// Reactive hydration state for components
+export const collectionHydrated = atom<boolean>(false);
+
+// Initialize on module load (but don't block) - only in browser environment
+onBrowser(() => {
+  initializeCollection().then(() => {
+    collectionHydrated.set(true);
+  });
+});
 
 // ============================================================================
 // COLLECTION STORE (ATOM + INDEXEDDB PERSISTENCE)
@@ -114,11 +145,11 @@ function saveToStorage() {
 }
 
 // Subscribe to store changes and persist to IndexedDB (only in browser)
-if (typeof window !== 'undefined') {
+onBrowser(() => {
   collectionStore.subscribe(() => {
     saveToStorage();
   });
-}
+});
 
 // ============================================================================
 // STORAGE EVENT DISPATCHING
@@ -126,10 +157,11 @@ if (typeof window !== 'undefined') {
 
 // Dispatch storage warning/error events for UI components (PACK-045)
 export function dispatchStorageEvent(type: 'warning' | 'error', message: string): void {
-  if (typeof window === 'undefined') return;
-  window.dispatchEvent(
-    new CustomEvent(`daddeck:storage-${type}`, { detail: { message, type } })
-  );
+  onBrowser(() => {
+    window.dispatchEvent(
+      new CustomEvent(`daddeck:storage-${type}`, { detail: { message, type } })
+    );
+  });
 }
 
 // ============================================================================

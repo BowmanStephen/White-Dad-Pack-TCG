@@ -1,4 +1,6 @@
-import type { Rarity, PackCard } from './card';
+import type { Rarity } from './core';
+import type { PackCard, CardStats } from './card';
+import type { Pack, PackState, PackDesign } from './pack';
 
 // Pity counter state (PACK-003)
 export interface PityCounter {
@@ -61,35 +63,6 @@ export interface UIState {
   isSkipping: boolean;
   showResults: boolean;
 }
-
-// Pack State type
-export type PackState =
-  | 'idle'
-  | 'generating'
-  | 'pack_animate'
-  | 'cards_ready'
-  | 'revealing'
-  | 'results';
-
-// Pack interface
-export interface Pack {
-  id: string;
-  cards: PackCard[];
-  openedAt: Date;
-  bestRarity: Rarity;
-  design: PackDesign;
-}
-
-// Pack Design type
-export type PackDesign = 'standard' | 'holiday' | 'premium' | SeasonPackDesign;
-
-// Season pack design
-export type SeasonPackDesign =
-  | 'base_set'
-  | 'summer_bbq'
-  | 'fall_foliage'
-  | 'winter_wonderland'
-  | 'spring_bloom';
 
 // Advanced collection filters (PACK-021)
 export interface StatRangeFilter {

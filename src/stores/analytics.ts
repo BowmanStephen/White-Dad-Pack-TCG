@@ -6,6 +6,7 @@ import type {
   EventQueue,
 } from '@/types';
 import { safeJsonParse } from '@/lib/utils/safe-parse';
+import { onBrowser } from '@/lib/utils/browser';
 
 // ============================================================================
 // DEFAULT CONFIGURATION
@@ -309,7 +310,7 @@ function logDebug(...args: unknown[]): void {
 // ============================================================================
 
 // Initialize session on module load
-if (typeof window !== 'undefined') {
+onBrowser(() => {
   initializeSession();
 
   // Flush events before page unload
@@ -323,4 +324,4 @@ if (typeof window !== 'undefined') {
       flushEvents();
     }
   });
-}
+});

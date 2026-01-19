@@ -1,4 +1,5 @@
-import type { Rarity, DadType, PackCard, PackType } from './index';
+import type { Rarity, DadType } from './core';
+import type { PackCard } from './card';
 
 // Pack Configuration
 export interface PackConfig {
@@ -85,6 +86,12 @@ export interface BatchSummary {
   duration: number;
   timestamp: Date;
 }
+
+// Pack Type
+export type PackType = 'standard' | 'premium' | 'theme';
+
+// Tear Animation Types (PACK-027 - Pack Tear Variations)
+export type TearAnimation = 'standard' | 'slow' | 'explosive';
 
 // Pack Design Configuration
 export interface PackDesignConfig {

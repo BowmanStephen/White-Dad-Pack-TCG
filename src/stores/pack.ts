@@ -1,12 +1,10 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState, PackType, DadType, TearAnimation } from '../types';
 import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
-import { addPackToCollection, getPityCounter, ensureCollectionInitialized } from './collection';
+import { addPackToCollection, getPityCounter } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
-import { wishlist } from './wishlist';
-import { findPulledWishlistedCards } from '../lib/collection/utils';
 import { selectRandomTearAnimation } from '../types';
 import { skipAnimations as skipAnimationsStore, showToast } from './ui';
 import { checkRateLimit, recordPackOpen, getRateLimitStatus } from '../lib/utils/rate-limiter';
@@ -113,10 +111,6 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
     return;
   }
 
-  // CRITICAL: Ensure collection is loaded before opening packs
-  // This prevents race conditions where packs overwrite loaded data
-  await ensureCollectionInitialized();
-
   // Use provided pack type or fall back to store selection
   const finalPackType = packType || selectedPackType.get();
   const finalThemeType = themeType !== undefined ? themeType : selectedThemeType.get();
@@ -192,16 +186,6 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
           );
           storageError.set(storageAppError);
           logError(storageAppError, saveResult.error);
-        }
-
-        // PACK-020: Check if any pulled cards are on wishlist
-        const currentWishlist = wishlist.get();
-        const pulledCardIds = pack.cards.map(card => card.id);
-        const wishlistedCardIds = findPulledWishlistedCards(pulledCardIds, currentWishlist.entries);
-
-        if (wishlistedCardIds.length > 0) {
-          // Store wishlisted card IDs for notification display
-          (pack as any).wishlistedCards = wishlistedCardIds;
         }
 
         // SEC-002: Record pack open for rate limiting

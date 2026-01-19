@@ -23,6 +23,7 @@
 import { atom } from 'nanostores';
 import { persistentAtom } from '@nanostores/persistent';
 import { getNetworkDetector, NETWORK_EVENTS, type NetworkInfo } from '@/lib/network/network-detector';
+import { onBrowser } from '@/lib/utils/browser';
 
 /**
  * Queued action that will be retried when back online
@@ -89,7 +90,7 @@ queuedActions.subscribe((actions) => {
   queueCount.set(actions.length);
 
   // Persist to localStorage (client-side only)
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     try {
       const toStore = actions.map(a => ({
         ...a,
@@ -99,7 +100,7 @@ queuedActions.subscribe((actions) => {
     } catch (error) {
       console.error('[Offline Queue] Failed to save actions:', error);
     }
-  }
+  });
 });
 
 /**

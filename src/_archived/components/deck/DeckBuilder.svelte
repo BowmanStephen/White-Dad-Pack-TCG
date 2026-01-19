@@ -241,44 +241,12 @@
 
       {#if allDecks.length === 0}
         <div class="empty-state">
-          <div class="empty-animation">
-            <div class="deck-icon">🃏</div>
-            <div class="cards-float">
-              <span class="float-card card-1">🎴</span>
-              <span class="float-card card-2">🎴</span>
-              <span class="float-card card-3">🎴</span>
-            </div>
-          </div>
+          <div class="empty-icon">🃏</div>
           <h2>{t('deck.noDecks')}</h2>
           <p>{t('deck.noDecksDescription')}</p>
-          <div class="deck-features">
-            <div class="feature-item">
-              <span class="feature-icon">⚔️</span>
-              <div class="feature-content">
-                <span class="feature-title">Battle Ready</span>
-                <span class="feature-desc">Build decks for PvP combat</span>
-              </div>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">📊</span>
-              <div class="feature-content">
-                <span class="feature-title">Deck Stats</span>
-                <span class="feature-desc">Analyze type distribution</span>
-              </div>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">💡</span>
-              <div class="feature-content">
-                <span class="feature-title">Suggestions</span>
-                <span class="feature-desc">Get synergy recommendations</span>
-              </div>
-            </div>
-          </div>
-          <button on:click={handleCreateDeck} class="btn-primary enhanced-cta">
-            <span class="cta-icon">⚡</span>
-            <span>{t('deck.createFirst')}</span>
+          <button on:click={handleCreateDeck} class="btn-primary">
+            {t('deck.createFirst')}
           </button>
-          <p class="empty-hint">Create up to {limitReached ? '0' : '3'} decks • Share with friends • Compete on leaderboards</p>
         </div>
       {:else}
         <div class="decks-grid">
@@ -782,81 +750,6 @@
   .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .empty-animation {
-    position: relative;
-    margin-bottom: 2rem;
-  }
-
-  .deck-icon {
-    font-size: 5rem;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  .cards-float {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-  }
-
-  .float-card {
-    position: absolute;
-    font-size: 1.5rem;
-    animation: cardFloat 4s ease-in-out infinite;
-  }
-
-  .card-1 {
-    top: 10%;
-    left: -5%;
-    animation-delay: 0s;
-  }
-
-  .card-2 {
-    top: 50%;
-    right: -5%;
-    animation-delay: 1.5s;
-  }
-
-  .card-3 {
-    bottom: 10%;
-    left: 50%;
-    animation-delay: 3s;
-  }
-
-  @keyframes cardFloat {
-    0%, 100% {
-      opacity: 0;
-      transform: translateY(0) rotate(0deg) scale(0.8);
-    }
-    50% {
-      opacity: 1;
-      transform: translateY(-20px) rotate(10deg) scale(1.1);
-    }
   }
 
   .empty-icon {
@@ -865,118 +758,14 @@
   }
 
   .empty-state h2 {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 1.5rem;
     color: #f8fafc;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #3b82f6, #60a5fa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    margin-bottom: 0.5rem;
   }
 
   .empty-state p {
-    font-size: 1.125rem;
     color: #94a3b8;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    line-height: 1.6;
-  }
-
-  .deck-features {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-    max-width: 700px;
-    width: 100%;
-  }
-
-  @media (min-width: 640px) {
-    .deck-features {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-  }
-
-  .feature-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.25rem;
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 0.75rem;
-    transition: all 0.3s;
-    text-align: left;
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .feature-item:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
-  }
-
-  .feature-icon {
-    font-size: 2rem;
-    line-height: 1;
-  }
-
-  .feature-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .feature-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #e2e8f0;
-  }
-
-  .feature-desc {
-    font-size: 0.875rem;
-    color: #94a3b8;
-  }
-
-  .enhanced-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 2.5rem;
-    font-size: 1.125rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .enhanced-cta::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-
-  .enhanced-cta:hover::before {
-    left: 100%;
-  }
-
-  .cta-icon {
-    font-size: 1.25rem;
-  }
-
-  .empty-hint {
-    margin-top: 1.5rem;
-    font-size: 0.875rem;
-    color: #64748b;
-    font-style: italic;
+    margin-bottom: 1.5rem;
   }
 
   /* Deck Editor */

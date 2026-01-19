@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
 import type { Rarity } from '../types';
+import { onBrowser } from '@/lib/utils/browser';
 
 /**
  * Audio Store - Manages sound effects and mute state
@@ -52,9 +53,9 @@ export const soundTheme = atom<SoundTheme>(initialSoundTheme);
  */
 export function setSoundTheme(theme: SoundTheme): void {
   soundTheme.set(theme);
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(SOUND_THEME_KEY, theme);
-  }
+  });
   // Clear sound cache to reload with new theme
   soundCache.clear();
   preloadSounds();
@@ -172,9 +173,9 @@ export function toggleMute(): void {
   muted.set(newMuted);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(MUTED_KEY, String(newMuted));
-  }
+  });
 
   // Initialize audio context on first unmute
   if (!newMuted) {
@@ -191,9 +192,9 @@ export function setMasterVolume(volume: number): void {
   masterVolume.set(clampedVolume);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(VOLUME_KEY, String(clampedVolume));
-  }
+  });
 }
 
 /**
@@ -205,9 +206,9 @@ export function setMusicVolume(volume: number): void {
   musicVolume.set(clampedVolume);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(MUSIC_VOLUME_KEY, String(clampedVolume));
-  }
+  });
 }
 
 /**
@@ -219,9 +220,9 @@ export function setSfxVolume(volume: number): void {
   sfxVolume.set(clampedVolume);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(SFX_VOLUME_KEY, String(clampedVolume));
-  }
+  });
 }
 
 /**

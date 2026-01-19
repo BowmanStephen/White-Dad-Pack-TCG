@@ -13,6 +13,7 @@
  */
 
 import { atom, computed } from 'nanostores';
+import { onBrowser } from '@/lib/utils/browser';
 
 /**
  * Motion mode options
@@ -112,13 +113,13 @@ export function initializeMotionSettings(): void {
 export function setMotionMode(mode: MotionMode): void {
   $motionMode.set(mode);
 
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     try {
       localStorage.setItem(MOTION_MODE_KEY, mode);
     } catch (error) {
       console.warn('Failed to save motion preference:', error);
     }
-  }
+  });
 }
 
 /**

@@ -1,6 +1,7 @@
 import { atom, computed } from 'nanostores';
 import type { Card } from '../types';
 import { getCardCount } from '../lib/cards/database';
+import { onBrowser } from '@/lib/utils/browser';
 
 // ============================================================================
 // DISCOVERED CARDS STORAGE (LOCALSTORAGE)
@@ -129,7 +130,7 @@ export function getDiscoveredCardIds(): string[] {
  */
 export function resetDiscoveredCards(): void {
   discoveredCards.set(new Set());
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.removeItem(DISCOVERED_CARDS_KEY);
-  }
+  });
 }

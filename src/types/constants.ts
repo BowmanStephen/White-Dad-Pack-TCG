@@ -1,4 +1,5 @@
-import type { Rarity, DadType, HoloVariant, CardStats } from './card';
+import type { Rarity, DadType, HoloVariant } from './core';
+import type { CardStats } from './card';
 import type { SeasonId } from './season';
 
 // Rarity order for comparison (common=0, mythic=5)

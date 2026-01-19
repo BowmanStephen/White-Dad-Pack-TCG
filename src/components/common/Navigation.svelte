@@ -1,8 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { muted, toggleMute } from '../../stores/audio';
-  import { currentStreak, canClaimToday } from '../../stores/daily-rewards';
-  import { openDailyRewardsModal } from '../../stores/daily-rewards-modal';
   import ThemeToggle from './ThemeToggle.svelte';
   import MotionToggle from './MotionToggle.svelte';
 
@@ -14,8 +12,6 @@
   }
 
   let isMuted = $state(false);
-  let dailyStreak = $state(0);
-  let canClaim = $state(false);
 
   // Subscribe to muted state
   $effect(() => {
@@ -25,26 +21,10 @@
     return unsubscribe;
   });
 
-  // Subscribe to daily rewards state
-  $effect(() => {
-    const unsubscribeStreak = currentStreak.subscribe((value) => {
-      dailyStreak = value;
-    });
-    const unsubscribeClaim = canClaimToday.subscribe((value) => {
-      canClaim = value;
-    });
-    return () => {
-      unsubscribeStreak();
-      unsubscribeClaim();
-    };
-  });
-
   const links: NavLink[] = [
     { href: '/', label: 'Home' },
     { href: '/pack', label: 'Open Pack', isCta: true },
     { href: '/collection', label: 'My Collection', isTutorialTarget: true },
-    { href: '/trade', label: 'Trading' },
-    { href: '/battle', label: 'Battle' },
   ];
 
   let isMenuOpen = false;
@@ -118,22 +98,6 @@
           {link.label}
         </a>
       {/each}
-
-      <!-- Daily Rewards Button -->
-      <button
-        class="daily-rewards-button {canClaim ? 'claim-available' : ''}"
-        on:click={openDailyRewardsModal}
-        aria-label="Daily rewards"
-        type="button"
-      >
-        <span class="daily-icon">🎁</span>
-        {#if dailyStreak > 0}
-          <span class="daily-streak">{dailyStreak}</span>
-        {/if}
-        {#if canClaim}
-          <span class="daily-pulse"></span>
-        {/if}
-      </button>
 
       <!-- Mute button -->
       <button

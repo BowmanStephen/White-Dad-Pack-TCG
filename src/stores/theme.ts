@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
 import { onMount } from 'svelte';
+import { onBrowser } from '@/lib/utils/browser';
 
 // Theme Types
 export type ThemeMode = 'light' | 'dark' | 'auto';
@@ -56,10 +57,10 @@ function updateDarkModeState(): void {
   }
 
   // Apply class to document for CSS
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     const isDark = $isDarkMode.get();
     document.documentElement.classList.toggle('dark', isDark);
-  }
+  });
 }
 
 /**
@@ -69,9 +70,9 @@ export function setThemeMode(mode: ThemeMode): void {
   $themeMode.set(mode);
 
   // Persist to localStorage
-  if (typeof window !== 'undefined') {
+  onBrowser(() => {
     localStorage.setItem(THEME_KEY, mode);
-  }
+  });
 
   updateDarkModeState();
 }

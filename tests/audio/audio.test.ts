@@ -90,7 +90,13 @@ const mockLocalStorage = {
 (global as any).Audio = MockAudio;
 (global as any).AudioContext = MockAudioContext;
 (global as any).webkitAudioContext = MockAudioContext;
-(global as any).localStorage = mockLocalStorage;
+
+// Use defineProperty to override localStorage (it may be read-only)
+Object.defineProperty(global, 'localStorage', {
+  value: mockLocalStorage,
+  writable: true,
+  configurable: true,
+});
 
 describe('Audio Store', () => {
   beforeEach(() => {

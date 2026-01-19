@@ -3,20 +3,11 @@
   import { collection } from '../../stores/collection';
   import {
     getUniqueCardsWithCounts,
-    sortCardsByRarityAndName,
     sortCardsByOption,
     getCardObtainedDates,
-    filterCardsBySearch,
-    filterCardsByRarity,
-    filterCardsByHolo,
-    filterCardsByTypes,
     formatCardCount,
-    filterCardsByStatRanges,
-    filterCardsByHoloVariants,
-    filterCardsByAdvancedSearch,
-    getDefaultStatRanges,
-    areStatRangesDefault,
   } from '../../lib/collection/utils';
+  import { FilterManager } from '../../lib/collection/filter-manager';
   import { SAVED_SEARCH_PRESETS } from '../../lib/collection/presets';
   import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard, HoloVariant, StatRanges, SavedSearchPreset } from '../../types';
   import Card from '../card/Card.svelte';
@@ -29,7 +20,11 @@
   import RarityBadge from '../card/RarityBadge.svelte';
   import { openDetailModal, isDetailModalOpen, detailModalCard } from '../../stores/card-detail-modal';
   import { calculateVisibleRange, getTotalHeight, getEstimatedCardHeight } from '../../lib/utils/virtual-scroll';
-  import { getQueryParam, getQueryParamArray, setQueryParam, setQueryParamArray } from '../../lib/utils/url-params';
+  import {
+    initializeGalleryFiltersFromURL,
+    syncFiltersToURL,
+  } from '../../lib/utils/url-params';
+  import { initBrowserState } from '../../lib/utils/browser';
   import CollectionSort from './CollectionSort.svelte';
 
   // State
@@ -47,29 +42,17 @@
   });
   let scrollContainer: HTMLDivElement;
 
-  // Filters
-  let searchTerm = '';
+  // Filter manager (consolidated filter state and logic)
+  let filterManager = new FilterManager();
   let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-  let selectedRarity: Rarity | null = null;
-  let holoOnly = false;
-  let selectedTypes = new Set<DadType>();
-  let showTypeFilter = false;
 
-  // Advanced search state (US077 - Card Search)
+  // UI state toggles
+  let showTypeFilter = false;
   let showAdvancedFilters = false;
   let showStatRanges = false;
   let showHoloVariants = false;
   let showSavedSearches = false;
   let showAbilitiesFilter = false;
-
-  // Holo variant selection (multi-select)
-  let selectedHoloVariants = new Set<HoloVariant>();
-
-  // Stat range filters
-  let statRanges: StatRanges = {};
-
-  // Abilities filter
-  let abilitiesMode: 'any' | 'hasAbilities' | 'noAbilities' = 'any';
 
   // Saved searches
   let savedSearches = SAVED_SEARCH_PRESETS;
@@ -77,30 +60,41 @@
   // Result count tracking
   let totalFilteredCount = 0;
 
-  // Sort
-  let selectedSort: SortOption = 'rarity_desc';
+  // Obtained dates mapping
   let cardObtainedDates = new Map<string, Date>();
 
   // Card comparison state
   let selectedForCompare: PackCard[] = [];
   let showComparison = false;
 
+  // Reactive getter for filter state (re-runs when filterManager changes)
+  function getFilterState() {
+    return filterManager.getState();
+  }
+
+  // Derived state from FilterManager (for backward compat with template)
+  let filterState = $derived(getFilterState());
+  let searchTerm = $derived(filterState.searchTerm);
+  let selectedRarity = $derived(filterState.rarity);
+  let selectedTypes = $derived(filterState.types);
+  let holoOnly = $derived(filterState.holoOnly);
+  let selectedHoloVariants = $derived(filterState.selectedHoloVariants);
+  let selectedSort = $derived(filterState.sort);
+  let statRanges = $derived(filterState.statRanges);
+  let abilitiesMode = $derived(filterState.abilitiesMode);
+
   function initializeFromURL() {
-    const rarityParam = getQueryParam('rarity');
-    if (rarityParam && Object.keys(RARITY_CONFIG).includes(rarityParam)) {
-      selectedRarity = rarityParam as Rarity;
-    }
+    const { rarity, types, sort } = initializeGalleryFiltersFromURL();
 
-    const typeParam = getQueryParamArray('type');
-    const validTypes = typeParam.filter((t): t is DadType => Object.keys(DAD_TYPE_NAMES).includes(t));
-    if (validTypes.length > 0) {
-      selectedTypes = new Set(validTypes);
+    filterManager.updateState({
+      rarity,
+      types,
+      sort,
+    });
+
+    // Show type filter if any types are selected
+    if (types.size > 0) {
       showTypeFilter = true;
-    }
-
-    const sortParam = getQueryParam('sort');
-    if (sortParam && Object.keys(SORT_OPTION_CONFIG).includes(sortParam)) {
-      selectedSort = sortParam as SortOption;
     }
   }
 
@@ -109,52 +103,17 @@
     const currentCollection = collection.get();
     const uniqueCards = getUniqueCardsWithCounts(currentCollection.packs);
     cardObtainedDates = getCardObtainedDates(currentCollection.packs);
-    allCards = sortCardsByOption(uniqueCards, selectedSort, cardObtainedDates);
+    const state = filterManager.getState();
+    allCards = sortCardsByOption(uniqueCards, state.sort, cardObtainedDates);
     applyFilters();
     updateVirtualScroll();
     isInitialLoading = false;
   }
 
-  // Apply all filters
+  // Apply all filters using FilterManager
   function applyFilters() {
-    let filtered = [...allCards];
-
-    // Apply rarity filter
-    filtered = filterCardsByRarity(filtered, selectedRarity);
-
-    // Apply holo filter (legacy - for backward compatibility)
-    if (holoOnly && selectedHoloVariants.size === 0) {
-      // If legacy holoOnly is set but no new variants, use legacy filter
-      filtered = filterCardsByHolo(filtered, holoOnly);
-    } else if (selectedHoloVariants.size > 0) {
-      // Use new holo variant filter
-      filtered = filterCardsByHoloVariants(filtered, selectedHoloVariants);
-    }
-
-    // Apply type filter
-    filtered = filterCardsByTypes(filtered, selectedTypes);
-
-    // Apply search filter
-    filtered = filterCardsBySearch(filtered, searchTerm);
-
-    // Apply stat range filter (US077)
-    filtered = filterCardsByStatRanges(filtered, statRanges);
-
-    // Apply abilities filter (PACK-021)
-    if (abilitiesMode === 'hasAbilities') {
-      filtered = filtered.filter(card =>
-        card.card.abilities && card.card.abilities.length > 0
-      );
-    } else if (abilitiesMode === 'noAbilities') {
-      filtered = filtered.filter(card =>
-        !card.card.abilities || card.card.abilities.length === 0
-      );
-    }
-
-    // Track total filtered count for result indicator
+    const filtered = filterManager.applyFilters(allCards);
     totalFilteredCount = filtered.length;
-
-    // Set all filtered cards as displayed (virtual scroll will handle rendering)
     displayedCards = filtered;
   }
 
@@ -183,7 +142,7 @@
   // Handle search input with debounce
   function handleSearch(event: Event) {
     const target = event.target as HTMLInputElement;
-    searchTerm = target.value;
+    filterManager.updateState({ searchTerm: target.value });
 
     // Clear existing timeout
     if (debounceTimeout) {
@@ -198,20 +157,21 @@
 
   // Clear search
   function clearSearch() {
-    searchTerm = '';
+    filterManager.updateState({ searchTerm: '' });
     resetPagination();
   }
 
   // Handle rarity filter change
   function handleRarityFilter(rarity: Rarity | null) {
-    selectedRarity = rarity;
-    setQueryParam('rarity', rarity);
+    filterManager.updateState({ rarity });
+    syncFiltersToURL({ rarity });
     resetPagination();
   }
 
   // Toggle holo filter
   function toggleHoloFilter() {
-    holoOnly = !holoOnly;
+    const state = filterManager.getState();
+    filterManager.updateState({ holoOnly: !state.holoOnly });
     resetPagination();
   }
 
@@ -222,28 +182,29 @@
 
   // Handle type selection
   function toggleTypeSelection(type: DadType) {
-    const newTypes = new Set(selectedTypes);
+    const state = filterManager.getState();
+    const newTypes = new Set(state.types);
     if (newTypes.has(type)) {
       newTypes.delete(type);
     } else {
       newTypes.add(type);
     }
-    selectedTypes = newTypes;
-    setQueryParamArray('type', Array.from(newTypes));
+    filterManager.updateState({ types: newTypes });
+    syncFiltersToURL({ types: newTypes });
     resetPagination();
   }
 
   // Clear all type filters
   function clearTypeFilters() {
-    selectedTypes = new Set();
-    setQueryParamArray('type', []);
+    filterManager.updateState({ types: new Set() });
+    syncFiltersToURL({ types: new Set() });
     resetPagination();
   }
 
   // Handle sort selection
   function handleSortChange(sortOption: SortOption) {
-    selectedSort = sortOption;
-    setQueryParam('sort', sortOption);
+    filterManager.updateState({ sort: sortOption });
+    syncFiltersToURL({ sort: sortOption });
     resetPagination();
   }
 
@@ -363,10 +324,13 @@
    * Update stat range filter
    */
   function updateStatRange(stat: keyof StatRanges, min: number, max: number) {
-    statRanges = {
-      ...statRanges,
-      [stat]: { min, max },
-    };
+    const state = filterManager.getState();
+    filterManager.updateState({
+      statRanges: {
+        ...state.statRanges,
+        [stat]: { min, max },
+      },
+    });
     resetPagination();
   }
 
@@ -374,9 +338,10 @@
    * Clear stat range filter
    */
   function clearStatRange(stat: keyof StatRanges) {
-    const newRanges = { ...statRanges };
+    const state = filterManager.getState();
+    const newRanges = { ...state.statRanges };
     delete newRanges[stat];
-    statRanges = newRanges;
+    filterManager.updateState({ statRanges: newRanges });
     resetPagination();
   }
 
@@ -384,15 +349,14 @@
    * Toggle holo variant selection
    */
   function toggleHoloVariant(variant: HoloVariant) {
-    const newVariants = new Set(selectedHoloVariants);
+    const state = filterManager.getState();
+    const newVariants = new Set(state.selectedHoloVariants);
     if (newVariants.has(variant)) {
       newVariants.delete(variant);
     } else {
       newVariants.add(variant);
     }
-    selectedHoloVariants = newVariants;
-    // Update legacy holoOnly for backward compatibility
-    holoOnly = newVariants.size > 0 && newVariants.has('none') === false;
+    filterManager.updateState({ selectedHoloVariants: newVariants });
     resetPagination();
   }
 
@@ -400,8 +364,7 @@
    * Clear all holo variant selections
    */
   function clearHoloVariants() {
-    selectedHoloVariants = new Set();
-    holoOnly = false;
+    filterManager.updateState({ selectedHoloVariants: new Set() });
     resetPagination();
   }
 
@@ -416,7 +379,7 @@
    * Set abilities filter mode
    */
   function setAbilitiesMode(mode: 'any' | 'hasAbilities' | 'noAbilities') {
-    abilitiesMode = mode;
+    filterManager.updateState({ abilitiesMode: mode });
     resetPagination();
   }
 
@@ -424,12 +387,13 @@
    * Apply saved search preset
    */
   function applySavedSearch(preset: SavedSearchPreset) {
-    searchTerm = preset.filters.searchTerm;
-    selectedRarity = preset.filters.rarity;
-    selectedTypes = new Set(preset.filters.selectedTypes);
-    selectedHoloVariants = new Set(preset.filters.holoVariants);
-    statRanges = { ...preset.filters.statRanges };
-    holoOnly = selectedHoloVariants.size > 0 && !selectedHoloVariants.has('none');
+    filterManager.updateState({
+      searchTerm: preset.filters.searchTerm,
+      rarity: preset.filters.rarity,
+      types: new Set(preset.filters.selectedTypes),
+      selectedHoloVariants: new Set(preset.filters.holoVariants),
+      statRanges: { ...preset.filters.statRanges },
+    });
     resetPagination();
     showSavedSearches = false;
   }
@@ -438,12 +402,7 @@
    * Clear all filters
    */
   function clearAllFilters() {
-    searchTerm = '';
-    selectedRarity = null;
-    holoOnly = false;
-    selectedTypes = new Set();
-    selectedHoloVariants = new Set();
-    statRanges = {};
+    filterManager.reset();
     showTypeFilter = false;
     showStatRanges = false;
     showHoloVariants = false;

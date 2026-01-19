@@ -96,3 +96,57 @@ export const isNotificationSupported = (): boolean => {
 export const isDeviceOrientationSupported = (): boolean => {
   return browser && 'DeviceOrientationEvent' in window;
 };
+
+/**
+ * Browser initialization state object
+ */
+export interface BrowserInitState {
+  isInitialized: boolean;
+  storageAvailable: boolean;
+  navigatorAvailable: boolean;
+  timestamp: number;
+}
+
+/**
+ * Initialize browser state safely on mount
+ * Useful for SSR-safe component initialization
+ */
+export function initBrowserState(): BrowserInitState {
+  if (!browser) {
+    return {
+      isInitialized: false,
+      storageAvailable: false,
+      navigatorAvailable: false,
+      timestamp: 0,
+    };
+  }
+
+  return {
+    isInitialized: true,
+    storageAvailable: isLocalStorageAvailable(),
+    navigatorAvailable: getNavigator() !== null,
+    timestamp: Date.now(),
+  };
+}
+
+/**
+ * Execute callback only in browser environment
+ * Replaces common `if (typeof window !== 'undefined')` pattern
+ * 
+ * @param callback - Function to execute if in browser
+ * @returns Return value of callback, or undefined if not in browser
+ * 
+ * @example
+ * ```typescript
+ * // Before:
+ * if (typeof window !== 'undefined') {
+ *   localStorage.setItem('key', 'value');
+ * }
+ * 
+ * // After:
+ * onBrowser(() => localStorage.setItem('key', 'value'));
+ * ```
+ */
+export function onBrowser<T>(callback: () => T): T | undefined {
+  return browser ? callback() : undefined;
+}

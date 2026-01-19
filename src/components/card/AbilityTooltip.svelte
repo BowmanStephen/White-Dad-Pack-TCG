@@ -24,6 +24,9 @@
   onMount(() => {
     // Guard for SSR
     if (typeof window === 'undefined') return;
+    
+    // Guard for missing trigger element
+    if (!triggerElement) return;
 
     // Check if mobile device
     isMobile = 'ontouchstart' in window;

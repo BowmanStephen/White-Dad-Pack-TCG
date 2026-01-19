@@ -17,7 +17,6 @@
   } from '@/stores/leaderboard';
   import { generateLeaderboard, generateUserProfile } from '@/lib/leaderboard/generator';
   import { LEADERBOARD_CATEGORIES, TIME_PERIODS } from '@/types/leaderboard';
-  import type { PlayerProfile } from '@/types/profile';
 
   // Local reactive state
   let leaderboard = $state(currentLeaderboard.get());
@@ -25,8 +24,7 @@
   let errorMessage = $state(error.get());
 
   // User profile (in real app, would come from auth/user store)
-  // Initialize to null for SSR safety, will be set in onMount
-  let userProfile = $state<PlayerProfile | null>(null);
+  let userProfile = $state(generateUserProfile());
 
   // Subscribe to store changes
   onMount(() => {
@@ -40,15 +38,12 @@
       errorMessage = value;
     });
 
-    // Initialize user profile only on client side (SSR-safe)
-    const profile = generateUserProfile();
     // Add some mock friends to the user profile
     const mockFriendIds = Array.from({ length: 15 }, (_, i) => `friend_${i}`);
-    profile.friends = mockFriendIds;
-    userProfile = profile;
+    userProfile.friends = mockFriendIds;
 
-    // Load initial leaderboard if not present and profile is ready
-    if (!leaderboard && userProfile) {
+    // Load initial leaderboard if not present
+    if (!leaderboard) {
       loadLeaderboard();
     }
 
@@ -61,12 +56,6 @@
 
   // Load leaderboard data
   async function loadLeaderboard() {
-    // Guard for SSR: exit if profile not initialized
-    if (!userProfile) {
-      console.warn('[Leaderboard] Profile not initialized, skipping load');
-      return;
-    }
-
     try {
       setLoading(true);
       setError(null);

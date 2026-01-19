@@ -224,223 +224,9 @@ export interface UIState {
   showResults: boolean;
 }
 
-// Rarity Configuration (for visual effects)
-export interface RarityConfig {
-  name: string;
-  color: string;
-  borderColor: string;
-  glowColor: string;
-  particleCount: number;
-  animationIntensity: number;
-}
+// Constants moved to constants.ts - re-exported via barrel file
 
-// Rarity order for comparison (common=0, mythic=5)
-export const RARITY_ORDER: Record<Rarity, number> = {
-  common: 0,
-  uncommon: 1,
-  rare: 2,
-  epic: 3,
-  legendary: 4,
-  mythic: 5,
-};
-
-// Sort options for collection (FILTER-003)
-export type SortOption =
-  | 'rarity_desc'
-  | 'rarity_asc'
-  | 'name_asc'
-  | 'name_desc'
-  | 'date_obtained_desc'
-  | 'date_obtained_asc'
-  | 'type_asc'
-  | 'type_desc';
-
-// Sort option display names and configurations
-export const SORT_OPTION_CONFIG: Record<SortOption, { name: string; description: string }> = {
-  rarity_desc: { name: 'Rarity', description: 'Rarest first' },
-  rarity_asc: { name: 'Rarity', description: 'Common first' },
-  name_asc: { name: 'Name', description: 'A to Z' },
-  name_desc: { name: 'Name', description: 'Z to A' },
-  date_obtained_desc: { name: 'Date Acquired', description: 'Newest first' },
-  date_obtained_asc: { name: 'Date Acquired', description: 'Oldest first' },
-  type_asc: { name: 'Dad Type', description: 'A to Z' },
-  type_desc: { name: 'Dad Type', description: 'Z to A' },
-};
-
-// Rarity configurations map
-export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
-  common: {
-    name: 'Common',
-    color: '#9ca3af',
-    borderColor: '#d1d5db',
-    glowColor: 'rgba(156, 163, 175, 0.3)',
-    particleCount: 0,
-    animationIntensity: 1,
-  },
-  uncommon: {
-    name: 'Uncommon',
-    color: '#60a5fa',
-    borderColor: '#93c5fd',
-    glowColor: 'rgba(96, 165, 250, 0.4)',
-    particleCount: 5,
-    animationIntensity: 1.2,
-  },
-  rare: {
-    name: 'Rare',
-    color: '#fbbf24',
-    borderColor: '#fcd34d',
-    glowColor: 'rgba(251, 191, 36, 0.5)',
-    particleCount: 10,
-    animationIntensity: 1.5,
-  },
-  epic: {
-    name: 'Epic',
-    color: '#a855f7',
-    borderColor: '#c084fc',
-    glowColor: 'rgba(168, 85, 247, 0.5)',
-    particleCount: 15,
-    animationIntensity: 1.8,
-  },
-  legendary: {
-    name: 'Legendary',
-    color: '#f97316',
-    borderColor: '#fb923c',
-    glowColor: 'rgba(249, 115, 22, 0.6)',
-    particleCount: 25,
-    animationIntensity: 2.2,
-  },
-  mythic: {
-    name: 'Mythic',
-    color: '#ec4899',
-    borderColor: '#f472b6',
-    glowColor: 'rgba(236, 72, 153, 0.7)',
-    particleCount: 40,
-    animationIntensity: 3,
-  },
-};
-
-// ============================================================================
-// RARITY DROP RATES (TOOLTIP-002: Rarity Explanation Tooltips)
-// ============================================================================
-
-// Drop rate descriptions for each rarity tier
-// Based on DEFAULT_PACK_CONFIG in src/lib/pack/generator.ts
-export const RARITY_DROP_RATES: Record<Rarity, {
-  description: string;
-  slots: string;
-  probability: string;
-  note: string;
-}> = {
-  common: {
-    description: 'The most common cards in the game',
-    slots: 'Slots 1-3 (guaranteed)',
-    probability: '100% in first 3 slots',
-    note: 'Basic cards with minimal effects'
-  },
-  uncommon: {
-    description: 'Enhanced cards with better stats and minor effects',
-    slots: 'Slots 4-5',
-    probability: '74% chance per slot',
-    note: 'First upgrade from common cards'
-  },
-  rare: {
-    description: 'Powerful cards with strong abilities and particle effects',
-    slots: 'Slots 4-6',
-    probability: '20% (slots 4-5), 87.9% (slot 6)',
-    note: 'Minimum guarantee in slot 6'
-  },
-  epic: {
-    description: 'Premium cards with advanced animations and holo variants',
-    slots: 'Slots 4-6',
-    probability: '5% (slots 4-5), 10% (slot 6)',
-    note: 'Highly sought after for competitive play'
-  },
-  legendary: {
-    description: 'Ultra-rare full-art cards with intense visual effects',
-    slots: 'Slots 4-6',
-    probability: '0.9% (slots 4-5), 1.99% (slot 6)',
-    note: 'Full artwork, maximum particles'
-  },
-  mythic: {
-    description: 'The rarest cards with prismatic holo effects',
-    slots: 'Slots 4-6',
-    probability: '0.1% (slots 4-5), 0.1% (slot 6)',
-    note: '1 in 1,000 cards - extremely rare!'
-  }
-};
-
-// Holographic variant descriptions
-// Based on rollHolo() function in src/lib/pack/generator.ts
-export const HOLO_VARIANT_DESCRIPTIONS: Record<HoloVariant, {
-  name: string;
-  description: string;
-  rarity: string;
-  chance: string;
-  features: string[];
-}> = {
-  none: {
-    name: 'Non-Holo',
-    description: 'Standard card without holographic effects',
-    rarity: 'Common',
-    chance: '~80% of all cards',
-    features: [
-      'Standard card finish',
-      'No special effects',
-      'Base collection value'
-    ]
-  },
-  standard: {
-    name: 'Standard Holo',
-    description: 'Basic holographic shine on card artwork',
-    rarity: 'Uncommon',
-    chance: '~15% of all cards',
-    features: [
-      'Holo shine on artwork area',
-      'Subtle sparkle effect',
-      'Available on all rarities'
-    ]
-  },
-  reverse: {
-    name: 'Reverse Holo',
-    description: 'Holographic background with non-holo artwork',
-    rarity: 'Rare',
-    chance: '~3% of all cards',
-    features: [
-      'Entire card background is holo',
-      'Artwork area remains non-holo',
-      'Distinctive crisscross pattern'
-    ]
-  },
-  full_art: {
-    name: 'Full Art Holo',
-    description: 'Entire card is holographic with extended artwork',
-    rarity: 'Legendary+',
-    chance: '~1.5% of legendary/mythic cards',
-    features: [
-      'Full card holographic treatment',
-      'Extended artwork covering entire face',
-      'Only legendary and mythic rarities'
-    ]
-  },
-  prismatic: {
-    name: 'Prismatic Holo',
-    description: 'Rainbow prismatic effect - the ultimate holo variant',
-    rarity: 'Mythic Only',
-    chance: '~0.5% of mythic cards',
-    features: [
-      'Rainbow prismatic effect',
-      'Maximum particle intensity',
-      'Mythic rarity exclusive'
-    ]
-  }
-};
-
-// Overall holo drop rate
-export const HOLO_DROP_RATE = {
-  description: 'Approximately 1 in 6 cards will be holographic',
-  chance: '16.67%',
-  note: 'Applies to all cards regardless of rarity'
-};
+// Constants moved to constants.ts - re-exported via barrel file
 
 // Dad Type Display Names (clean names for UI)
 // Uses internal X-rated DadType names from core.ts (Season 2+ branding)
@@ -1204,10 +990,8 @@ export const CRAFTING_RECIPES: CraftingRecipe[] = [
 // ============================================================================
 // LEADERBOARD TYPES (US079 - Leaderboard - Global Rankings)
 // ============================================================================
-
-// Re-export leaderboard types from separate file
-export * from './leaderboard';
-import type { PlayerStats } from './leaderboard';
+// REMOVED: Leaderboard system was removed as scope creep for pack opening simulator
+// Leaderboard required server infrastructure and was not essential for core gameplay
 
 // ============================================================================
 // NOTIFICATION TYPES (US081 - Notification System - Browser Push)
@@ -1596,7 +1380,7 @@ export interface PlayerProfile {
   bio: string;                // 140 character max bio text
   favoriteCardId: string | null; // ID of favorite card (for display)
   badges: Badge[];            // Unlocked badges
-  stats: PlayerStats;         // Player statistics (reused from leaderboard)
+  // REMOVED: stats field (PlayerStats from leaderboard system)
   friends: string[];          // Friend player IDs
   createdAt: Date;            // When profile was created
   updatedAt: Date;            // Last profile update
@@ -2599,7 +2383,7 @@ export interface FriendProfile {
   pseudonym: string;               // Dad-themed pseudonym
   avatarId: AvatarId;              // Avatar ID
   bio: string;                     // Bio text
-  stats: PlayerStats;              // Player statistics (read-only)
+  // REMOVED: stats field (PlayerStats from leaderboard system)
   badges: Badge[];                 // Unlocked badges (display only)
   isOnline: boolean;               // Online status
   lastActive: Date;                // Last activity timestamp
@@ -2657,21 +2441,7 @@ export interface FriendCollectionView {
   lastUpdated: Date;
 }
 
-// Friend stats comparison
-export interface FriendStatsComparison {
-  yourStats: PlayerStats;
-  friendStats: PlayerStats;
-  comparisons: StatsComparison[];
-}
-
-// Individual stat comparison
-export interface StatsComparison {
-  stat: keyof PlayerStats;
-  yourValue: number;
-  friendValue: number;
-  winner: 'you' | 'friend' | 'tie';
-  difference: number;
-}
+// REMOVED: FriendStatsComparison and StatsComparison (depended on PlayerStats from leaderboard system)
 
 // Friend state for UI
 export interface FriendState {
@@ -2828,18 +2598,14 @@ export const PREMIUM_PACK_VISUAL_CONFIG = {
 export * from './security';
 
 // ============================================================================
-// ADMIN PANEL TYPES (US096 - Admin Panel - Content Management)
+// ADMIN PANEL TYPES (US096 - Archived)
 // ============================================================================
-
-// Re-export admin types for convenience
-export * from './admin';
+// Admin types archived to src/_archived/types/admin.ts
 
 // ============================================================================
-// EMAIL SYSTEM TYPES (US097 - Email System - Notifications)
+// EMAIL SYSTEM TYPES (US097 - Archived)
 // ============================================================================
-
-// Re-export email types for convenience
-export * from './email';
+// Email types archived to src/_archived/types/email.ts
 
 // ============================================================================
 // LIVE EVENTS TYPES (US099 - Live Events - Limited Time)

@@ -9,7 +9,6 @@ import type {
 } from '@/types/crafting';
 import type { PackCard, Rarity } from '@/types';
 import { showToast } from './ui';
-import { getRandomCardByRarity } from '@/lib/cards/database';
 
 // ============================================================================
 // CRAFTING CONFIG
@@ -376,27 +375,14 @@ export async function executeCraft(inputCards: PackCard[]): Promise<PackCard | n
   let resultCard: PackCard | null = null;
 
   if (success) {
-    // Generate result card from database with proper rarity
-    const baseCard = getRandomCardByRarity(recipe.outputRarity);
-
-    // Defensive handling: if no cards of target rarity exist, fail gracefully
-    if (!baseCard) {
-      console.error(`No cards found in database with rarity: ${recipe.outputRarity}`);
-      craftingState.set('failed');
-      showToast(`Error: No ${recipe.outputRarity} cards available in database`, 'error');
-      return null;
-    }
-
-    // Create PackCard from database Card with holo chance
-    const holoRoll = Math.random();
-    const isHolo = holoRoll < 0.167; // 1 in 6 chance for holo
-
+    // Generate result card (simplified - would use actual card generation)
     resultCard = {
-      ...baseCard,
-      id: crypto.randomUUID(), // Unique ID for crafted card
-      isHolo,
+      ...inputCards[0],
+      id: crypto.randomUUID(),
+      rarity: recipe.outputRarity,
+      isHolo: Math.random() < 0.167, // 1 in 6 chance for holo
       isRevealed: true,
-      holoType: isHolo ? 'standard' : 'none',
+      holoType: 'none',
     };
 
     // Discover recipe if not already discovered

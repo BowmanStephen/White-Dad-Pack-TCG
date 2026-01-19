@@ -91,20 +91,14 @@ export function escapeHTML(input: string): string {
     return '';
   }
 
-  // SSR-safe implementation
-  if (typeof document === 'undefined') {
-    // Fallback for server-side rendering
-    return input
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  const div = document.createElement('div');
-  div.textContent = input;
-  return div.innerHTML;
+  // Always use manual escaping for consistency across environments
+  // This ensures consistent behavior in SSR, browser, and test environments
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 /**

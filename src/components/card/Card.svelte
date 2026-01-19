@@ -10,8 +10,6 @@
   import { downloadCardImage, shareCardImage, checkShareSupport } from '@lib/utils/image-generation';
   import { openLightbox } from '@/stores/lightbox';
   import { getRandomJoke } from '@lib/jokes';
-  import { isInWishlist, addToWishlist, removeFromWishlist } from '@/stores/wishlist';
-  import { cardUpgrades } from '@/stores/upgrade';
 
   interface Props {
     card: PackCard;
@@ -54,39 +52,16 @@
   let canShare = $derived(enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles);
   let displayFlavorText = $derived(useRandomJoke ? getRandomJoke(card.type) : card.flavorText);
 
-  // Get upgrade level from store
-  let upgrades = $derived($cardUpgrades);
-  let upgradeData = $derived(upgrades[card.id]);
-  let upgradeLevel = $derived(upgradeData?.level || 0);
+  // Upgrade level (stubbed - feature archived)
+  let upgradeLevel = 0;
 
-  // PACK-020: Wishlist state
-  let isWishlisted = $state(false);
+  // Wishlist state (stubbed - feature archived)
+  let isWishlisted = false;
 
-  // Check wishlist status on mount and when card changes
-  $effect(() => {
-    if (showWishlistButton && card.id) {
-      isWishlisted = isInWishlist(card.id);
-    }
-  });
-
-  // Handle wishlist toggle
+  // Handle wishlist toggle (stubbed)
   async function handleWishlistToggle(event: Event) {
-    event.stopPropagation(); // Prevent card click
-
-    if (isWishlisted) {
-      const result = removeFromWishlist(card.id);
-      if (result.success) {
-        isWishlisted = false;
-        onWishlistToggle?.(false);
-      }
-    } else {
-      // Add with medium priority by default (can be edited later)
-      const result = addToWishlist(card as any, 'medium');
-      if (result.success) {
-        isWishlisted = true;
-        onWishlistToggle?.(true);
-      }
-    }
+    event.stopPropagation();
+    // Wishlist feature archived
   }
 
   const sizeClasses = {

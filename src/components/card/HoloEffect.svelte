@@ -260,7 +260,6 @@
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
     .holo-sheen,
-    .prismatic-holo,
     .holo-effect {
       animation: none !important;
       transition: none !important;

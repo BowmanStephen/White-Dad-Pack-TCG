@@ -13,7 +13,7 @@
   import ParticleEffects from '../card/ParticleEffects.svelte';
   import ScreenShake from '../card/ScreenShake.svelte';
   import { collection, getCurrentStreak, getBestStreak } from '@/stores/collection';
-  import WishlistToast from '../wishlist/WishlistToast.svelte';
+  
 
   interface Props {
     pack: Pack;
@@ -947,13 +947,6 @@
 
 <!-- Share Modal -->
 <ShareModal cards={pack.cards} packImageElement={null} />
-
-<!-- Wishlist Notification Toast (PACK-020) -->
-<WishlistToast
-  cards={wishlistedCards}
-  show={showWishlistToast}
-  onClose={() => (showWishlistToast = false)}
-/>
 
 <style>
   @keyframes shimmer {

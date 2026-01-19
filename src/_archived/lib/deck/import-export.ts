@@ -93,34 +93,55 @@ export function importDeckFromJSON(
   jsonString: string,
   userCards?: string[]
 ): Deck {
-  // Validate and sanitize JSON input to prevent XSS
-  const sanitizedData = validateJSON<DeckExport>(
-    jsonString,
-    (data): data is DeckExport => {
-      // Schema validation
-      return (
-        typeof data === 'object' &&
-        data !== null &&
-        typeof data.name === 'string' &&
-        Array.isArray(data.cards)
-      );
-    }
-  );
-
-  if (!sanitizedData) {
+  // Parse JSON first to get better error messages
+  let parsedData: unknown;
+  try {
+    parsedData = JSON.parse(jsonString);
+  } catch {
     throw new Error('Invalid JSON format. Please check the deck data.');
   }
 
-  const importData = sanitizedData;
+  // Validate basic structure
+  if (typeof parsedData !== 'object' || parsedData === null) {
+    throw new Error('Invalid JSON format. Please check the deck data.');
+  }
 
-  // Validate import data structure
-  if (!importData.name || typeof importData.name !== 'string') {
+  const data = parsedData as Record<string, unknown>;
+
+  // Check for name first (specific error message)
+  if (!data.name || typeof data.name !== 'string') {
     throw new Error('Deck name is required.');
   }
 
-  if (!Array.isArray(importData.cards)) {
+  // Check for cards array (specific error message)
+  if (!Array.isArray(data.cards)) {
     throw new Error('Deck must contain a cards array.');
   }
+
+  // Now sanitize the data to prevent XSS (only escape display strings, not IDs used as keys)
+  const importData: DeckExport = {
+    name: typeof data.name === 'string' ? escapeHTML(data.name) : '',
+    description: typeof data.description === 'string' ? escapeHTML(data.description) : undefined,
+    cards: Array.isArray(data.cards)
+      ? data.cards.map((card: unknown) => {
+          if (typeof card === 'object' && card !== null) {
+            const c = card as Record<string, unknown>;
+            // Validate cardId is a string (don't escape - used as lookup key)
+            const cardId = typeof c.cardId === 'string' ? c.cardId : '';
+            if (!cardId) {
+              throw new Error('Each card must have a valid cardId.');
+            }
+            return {
+              cardId, // Use as-is for database lookup
+              cardName: typeof c.cardName === 'string' ? escapeHTML(c.cardName) : '',
+              count: typeof c.count === 'number' ? c.count : 1,
+            };
+          }
+          throw new Error('Invalid card data in deck.');
+        })
+      : [],
+    exportedAt: data.exportedAt instanceof Date ? data.exportedAt : new Date(),
+  };
 
   // Get all cards from database
   const allCards = getAllCards();
