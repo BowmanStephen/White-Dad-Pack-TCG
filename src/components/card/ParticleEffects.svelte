@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Rarity } from '../../types';
   import { RARITY_CONFIG } from '../../types';
-  import { getParticleMultiplier, getCinematicConfig } from '../../stores/ui';
+  import { getParticleMultiplier, getCinematicConfig, getParticleIntensityMultiplier, getParticlePresetMultiplier } from '../../stores/ui';
   import { isReducedMotion } from '../../stores/motion';
   import { onDestroy } from 'svelte';
   import { createThrottledRAF, rafSchedule } from '../../lib/utils/performance';
@@ -17,16 +17,18 @@
   const config = RARITY_CONFIG[rarity];
   const baseParticleCount = config.particleCount;
 
-  // Get both quality and cinematic multipliers for enhanced effects
+  // Get quality, cinematic, intensity, and preset multipliers for enhanced effects
   const qualityMultiplier = $derived(getParticleMultiplier());
   const cinematicConfig = $derived(getCinematicConfig());
+  const intensityMultiplier = $derived(getParticleIntensityMultiplier());
+  const presetMultiplier = $derived(getParticlePresetMultiplier());
 
   // PACK-057: Check reduced motion state
   const reducedMotion = $derived(isReducedMotion.get());
 
-  // Combined multiplier: cinematic mode doubles particles on top of quality setting
+  // Combined multiplier: preset (PACK-VFX-030) + cinematic mode + user intensity on top of quality setting
   // PACK-057: Reduce to 0 when reduced motion is enabled
-  const combinedMultiplier = $derived(reducedMotion ? 0 : (qualityMultiplier * cinematicConfig.particleMultiplier));
+  const combinedMultiplier = $derived(reducedMotion ? 0 : (qualityMultiplier * presetMultiplier * cinematicConfig.particleMultiplier * intensityMultiplier));
 
   // Mobile performance cap - prevent frame drops on mid-tier devices
   // Mythic cards can hit 160 particles with max settings, which drops frames
@@ -43,7 +45,7 @@
   // PACK-VFX-027: Object pooling for particle reuse
   // Pre-allocate particle objects to reduce garbage collection pressure
   const PARTICLE_POOL_SIZE = 150; // Maximum particles across all rarities
-  const particlePool: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
+  const particlePool: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string; rotationSpeed: number; trailOpacity: number }> = [];
 
   // Initialize particle pool once
   for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
@@ -56,6 +58,8 @@
       size: 4,
       delay: 0,
       color: '#ffffff',
+      rotationSpeed: 0,
+      trailOpacity: 0, // PACK-VFX-034: Trail opacity for mythic particles
     });
   }
 
@@ -76,7 +80,7 @@
     return colors[colorIndex];
   }
 
-  let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
+  let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string; rotationSpeed: number; trailOpacity: number }> = [];
 
   // PACK-VFX-027: Track RAF loop for smooth 60fps updates
   let rafLoop: ReturnType<typeof createThrottledRAF> | null = null;
@@ -84,7 +88,7 @@
 
   // Regenerate particles when settings change
   $effect(() => {
-    const multiplier = getParticleMultiplier() * getCinematicConfig().particleMultiplier;
+    const multiplier = getParticleMultiplier() * getParticlePresetMultiplier() * getCinematicConfig().particleMultiplier * getParticleIntensityMultiplier();
     particleCount = Math.min(
       Math.floor(baseParticleCount * multiplier),
       MAX_PARTICLES_MOBILE
@@ -103,9 +107,14 @@
         particle.y = 50;
         particle.vx = (Math.random() - 0.5) * 40;
         particle.vy = (Math.random() - 0.5) * 40;
-        particle.size = Math.random() * 6 + 2;
-        particle.delay = Math.random() * 300;
+        // PACK-VFX-032: Use configured particle size based on rarity instead of random size
+        particle.size = config.particleSize;
+        particle.delay = Math.random() * 50;
         particle.color = particleColor;
+        // PACK-VFX-033: Add random rotation speed (-180deg/s to +180deg/s)
+        particle.rotationSpeed = (Math.random() - 0.5) * 360;
+        // PACK-VFX-034: Add trail effect for mythic particles only (50% opacity)
+        particle.trailOpacity = rarity === 'mythic' ? 0.5 : 0;
 
         return particle;
       });
@@ -148,6 +157,7 @@
     {#each particles as particle (particle.id)}
       <div
         class="particle"
+        class:has-trail={particle.trailOpacity > 0}
         style="
           left: {particle.x}%;
           top: {particle.y}%;
@@ -158,6 +168,8 @@
           animation-delay: {particle.delay}ms;
           --vx: {particle.vx}%;
           --vy: {particle.vy}%;
+          --rotation-speed: {particle.rotationSpeed}deg;
+          --trail-opacity: {particle.trailOpacity};
           animation-duration: {duration}ms;
         "
       ></div>
@@ -183,6 +195,23 @@
     transform: translateZ(0);
   }
 
+  /* PACK-VFX-034: Particle trail effect for mythic rarity */
+  .particle.has-trail::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    opacity: var(--trail-opacity, 0);
+    transform: translate(-50%, -50%) scale(0.8);
+    animation: trail-fade 200ms ease-out forwards;
+    will-change: opacity, transform;
+    pointer-events: none;
+  }
+
   /* Reduce box-shadow calculations for mobile performance */
   @media (max-width: 768px) {
     .particle {
@@ -193,16 +222,28 @@
   @keyframes particle-burst {
     0% {
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0);
+      transform: translate(-50%, -50%) scale(0) rotate(0deg);
     }
     /* PACK-VFX-007: Fade-in effect over first 20% (0.3s of 1.5s duration) */
     20% {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1.5);
+      transform: translate(-50%, -50%) scale(1.5) rotate(calc(var(--rotation-speed) * 0.2));
     }
     100% {
       opacity: 0;
-      transform: translate(calc(-50% + var(--vx)), calc(-50% + var(--vy))) scale(0);
+      transform: translate(calc(-50% + var(--vx)), calc(-50% + var(--vy))) scale(0) rotate(var(--rotation-speed));
+    }
+  }
+
+  /* PACK-VFX-034: Trail fade animation for mythic particles */
+  @keyframes trail-fade {
+    0% {
+      opacity: var(--trail-opacity, 0.5);
+      transform: translate(-50%, -50%) scale(0.6);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.3);
     }
   }
 </style>

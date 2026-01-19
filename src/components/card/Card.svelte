@@ -598,12 +598,25 @@
 
   .card-3d {
     transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s ease-out;
     will-change: transform;
+    animation: card-scale-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
   }
 
   .card-face {
     backface-visibility: hidden;
+  }
+
+  /* PACK-VFX-036: Card scale-in animation on reveal */
+  @keyframes card-scale-in {
+    0% {
+      transform: scale(0.2);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 
   .card-back {
@@ -709,6 +722,9 @@
       transform: none !important;
     }
     .holo-flash-overlay {
+      animation: none !important;
+    }
+    .card-3d {
       animation: none !important;
     }
   }

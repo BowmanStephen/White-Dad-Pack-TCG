@@ -37,7 +37,14 @@
     setFastForward,
     animationQuality,
     setAnimationQuality,
+    particlePreset,
+    setParticlePreset,
+    PARTICLE_PRESETS,
+    particleIntensity,
+    setParticleIntensity,
+    getParticleIntensityMultiplier,
     type AnimationQuality,
+    type ParticlePreset,
   } from '@/stores/ui';
 
   import {
@@ -101,6 +108,8 @@
   let currentSkipAnimations = $state(false);
   let currentFastForward = $state(false);
   let currentAnimationQuality = $state<AnimationQuality>('auto');
+  let currentParticlePreset = $state<ParticlePreset>('high');
+  let currentParticleIntensity = $state(3);
   let currentThemeMode = $state<ThemeMode>('auto');
   let currentIsDarkMode = $state(false);
   let currentNotificationPrefs = $state<NotificationPreferences>(notificationPreferences.get());
@@ -117,6 +126,8 @@
     const unsubSkip = skipAnimations.subscribe((v) => (currentSkipAnimations = v));
     const unsubFast = fastForward.subscribe((v) => (currentFastForward = v));
     const unsubQuality = animationQuality.subscribe((v) => (currentAnimationQuality = v));
+    const unsubPreset = particlePreset.subscribe((v) => (currentParticlePreset = v));
+    const unsubIntensity = particleIntensity.subscribe((v) => (currentParticleIntensity = v));
     const unsubThemeMode = themeMode.subscribe((v) => (currentThemeMode = v));
     const unsubIsDarkMode = isDarkMode.subscribe((v) => (currentIsDarkMode = v));
     const unsubNotifications = notificationPreferences.subscribe((v) => (currentNotificationPrefs = v));
@@ -132,6 +143,8 @@
       unsubSkip();
       unsubFast();
       unsubQuality();
+      unsubPreset();
+      unsubIntensity();
       unsubThemeMode();
       unsubIsDarkMode();
       unsubNotifications();
@@ -202,6 +215,30 @@
       value: 'low' as AnimationQuality,
       label: 'Low',
       description: 'Minimal animations for best performance',
+    },
+  ];
+
+  // Particle preset options (PACK-VFX-030)
+  const particlePresets = [
+    {
+      value: 'low' as ParticlePreset,
+      label: 'Low',
+      description: '50% particles, no screen shake - best performance',
+    },
+    {
+      value: 'medium' as ParticlePreset,
+      label: 'Medium',
+      description: '75% particles, reduced effects for smoother performance',
+    },
+    {
+      value: 'high' as ParticlePreset,
+      label: 'High',
+      description: '100% particles, all effects enabled (default)',
+    },
+    {
+      value: 'ultra' as ParticlePreset,
+      label: 'Ultra',
+      description: '150% particles, maximum drama for epic reveals',
     },
   ];
 
@@ -466,6 +503,34 @@
       {/each}
     </div>
 
+    <!-- Particle Quality Preset (PACK-VFX-030) -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="particle-preset" class="setting-label">Particle Quality Preset</label>
+        <p class="setting-description">Quick particle effect quality settings</p>
+      </div>
+      <select
+        id="particle-preset"
+        bind:value={currentParticlePreset}
+        on:change={(e) => setParticlePreset(e.target.value as ParticlePreset)}
+        class="select-input"
+        aria-label="Particle quality preset"
+      >
+        {#each particlePresets as preset}
+          <option value={preset.value}>{preset.label}</option>
+        {/each}
+      </select>
+    </div>
+
+    <!-- Particle Preset Description -->
+    <div class="setting-description-box">
+      {#each particlePresets as preset}
+        {#if preset.value === currentParticlePreset}
+          <p>{preset.description}</p>
+        {/if}
+      {/each}
+    </div>
+
     <!-- Cinematic Mode -->
     <div class="setting-row">
       <div class="setting-info">
@@ -530,6 +595,50 @@
         <span class="toggle-slider"></span>
         <span class="toggle-label">{currentFastForward ? 'On' : 'Off'}</span>
       </button>
+    </div>
+
+    <!-- Particle Intensity Slider (PACK-VFX-029) -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="particle-intensity" class="setting-label">Particle Intensity</label>
+        <p class="setting-description">
+          {currentParticleIntensity === 1 ? 'Minimal (20%)' :
+           currentParticleIntensity === 2 ? 'Low (60%)' :
+           currentParticleIntensity === 3 ? 'Normal (100%)' :
+           currentParticleIntensity === 4 ? 'High (150%)' :
+           currentParticleIntensity === 5 ? 'Maximum (200%)' : 'Normal (100%)'}
+        </p>
+      </div>
+      <div class="slider-container">
+        <input
+          id="particle-intensity"
+          type="range"
+          min="1"
+          max="5"
+          step="1"
+          bind:value={currentParticleIntensity}
+          on:input={(e) => setParticleIntensity(parseInt(e.target.value, 10))}
+          class="slider"
+          aria-label="Particle intensity"
+          aria-valuemin="1"
+          aria-valuemax="5"
+          aria-valuenow={currentParticleIntensity}
+          aria-valuetext={currentParticleIntensity === 1 ? 'Minimal' :
+                          currentParticleIntensity === 2 ? 'Low' :
+                          currentParticleIntensity === 3 ? 'Normal' :
+                          currentParticleIntensity === 4 ? 'High' :
+                          currentParticleIntensity === 5 ? 'Maximum' : 'Normal'}
+        />
+        <div class="slider-labels">
+          <span>Min</span>
+          <span>Max</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Particle Intensity Description -->
+    <div class="setting-description-box">
+      <p>✨ Control particle effect density. Lower values improve performance on slower devices.</p>
     </div>
   </section>
 
@@ -1061,6 +1170,22 @@
   .slider:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  /* Slider Container (for labeled sliders) */
+  .slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 150px;
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
   }
 
   /* Select Input */

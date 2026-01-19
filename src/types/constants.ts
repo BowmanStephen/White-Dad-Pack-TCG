@@ -43,6 +43,7 @@ export interface RarityConfig {
   particleCount: number;
   animationIntensity: number;
   particleVelocity: number; // Particle burst velocity in pixels per second (PACK-VFX-001)
+  particleSize: number; // Particle size in pixels (PACK-VFX-032)
 }
 
 // Rarity configurations map
@@ -58,6 +59,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     particleCount: 0,
     animationIntensity: 1,
     particleVelocity: 150, // PACK-VFX-001: 150px/s for common rarity
+    particleSize: 4, // PACK-VFX-032: 4px particle size for common rarity
   },
   uncommon: {
     name: 'Uncommon',
@@ -67,6 +69,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     particleCount: 5,
     animationIntensity: 1.2,
     particleVelocity: 175, // PACK-VFX-002: 175px/s for uncommon rarity
+    particleSize: 5, // PACK-VFX-032: 5px particle size for uncommon rarity
   },
   rare: {
     name: 'Rare',
@@ -76,6 +79,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     particleCount: 10,
     animationIntensity: 1.5,
     particleVelocity: 200, // Faster for rare
+    particleSize: 6, // PACK-VFX-032: 6px particle size for rare rarity
   },
   epic: {
     name: 'Epic',
@@ -85,6 +89,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     particleCount: 15,
     animationIntensity: 1.8,
     particleVelocity: 225, // PACK-VFX-004: 225px/s for epic rarity
+    particleSize: 7, // PACK-VFX-032: 7px particle size for epic rarity
   },
   legendary: {
     name: 'Legendary',
@@ -94,6 +99,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     particleCount: 25,
     animationIntensity: 2.2,
     particleVelocity: 250, // PACK-VFX-005: 250px/s for legendary rarity
+    particleSize: 8, // PACK-VFX-032: 8px particle size for legendary rarity
   },
   mythic: {
     name: 'Mythic',
@@ -103,6 +109,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     particleCount: 40,
     animationIntensity: 3,
     particleVelocity: 300, // PACK-VFX-006: 300px/s for mythic rarity
+    particleSize: 10, // PACK-VFX-032: 10px particle size for mythic rarity
   },
 };
 

@@ -644,7 +644,7 @@
       "dependsOn": [
         "PACK-VFX-026"
       ],
-      "completionNotes": "✅ Completed - Object pooling (96% reduction), RAF loop management, mobile cap at 120 particles. 12/12 tests passing. Build successful (7.79s). Full documentation in docs/PERFORMANCE_OPTIMIZATION_PACK-VFX-027.md"
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-028",
@@ -659,7 +659,7 @@
         "Document which effects need reduction for low-end"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "testing",
@@ -668,7 +668,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-027"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-029",
@@ -683,14 +684,15 @@
         "Setting persists to localStorage"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "settings",
         "particles",
         "accessibility"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-030",
@@ -705,7 +707,7 @@
         "Ultra: 150% particles, maximum drama"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "settings",
@@ -714,7 +716,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-029"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-031",
@@ -729,7 +732,7 @@
         "Apply to all rarity particles"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
@@ -738,7 +741,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-007"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-032",
@@ -754,14 +758,15 @@
         "Set mythic particle size to 10px"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
         "size",
         "rarity-gradient"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-033",
@@ -776,14 +781,15 @@
         "Apply rotation to all particles"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
         "rotation",
         "animation"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-034",
@@ -798,7 +804,7 @@
         "Ensure trails don't clutter visuals"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "particles",
@@ -807,7 +813,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-022"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-035",
@@ -822,14 +829,15 @@
         "Test flip has depth and feels premium"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "card",
         "flip",
         "3d"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-036",
@@ -4894,6 +4902,6 @@
     "version": "2.0.0",
     "totalTasks": 210,
     "focus": "Complete MVP polish for all features",
-    "updatedAt": "2026-01-19T07:16:00.950Z"
+    "updatedAt": "2026-01-19T08:08:01.896Z"
   }
 }

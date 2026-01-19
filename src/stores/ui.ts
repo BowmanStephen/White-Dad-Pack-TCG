@@ -6,12 +6,15 @@ import { onBrowser } from '@/lib/utils/browser';
 
 // Animation Quality Settings
 export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
+export type ParticlePreset = 'low' | 'medium' | 'high' | 'ultra';
 
 const QUALITY_KEY = 'daddeck_animation_quality';
+const PARTICLE_PRESET_KEY = 'daddeck_particle_preset';
 const SCREEN_SHAKE_KEY = 'daddeck_screen_shake_enabled';
 const CINEMATIC_MODE_KEY = 'daddeck_cinematic_mode';
 const SKIP_ANIMATIONS_KEY = 'daddeck_skip_animations';
 const FAST_FORWARD_KEY = 'daddeck_fast_forward';
+const PARTICLE_INTENSITY_KEY = 'daddeck_particle_intensity';
 
 // Cinematic mode configuration (US083 - Pack Opening - Cinematic Mode)
 const CINEMATIC_CONFIGS: Record<CinematicMode, CinematicConfig> = {
@@ -298,6 +301,166 @@ export function setCinematicMode(mode: CinematicMode): void {
 export function toggleCinematicMode(): void {
   const current = $cinematicMode.get();
   setCinematicMode(current === 'cinematic' ? 'normal' : 'cinematic');
+}
+
+// ============================================================================
+// PARTICLE PRESET SYSTEM (PACK-VFX-030)
+// ============================================================================
+
+/**
+ * Particle preset configuration
+ * Each preset controls both particle count and screen shake
+ */
+export const PARTICLE_PRESETS: Record<ParticlePreset, {
+  particleMultiplier: number;
+  screenShakeEnabled: boolean;
+  description: string;
+}> = {
+  low: {
+    particleMultiplier: 0.5,    // 50% particles
+    screenShakeEnabled: false,  // No screen shake
+    description: 'Minimal particles, no screen shake - best performance',
+  },
+  medium: {
+    particleMultiplier: 0.75,   // 75% particles
+    screenShakeEnabled: false,  // No screen shake (reduced effects)
+    description: 'Balanced particles, reduced effects for smoother performance',
+  },
+  high: {
+    particleMultiplier: 1.0,    // 100% particles
+    screenShakeEnabled: true,   // All effects enabled (default)
+    description: 'Full particle effects with screen shake - the complete experience',
+  },
+  ultra: {
+    particleMultiplier: 1.5,    // 150% particles
+    screenShakeEnabled: true,   // Maximum drama
+    description: 'Maximum particle intensity with all effects for epic reveals',
+  },
+};
+
+// Particle preset state
+const getInitialParticlePreset = (): ParticlePreset => {
+  return getStoredValue<ParticlePreset>(
+    PARTICLE_PRESET_KEY,
+    'high',
+    (value): value is ParticlePreset => ['low', 'medium', 'high', 'ultra'].includes(value as ParticlePreset)
+  );
+};
+
+export const $particlePreset = atom<ParticlePreset>(getInitialParticlePreset());
+export const particlePreset = $particlePreset;
+
+/**
+ * Get the particle preset configuration
+ */
+export function getParticlePresetConfig() {
+  const preset = $particlePreset.get();
+  return PARTICLE_PRESETS[preset];
+}
+
+/**
+ * Set particle preset
+ * @param preset - Preset to apply
+ */
+export function setParticlePreset(preset: ParticlePreset): void {
+  $particlePreset.set(preset);
+
+  // Apply preset settings
+  const config = PARTICLE_PRESETS[preset];
+
+  // Update screen shake based on preset
+  setScreenShakeEnabled(config.screenShakeEnabled);
+
+  // Update particle intensity slider to match preset
+  // Map preset multiplier to intensity slider (1-5 scale)
+  const intensityMap: Record<ParticlePreset, number> = {
+    low: 1,      // 0.5x → minimal
+    medium: 2,    // 0.75x → low
+    high: 3,      // 1.0x → normal
+    ultra: 5,     // 1.5x → maximum
+  };
+  setParticleIntensity(intensityMap[preset]);
+
+  // Persist to localStorage
+  onBrowser(() => {
+    localStorage.setItem(PARTICLE_PRESET_KEY, preset);
+  });
+
+  // Track preset change
+  trackEvent({
+    type: 'settings_change',
+    data: {
+      setting: 'particlePreset',
+      previousValue: $particlePreset.get(),
+      newValue: preset,
+    },
+  });
+}
+
+/**
+ * Get the combined particle multiplier from preset
+ * This overrides the base particle intensity when preset is active
+ */
+export function getParticlePresetMultiplier(): number {
+  const config = getParticlePresetConfig();
+  return config.particleMultiplier;
+}
+
+// ============================================================================
+// PARTICLE INTENSITY (PACK-VFX-029)
+// ============================================================================
+
+// Particle intensity: 1-5 scale (1=minimal, 3=normal, 5=maximum)
+const getInitialParticleIntensity = (): number => {
+  const saved = getStoredValue(PARTICLE_INTENSITY_KEY, null);
+  if (saved === null) return 3; // Default to normal
+
+  const intensity = parseInt(saved, 10);
+  return isNaN(intensity) || intensity < 1 || intensity > 5 ? 3 : intensity;
+};
+
+export const $particleIntensity = atom<number>(getInitialParticleIntensity());
+export const particleIntensity = $particleIntensity;
+
+/**
+ * Get the particle intensity multiplier based on user setting
+ * @returns Multiplier (0.2 = minimal, 1.0 = normal, 2.0 = maximum)
+ */
+export function getParticleIntensityMultiplier(): number {
+  const intensity = $particleIntensity.get();
+
+  // Scale 1-5 to 0.2-2.0 multiplier
+  // 1 = 0.2 (20% of normal)
+  // 2 = 0.6 (60% of normal)
+  // 3 = 1.0 (100% - normal)
+  // 4 = 1.5 (150% of normal)
+  // 5 = 2.0 (200% of normal)
+  return intensity === 1 ? 0.2 : intensity === 2 ? 0.6 : intensity === 3 ? 1.0 : intensity === 4 ? 1.5 : 2.0;
+}
+
+/**
+ * Set particle intensity
+ * @param intensity - Intensity level (1-5)
+ */
+export function setParticleIntensity(intensity: number): void {
+  // Validate intensity is between 1 and 5
+  const validatedIntensity = Math.max(1, Math.min(5, intensity));
+  $particleIntensity.set(validatedIntensity);
+
+  // Persist to localStorage
+  onBrowser(() => {
+    localStorage.setItem(PARTICLE_INTENSITY_KEY, String(validatedIntensity));
+  });
+
+  // Track setting change
+  trackEvent({
+    type: 'settings_change',
+    data: {
+      setting: 'particleIntensity',
+      previousValue: $particleIntensity.get(),
+      newValue: validatedIntensity,
+    },
+  });
 }
 
 // Export stores without $ prefix for imports
