@@ -1,6 +1,5 @@
 import type { Rarity, DadType, HoloVariant } from './core';
 import type { CardStats } from './card';
-import type { SeasonId } from './season';
 
 // Rarity order for comparison (common=0, mythic=5)
 export const RARITY_ORDER: Record<Rarity, number> = {
@@ -43,6 +42,7 @@ export interface RarityConfig {
   glowColor: string;
   particleCount: number;
   animationIntensity: number;
+  particleVelocity: number; // Particle burst velocity in pixels per second (PACK-VFX-001)
 }
 
 // Rarity configurations map
@@ -57,6 +57,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(107, 114, 128, 0.4)', // Increased opacity for visibility
     particleCount: 0,
     animationIntensity: 1,
+    particleVelocity: 150, // PACK-VFX-001: 150px/s for common rarity
   },
   uncommon: {
     name: 'Uncommon',
@@ -65,6 +66,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(59, 130, 246, 0.5)', // Increased opacity
     particleCount: 5,
     animationIntensity: 1.2,
+    particleVelocity: 180, // Slightly faster than common
   },
   rare: {
     name: 'Rare',
@@ -73,6 +75,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(217, 119, 6, 0.6)', // Darker for better contrast
     particleCount: 10,
     animationIntensity: 1.5,
+    particleVelocity: 200, // Faster for rare
   },
   epic: {
     name: 'Epic',
@@ -81,6 +84,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(147, 51, 234, 0.6)', // Increased opacity
     particleCount: 15,
     animationIntensity: 1.8,
+    particleVelocity: 250, // Faster for epic
   },
   legendary: {
     name: 'Legendary',
@@ -89,6 +93,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(234, 88, 12, 0.7)', // Increased opacity
     particleCount: 25,
     animationIntensity: 2.2,
+    particleVelocity: 300, // Fast for legendary
   },
   mythic: {
     name: 'Mythic',
@@ -97,6 +102,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(219, 39, 119, 0.8)', // Higher opacity for mythic
     particleCount: 40,
     animationIntensity: 3,
+    particleVelocity: 400, // Fastest for mythic
   },
 };
 
