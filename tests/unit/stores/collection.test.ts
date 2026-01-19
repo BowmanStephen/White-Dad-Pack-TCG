@@ -38,7 +38,7 @@ import {
   trackCollectionSort
 } from '@/stores/collection';
 import type { Collection, Pack, PackCard, Rarity } from '@/types';
-import { RARITY_ORDER } from '@/types';
+import { RARITY_ORDER } from '@/types/constants';
 import type { PityCounter, StreakCounter } from '@/types/collection';
 
 // Mock IndexedDB functions
@@ -320,12 +320,12 @@ describe('Collection Store', () => {
       expect(getBestStreak()).toBe(1); // Best streak preserved
     });
 
-    it('should be an alias for addPackToCollection', () => {
+    it('should be an alias for addPackToCollection', async () => {
       const pack1 = createTestPack({ id: 'pack-alias-1' });
       const pack2 = createTestPack({ id: 'pack-alias-2' });
 
       const result1 = savePackToCollection(pack1);
-      const result2 = addPackToCollection(pack2);
+      const result2 = await addPackToCollection(pack2);
 
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(true);

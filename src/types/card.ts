@@ -110,7 +110,7 @@ export interface Card {
   totalInSeries: number;
   artist: string;
   holoVariant?: HoloVariant;
-  seasonId?: SeasonId;
+  seasonId?: import('./season').SeasonId;
 }
 
 // Card in a pack (with runtime properties)
@@ -125,5 +125,4 @@ export interface CollectionDisplayCard extends PackCard {
   duplicateCount: number;
 }
 
-// Season identifier - imported from season types
-export type SeasonId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+// SeasonId moved to season.ts - import from there if needed

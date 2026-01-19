@@ -4,12 +4,34 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { svelteTesting } from '@testing-library/svelte/vite';
 
 export default defineConfig({
-  plugins: [svelte(), svelteTesting()],
+  plugins: [
+    svelte({
+      compilerOptions: {
+        // Force client-side compilation for tests
+        generate: 'dom',
+        hydratable: false,
+      },
+    }),
+    // Temporarily disable svelteTesting() to debug environment issues
+    // svelteTesting()
+  ],
   test: {
-    environment: 'jsdom',
+    environmentOptions: {
+      // Custom jsdom environment options
+      url: 'http://localhost',
+      pretendToBeVisual: true,
+      resources: 'usable',
+    },
+    environment: 'happy-dom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/**/*.test.ts'],
+    include: [
+      'tests/**/*.test.ts',
+      '!tests/_archived/**/*.test.ts',
+      '!tests/integration/**/*.spec.ts',  // Exclude Playwright spec files
+      '!tests/e2e/**/*.spec.ts',         // Exclude E2E spec files
+      '!tests/visual/**/*.test.ts',        // Exclude visual tests
+    ],
     exclude: ['node_modules', 'dist', '**/*.spec.ts', 'tests/integration', 'tests/visual', 'tests/e2e', 'tests/_archived/**'],
     coverage: {
       provider: 'v8',
@@ -24,17 +46,13 @@ export default defineConfig({
         'node_modules/**',
         'dist/**',
       ],
-      // Coverage thresholds (set to 60% for now, will increase to 80% after Phase 1)
       thresholds: {
         lines: 60,
         functions: 60,
         branches: 55,
         statements: 60,
-        perFile: false, // Enforce thresholds across all files combined
+        perFile: false,
       },
-    },
-    ssr: {
-      noExternal: ['svelte'],
     },
   },
   resolve: {
@@ -44,6 +62,7 @@ export default defineConfig({
       '@lib': resolve(__dirname, './src/lib'),
       '@stores': resolve(__dirname, './src/stores'),
       '@data': resolve(__dirname, './src/data'),
+      '@mocks': resolve(__dirname, './tests/mocks'),
     },
   },
 });

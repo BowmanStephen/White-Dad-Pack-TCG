@@ -180,7 +180,7 @@
 
 <!-- Storage warning (non-modal, appears at top) -->
 {#if storageError && !packError}
-  <div class="fixed top-0 left-0 right-0 z-50 p-4">
+  <div class="fixed top-0 left-0 right-0 z-50 p-4" data-testid="error-message">
     <ErrorMessage error={storageError} compact={true} />
   </div>
 {/if}
@@ -240,20 +240,23 @@
 
   {:else if packState === 'generating'}
     <!-- Generating state - pack skeleton with shimmer -->
-    <PackSkeleton />
+    <PackSkeleton data-testid="pack-skeleton" />
 
   {:else if packError}
     <!-- Error state - use friendly error display -->
-    <ErrorDisplay
-      error={packError}
-      onDismiss={() => {
-        packErrorStore.set(null);
-      }}
-    />
+    <div data-testid="error-display">
+      <ErrorDisplay
+        error={packError}
+        onDismiss={() => {
+          packErrorStore.set(null);
+        }}
+      />
+    </div>
 
   {:else if packState === 'pack_animate' && currentPack}
     <!-- Pack opening animation -->
     <PackAnimation
+      data-testid="pack-animation"
       bestRarity={currentPack.bestRarity}
       design={currentPack.design}
       tearAnimation={currentTearAnimation}
@@ -264,6 +267,7 @@
   {:else if (packState === 'cards_ready' || packState === 'revealing') && currentPack}
     <!-- Card reveal phase -->
     <CardRevealer
+      data-testid="card-revealer"
       pack={currentPack}
       currentIndex={currentCardIndex}
       revealedIndices={revealedCards}
@@ -278,7 +282,7 @@
 
   {:else if packState === 'results' && currentPack && packStats}
     <!-- Results screen -->
-    <div class="results-container">
+    <div class="results-container" data-testid="pack-results">
       <PackResults
         pack={currentPack}
         stats={packStats}

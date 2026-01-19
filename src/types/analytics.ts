@@ -1,5 +1,6 @@
-import type { Rarity, HoloVariant, SortOption } from './core';
-import type { PackType, DadType } from './index';
+import type { Rarity, HoloVariant, DadType } from './core';
+import type { PackType } from './pack';
+import type { SortOption } from './constants';
 
 // ============================================================================
 // ANALYTICS TYPES

@@ -3,7 +3,7 @@
   // Displays an animated pack placeholder with shimmer effect
 </script>
 
-<div class="pack-skeleton" aria-hidden="true" role="presentation">
+<div class="pack-skeleton" data-testid="pack-skeleton" aria-hidden="true" role="presentation">
   <!-- Pack outer container -->
   <div class="pack-outer">
     <!-- Shimmer overlay -->

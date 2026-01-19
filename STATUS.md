@@ -20,7 +20,7 @@ Scope has been dramatically reduced to focus on **2 core features**:
 | Component dirs | 18 | 20 |
 | Lib dirs | 18 | 12 |
 | Stores | 14 | 15 |
-| Type files | 11 | 18 |
+| Type files | 27 | 18 |
 
 ---
 
@@ -73,10 +73,15 @@ Scope has been dramatically reduced to focus on **2 core features**:
 
 ## 🎯 Next Steps
 
-### Phase 3 Type Refactoring (Complete Critical Fixes)
+### Phase 3 Type Refactoring - ✅ COMPLETE
 - [x] ✅ Circular dependency resolved (core.ts → index.ts pattern)
 - [x] ✅ Duplicate types removed (core types consolidated)
-- [ ] Full type file split (~2,900 lines) - **Deferred to dedicated session**
+- [x] ✅ **Full type file split complete** - Reduced `index.ts` from 3,096 → 105 lines (97% reduction!)
+- [x] ✅ All types organized into 27 feature-specific files
+- [x] ✅ Barrel file pattern implemented (clean re-exports only)
+- [x] ✅ Build passing (6 pages, ~10.87s)
+- [x] ✅ All 562 tests passing
+- [x] ✅ Fixed SSR issue in CollectionStats (DAD_TYPE_COLORS fallback)
 
 ### Immediate (Fix Test Failures)
 - [ ] Remove or update tests for removed features

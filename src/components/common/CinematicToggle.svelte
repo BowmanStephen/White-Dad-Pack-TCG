@@ -12,6 +12,7 @@
 <button
   class="cinematic-toggle"
   class:active={isCinematic}
+  data-testid="cinematic-toggle"
   on:click={handleToggle}
   aria-label="Toggle cinematic mode"
   aria-pressed={isCinematic}

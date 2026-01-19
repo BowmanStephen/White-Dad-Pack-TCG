@@ -178,8 +178,8 @@
     }
   }
 
-  const bestRarityConfig = $derived(RARITY_CONFIG[stats.bestCard.rarity]);
-  const hasLegendaryOrBetter = $derived(stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic');
+  const bestRarityConfig = $derived(stats.bestCard ? RARITY_CONFIG[stats.bestCard.rarity] : null);
+  const hasLegendaryOrBetter = $derived(stats.bestCard ? (stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic') : false);
 
   // Check if a card is new to the collection
   function isCardNew(cardId: string) {

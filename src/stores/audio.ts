@@ -260,20 +260,28 @@ export function playSound(
 
   switch (soundType) {
     case 'pack_tear':
-      soundPath += 'pack-tear.mp3';
+      soundPath += 'kenney_casino-audio/Audio/cards-pack-open-1.ogg';
       break;
     case 'card_reveal':
     case 'jingle':
       targetRarity = options?.rarity || 'common';
       // Use rarity-specific reveal sounds
-      if (targetRarity && ['rare', 'epic', 'legendary', 'mythic'].includes(targetRarity)) {
-        soundPath += `reveal-${targetRarity}.mp3`;
+      if (targetRarity === 'mythic') {
+        soundPath += 'mixkit-melodic-gold-price-2000.wav';
+      } else if (targetRarity === 'legendary') {
+        soundPath += 'mixkit-magical-coin-win-1936.wav';
+      } else if (targetRarity === 'epic') {
+        soundPath += 'mixkit-gold-coin-prize-1999.wav';
+      } else if (targetRarity === 'rare') {
+        soundPath += 'mixkit-payout-award-ding-1935.wav';
+      } else if (targetRarity === 'uncommon') {
+        soundPath += 'kenney_casino-audio/Audio/card-place-2.ogg';
       } else {
-        soundPath += 'reveal-common.mp3';
+        soundPath += 'kenney_casino-audio/Audio/card-place-1.ogg';
       }
       break;
     case 'card_flip':
-      soundPath += 'card-flip.mp3';
+      soundPath += 'kenney_casino-audio/Audio/card-slide-1.ogg';
       break;
   }
 
@@ -361,9 +369,8 @@ export function playNewDiscoverySound(): void {
   if (muted.get()) return;
   initAudioContext();
 
-  // Use the reveal-rare sound as the "ding!" effect
-  // It's celebratory but not too long
-  const soundPath = '/sounds/reveal-rare.mp3';
+  // Use the magical coin win sound for discovery celebration
+  const soundPath = '/sounds/mixkit-melodic-bonus-collect-1938.wav';
   const audio = getCachedAudio(soundPath);
 
   // Slightly higher volume for discovery celebration
@@ -396,14 +403,20 @@ export function playCardFlip(): void {
  */
 export function preloadSounds(): void {
   const soundsToPreload = [
-    'pack-tear.mp3',
-    'reveal-common.mp3',
-    'reveal-uncommon.mp3',
-    'reveal-rare.mp3',
-    'reveal-epic.mp3',
-    'reveal-legendary.mp3',
-    'reveal-mythic.mp3',
-    'card-flip.mp3',
+    // Pack opening
+    'kenney_casino-audio/Audio/cards-pack-open-1.ogg',
+    // Card flip
+    'kenney_casino-audio/Audio/card-slide-1.ogg',
+    // Common/Uncommon reveals (Kenney)
+    'kenney_casino-audio/Audio/card-place-1.ogg',
+    'kenney_casino-audio/Audio/card-place-2.ogg',
+    // Rare+ reveals (Mixkit)
+    'mixkit-payout-award-ding-1935.wav',
+    'mixkit-gold-coin-prize-1999.wav',
+    'mixkit-magical-coin-win-1936.wav',
+    'mixkit-melodic-gold-price-2000.wav',
+    // New discovery
+    'mixkit-melodic-bonus-collect-1938.wav',
   ];
 
   soundsToPreload.forEach(sound => {

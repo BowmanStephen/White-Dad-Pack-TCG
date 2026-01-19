@@ -6,22 +6,18 @@
 
 DadDeck™ is a satirical trading card game pack-opening simulator that parodies suburban American dad culture. Built with modern web technologies, it offers a premium, AAA-quality "pack pull" experience without the microtransactions.
 
-### ✅ What Works
+### ✅ What Works (MVP Scope)
 - **Pack Opening** - Full 6-stage opening flow with premium animations
-- **Collections** - LocalStorage-backed card persistence and history tracking
-- **Battle System** - Stat-based combat with type advantages
-- **Deck Building** - Create/validate custom decks with real-time stats
-- **Card Database** - 105+ unique cards across 37+ dad types with full metadata
+- **Collection Management** - IndexedDB-backed card persistence with search, filters, and sorting
+- **Card Database** - 173 unique cards with full metadata
 - **Error Logging** - Built-in error reporting system with Sentry integration and unique IDs
-- **Achievements** - Pop-up unlocks and gallery system
 - **Responsive Design** - Works beautifully on mobile (65%) and desktop (35%)
 
 ### ⚠️ Known Limitations
-- **Premium Features Removed (Jan 18, 2026)** - Removed premium/DadPass stores per Phase 4 cleanup. All features 100% free.
+- **MVP Scope (Jan 18, 2026)** - Focused on 2 core features only: pack opening + collection management
+- **Archived Features** - Battle system, trading, deck building, crafting, achievements, and other features have been removed (see `src/_archived/`)
 - **Server-Side Features Not Implemented** - No user accounts, cloud sync, or multiplayer
-- **Trading/Referral Stubs** - UI elements exist but don't persist across sessions
 - **Discord Bot** - Experimental feature, limited functionality
-- **2 Minor Test Errors** - Non-blocking validation edge cases (197/197 core tests pass)
 
 ---
 
@@ -40,17 +36,10 @@ DadDeck™ is a satirical trading card game pack-opening simulator that parodies
 
 ### Core Gameplay
 - 🃏 **Pack Opening:** Full-fidelity 6-stage opening sequence with animations.
-- 🗃️ **Card Collection:** 105+ unique cards across 37+ "Dicktator Dad" Types.
+- 🗃️ **Card Collection:** 173 unique cards with IndexedDB persistence.
 - ✨ **Rarity System:** 6 rarity tiers from Common to Mythic with holographic variants.
-- 💾 **Persistence:** Your collection is saved locally and survives page reloads.
-- 🎭 **Special Types:** 6 new card types including Events, Terrain, and Evolutions.
-
-### Advanced Systems
-- ⚔️ **Battle Mechanics:** Stat-based combat system with type advantages and synergy bonuses.
-- 🛠️ **Deck Builder:** Create and validate custom decks for suburban dominance.
-- 🧪 **Crafting & Upgrades:** Sacrifice duplicates to level up your favorite dads.
-- 🏆 **Achievements & Leaderboards:** Track progress and compare collection value globally.
-- 🤝 **Trading Hub:** Exchange cards through a structured trading system.
+- 💾 **Persistence:** Your collection is saved to IndexedDB and survives page reloads.
+- 🔍 **Collection Management:** Search, filter (by rarity/type), and sort your cards.
 
 ---
 
@@ -182,15 +171,15 @@ DadDeck™ includes a built-in anti-cheat system (`src/lib/security/pack-validat
 
 ### Build & Test Status
 - **Build:** ✅ Passing (0 errors, 0 warnings)
-- **Tests:** ✅ 197/197 core tests passing
+- **Tests:** ✅ 562/562 tests passing (32 skipped - archived features)
 - **Type Checking:** ✅ TypeScript strict mode passing
 - **Bundle Size:** ~200KB gzipped (optimized)
 
 ### Recent Changes (Jan 18, 2026)
-- 🚀 **Migration 3 Complete** - 37 new Dicktator Dad types and 6 special card types added
-- 🚨 **Error Logging System** - Integrated Sentry, added error reporting UI and unique error IDs
-- 🧹 **Code cleanup** - Consolidated CSS utilities, removed ~2,463 lines of dead code
-- 🌍 **Internationalization** - Added i18n system with English & Spanish (300+ keys)
+- 🎯 **MVP Scope Reduction** - Focused on 2 core features (pack opening + collection)
+- 🧹 **Code cleanup** - Archived 20+ component directories, removed ~2,463 lines of dead code
+- 📦 **Type system refactor** - Split monolithic type file into 27 modular feature files
+- 💾 **IndexedDB migration** - Collections now stored in IndexedDB for better quota management
 - 🔍 **Collection search & filters** - Full-text search, multi-select filters, sorting
 - 📊 **Interactive stat tooltips** - Hover & tap-to-reveal on card stats
 

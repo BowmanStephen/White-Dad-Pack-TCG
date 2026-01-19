@@ -1,7 +1,7 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState, PackType, DadType, TearAnimation } from '../types';
 import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
-import { addPackToCollection, getPityCounter } from './collection';
+import { addPackToCollection, getPityCounter, ensureCollectionInitialized } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
@@ -170,8 +170,11 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
           throw new Error('Generated pack has no cards');
         }
 
-        // Save pack to collection (LocalStorage)
-        const saveResult = addPackToCollection(pack);
+        // Ensure collection is initialized before saving
+        await ensureCollectionInitialized();
+
+        // Save pack to collection (IndexedDB) - await to ensure persistence
+        const saveResult = await addPackToCollection(pack);
         if (!saveResult.success) {
           // Create storage error but don't block the pack opening
           const storageAppError = createAppError(

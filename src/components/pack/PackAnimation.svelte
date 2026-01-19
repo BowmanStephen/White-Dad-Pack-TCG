@@ -289,6 +289,7 @@
 
 <div
   class="relative cursor-pointer"
+  data-testid="pack-animation"
   bind:this={packElement}
   on:click={handleClick}
   on:keydown={handleKeydown}

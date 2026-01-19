@@ -277,12 +277,12 @@ import {
   type SortOption as SortOptionImport,
 } from '../data/configs';
 
-// Import tear animation configuration from index.ts (PACK-027)
+// Import tear animation configuration from pack.ts (PACK-027)
 import {
   TEAR_ANIMATION_CONFIG,
   selectRandomTearAnimation,
   type TearAnimation,
-} from './index';
+} from './pack';
 
 // Re-export constants for backward compatibility
 export const RARITY_CONFIG = RARITY_CONFIG_IMPORT;

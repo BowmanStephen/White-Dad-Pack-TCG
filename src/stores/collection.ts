@@ -121,8 +121,14 @@ export const collection = collectionStore;
 // Track save timeout for debouncing
 let saveTimeout: number | null = null;
 
+// Track if an immediate save is pending (to avoid duplicate saves)
+let immediateSavePending = false;
+
 // Save to IndexedDB (debounced) - PACK-045: With quota warning handling
 function saveToStorage() {
+  // Skip debounced save if immediate save is pending
+  if (immediateSavePending) return;
+  
   if (saveTimeout) clearTimeout(saveTimeout);
 
   saveTimeout = window.setTimeout(async () => {
@@ -142,6 +148,39 @@ function saveToStorage() {
       dispatchStorageEvent('error', 'An unexpected error occurred while saving');
     }
   }, 500);
+}
+
+// Save to IndexedDB immediately (for critical operations like pack saves)
+async function saveToStorageImmediate(): Promise<{ success: boolean; error?: string }> {
+  // Cancel any pending debounced save
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+  }
+  
+  immediateSavePending = true;
+  
+  try {
+    const current = collectionStore.get();
+    const result = await saveToIndexedDB(current);
+
+    if (!result.success) {
+      console.error('[Collection] Failed to save:', result.error);
+      dispatchStorageEvent('error', result.error || 'Failed to save collection');
+      return { success: false, error: result.error };
+    } else if (result.quotaWarning) {
+      console.warn('[Collection] Quota warning:', result.quotaWarning);
+      dispatchStorageEvent('warning', result.quotaWarning);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[Collection] Error saving:', error);
+    dispatchStorageEvent('error', 'An unexpected error occurred while saving');
+    return { success: false, error: 'An unexpected error occurred while saving' };
+  } finally {
+    immediateSavePending = false;
+  }
 }
 
 // Subscribe to store changes and persist to IndexedDB (only in browser)
@@ -258,11 +297,34 @@ export function getBestStreak(): number {
 
 // Add a pack to the collection (alias for US022 compatibility)
 export function savePackToCollection(pack: Pack): { success: boolean; error?: string } {
-  return addPackToCollection(pack);
+  return addPackToCollectionSync(pack);
 }
 
-// Add a pack to the collection
-export function addPackToCollection(pack: Pack): { success: boolean; error?: string } {
+// Synchronous version for backward compatibility (triggers async save)
+function addPackToCollectionSync(pack: Pack): { success: boolean; error?: string } {
+  const result = updateCollectionWithPack(pack);
+  if (result.success) {
+    // Trigger immediate save (fire and forget for sync API)
+    saveToStorageImmediate().catch(err => {
+      console.error('[Collection] Background save failed:', err);
+    });
+  }
+  return result;
+}
+
+// Add a pack to the collection (async version - waits for IndexedDB save)
+export async function addPackToCollection(pack: Pack): Promise<{ success: boolean; error?: string }> {
+  const result = updateCollectionWithPack(pack);
+  if (!result.success) {
+    return result;
+  }
+  
+  // Wait for IndexedDB save to complete
+  return saveToStorageImmediate();
+}
+
+// Core logic to update collection state with a new pack
+function updateCollectionWithPack(pack: Pack): { success: boolean; error?: string } {
   try {
     const current = collection.get();
 
@@ -334,7 +396,7 @@ export function addPackToCollection(pack: Pack): { success: boolean; error?: str
   } catch (error) {
     const storageError = createStorageError(
       error instanceof Error ? error.message : 'Failed to save pack to collection',
-      () => addPackToCollection(pack)
+      () => addPackToCollectionSync(pack)
     );
     logError(storageError, error);
     return {

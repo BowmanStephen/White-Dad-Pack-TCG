@@ -1,8 +1,49 @@
 /**
  * Global test setup for Vitest
- * Provides DOM environment and common mocks
+ * DOM environment is set up by vitest.config.mjs
+ * This file provides common mocks and utilities
  */
 import { vi, beforeEach, afterEach } from 'vitest';
+import { JSDOM } from 'jsdom';
+
+// Manually set up jsdom if not already set up
+if (typeof document === 'undefined') {
+  console.log('Setting up jsdom manually...');
+
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'http://localhost',
+    pretendToBeVisual: true,
+    resources: 'usable',
+  });
+
+  // Define globals manually
+  global.window = dom.window;
+  global.document = dom.window.document;
+  global.navigator = dom.window.navigator;
+  global.HTMLElement = dom.window.HTMLElement;
+  global.HTMLAnchorElement = dom.window.HTMLAnchorElement;
+  global.HTMLButtonElement = dom.window.HTMLButtonElement;
+  global.HTMLDivElement = dom.window.HTMLDivElement;
+  global.HTMLSpanElement = dom.window.HTMLSpanElement;
+  global.HTMLImageElement = dom.window.HTMLImageElement;
+  global.HTMLAudioElement = dom.window.HTMLAudioElement;
+  global.Text = dom.window.Text;
+  global.Node = dom.window.Node;
+  global.Element = dom.window.Element;
+  global.Event = dom.window.Event;
+  global.EventTarget = dom.window.EventTarget;
+  global.CustomEvent = dom.window.CustomEvent;
+  global.localStorage = dom.window.localStorage;
+  global.sessionStorage = dom.window.sessionStorage;
+
+  // Browser APIs that Svelte needs
+  global.requestAnimationFrame = dom.window.requestAnimationFrame;
+  global.cancelAnimationFrame = dom.window.cancelAnimationFrame;
+  global.requestIdleCallback = dom.window.requestIdleCallback;
+  global.performance = dom.window.performance;
+
+  console.log('jsdom globals set up successfully');
+}
 import '@testing-library/jest-dom/vitest';
 
 // Mock localStorage for all tests
@@ -93,9 +134,49 @@ Object.defineProperty(globalThis, 'IntersectionObserver', {
   value: IntersectionObserverMock,
 });
 
+// Mock Web Animations API (element.animate())
+// jsdom doesn't support this, so we provide a minimal mock
+Object.defineProperty(Element.prototype, 'animate', {
+  writable: true,
+  value: vi.fn().mockImplementation(() => ({
+    finish: vi.fn(),
+    pause: vi.fn(),
+    play: vi.fn(),
+    cancel: vi.fn(),
+    reverse: vi.fn(),
+    onfinish: null,
+    oncancel: null,
+    updatePlaybackRate: vi.fn(),
+  })),
+});
+
 // Reset localStorage between tests
 beforeEach(() => {
   localStorageMock.clear();
+});
+
+// Mock HTMLAudioElement.play() to return a resolved Promise
+// This is needed for tests that use audio stores (PackOpener, etc.)
+Object.defineProperty(HTMLAudioElement.prototype, 'play', {
+  writable: true,
+  value: vi.fn().mockImplementation(() => Promise.resolve()),
+});
+
+// Mock HTMLAudioElement.pause() to prevent errors in tests
+Object.defineProperty(HTMLAudioElement.prototype, 'pause', {
+  writable: true,
+  value: vi.fn().mockImplementation(() => {}),
+});
+
+// Mock audio event listeners (addEventListener, removeEventListener)
+Object.defineProperty(HTMLAudioElement.prototype, 'addEventListener', {
+  writable: true,
+  value: vi.fn().mockImplementation(() => {}),
+});
+
+Object.defineProperty(HTMLAudioElement.prototype, 'removeEventListener', {
+  writable: true,
+  value: vi.fn().mockImplementation(() => {}),
 });
 
 // Cleanup after each test

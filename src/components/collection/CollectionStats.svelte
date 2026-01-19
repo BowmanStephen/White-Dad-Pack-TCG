@@ -20,10 +20,11 @@
   // Create a combined config object for dad types
   const DAD_TYPE_CONFIG: Record<DadType, { name: string; emoji: string; color: string }> = Object.keys(DAD_TYPE_NAMES).reduce((acc, type) => {
     const dadType = type as DadType;
+    const colors = DAD_TYPE_COLORS[dadType];
     acc[dadType] = {
       name: DAD_TYPE_NAMES[dadType],
       emoji: DAD_TYPE_ICONS[dadType],
-      color: DAD_TYPE_COLORS[dadType].primary,
+      color: colors?.primary || '#64748b', // Fallback to slate if undefined
     };
     return acc;
   }, {} as Record<DadType, { name: string; emoji: string; color: string }>);

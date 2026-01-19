@@ -203,7 +203,7 @@ function rollHolo(rarity: Rarity, rng: SeededRandom): HoloVariant {
 ## 4. Pity & Bad Luck Protection
 
 > **STATUS: IMPLEMENTED**
-> - Types: `src/types/index.ts` (PityCounter, PityThresholds, PityState)
+> - Types: `src/types/pity.ts` and `src/types/collection.ts` (PityCounter, PityThresholds, PityState)
 > - Store: `src/stores/pity.ts`
 > - Integration: `src/lib/pack/generator.ts` (generatePackWithPity)
 > - Tests: `tests/unit/stores/pity.test.ts`
@@ -215,16 +215,15 @@ The pity system protects players from extended bad luck streaks by guaranteeing 
 **Actual Implementation:**
 
 ```typescript
-// From src/types/index.ts
+// From src/types/collection.ts (PityCounter) and src/types/pity.ts (PityThresholds)
 interface PityCounter {
-  packsSinceRare: number;        // Reset when Rare+ pulled
-  packsSinceEpic: number;        // Reset when Epic+ pulled
-  packsSinceLegendary: number;   // Reset when Legendary+ pulled
-  packsSinceMythic: number;      // Reset when Mythic pulled
-  lastUpdated: Date;
+  rare: number;      // Packs since last rare
+  epic: number;      // Packs since last epic
+  legendary: number; // Packs since last legendary
+  mythic: number;    // Packs since last mythic
 }
 
-// From src/types/index.ts
+// From src/types/pity.ts
 const DEFAULT_PITY_THRESHOLDS = {
   rare: { softPity: 15, hardPity: 30, softPityMultiplier: 1.5 },
   epic: { softPity: 40, hardPity: 60, softPityMultiplier: 2.0 },
@@ -307,7 +306,7 @@ Show players their pity progress transparently:
 > **STATUS: IMPLEMENTED**
 > - Base Store: `src/stores/collection.ts`
 > - Completion Tracking: `src/lib/collection/completion.ts` (NEW)
-> - Types: `src/types/index.ts` (CollectionCompletion, RarityCompletion, etc.)
+> - Types: `src/types/completion.ts` (CollectionCompletion, RarityCompletion, etc.)
 > - Tests: `tests/unit/lib/collection/completion.test.ts`
 
 ### 5.1 Collection State
@@ -1700,7 +1699,7 @@ const DEFAULT_CRAFTING_CONFIG = {
 | Batch Store | `src/stores/batch.ts` |
 | Crafting Logic | `src/lib/crafting/executor.ts` |
 | Upgrade Logic | `src/lib/upgrade/executor.ts` |
-| Types | `src/types/index.ts` |
+| Types | `src/types/` (modular files: `completion.ts`, `collection.ts`, etc.) |
 | Card Database | `src/data/cards.json` |
 | Security Validation | `src/lib/security/pack-validator.ts` |
 

@@ -85,7 +85,7 @@
 
 {#if status.isBlocked}
   <!-- Blocked state - red banner with countdown -->
-  <div class="rate-limit-banner rate-limit-blocked">
+  <div class="rate-limit-banner rate-limit-blocked" data-testid="rate-limit-banner">
     <div class="rate-limit-icon">⏳</div>
     <div class="rate-limit-content">
       <div class="rate-limit-title">Rate Limit Reached</div>
@@ -96,7 +96,7 @@
   </div>
 {:else if getWarningLevel() !== 'safe'}
   <!-- Warning state - yellow/orange banner -->
-  <div class="rate-limit-banner rate-limit-warning">
+  <div class="rate-limit-banner rate-limit-warning" data-testid="rate-limit-banner">
     <div class="rate-limit-icon">⚠️</div>
     <div class="rate-limit-content">
       <div class="rate-limit-title">

@@ -399,6 +399,7 @@
 
 <div
   class="flex flex-col items-center gap-6 w-full max-w-lg"
+  data-testid="card-revealer"
   on:touchstart={handleTouchStart}
   on:touchmove={handleTouchMove}
   on:touchend={handleTouchEnd}

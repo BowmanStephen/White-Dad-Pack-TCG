@@ -556,14 +556,14 @@ PUBLIC_ANALYTICS_ID=      # For tracking (GA, Plausible)
 5. Check Common Pitfalls when stuck
 
 **Key Files to Understand:**
-- `src/types/index.ts` - All data models
+- `src/types/` - Modular type definitions (barrel file: `index.ts`)
 - `src/lib/pack/generator.ts` - Core business logic
 - `src/stores/pack.ts` - State management example
 - `astro.config.mjs` - Build configuration
 - `tailwind.config.mjs` - Design tokens
 
 **When Adding Features:**
-1. Define types in `src/types/`
+1. Define types in `src/types/` (use feature-specific files, import via `@/types`)
 2. Create store in `src/stores/`
 3. Add logic to `src/lib/`
 4. Build component in `src/components/`

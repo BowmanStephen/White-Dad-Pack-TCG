@@ -1,4 +1,4 @@
-import type { Rarity } from './core';
+import type { Rarity, DadType, HoloVariant } from './core';
 import type { PackCard, CardStats } from './card';
 import type { Pack, PackState, PackDesign } from './pack';
 
@@ -87,4 +87,44 @@ export interface SearchPreset {
   name: string;
   filters: AdvancedCollectionFilters;
   createdAt: Date;
+}
+
+// ============================================================================
+// ADVANCED SEARCH TYPES (Alternative API - from index.ts)
+// ============================================================================
+
+// Stat range filter (alternative structure - without stat field)
+export interface StatRangeFilterSimple {
+  min: number;
+  max: number;
+}
+
+// All stat ranges for filtering
+export interface StatRanges {
+  dadJoke?: StatRangeFilterSimple;
+  grillSkill?: StatRangeFilterSimple;
+  fixIt?: StatRangeFilterSimple;
+  napPower?: StatRangeFilterSimple;
+  remoteControl?: StatRangeFilterSimple;
+  thermostat?: StatRangeFilterSimple;
+  sockSandal?: StatRangeFilterSimple;
+  beerSnob?: StatRangeFilterSimple;
+}
+
+// Advanced search filters interface (alternative API)
+export interface AdvancedSearchFilters {
+  searchTerm: string;
+  rarity: Rarity | null;
+  holoVariants: Set<HoloVariant>; // Multiple holo variants (not just "holo only")
+  selectedTypes: Set<DadType>;
+  statRanges: StatRanges;
+}
+
+// Saved search preset interface
+export interface SavedSearchPreset {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  filters: AdvancedSearchFilters;
 }

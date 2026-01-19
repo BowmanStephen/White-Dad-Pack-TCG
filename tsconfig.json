@@ -7,7 +7,8 @@
       "@components/*": ["src/components/*"],
       "@lib/*": ["src/lib/*"],
       "@stores/*": ["src/stores/*"],
-      "@data/*": ["src/data/*"]
+      "@data/*": ["src/data/*"],
+      "@mocks/*": ["tests/mocks/*"]
     }
   },
   "include": [".astro/types.d.ts", "src/types/**/*.d.ts", "**/*"],

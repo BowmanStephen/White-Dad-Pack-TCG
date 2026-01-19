@@ -129,9 +129,10 @@
 
   @keyframes particle-burst {
     0% {
-      opacity: 1;
+      opacity: 0;
       transform: translate(-50%, -50%) scale(0);
     }
+    /* PACK-VFX-007: Fade-in effect over first 20% (0.3s of 1.5s duration) */
     20% {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1.5);

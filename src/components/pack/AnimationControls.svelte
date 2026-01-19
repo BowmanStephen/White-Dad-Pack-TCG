@@ -2,7 +2,7 @@
   import { toggleSkipAnimations, toggleFastForward, skipAnimations, fastForward } from '../../stores/ui';
 </script>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2" data-testid="animation-controls">
   <!-- Skip animations toggle -->
   <button
     class="flex items-center gap-2 px-3 py-2 bg-slate-800/80 hover:bg-slate-700/80 rounded-lg transition-colors border-2 {$skipAnimations ? 'border-amber-500' : 'border-slate-600'}"

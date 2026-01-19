@@ -10,6 +10,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working in this
 
 ---
 
+## 🎯 Quick Reference (Fast Access)
+
+**Most Common Commands:**
+```bash
+bun run dev              # Start dev server (localhost:4321)
+bun test                 # Run tests (562/562 passing)
+bun run build            # Build for production
+```
+
+**Most Important Files:**
+1. `src/types/index.ts` - All type definitions (barrel file)
+2. `src/stores/pack.ts` - Pack state management
+3. `src/lib/pack/generator.ts` - Pack generation logic
+4. `STATUS.md` - Current project status
+
+**Active Features (MVP):**
+- ✅ Pack Opening (6-stage state machine)
+- ✅ Collection Management (search/filter/sort)
+- 🗄️ All other features archived to `src/_archived/`
+
+**Test Status:** ✅ 562/562 passing | ⚠️ 32 skipped (archived features)
+
+---
+
 ## ⚠️ MVP SCOPE NOTICE (January 18, 2026)
 
 **This project has undergone a significant scope reduction.** The codebase now focuses on **2 core features only**:
@@ -40,6 +64,23 @@ The following features have been **archived and are NOT active**:
 
 ### Documentation Note
 This CLAUDE.md contains documentation for both **active** and **archived** features. When working on this codebase, focus only on the 2 active features mentioned above. See `STATUS.md` for complete details on the scope reduction.
+
+---
+
+## 🚨 Recent Changes (What's New)
+
+### January 18, 2026 - MVP Scope Reduction Complete
+- **Type System Refactor**: Split monolithic `src/types/index.ts` (~3,096 lines) into modular feature files. Barrel file now ~106 lines.
+- **Scope Reduction**: Removed 11 pages, archived 20+ components, 15 stores, 18 type files
+- **Active Features**: Pack opening + Collection management only
+- **Test Status**: 562/562 tests passing for active features (32 skipped for archived)
+- **Build Impact**: Faster builds, smaller bundles, cleaner codebase
+
+### Previous Updates
+- **IndexedDB Migration**: Collections now stored in IndexedDB with automatic LocalStorage migration
+- **Particle VFX System**: Rarity-based particle effects with configurable velocity
+- **Error Logging**: Sentry integration with error report modal
+- **I18N System**: Complete translation infrastructure (English/Spanish)
 
 ---
 
@@ -231,6 +272,31 @@ bun run discord-bot:dev  # Run Discord bot in watch mode
    - Code splitting: vendor chunks (html2canvas, svelte, nanostores)
    - Image optimization pipeline (pre-build hook)
    - Lazy loading for non-critical components
+
+### Type System Architecture
+
+**Modular Type Organization:**
+- **Barrel File**: `src/types/index.ts` (~106 lines) - Re-exports all types
+- **Feature Files**: Types organized by domain (e.g., `card.ts`, `pack.ts`, `collection.ts`)
+- **Core Types**: `core.ts` - Base types (Rarity, DadType, HoloVariant, etc.)
+- **Constants**: `constants.ts` - Shared constants (RARITY_CONFIG, DAD_TYPE_NAMES, etc.)
+
+**Import Pattern:**
+```typescript
+// ✅ Preferred: Import via barrel file (backward compatible)
+import type { Card, Pack, Collection } from '@/types';
+
+// ✅ Also valid: Direct import from feature file
+import type { Card } from '@/types/card';
+```
+
+**Type File Structure:**
+- `core.ts` - Base types (Rarity, DadType, HoloVariant, CinematicMode)
+- `card.ts` - Card-related types (Card, PackCard, CardStats, CardAbility)
+- `pack.ts` - Pack types (Pack, PackConfig, PackState, TearAnimation)
+- `collection.ts` - Collection types (Collection, CollectionStats, filters)
+- `constants.ts` - Shared constants (RARITY_CONFIG, DAD_TYPE_NAMES, etc.)
+- Feature-specific: `analytics.ts`, `achievements.ts`, `trading.ts`, `crafting.ts`, etc.
 
 ### Data Flow Architecture
 
@@ -611,7 +677,7 @@ import { generatePack } from '@lib/pack/generator'; // src/lib/pack/generator
 
 **Step 1: Planning & Types**
 ```typescript
-// 1. Define your types in src/types/index.ts
+// 1. Define your types in src/types/ (use feature-specific files, import via @/types)
 export interface NewFeature {
   id: string;
   status: 'pending' | 'active' | 'complete';
@@ -794,7 +860,7 @@ collectionStore.set({
 **3. Import Path Errors**
 ```typescript
 // ❌ PROBLEM: Relative paths
-import { Card } from '../../../types/index';
+import { Card } from '@/types'; // or from '@/types/card' for direct import
 
 // ✅ SOLUTION: Use path aliases
 import { Card } from '@/types';  // Clean and maintainable
@@ -853,7 +919,12 @@ global.indexedDB = {
 ```bash
 # Unit Tests (Vitest)
 bun test                    # Watch mode
-bun run test:run            # Single run
+bun run test:run            # Single run (all tests)
+bun run test:coverage       # Run with coverage report
+
+# Single test file or pattern
+bun test path/to/specific.test.ts           # Run specific test file
+bun test path/to/specific.test.ts -t "test name"  # Run specific test
 
 # E2E Tests (Playwright)
 bun run test:e2e            # Run all E2E tests
@@ -1189,7 +1260,7 @@ export function sanitizeHTML(html: string): string {
 ## 📝 Key Files to Understand
 
 ### Must Read (Priority Order)
-1. **`src/types/index.ts`** - All types, understand the data model
+1. **`src/types/`** - Modular type definitions (barrel file: `index.ts` re-exports all)
 2. **`src/stores/pack.ts`** - Pack state management
 3. **`src/lib/pack/generator.ts`** - How packs are created
 4. **`src/components/pack/PackOpener.svelte`** - Main pack opening UI
@@ -1228,6 +1299,149 @@ export function sanitizeHTML(html: string): string {
 - Ask: "Where does this data come from?"
 - Ask: "What happens when the user clicks X?"
 
+### Common Code Patterns
+
+**Pattern 1: Creating a New Store**
+```typescript
+// src/stores/feature.ts
+import { atom, computed } from 'nanostores';
+
+// 1. Define the store with initial state
+export const featureState = atom<FeatureData[]>([]);
+
+// 2. Create computed values (auto-update when state changes)
+export const activeCount = computed(featureState,
+  items => items.filter(i => i.active).length
+);
+
+// 3. Define actions (functions that modify state)
+export function addFeature(item: FeatureData) {
+  featureState.set([...featureState.get(), item]);
+}
+```
+
+**Pattern 2: Creating a New Component**
+```svelte
+<!-- src/components/feature/FeatureUI.svelte -->
+<script lang="ts">
+  import { featureState, addFeature } from '@/stores/feature';
+
+  // Use $state for local component state (Svelte 5 runes)
+  let isLoading = $state(false);
+  let error = $state<string | null>(null);
+
+  async function handleAdd() {
+    isLoading = true;
+    try {
+      await addFeature(newItem);
+    } catch (e) {
+      error = e.message;
+    } finally {
+      isLoading = false;
+    }
+  }
+</script>
+
+{#if error}
+  <div class="error">{error}</div>
+{/if}
+
+{#if isLoading}
+  <div class="loading">Loading...</div>
+{:else}
+  <button on:click={handleAdd}>Add Feature</button>
+{/if}
+```
+
+**Pattern 3: Using Pack Store**
+```typescript
+// In a component or business logic
+import { currentPack, packState, openPack } from '@/stores/pack';
+
+// Subscribe to pack changes
+currentPack.subscribe((pack) => {
+  console.log('Pack updated:', pack);
+});
+
+// Open a new pack (triggers state machine)
+await openPack({ raritySlots: DEFAULT_PACK_CONFIG.slots });
+
+// Check current state
+const currentState = packState.get(); // 'idle' | 'generating' | 'pack_animate' | etc.
+```
+
+**Pattern 4: Type-Safe Data Access**
+```typescript
+// Always import types from @/types (barrel file)
+import type { Card, Pack, Rarity, DadType } from '@/types';
+
+// Use type guards for runtime validation
+function isValidCard(data: unknown): data is Card {
+  return (
+    typeof data === 'object' && data !== null &&
+    'id' in data && 'name' in data && 'rarity' in data
+  );
+}
+
+// Use in data processing
+if (isValidCard(rawData)) {
+  // TypeScript now knows this is a Card
+  console.log(card.name);
+}
+```
+
+**Pattern 5: Collection Operations**
+```typescript
+import { collection, addPackToCollection } from '@/stores/collection';
+import { getAllCards } from '@/lib/cards/database';
+
+// Get current collection
+const currentCollection = collection.get();
+
+// Add a pack to collection
+await addPackToCollection(newPack);
+
+// Get all unique cards in collection
+const uniqueCards = new Set(
+  currentCollection.packs.flatMap(p => p.cards.map(c => c.id))
+);
+
+// Query card database
+const allCards = getAllCards();
+const legendaryCards = allCards.filter(c => c.rarity === 'legendary');
+```
+
+**Pattern 6: Testing Store Logic**
+```typescript
+// tests/stores/feature.test.ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import { featureState, addFeature } from '@/stores/feature';
+
+describe('Feature Store', () => {
+  beforeEach(() => {
+    // Reset state before each test
+    featureState.set([]);
+  });
+
+  it('should add feature to state', () => {
+    const newItem = { id: 'test', name: 'Test', active: true };
+    addFeature(newItem);
+
+    const items = featureState.get();
+    expect(items).toHaveLength(1);
+    expect(items[0]).toEqual(newItem);
+  });
+
+  it('should maintain immutability', () => {
+    const initial = featureState.get();
+    addFeature({ id: 'test', name: 'Test', active: true });
+
+    expect(featureState.get()).not.toBe(initial); // New reference
+    expect(initial).toHaveLength(0); // Original unchanged
+  });
+});
+```
+
 ---
 
 ## 🚦 Quick Commands Reference
@@ -1245,7 +1459,9 @@ bun run generate-sitemap # Generate sitemap.xml
 
 # Testing
 bun test                 # Run tests in watch mode
-bun run test:run         # Run tests once
+bun run test:run         # Run tests once (all)
+bun run test:coverage    # Run with coverage report
+bun test path/to/test.test.ts  # Run specific test file
 
 # Discord Bot
 bun run discord-bot      # Run Discord bot
@@ -1327,23 +1543,87 @@ The following features were **removed in MVP scope reduction** (January 18, 2026
 
 ## 🐛 Common Issues & Solutions
 
-### Pack Generation Not Working
-**Check:** `src/lib/pack/generator.ts` - ensure `CARDS` array is populated
-**Check:** Browser console for Nanostores errors
-**Fix:** Clear IndexedDB: Delete site data in browser DevTools
+### Troubleshooting Flowcharts
 
-### Animations Laggy
-**Check:** DevTools Performance tab for bottlenecks
-**Fix:** Reduce particle count in `RARITY_CONFIG`
-**Fix:** Use `will-change` CSS property for animated elements
+**Issue: Pack Opening Not Working**
+```
+1. Check browser console for errors
+   ├─ Error: "CARDS array is empty"
+   │  └─ Fix: Verify src/data/cards.json exists and has 173 cards
+   ├─ Error: "Store not initialized"
+   │  └─ Fix: Check import paths use @/ alias
+   └─ No error but nothing happens
+      └─ Fix: Clear IndexedDB in DevTools → Application → Storage
 
-### Types Not Found
-**Check:** Import path uses `@/` alias: `import { Card } from '@/types'`
-**Check:** `tsconfig.json` has path alias configured
+2. Test pack generator manually
+   └─ Open browser console and run:
+      window.generatePack = () => import('/src/lib/pack/generator.ts')
+      generatePack().then(p => console.log(p))
+```
 
-### Svelte Component Not Hydrating
-**Check:** Added `client:load` directive: `<PackOpener client:load />`
-**Check:** Component is imported in `.astro` file
+**Issue: Tests Failing**
+```
+1. Check test environment
+   ├─ Running unit tests?
+   │  └─ Verify vitest.config.ts has correct environment (jsdom)
+   ├─ Running E2E tests?
+   │  └─ Verify Playwright browsers installed: bun install -D playwright
+   └─ Tests timeout?
+      └─ Increase timeout in test file: test.setTimeout(10000)
+
+2. Check for missing mocks
+   └─ tests/setup.ts should mock IndexedDB and globals
+
+3. Run single test file
+   └─ bun test path/to/specific.test.ts
+```
+
+**Issue: Build Failing**
+```
+1. Type errors?
+   └─ Run: bun run typecheck (or npx tsc --noEmit)
+
+2. Import errors?
+   └─ Verify all imports use @/ alias (not relative paths)
+
+3. Build too large?
+   └─ Run: bun run build
+      Check: du -sh dist/_astro/
+      Optimize: Review vendor chunks in astro.config.mjs
+```
+
+### Common Issues & Quick Fixes
+
+**Pack Generation Not Working**
+- **Check:** `src/lib/pack/generator.ts` - ensure `CARDS` array is populated
+- **Check:** Browser console for Nanostores errors
+- **Fix:** Clear IndexedDB: DevTools → Application → Storage → Clear site data
+
+**Animations Laggy**
+- **Check:** DevTools Performance tab for bottlenecks
+- **Fix:** Reduce particle count in `RARITY_CONFIG` (src/types/constants.ts)
+- **Fix:** Add `will-change: transform, opacity` to animated elements
+
+**Types Not Found**
+- **Check:** Import path uses `@/` alias: `import { Card } from '@/types'`
+- **Check:** `tsconfig.json` has path alias configured in `compilerOptions.paths`
+- **Fix:** Restart TypeScript server in VSCode: Cmd+Shift+P → "TypeScript: Restart TS Server"
+
+**Svelte Component Not Hydrating**
+- **Check:** Added `client:load` directive: `<PackOpener client:load />`
+- **Check:** Component is imported in `.astro` file
+- **Fix:** Try different directive: `client:idle` or `client:visible`
+
+**IndexedDB Full / Quota Exceeded**
+- **Symptom:** "QuotaExceededError" when opening packs
+- **Check:** DevTools → Application → IndexedDB → daddeck-collection
+- **Fix:** Clear old packs or export/clear collection
+- **Prevention:** `checkQuotaBeforeSave()` warns at 90% capacity
+
+**Tests Timing Out**
+- **Check:** Test environment has jsdom configured in `vitest.config.ts`
+- **Fix:** Increase timeout: `test.setTimeout(10000)` in test file
+- **Fix:** Mock async operations with `vi.useFakeTimers()`
 
 ---
 
@@ -1362,8 +1642,10 @@ The following features were **removed in MVP scope reduction** (January 18, 2026
 
 ---
 
-**Last updated:** January 18, 2026 (MVP Scope Reduction)
-**Recent Update:** Updated documentation to reflect MVP scope reduction - focused on 2 core features (pack opening + collection management)
+**Last updated:** January 18, 2026 (Type File Split Migration Complete)
+**Recent Updates:**
+- **Type System Refactor** (Jan 18, 2026): Split monolithic `index.ts` (~3,096 lines) into modular feature files. `index.ts` is now a barrel file (~106 lines) that re-exports all types. All imports via `@/types` continue to work (backward compatible).
+- **MVP Scope Reduction** (Jan 18, 2026): Focused on 2 core features (pack opening + collection management)
 
 ---
 
