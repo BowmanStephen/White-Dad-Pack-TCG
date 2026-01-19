@@ -66,10 +66,10 @@ export function weightedRandom<T extends string>(
 ): T {
   const entries = Object.entries(weights) as [T, number][];
   const totalWeight = entries.reduce((sum, [, weight]) => sum + weight, 0);
-  
+
   let random = rng ? rng.next() : Math.random();
   random *= totalWeight;
-  
+
   let cumulative = 0;
   for (const [key, weight] of entries) {
     cumulative += weight;
@@ -77,7 +77,26 @@ export function weightedRandom<T extends string>(
       return key;
     }
   }
-  
+
   // Fallback to last item (shouldn't happen with valid weights)
   return entries[entries.length - 1][0];
+}
+
+/**
+ * Generate a random boolean with specified probability
+ * @param probability The probability of returning true (0-1)
+ * @returns true with the given probability, false otherwise
+ *
+ * @example
+ * ```ts
+ * randomBoolean(0.5); // 50% chance of true
+ * randomBoolean(0.1); // 10% chance of true
+ * randomBoolean(1.0); // Always true
+ * randomBoolean(0.0); // Always false
+ * ```
+ */
+export function randomBoolean(probability: number): boolean {
+  // Clamp probability between 0 and 1
+  const clampedProbability = Math.max(0, Math.min(1, probability));
+  return Math.random() < clampedProbability;
 }
