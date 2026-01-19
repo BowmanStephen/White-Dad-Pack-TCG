@@ -87,6 +87,9 @@
   // Touch device detection for tilt effect
   let isTouchDevice = false;
 
+  // Hover state tracking - MUST be declared before derived values that use it
+  let isHovered = $state(false);
+
   if (isBrowser) {
     // Check for low-end device indicators
     const hardwareConcurrency = navigator.hardwareConcurrency || 4;
@@ -154,6 +157,7 @@
 
   let rotateX = $derived((interactive && !isTouchDevice) ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0);
   let rotateY = $derived((interactive && !isTouchDevice) ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0);
+  let translateY = $derived(isHovered ? -8 : 0);
 
   function getRarityStars(rarity: string): number {
     const starMap: Record<string, number> = {
@@ -266,9 +270,6 @@
   let glowIntensity = $derived(rarityConfig.animationIntensity);
   let glowColor = $derived(rarityConfig.glowColor);
 
-  // Hover state tracking
-  let isHovered = $state(false);
-
   // PACK-VFX-024: Track card reveal state for flash effect
   let wasFlipped = $state(false);
   let showFlash = $state(false);
@@ -358,8 +359,9 @@
     class:card-flipped={isFlipped && showBack}
     class:glow-pulse={hasBaseGlow || isHovered}
     class:glow-hovered={isHovered}
+    class:card-lift={isHovered}
     style="
-      transform: perspective(1000px) rotateX({rotateX}deg) rotateY({rotateY}deg);
+      transform: perspective(1000px) rotateX({rotateX}deg) rotateY({rotateY}deg) translateY({translateY}px);
       --rarity-color: {rarityConfig.color};
       --rarity-glow: {rarityConfig.glowColor};
       --glow-intensity: {glowIntensity};
@@ -598,9 +600,14 @@
 
   .card-3d {
     transform-style: preserve-3d;
-    transition: transform 0.4s ease-out;
-    will-change: transform;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    will-change: transform, box-shadow;
     animation: card-scale-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+
+  /* PACK-VFX-037: Card hover lift effect */
+  .card-lift {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
   }
 
   .card-face {
