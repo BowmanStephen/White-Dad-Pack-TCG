@@ -66,7 +66,7 @@ export const RARITY_CONFIG: Record<Rarity, RarityConfig> = {
     glowColor: 'rgba(59, 130, 246, 0.5)', // Increased opacity
     particleCount: 5,
     animationIntensity: 1.2,
-    particleVelocity: 180, // Slightly faster than common
+    particleVelocity: 175, // PACK-VFX-002: 175px/s for uncommon rarity
   },
   rare: {
     name: 'Rare',
