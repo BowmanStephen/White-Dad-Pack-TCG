@@ -11,7 +11,14 @@ import * as Sentry from '@sentry/astro';
 
 const SENTRY_DSN = import.meta.env.PUBLIC_SENTRY_DSN;
 const ENVIRONMENT = import.meta.env.PUBLIC_VERCEL_ENV || import.meta.env.MODE || 'development';
-const SAMPLE_RATE = ENVIRONMENT === 'production' ? 0.1 : 1.0; // 10% sampling in production
+const TRACES_SAMPLE_RATE = ENVIRONMENT === 'production' ? 0.1 : 1.0;
+const REPLAYS_SESSION_SAMPLE_RATE = ENVIRONMENT === 'production' ? 0.1 : 1.0;
+
+// Optional privacy/logging controls (default to privacy-friendly values)
+const SEND_DEFAULT_PII = import.meta.env.PUBLIC_SENTRY_SEND_DEFAULT_PII === 'true';
+const ENABLE_LOGS = import.meta.env.PUBLIC_SENTRY_ENABLE_LOGS === 'true';
+const REPLAY_MASK_ALL_TEXT = import.meta.env.PUBLIC_SENTRY_REPLAY_MASK_ALL_TEXT !== 'false';
+const REPLAY_BLOCK_ALL_MEDIA = import.meta.env.PUBLIC_SENTRY_REPLAY_BLOCK_ALL_MEDIA !== 'false';
 
 /**
  * Initialize Sentry for error tracking
@@ -29,27 +36,40 @@ export function initSentry() {
     Sentry.init({
       dsn: SENTRY_DSN,
       environment: ENVIRONMENT,
+      // Adds request headers and IP for users (enable only if you need it)
+      // https://docs.sentry.io/platforms/javascript/guides/astro/configuration/options/#sendDefaultPii
+      sendDefaultPii: SEND_DEFAULT_PII,
 
       // Release version from package.json
       release: getReleaseVersion(),
 
-      // Tracing sample rate (10% of transactions)
-      tracesSampleRate: SAMPLE_RATE,
+      // Define how likely traces are sampled
+      tracesSampleRate: TRACES_SAMPLE_RATE,
 
-      // Session replay sample rate (1% of sessions)
-      replaysSessionSampleRate: 0.01,
+      // Session replay sampling
+      replaysSessionSampleRate: REPLAYS_SESSION_SAMPLE_RATE,
       replaysOnErrorSampleRate: 1.0, // 100% on error
 
       // Integrations
       integrations: [
         Sentry.browserTracingIntegration(),
         Sentry.replayIntegration({
-          maskAllText: true,
-          blockAllMedia: true,
+          maskAllText: REPLAY_MASK_ALL_TEXT,
+          blockAllMedia: REPLAY_BLOCK_ALL_MEDIA,
         }),
-        Sentry.captureConsoleIntegration({
-          levels: ['error'],
-        }),
+        ...(ENABLE_LOGS
+          ? [
+              Sentry.captureConsoleIntegration({
+                // Send logs to Sentry (opt-in)
+                levels: ['error', 'warn', 'log'],
+              }),
+            ]
+          : [
+              Sentry.captureConsoleIntegration({
+                // Default: only send errors
+                levels: ['error'],
+              }),
+            ]),
       ],
 
       // Filter out sensitive data

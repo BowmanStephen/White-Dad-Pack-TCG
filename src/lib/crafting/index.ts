@@ -5,10 +5,14 @@
  * - Cost calculation based on rarity and recipe
  * - Affordability checks
  * - Material requirements
+ * - Success determination
  */
 
 import type { CraftingRecipe } from '@/types/crafting';
 import type { Rarity } from '@/types';
+
+// Re-export crafting execution utilities
+export { canAffordCraft, rollCraftingSuccess } from './executor';
 
 /**
  * Rarity cost multipliers for crafting.

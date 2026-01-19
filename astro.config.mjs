@@ -19,13 +19,18 @@ export default defineConfig({
   integrations: [
     svelte(),
     tailwind(),
-    sentry({
-      sourceMapsUploadOptions: {
-        org: 'daddeck', // Replace with your Sentry org slug
-        project: 'daddeck-tcg', // Replace with your Sentry project slug
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      },
-    }),
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? [
+          sentry({
+            // Source maps upload for readable production stack traces
+            sourceMapsUploadOptions: {
+              org: 'bowman-labs',
+              project: 'javascript-astro',
+              authToken: process.env.SENTRY_AUTH_TOKEN,
+            },
+          }),
+        ]
+      : []),
   ],
   output: 'static',
 

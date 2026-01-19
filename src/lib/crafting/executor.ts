@@ -10,6 +10,7 @@
 
 import type { CraftingRecipe } from '@/types/crafting';
 import { calculateCraftingCost } from './index';
+import { randomBoolean } from '@/lib/utils/random';
 
 /**
  * Check if a player can afford to craft with a specific recipe.
@@ -43,6 +44,51 @@ export function canAffordCraft(
 
   // Check if player has enough currency
   return playerCurrency >= cost;
+}
+
+/**
+ * Roll for crafting success based on the recipe's success rate.
+ *
+ * This function determines whether a crafting operation succeeds or fails
+ * by comparing a random roll against the recipe's success rate.
+ *
+ * @param recipe - The crafting recipe to roll success for
+ * @returns true if the craft succeeds, false otherwise
+ *
+ * @example
+ * ```ts
+ * const recipe = CRAFTING_RECIPES.rare_to_epic;
+ * // recipe.successRate = 0.5 (50% chance)
+ *
+ * const success = rollCraftingSuccess(recipe);
+ * // Returns true 50% of the time, false 50% of the time
+ *
+ * if (success) {
+ *   console.log('Crafting successful!');
+ * } else {
+ *   console.log('Crafting failed - lost some materials');
+ * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * // Guaranteed success recipe
+ * const recipe = CRAFTING_RECIPES.common_to_uncommon;
+ * // recipe.successRate = 1.0 (100% chance)
+ *
+ * const success = rollCraftingSuccess(recipe);
+ * // Always returns true
+ * ```
+ */
+export function rollCraftingSuccess(recipe: CraftingRecipe): boolean {
+  // Recipes with 100% success rate always succeed
+  if (recipe.successRate >= 1.0) {
+    return true;
+  }
+
+  // Roll for success based on the recipe's success rate
+  // randomBoolean() returns true with the specified probability
+  return randomBoolean(recipe.successRate);
 }
 
 /**
