@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working in this
 **Project:** DadDeck™ - The Ultimate White Dad Trading Card Simulator
 **Type:** Satirical Trading Card Game (TCG) Pack-Opening Simulator
 **Status:** Stable & Production Ready (MVP Scope)
-**Version:** 2.2.0
+**Version:** 2.2.1
 **Last Updated:** January 19, 2026
 
 ---
@@ -73,7 +73,7 @@ bun run build            # Build for production
 **Problem:**
 - `tests/components/` directory is completely blocked
 - All component tests fail with: `ReferenceError: document is not defined`
-- Vitest 4.0.17's jsdom environment is not initializing properly
+- Vitest 4.0.17's happy-dom environment is not initializing properly for Svelte components
 - @testing-library/svelte@5.3.1 requires `document` global which is undefined
 
 **Impact:**
@@ -82,24 +82,22 @@ bun run build            # Build for production
 - ❌ Cannot re-create CollectionManager.test.ts (Task 4 - blocked)
 - ❌ Cannot create AnimatedNumber.test.ts (Task 4 - blocked)
 
-**Current State:**
+**Current State (Vitest 4.0.17):**
 - ✅ Unit tests work (tests/unit/ - 278 pass, 150 fail)
 - ❌ Component tests blocked (tests/components/ - all failing)
+- Configured with `happy-dom` environment but jsdom globals not available
+
+**Attempted Workarounds:**
+1. **Vitest 3.x downgrade** - Environment works but path aliases (`@/`) break due to Vite 7.x incompatibility
+2. **jsdom instead of happy-dom** - Same issue, globals not initialized before test imports
+3. **Custom setup files** - Manual jsdom initialization doesn't run early enough
 
 **Documentation:** See `TESTS_COMPONENTS_ENV_ISSUE.md` for full analysis and solutions
 
-**Recommended Solution:**
-1. **Wait for Svelte 5.5+** (recommended - expected Q1-Q2 2026)
-   - Native Svelte test utilities won't need jsdom
-   - Cleanest long-term solution
-
-2. **Downgrade to Vitest 3.x** (temporary workaround)
-   - Proven compatibility with @testing-library/svelte
-   - Command: `bun install --save-dev vitest@3.x.x`
-
-3. **Create custom Vitest environment package** (advanced fix)
-   - Build local environment that properly sets up jsdom
-   - See TESTS_COMPONENTS_ENV_ISSUE.md for implementation
+**Recommended Solution: Wait for Svelte 5.5+** (expected Q1-Q2 2026)
+- Native Svelte test utilities won't need @testing-library/svelte
+- Won't require jsdom/happy-dom environment at all
+- Cleanest long-term solution without workarounds
 
 ---
 
@@ -1846,7 +1844,7 @@ pack.set({ ...p, cards: [...p.cards, newCard] });
 
 ---
 
-**Last updated:** January 19, 2026
+**Last updated:** January 19, 2026 (v2.2.1 - Updated blocker section with current Vitest 4.0.17 status)
 **Recent Updates:**
 - **Developer Profile Added** (Jan 19, 2026): Personalized guidance for Stephen's UX background and learning style
 - **Type System Refactor** (Jan 18, 2026): Split monolithic `index.ts` (~3,096 lines) into modular feature files
@@ -2233,7 +2231,7 @@ console.log('Current pack:', pack);
 
 ---
 
-**Last updated:** January 19, 2026
+**Last updated:** January 19, 2026 (v2.2.1 - Updated blocker section with current Vitest 4.0.17 status)
 
 ---
 
