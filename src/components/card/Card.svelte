@@ -245,6 +245,8 @@
     const baseGlow = rarityConfig.glowColor;
     switch(card.rarity) {
       case 'legendary':
+        // PACK-VFX-018: Legendary glow intensity set to 1.5x (45px, 90px, 135px)
+        return `0 0 45px ${baseGlow}, 0 0 90px ${baseGlow}55, 0 0 135px ${baseGlow}33, inset 0 0 30px rgba(0,0,0,0.5)`;
       case 'mythic':
         return `0 0 30px ${baseGlow}, 0 0 60px ${baseGlow}55, 0 0 90px ${baseGlow}33, inset 0 0 30px rgba(0,0,0,0.5)`;
       case 'epic':
