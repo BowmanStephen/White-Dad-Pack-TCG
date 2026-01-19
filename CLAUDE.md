@@ -1,10 +1,12 @@
-# CLAUDE.md - DadDeck™ Project Guide
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working in this repository.
 
 **Project:** DadDeck™ - The Ultimate White Dad Trading Card Simulator
 **Type:** Satirical Trading Card Game (TCG) Pack-Opening Simulator
 **Status:** Stable & Production Ready
 **Version:** 2.2.0
-**Last Updated:** January 18, 2026
+**Last Updated:** January 18, 2026 (Migration 3 Complete)
 
 ---
 
@@ -751,30 +753,26 @@ loops in UI/state machines.
 
 ### Dad Types & Special Card Types
 
-**Core DICKTATOR DADS (archetypes):**
+**Core DICKTATOR DADS (37 Archetypes):**
 ```
-BBQ_DAD | FIX_IT_DAD | GOLF_DAD | COUCH_DAD | LAWN_DAD
-CAR_DAD | OFFICE_DAD | COOL_DAD | COACH_DAD | CHEF_DAD
-HOLIDAY_DAD | WAREHOUSE_DAD | VINTAGE_DAD | FASHION_DAD
-TECH_DAD
-```
-
-**Extended Archetypes & Variants:**
-```
-SUBURBAN_SPY | GAMER_GIZZARDS | PREPPER_PENIS
+BBQ_DICKTATOR | FIX_IT_FUCKBOY | GOLF_GONAD | COUCH_CUMMANDER | LAWN_LUNATIC
+CAR_COCK | OFFICE_ORGASMS | COOL_CUCKS | COACH_CUMSTERS | CHEF_CUMSTERS
+HOLIDAY_HORNDOGS | WAREHOUSE_WANKERS | VINTAGE_VAGABONDS | FASHION_FUCK
+TECH_TWATS | SUBURBAN_SPY | GAMER_GIZZARDS | PREPPER_PENIS
 BBQ_BRAWLER | SUBURBAN_SOCIALITE | NEIGHBORHOOD_NOSY
 SON_SPAWNS | DAUGHTER_DINGBATS | UNCLE_UPROARS
-SUBURBAN_SIDEKICKS
+SUBURBAN_SIDEKICKS | DUNE_DESERT_DADS | SODA_SUCKERS
+FURNITURE_FREAKS | ... and more (See DadDecK_Card_Types.md)
 ```
 
-**Special Card Types (inspired by classic TCG mechanics):**
+**Special Card Types (6 Types):**
 ```
 ITEM      - Equipment and accessories (standard gear)
 EVENT     - Shitshow Scenarios (one-time use cards, MTG-style)
-TERRAIN   - Suburban Shitfields (permanent battlefield modifiers, Pokémon Stadium-style)
-EVOLUTION - Midlife Crisis Mutations (upgrade base dads, Pokémon Evolution-style)
-CURSE     - Dad Damnations (negative effects on opponents, MTG Curses-style)
-TRAP      - Suburban Suckerpunches (face-down triggered effects, Yu-Gi-Oh! Trap-style)
+TERRAIN   - Suburban Shitfields (permanent battlefield modifiers)
+EVOLUTION - Midlife Crisis Mutations (upgrade base dads)
+CURSE     - Dad Damnations (negative effects on opponents)
+TRAP      - Suburban Suckerpunches (face-down triggered effects)
 ```
 
 See `DadDecK_Card_Types.md` for detailed examples and mechanics of all card types.
@@ -1622,7 +1620,7 @@ PUBLIC_ANALYTICS_ID=      # For tracking (GA, Plausible, etc.)
 - ✅ Unlimited free pack opening
 - ✅ Premium pack opening feel
 - ✅ Shareable card pulls
-- ✅ 50+ unique cards in database
+- ✅ 105+ unique cards in database (Migration 3)
 
 ---
 
@@ -1648,7 +1646,13 @@ currentPack.subscribe((pack) => {
 </script>
 ```
 
-**2. Performance Profiling**
+**2. Error Logging & Diagnostics (PACK-103)**
+- **Error ID**: Every error generates a unique ID (e.g., `err_1737223456789_abc123`).
+- **Test Page**: Visit `/error-test` in development to verify logging and UI components.
+- **Sentry**: Errors are automatically captured and sent to Sentry if `PUBLIC_SENTRY_DSN` is set.
+- **User Reports**: Users can click "Report Issue" in the error UI to send feedback with diagnostics.
+
+**3. Performance Profiling**
 ```javascript
 // Measure pack generation time
 console.time('pack-generation');
@@ -2196,8 +2200,8 @@ bun astro check          # Type check Astro components
 - ✅ **Pack Opening Flow** - Complete 6-stage state machine (idle → results)
 - ✅ **Card Reveal Animations** - Individual card flip with skip option
 - ✅ **Rarity-based VFX** - Particle systems, glows, holo effects
-- ✅ **Social Sharing** - Card pull sharing for social media
-- ✅ **Collection Persistence** - LocalStorage-based collection management
+- ✅ **Social Sharing** - Card pull sharing for social media (with dynamic OG image support coming)
+- ✅ **Collection Persistence** - LocalStorage-based collection management (Migration to IndexedDB planned)
 - ✅ **Mobile Responsive** - 65% mobile, 35% desktop optimized
 - ✅ **Batch Opening** - Open multiple packs at once (see HOTL dashboard patterns in
   `docs/RALPH_LOOP_ARCHITECTURE.md`)
@@ -2257,6 +2261,9 @@ bun astro check          # Type check Astro components
 - ✅ **Collection filters** (FILTER-001/002) - Multi-select rarity and dad type filters
 - ✅ **Collection sorting** (FILTER-003) - Sort by date/rarity/type with ascending/descending
 - ✅ **Interactive stat tooltips** - Desktop hover & mobile tap-to-reveal with detailed descriptions
+- ✅ **Error Logging System** (PACK-103) - Sentry integration, error report modal, unique error IDs
+- ✅ **Error Test Page** - Dedicated `/error-test` for verifying logging and UI
+- ✅ **Browser Diagnostics** - Automatic tracking of User Agent and URL in error logs
 
 **Analytics:**
 - ✅ Google Analytics integration

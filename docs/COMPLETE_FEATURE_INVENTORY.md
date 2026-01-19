@@ -8,7 +8,7 @@
 
 ## 📋 Executive Summary
 
-DadDeck TCG is a satirical trading card game simulator featuring suburban American dad culture. Built with Astro + Svelte + Nanostores, it features 50+ unique cards, 15 dad types, 6 rarity tiers, and comprehensive gameplay mechanics including pack opening, collection management, deck building, battles, trading, and crafting.
+DadDeck TCG is a satirical trading card game simulator featuring suburban American dad culture. Built with Astro + Svelte + Nanostores, it features 105+ unique cards, 37 dicktator dad types, 6 rarity tiers, and comprehensive gameplay mechanics including pack opening, collection management, deck building, battles, trading, and crafting.
 
 **Tech Stack:**
 - **Frontend:** Astro 5.16+, Svelte 5.46+, Tailwind CSS 3
@@ -21,7 +21,7 @@ DadDeck TCG is a satirical trading card game simulator featuring suburban Americ
 - 29 component directories
 - 10 page routes
 - 25+ major features
-- 50+ cards in database
+- 105+ cards in database
 
 ---
 
@@ -292,6 +292,12 @@ if (random() < critChance) damage ×= 2
 - **Name Validation:** Length and character restrictions
 - **Deck Count:** Maximum 10 decks per player
 
+### Error Logging System (PACK-103)
+- **Sentry Integration:** Automatic error reporting to Sentry
+- **Unique Error IDs:** Correlation IDs for cross-referencing logs
+- **Error Report UI:** User-friendly modal for reporting issues
+- **Diagnostics:** Captures user agent, URL, and stack trace
+
 ### Input Sanitization
 - **DOMPurify:** HTML sanitization for user input
 - **Entity Encoding:** Prevents XSS attacks
@@ -427,22 +433,15 @@ Each card has 0-100 in:
 - **Legendary** (orange) - 2.2x power multiplier
 - **Mythic** (pink) - 3.0x power multiplier
 
-### Dad Types (15 core types)
-1. BBQ_DICKTATOR - Beats: GOLF_GONAD, COUCH_CUMMANDER
-2. FIX_IT_FUCKBOY - Beats: TECH_TWATS, CAR_COCK
-3. GOLF_GONAD - Beats: COACH_CUMSTERS, COOL_CUCKS
-4. COUCH_CUMMANDER - Beats: OFFICE_ORGASMS, CHEF_CUMSTERS
-5. CAR_COCK - Beats: WAREHOUSE_WANKER, VINTAGE_VIRGIN
-6. OFFICE_ORGASMS - Beats: TECH_TWATS, GYM_BRAINS
-7. COOL_CUCKS - Beats: FASHION_FAGGOT, SUBURBAN_SPY
-8. COACH_CUMSTERS - Beats: BBQ_DICKTATOR, WAREHOUSE_WANKER
-9. CHEF_CUMSTERS - Beats: FIX_IT_FUCKBOY, FASHION_FAGGOT
-10. TECH_TWATS - Beats: COUCH_CUMMANDER, CAR_COCK
-11. WAREHOUSE_WANKER - Beats: OFFICE_ORGASMS, COACH_CUMSTERS
-12. VINTAGE_VIRGIN - Beats: COOL_CUCKS, SUBURBAN_SPY
-13. FASHION_FAGGOT - Beats: CAR_COCK, GYM_BRAINS
-14. SUBURBAN_SPY - Beats: GOLF_GONAD, BBQ_DICKTATOR
-15. GYM_BRAINS - Beats: CHEF_CUMSTERS, VINTAGE_VIRGIN
+### Dad Types (37 DICKTATOR DAD types)
+1. BBQ_DICKTATOR | FIX_IT_FUCKBOY | GOLF_GONAD | COUCH_CUMMANDER | LAWN_LUNATIC
+2. CAR_COCK | OFFICE_ORGASMS | COOL_CUCKS | COACH_CUMSTERS | CHEF_CUMSTERS
+3. HOLIDAY_HORNDOGS | WAREHOUSE_WANKERS | VINTAGE_VAGABONDS | FASHION_FUCK
+4. TECH_TWATS | SUBURBAN_SPY | GAMER_GIZZARDS | PREPPER_PENIS
+5. BBQ_BRAWLER | SUBURBAN_SOCIALITE | NEIGHBORHOOD_NOSY
+6. SON_SPAWNS | DAUGHTER_DINGBATS | UNCLE_UPROARS
+7. SUBURBAN_SIDEKICKS | DUNE_DESERT_DADS | SODA_SUCKERS | FURNITURE_FREAKS
+... and more (See DadDecK_Card_Types.md)
 
 ### Holographic Variants (5 types)
 - **none** - Standard non-holo
@@ -490,7 +489,7 @@ Each card has 0-100 in:
 - 29 component directories
 - 10 page routes
 - 27 type definition files
-- 50+ cards in database
+- 105+ cards in database
 
 **Performance Targets:**
 - Initial load: <3 seconds

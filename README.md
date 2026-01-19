@@ -1,8 +1,8 @@
 # DadDeck™ - The Ultimate White Dad Trading Card Simulator
 
 **Status:** Stable & Production Ready ✅  
-**Version:** 2.1.0  
-**Last Updated:** January 18, 2026 (Post-Phase 4 Stabilization)
+**Version:** 2.2.0  
+**Last Updated:** January 18, 2026 (Migration 3 Complete)
 
 DadDeck™ is a satirical trading card game pack-opening simulator that parodies suburban American dad culture. Built with modern web technologies, it offers a premium, AAA-quality "pack pull" experience without the microtransactions.
 
@@ -11,7 +11,8 @@ DadDeck™ is a satirical trading card game pack-opening simulator that parodies
 - **Collections** - LocalStorage-backed card persistence and history tracking
 - **Battle System** - Stat-based combat with type advantages
 - **Deck Building** - Create/validate custom decks with real-time stats
-- **Card Database** - 50+ unique cards across 15+ dad types with full metadata
+- **Card Database** - 105+ unique cards across 37+ dad types with full metadata
+- **Error Logging** - Built-in error reporting system with Sentry integration and unique IDs
 - **Achievements** - Pop-up unlocks and gallery system
 - **Responsive Design** - Works beautifully on mobile (65%) and desktop (35%)
 
@@ -39,9 +40,10 @@ DadDeck™ is a satirical trading card game pack-opening simulator that parodies
 
 ### Core Gameplay
 - 🃏 **Pack Opening:** Full-fidelity 6-stage opening sequence with animations.
-- 🗃️ **Card Collection:** 50+ unique cards across 15+ "Dad Types" (BBQ, Fix-It, Lawn, etc.).
-- ✨ **Rarity System:** 6 rarity tiers from Common to Mythic with unique holographic variants.
+- 🗃️ **Card Collection:** 105+ unique cards across 37+ "Dicktator Dad" Types.
+- ✨ **Rarity System:** 6 rarity tiers from Common to Mythic with holographic variants.
 - 💾 **Persistence:** Your collection is saved locally and survives page reloads.
+- 🎭 **Special Types:** 6 new card types including Events, Terrain, and Evolutions.
 
 ### Advanced Systems
 - ⚔️ **Battle Mechanics:** Stat-based combat system with type advantages and synergy bonuses.
@@ -185,7 +187,8 @@ DadDeck™ includes a built-in anti-cheat system (`src/lib/security/pack-validat
 - **Bundle Size:** ~200KB gzipped (optimized)
 
 ### Recent Changes (Jan 18, 2026)
-- ✂️ **Removed premium features** - Deleted `src/stores/premium.ts` as all features are free-to-play
+- 🚀 **Migration 3 Complete** - 37 new Dicktator Dad types and 6 special card types added
+- 🚨 **Error Logging System** - Integrated Sentry, added error reporting UI and unique error IDs
 - 🧹 **Code cleanup** - Consolidated CSS utilities, removed ~2,463 lines of dead code
 - 🌍 **Internationalization** - Added i18n system with English & Spanish (300+ keys)
 - 🔍 **Collection search & filters** - Full-text search, multi-select filters, sorting
