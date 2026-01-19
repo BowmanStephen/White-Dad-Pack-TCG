@@ -6,8 +6,14 @@
 import { vi, beforeEach, afterEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 
+// Debug: Check current state
+console.log('Setup file loaded');
+console.log('typeof document:', typeof document);
+console.log('typeof global.document:', typeof global.document);
+console.log('typeof globalThis.document:', typeof globalThis.document);
+
 // Manually set up jsdom if not already set up
-if (typeof document === 'undefined') {
+if (typeof document === 'undefined' || typeof document.body === 'undefined') {
   console.log('Setting up jsdom manually...');
 
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
@@ -16,33 +22,35 @@ if (typeof document === 'undefined') {
     resources: 'usable',
   });
 
-  // Define globals manually
-  global.window = dom.window;
-  global.document = dom.window.document;
-  global.navigator = dom.window.navigator;
-  global.HTMLElement = dom.window.HTMLElement;
-  global.HTMLAnchorElement = dom.window.HTMLAnchorElement;
-  global.HTMLButtonElement = dom.window.HTMLButtonElement;
-  global.HTMLDivElement = dom.window.HTMLDivElement;
-  global.HTMLSpanElement = dom.window.HTMLSpanElement;
-  global.HTMLImageElement = dom.window.HTMLImageElement;
-  global.HTMLAudioElement = dom.window.HTMLAudioElement;
-  global.Text = dom.window.Text;
-  global.Node = dom.window.Node;
-  global.Element = dom.window.Element;
-  global.Event = dom.window.Event;
-  global.EventTarget = dom.window.EventTarget;
-  global.CustomEvent = dom.window.CustomEvent;
-  global.localStorage = dom.window.localStorage;
-  global.sessionStorage = dom.window.sessionStorage;
+  // Define globals manually (must be defined BEFORE any other imports run)
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.navigator = dom.window.navigator;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.HTMLAnchorElement = dom.window.HTMLAnchorElement;
+  globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
+  globalThis.HTMLDivElement = dom.window.HTMLDivElement;
+  globalThis.HTMLSpanElement = dom.window.HTMLSpanElement;
+  globalThis.HTMLImageElement = dom.window.HTMLImageElement;
+  globalThis.HTMLAudioElement = dom.window.HTMLAudioElement;
+  globalThis.Text = dom.window.Text;
+  globalThis.Node = dom.window.Node;
+  globalThis.Element = dom.window.Element;
+  globalThis.Event = dom.window.Event;
+  globalThis.EventTarget = dom.window.EventTarget;
+  globalThis.CustomEvent = dom.window.CustomEvent;
+  globalThis.localStorage = dom.window.localStorage;
+  globalThis.sessionStorage = dom.window.sessionStorage;
 
   // Browser APIs that Svelte needs
-  global.requestAnimationFrame = dom.window.requestAnimationFrame;
-  global.cancelAnimationFrame = dom.window.cancelAnimationFrame;
-  global.requestIdleCallback = dom.window.requestIdleCallback;
-  global.performance = dom.window.performance;
+  globalThis.requestAnimationFrame = dom.window.requestAnimationFrame;
+  globalThis.cancelAnimationFrame = dom.window.cancelAnimationFrame;
+  globalThis.requestIdleCallback = dom.window.requestIdleCallback;
+  globalThis.performance = dom.window.performance;
 
   console.log('jsdom globals set up successfully');
+} else {
+  console.log('Document already defined, skipping jsdom setup');
 }
 import '@testing-library/jest-dom/vitest';
 

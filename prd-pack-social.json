@@ -1,0 +1,690 @@
+{
+  "name": "DadDeck™ - Pack Opening Social Features",
+  "description": "Micro-tasks for social sharing, screenshots, and community features.",
+  "branchName": "feature/pack-social",
+  "userStories": [
+    {
+      "id": "PACK-SOCIAL-001",
+      "title": "Add share button to pack results screen",
+      "description": "Create share button in pack results UI.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add share button (icon + label) to results",
+        "Position button prominently (top right)",
+        "Button is clickable and has hover state",
+        "Icon uses share symbol (arrow/box)",
+        "Test button is easy to find"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "sharing", "ui", "button"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-002",
+      "title": "Create share confirmation modal",
+      "description": "Modal appears when share button clicked.",
+      "acceptanceCriteria": [
+        "Create src/components/share/ShareModal.svelte",
+        "Modal shows on share button click",
+        "Modal title: 'Share Your Pull'",
+        "Modal backdrop closes modal on click",
+        "Modal has close button (X)",
+        "Test modal opens smoothly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "sharing", "modal", "ui"],
+      "dependsOn": ["PACK-SOCIAL-001"]
+    },
+    {
+      "id": "PACK-SOCIAL-003",
+      "title": "Add platform selection buttons to share modal",
+      "description": "Show Twitter, Facebook, Copy Link options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add Twitter share button (bird icon)",
+        "Add Facebook share button (F icon)",
+        "Add Copy Link button (link icon)",
+        "Buttons arranged horizontally",
+        "Each button has brand color",
+        "Test all buttons visible"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "sharing", "platforms", "ui"],
+      "dependsOn": ["PACK-SOCIAL-002"]
+    },
+    {
+      "id": "PACK-SOCIAL-004",
+      "title": "Implement Twitter share intent",
+      "description": "Generate Twitter share URL with pre-filled text.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "On Twitter button click, generate share URL",
+        "URL format: https://twitter.com/intent/tweet",
+        "Pre-filled text: 'Check out my [rarity] pull in DadDeck!'",
+        "Include link to DadDeck site",
+        "Test tweet opens in new tab with text"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "twitter", "sharing", "intent"],
+      "dependsOn": ["PACK-SOCIAL-003"]
+    },
+    {
+      "id": "PACK-SOCIAL-005",
+      "title": "Implement Facebook share dialog",
+      "description": "Generate Facebook share URL.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "On Facebook button click, generate share URL",
+        "URL format: https://www.facebook.com/sharer",
+        "Include DadDeck site URL",
+        "Test share opens in new tab",
+        "Verify Facebook fetches page metadata"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "facebook", "sharing", "dialog"],
+      "dependsOn": ["PACK-SOCIAL-003"]
+    },
+    {
+      "id": "PACK-SOCIAL-006",
+      "title": "Implement clipboard copy link",
+      "description": "Copy shareable link to clipboard.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "On Copy Link button click, copy URL to clipboard",
+        "Generate unique pack URL (or main site URL)",
+        "Use navigator.clipboard.writeText() API",
+        "Show 'Link copied!' toast notification",
+        "Test clipboard has correct URL"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "clipboard", "copy", "link"],
+      "dependsOn": ["PACK-SOCIAL-003"]
+    },
+    {
+      "id": "PACK-SOCIAL-007",
+      "title": "Add custom message input field",
+      "description": "Allow users to customize share text.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add text input to share modal",
+        "Label: 'Add a message (optional)'",
+        "Pre-fill with default message",
+        "User can edit text before sharing",
+        "Character limit: 280 chars (Twitter limit)",
+        "Test custom message used in share"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "sharing", "message", "custom"],
+      "dependsOn": ["PACK-SOCIAL-002"]
+    },
+    {
+      "id": "PACK-SOCIAL-008",
+      "title": "Add preset message templates",
+      "description": "Quick-select message templates for sharing.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add dropdown of preset messages",
+        "Presets: 'So excited!', 'Finally got a mythic!', 'Dad life!'",
+        "Selecting preset fills message input",
+        "User can still edit after selecting preset",
+        "Test presets save time"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "sharing", "presets", "templates"],
+      "dependsOn": ["PACK-SOCIAL-007"]
+    },
+    {
+      "id": "PACK-SOCIAL-009",
+      "title": "Add dad joke quotes to share templates",
+      "description": "Include dad jokes in preset messages.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Create array of dad joke quotes",
+        "Add 'Dad Joke' category to preset dropdown",
+        "Examples: 'I yi yiyi!', 'Pull my finger', etc.",
+        "Randomly select joke when Dad Joke chosen",
+        "Test jokes add humor to shares"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "sharing", "humor", "jokes"],
+      "dependsOn": ["PACK-SOCIAL-008"]
+    },
+    {
+      "id": "PACK-SOCIAL-010",
+      "title": "Capture card image on reveal",
+      "description": "Generate screenshot of revealed card.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Use html2canvas library to capture card element",
+        "Generate screenshot when card fully revealed",
+        "Screenshot captures card art, stats, name",
+        "Output as data URL (base64 image)",
+        "Test screenshot looks accurate"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "screenshot", "image", "capture"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-011",
+      "title": "Add rarity watermark to card screenshots",
+      "description": "Overlay rarity badge on shared screenshots.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/screenshot.ts",
+        "After capturing card image, add rarity watermark",
+        "Watermark shows: 'MYTHIC', 'LEGENDARY', etc.",
+        "Watermark in corner, semi-transparent",
+        "Watermark uses rarity color",
+        "Test watermark doesn't obscure card"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "screenshot", "watermark", "branding"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-012",
+      "title": "Add DadDeck logo to screenshots",
+      "description": "Include logo branding on shared images.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/screenshot.ts",
+        "Add DadDeck™ logo to all screenshots",
+        "Logo in bottom corner, subtle opacity",
+        "Logo size: 80x40px",
+        "Test branding visible but not obtrusive"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "screenshot", "branding", "logo"],
+      "dependsOn": ["PACK-SOCIAL-011"]
+    },
+    {
+      "id": "PACK-SOCIAL-013",
+      "title": "Implement batch screenshot for full pack",
+      "description": "Create combined image of all cards in pack.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add 'Screenshot All' button to share modal",
+        "Generate canvas with all 7 cards arranged",
+        "Cards arranged in grid (4 top, 3 bottom)",
+        "Include rarity watermarks on each card",
+        "Test full pack screenshot looks great"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "screenshot", "batch", "full-pack"],
+      "dependsOn": ["PACK-SOCIAL-010", "PACK-SOCIAL-011", "PACK-SOCIAL-012"]
+    },
+    {
+      "id": "PACK-SOCIAL-014",
+      "title": "Add image download button",
+      "description": "Allow users to download screenshot images.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add 'Download Image' button to modal",
+        "Button generates screenshot and triggers download",
+        "Filename format: daddeck-[rarity]-[timestamp].png",
+        "Test image downloads to device",
+        "Verify downloaded image looks correct"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "screenshot", "download", "save"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-015",
+      "title": "Track share count per pack",
+      "description": "Count how many times each pack is shared.",
+      "acceptanceCriteria": [
+        "Open src/stores/analytics.ts",
+        "Add shareCount property to pack metadata",
+        "Increment count when share action completes",
+        "Count persists to IndexedDB",
+        "Show share count in pack history",
+        "Test count increments correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "analytics", "tracking", "shares"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-016",
+      "title": "Display shared pulls in history",
+      "description": "Show which packs have been shared.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add shared icon to history entries",
+        "Icon appears if pack was shared (shareCount > 0)",
+        "Icon shows share count as badge",
+        "Hover shows share details (platform, date)",
+        "Test users can see sharing history"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "history", "tracking", "ui"],
+      "dependsOn": ["PACK-SOCIAL-015"]
+    },
+    {
+      "id": "PACK-SOCIAL-017",
+      "title": "Add share analytics event",
+      "description": "Track share actions in analytics.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/events.ts",
+        "Create trackShare() function",
+        "Log share event with: platform, packId, rarity",
+        "Send to Google Analytics or Plausible",
+        "Event name: 'pack_share'",
+        "Test events appear in analytics dashboard"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "analytics", "tracking", "events"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-018",
+      "title": "Add Open Graph meta tags for sharing",
+      "description": "Configure meta tags for rich link previews.",
+      "acceptanceCriteria": [
+        "Open src/pages/pack.astro",
+        "Add dynamic OG meta tags to page",
+        "og:title shows pack best card",
+        "og:description shows pack summary",
+        "og:image points to card screenshot",
+        "Test link preview on Twitter/Facebook"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "seo", "opengraph", "meta"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-019",
+      "title": "Add Twitter Card meta tags",
+      "description": "Configure Twitter-specific meta tags.",
+      "acceptanceCriteria": [
+        "Open src/pages/pack.astro",
+        "Add twitter:card meta tag (summary_large_image)",
+        "Add twitter:title, twitter:description",
+        "Add twitter:image (points to card screenshot)",
+        "Test rich preview on Twitter",
+        "Verify image appears in tweets"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "seo", "twitter", "meta"],
+      "dependsOn": ["PACK-SOCIAL-018"]
+    },
+    {
+      "id": "PACK-SOCIAL-020",
+      "title": "Create shareable pack URL",
+      "description": "Generate unique URL for each pack (if backend exists).",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/share.ts",
+        "Generate unique pack ID (UUID)",
+        "Create share URL: /pack?id=[uuid]",
+        "URL displays pack in 'viewer only' mode",
+        "Pack can be viewed but not opened again",
+        "Test URL loads correct pack"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "url", "sharing", "link"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-021",
+      "title": "Add Reddit share button",
+      "description": "Include Reddit in share options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add Reddit share button (alien icon)",
+        "Generate Reddit share URL",
+        "Pre-fill title with pack summary",
+        "Test share opens Reddit submit page"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "reddit", "sharing", "platform"],
+      "dependsOn": ["PACK-SOCIAL-003"]
+    },
+    {
+      "id": "PACK-SOCIAL-022",
+      "title": "Add WhatsApp share button",
+      "description": "Include WhatsApp in share options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add WhatsApp share button (phone icon)",
+        "Generate WhatsApp share URL (wa.me)",
+        "Pre-fill message with pack summary",
+        "Test share opens WhatsApp chat"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "whatsapp", "sharing", "platform"],
+      "dependsOn": ["PACK-SOCIAL-003"]
+    },
+    {
+      "id": "PACK-SOCIAL-023",
+      "title": "Add Discord share button",
+      "description": "Include Discord in share options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add Discord share button (discord icon)",
+        "Generate Discord webhook URL (if configured)",
+        "Pre-fill message with pack summary",
+        "Test share opens Discord or copies link"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "discord", "sharing", "platform"],
+      "dependsOn": ["PACK-SOCIAL-003"]
+    },
+    {
+      "id": "PACK-SOCIAL-024",
+      "title": "Implement QR code generation for sharing",
+      "description": "Generate QR code linking to pack result.",
+      "acceptanceCriteria": [
+        "Install qrcode library (qrcode npm package)",
+        "Open src/components/share/ShareModal.svelte",
+        "Add 'Show QR' button to modal",
+        "Generate QR code for pack URL",
+        "Display QR code in modal",
+        "Test QR code scans to correct URL"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "qr-code", "sharing", "mobile"],
+      "dependsOn": ["PACK-SOCIAL-020"]
+    },
+    {
+      "id": "PACK-SOCIAL-025",
+      "title": "Add 'Share Again' button in history",
+      "description": "Quick reshare of previously shared packs.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add share button to history entries",
+        "Button only appears if pack was shared before",
+        "Clicking opens share modal with that pack",
+        "Test reshare is easy and convenient"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "history", "reshare", "ui"],
+      "dependsOn": ["PACK-SOCIAL-015"]
+    },
+    {
+      "id": "PACK-SOCIAL-026",
+      "title": "Create share success notification",
+      "description": "Show toast when share completes successfully.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "After share action completes, show toast",
+        "Toast message: 'Shared to [platform]!'",
+        "Toast auto-dismisses after 3 seconds",
+        "Toast has success icon (checkmark)",
+        "Test toast confirms share worked"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "notification", "toast", "feedback"],
+      "dependsOn": ["PACK-SOCIAL-004"]
+    },
+    {
+      "id": "PACK-SOCIAL-027",
+      "title": "Add share error handling",
+      "description": "Gracefully handle share failures.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add try-catch around share actions",
+        "If share fails, show error toast",
+        "Error message: 'Share failed. Try again.'",
+        "Log error details to console",
+        "Test error handling is user-friendly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["social", "error-handling", "graceful-degradation"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-028",
+      "title": "Add share privacy note",
+      "description": "Inform users what data is shared.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add small text: 'Only card image and rarity are shared'",
+        "Text appears below platform buttons",
+        "Text is subtle, smaller font, gray color",
+        "Link to privacy policy if available",
+        "Test transparency builds user trust"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "privacy", "transparency", "ui"],
+      "dependsOn": ["PACK-SOCIAL-002"]
+    },
+    {
+      "id": "PACK-SOCIAL-029",
+      "title": "Implement screenshot quality settings",
+      "description": "Allow users to choose screenshot resolution.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add screenshot quality dropdown (1x/2x/3x)",
+        "1x = standard resolution (faster)",
+        "2x = 2x resolution (default, balance)",
+        "3x = 3x resolution (larger file, slower)",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "screenshot", "settings", "quality"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-030",
+      "title": "Add share button hover animation",
+      "description": "Make share button more interactive.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add CSS hover effect to share button",
+        "Button scales up slightly (1.1x) on hover",
+        "Add background color shift on hover",
+        "Smooth transition (0.2s ease-out)",
+        "Test hover invites clicking"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "ui", "hover", "animation"],
+      "dependsOn": ["PACK-SOCIAL-001"]
+    },
+    {
+      "id": "PACK-SOCIAL-031",
+      "title": "Create share achievement when first share",
+      "description": "Celebrate user's first share action.",
+      "acceptanceCriteria": [
+        "Open src/stores/achievements.ts",
+        "Track if user has ever shared",
+        "On first share, trigger celebration",
+        "Show confetti animation",
+        "Display 'First Share!' badge/toast",
+        "Test first share feels special"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "achievement", "milestone", "celebration"],
+      "dependsOn": ["PACK-SOCIAL-004"]
+    },
+    {
+      "id": "PACK-SOCIAL-032",
+      "title": "Add share streak counter",
+      "description": "Track consecutive days with shares.",
+      "acceptanceCriteria": [
+        "Open src/stores/analytics.ts",
+        "Track days when user shares packs",
+        "Calculate streak (consecutive days with share)",
+        "Display streak in share modal: '3 day share streak!'",
+        "Streak motivates regular sharing",
+        "Test streak counts correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "streak", "gamification", "motivation"],
+      "dependsOn": ["PACK-SOCIAL-015"]
+    },
+    {
+      "id": "PACK-SOCIAL-033",
+      "title": "Implement share cooldown",
+      "description": "Prevent share spam with rate limiting.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add 5-second cooldown after share",
+        "During cooldown, share button is disabled",
+        "Show countdown: 'Share again in 4s'",
+        "Prevents accidental duplicate shares",
+        "Test cooldown works and resets"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "cooldown", "rate-limit", "ux"],
+      "dependsOn": ["PACK-SOCIAL-001"]
+    },
+    {
+      "id": "PACK-SOCIAL-034",
+      "title": "Add share history export",
+      "description": "Allow users to export share history.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Export Share History' button",
+        "Export CSV with: date, platform, packId",
+        "Filename: share-history-[timestamp].csv",
+        "Download triggers automatically",
+        "Test export contains correct data"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "export", "history", "data"],
+      "dependsOn": ["PACK-SOCIAL-016"]
+    },
+    {
+      "id": "PACK-SOCIAL-035",
+      "title": "Create shareable GIF animation",
+      "description": "Generate animated GIF of card reveal.",
+      "acceptanceCriteria": [
+        "Install gif.js library (or similar)",
+        "Open src/components/pack/CardReveal.svelte",
+        "Record card flip animation as GIF",
+        "GIF duration: 2 seconds (full reveal)",
+        "GIF loops seamlessly",
+        "Use GIF as shareable image instead of PNG",
+        "Test GIF plays on social platforms"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "gif", "animation", "shareable"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-036",
+      "title": "Add share button to card detail modal",
+      "description": "Allow sharing individual cards from collection.",
+      "acceptanceCriteria": [
+        "Open src/components/card/CardDetailModal.svelte",
+        "Add share button to card detail view",
+        "Button generates screenshot of single card",
+        "Share includes card name and rarity",
+        "Test sharing single cards works"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "collection", "card", "sharing"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-037",
+      "title": "Add 'Share All Mythics' feature",
+      "description": "Special share when pack has multiple mythics.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Detect if pack has 2+ mythic cards",
+        "Add special 'Share Mythics!' button",
+        "Button creates collage of just mythic cards",
+        "Share text: 'DOUBLE MYTHIC!' or similar",
+        "Test feature celebrates rare occurrence"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "mythic", "special", "celebration"],
+      "dependsOn": ["PACK-SOCIAL-010"]
+    },
+    {
+      "id": "PACK-SOCIAL-038",
+      "title": "Implement share preview in modal",
+      "description": "Show preview of what will be shared.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Generate preview image before user shares",
+        "Show preview in modal (above platform buttons)",
+        "Preview includes card(s) + watermark + logo",
+        "User can see exactly what will be shared",
+        "Test preview matches final share"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "preview", "ui", "transparency"],
+      "dependsOn": ["PACK-SOCIAL-010", "PACK-SOCIAL-012"]
+    },
+    {
+      "id": "PACK-SOCIAL-039",
+      "title": "Add share reminder on pack complete",
+      "description": "Prompt user to share after pack opening.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "After all cards revealed, show subtle reminder",
+        "Message: 'Love your pull? Share it!'",
+        "Reminder appears near share button",
+        "Add 'Don't show again' checkbox",
+        "Test reminder encourages sharing without being annoying"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "prompt", "nudge", "ux"],
+      "dependsOn": ["PACK-SOCIAL-001"]
+    },
+    {
+      "id": "PACK-SOCIAL-040",
+      "title": "Create share leaderboard",
+      "description": "Show most shared packs of all time.",
+      "acceptanceCriteria": [
+        "Open src/pages/leaderboard.astro (or create)",
+        "Add 'Most Shared' tab to leaderboard",
+        "Show top 50 most shared packs",
+        "Display: share count, best card, sharer name",
+        "Requires backend for global tracking",
+        "Test leaderboard displays correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["social", "leaderboard", "ranking", "backend"],
+      "dependsOn": ["PACK-SOCIAL-015"]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "1.0.0",
+    "totalTasks": 40,
+    "focus": "Social sharing and community features"
+  }
+}

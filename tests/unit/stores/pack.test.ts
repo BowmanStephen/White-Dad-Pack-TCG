@@ -31,7 +31,7 @@ import { trackEvent } from '@/stores/analytics';
 import { createAppError, logError } from '@/lib/utils/errors';
 import { haptics } from '@/lib/utils/haptics';
 import { checkRateLimit, recordPackOpen, getRateLimitStatus } from '@/lib/utils/rate-limiter';
-import { selectRandomTearAnimation } from '@/types';
+import * as packTypes from '@/types/pack';
 
 /**
  * Pack Store Test Suite
@@ -48,13 +48,34 @@ import { selectRandomTearAnimation } from '@/types';
  */
 
 // Mock dependencies
-vi.mock('@/lib/pack/generator');
-vi.mock('@/stores/collection');
-vi.mock('@/stores/analytics');
-vi.mock('@/lib/utils/errors');
-vi.mock('@/lib/utils/haptics');
-vi.mock('@/lib/utils/rate-limiter');
-vi.mock('@/types');
+vi.mock('@/lib/pack/generator', () => ({
+  generatePack: vi.fn(),
+  getPackStats: vi.fn(),
+  getPackConfig: vi.fn()
+}));
+vi.mock('@/stores/collection', () => ({
+  addPackToCollection: vi.fn(),
+  getPityCounter: vi.fn(() => ({ rare: 0, epic: 0, legendary: 0, mythic: 0 })),
+  ensureCollectionInitialized: vi.fn(() => Promise.resolve())
+}));
+vi.mock('@/stores/analytics', () => ({
+  trackEvent: vi.fn()
+}));
+vi.mock('@/lib/utils/errors', () => ({
+  createAppError: vi.fn(),
+  logError: vi.fn()
+}));
+vi.mock('@/lib/utils/haptics', () => ({
+  haptics: {
+    packOpen: vi.fn(),
+    cardReveal: vi.fn()
+  }
+}));
+vi.mock('@/lib/utils/rate-limiter', () => ({
+  checkRateLimit: vi.fn(),
+  recordPackOpen: vi.fn(),
+  getRateLimitStatus: vi.fn()
+}));
 
 describe('Pack Store', () => {
   beforeEach(() => {
@@ -64,8 +85,8 @@ describe('Pack Store', () => {
     // Clear all mocks
     vi.clearAllMocks();
 
-    // Mock default implementations
-    vi.mocked(generatePack).mockReturnValue({
+    // Mock default implementations - cast to Mock type since we used factory functions
+    (generatePack as ReturnType<typeof vi.fn>).mockReturnValue({
       id: 'test-pack-1',
       cards: [
         {
@@ -118,17 +139,17 @@ describe('Pack Store', () => {
       design: 'standard'
     } as Pack);
 
-    vi.mocked(addPackToCollection).mockResolvedValue({
+    (addPackToCollection as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true
     });
 
-    vi.mocked(checkRateLimit).mockReturnValue({
+    (checkRateLimit as ReturnType<typeof vi.fn>).mockReturnValue({
       allowed: true
     });
 
-    vi.mocked(selectRandomTearAnimation).mockReturnValue('standard');
+    vi.spyOn(packTypes, 'selectRandomTearAnimation').mockReturnValue('standard');
 
-    vi.mocked(createAppError).mockImplementation((category, error, recovery) => ({
+    (createAppError as ReturnType<typeof vi.fn>).mockImplementation((category: string, error: unknown, recovery: unknown[]) => ({
       id: 'err-test',
       category,
       title: 'Test Error',
@@ -139,7 +160,7 @@ describe('Pack Store', () => {
       logged: false
     }));
 
-    vi.mocked(getRateLimitStatus).mockReturnValue({
+    (getRateLimitStatus as ReturnType<typeof vi.fn>).mockReturnValue({
       packsRemaining: 60,
       resetTime: Date.now() + 60000,
       isLimited: false
@@ -222,7 +243,12 @@ describe('Pack Store', () => {
           raritySlots: expect.any(Array)
         }),
         undefined,
-        undefined
+        expect.objectContaining({
+          rare: expect.any(Number),
+          epic: expect.any(Number),
+          legendary: expect.any(Number),
+          mythic: expect.any(Number)
+        })
       );
     });
 
@@ -283,7 +309,7 @@ describe('Pack Store', () => {
     });
 
     it('should handle rate limit error', async () => {
-      vi.mocked(checkRateLimit).mockReturnValue({
+      (checkRateLimit as ReturnType<typeof vi.fn>).mockReturnValue({
         allowed: false,
         remaining: 0,
         resetTime: Date.now() + 60000,
@@ -298,7 +324,7 @@ describe('Pack Store', () => {
     });
 
     it('should handle generation timeout', async () => {
-      vi.mocked(generatePack).mockImplementation(() => {
+      (generatePack as ReturnType<typeof vi.fn>).mockImplementation(() => {
         return new Promise(() => {}) // Never resolves
       });
 
@@ -312,7 +338,7 @@ describe('Pack Store', () => {
     }, 10000);
 
     it('should handle empty pack error', async () => {
-      vi.mocked(generatePack).mockReturnValue({
+      (generatePack as ReturnType<typeof vi.fn>).mockReturnValue({
         id: 'empty-pack',
         cards: [],
         openedAt: new Date().toISOString(),
@@ -327,7 +353,7 @@ describe('Pack Store', () => {
     });
 
     it('should handle storage save failure gracefully', async () => {
-      vi.mocked(addPackToCollection).mockResolvedValue({
+      (addPackToCollection as ReturnType<typeof vi.fn>).mockResolvedValue({
         success: false,
         error: 'Storage full'
       });
@@ -829,7 +855,7 @@ describe('Pack Store', () => {
 
   describe('Error Handling', () => {
     it('should log error on generation failure', async () => {
-      vi.mocked(generatePack).mockImplementation(() => {
+      (generatePack as ReturnType<typeof vi.fn>).mockImplementation(() => {
         throw new Error('Generation failed');
       });
 
@@ -840,7 +866,7 @@ describe('Pack Store', () => {
     });
 
     it('should provide retry action on generation error', async () => {
-      vi.mocked(generatePack).mockImplementation(() => {
+      (generatePack as ReturnType<typeof vi.fn>).mockImplementation(() => {
         throw new Error('Generation failed');
       });
 
@@ -851,7 +877,7 @@ describe('Pack Store', () => {
     });
 
     it('should provide go home action on generation error', async () => {
-      vi.mocked(generatePack).mockImplementation(() => {
+      (generatePack as ReturnType<typeof vi.fn>).mockImplementation(() => {
         throw new Error('Generation failed');
       });
 
@@ -869,7 +895,7 @@ describe('Pack Store', () => {
     });
 
     it('should block pack opening when rate limited', async () => {
-      vi.mocked(checkRateLimit).mockReturnValue({
+      (checkRateLimit as ReturnType<typeof vi.fn>).mockReturnValue({
         allowed: false,
         error: 'Rate limit exceeded'
       });

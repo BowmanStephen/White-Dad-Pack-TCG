@@ -12,8 +12,7 @@ export default defineConfig({
         hydratable: false,
       },
     }),
-    // Temporarily disable svelteTesting() to debug environment issues
-    // svelteTesting()
+    svelteTesting()
   ],
   test: {
     environmentOptions: {
@@ -22,8 +21,9 @@ export default defineConfig({
       pretendToBeVisual: true,
       resources: 'usable',
     },
-    environment: 'happy-dom',
+    environment: 'jsdom',
     globals: true,
+    environmentMatchGlobs: ['**/*'],
     setupFiles: ['./tests/setup.ts'],
     include: [
       'tests/**/*.test.ts',

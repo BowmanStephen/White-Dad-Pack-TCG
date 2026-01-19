@@ -1,0 +1,696 @@
+{
+  "name": "DadDeck™ - Pack Opening Audio System",
+  "description": "Micro-tasks for exceptional pack opening audio - sound effects, haptic feedback, and audio controls.",
+  "branchName": "feature/pack-audio",
+  "userStories": [
+    {
+      "id": "PACK-AUDIO-001",
+      "title": "Add pack tear sound effect trigger",
+      "description": "Play sound when pack tear animation starts.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Import audio utility from src/lib/utils/audio.ts",
+        "Trigger tear sound on pack_tear_animate state",
+        "Sound plays once, doesn't loop",
+        "Test sound syncs with tear animation",
+        "Ensure sound works on mobile (iOS/Android)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "pack-tear", "trigger"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-002",
+      "title": "Source or create pack tear sound file",
+      "description": "Obtain sound effect for pack opening.",
+      "acceptanceCriteria": [
+        "Find copyright-free pack tear sound",
+        "Or create synthesized tear sound using Web Audio API",
+        "Sound should be ripping paper/crunching",
+        "Duration: 0.5-0.8 seconds",
+        "Format: MP3 or OGG (compressed)",
+        "Save to public/sounds/pack-tear.mp3"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "assets", "pack-tear"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-003",
+      "title": "Add card flip sound for common rarity",
+      "description": "Play subtle flip sound when common card revealed.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger flip sound on common card reveal",
+        "Sound should be subtle card flip/click",
+        "Duration: 0.2-0.3 seconds",
+        "Volume: 50% of master",
+        "Test sound doesn't get annoying"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "card-flip", "common"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-004",
+      "title": "Add card flip sound for uncommon rarity",
+      "description": "Play slightly enhanced flip sound for uncommon cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger enhanced flip sound on uncommon reveal",
+        "Sound has slight pitch boost from common",
+        "Duration: 0.3 seconds",
+        "Volume: 60% of master",
+        "Test sound indicates higher rarity"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "card-flip", "uncommon"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-005",
+      "title": "Add card flip sound for rare rarity",
+      "description": "Play distinctive flip sound for rare cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger distinctive flip sound on rare reveal",
+        "Sound has metallic shimmer quality",
+        "Duration: 0.4 seconds",
+        "Volume: 70% of master",
+        "Test sound feels special"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "card-flip", "rare"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-006",
+      "title": "Add card reveal sound for epic rarity",
+      "description": "Play triumphant sound for epic card reveals.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger triumphant sound on epic reveal",
+        "Sound has chord/harmony quality",
+        "Duration: 0.6 seconds",
+        "Volume: 80% of master",
+        "Test sound feels rewarding"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "card-flip", "epic"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-007",
+      "title": "Add card reveal sound for legendary rarity",
+      "description": "Play epic orchestral hit for legendary cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger orchestral hit on legendary reveal",
+        "Sound has full orchestral quality",
+        "Duration: 1.0 seconds",
+        "Volume: 90% of master",
+        "Test sound feels legendary"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "card-flip", "legendary"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-008",
+      "title": "Add card reveal sound for mythic rarity",
+      "description": "Play celebration sequence for mythic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger celebration sound on mythic reveal",
+        "Sound has full choir/celebration quality",
+        "Duration: 1.5 seconds",
+        "Volume: 100% of master",
+        "Test sound feels mythic"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "card-flip", "mythic"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-009",
+      "title": "Add holo shimmer sound effect",
+      "description": "Play subtle shimmer for holographic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Detect holo variant card reveal",
+        "Trigger shimmer sound (sparkle/twinkle)",
+        "Duration: 0.5 seconds",
+        "Volume: 60% of master",
+        "Layer over card flip sound",
+        "Test sound adds premium feel"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "sfx", "holo", "shimmer"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-010",
+      "title": "Implement sound preload on page load",
+      "description": "Preload all sound effects when app loads.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Create preloadSounds() function",
+        "Preload all pack opening SFX on app init",
+        "Sounds cached in memory for instant playback",
+        "Show loading indicator while preloading",
+        "Test no delay when first sound plays"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "performance", "preload"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-011",
+      "title": "Add light haptic feedback on common reveal",
+      "description": "Trigger light vibration for common card on Android.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Import navigator.vibrate API",
+        "Add vibrate(50) call on common reveal",
+        "Test on Android device (vibration works)",
+        "Add try-catch for iOS (no haptic support)",
+        "Vibration feels like light tap"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "haptic", "common", "mobile"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-012",
+      "title": "Add medium haptic feedback on rare reveal",
+      "description": "Trigger medium vibration for rare card on Android.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate(100) call on rare reveal",
+        "Test on Android device",
+        "Vibration feels more noticeable than common",
+        "Add try-catch for iOS",
+        "Vibration pattern: single medium pulse"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "haptic", "rare", "mobile"],
+      "dependsOn": ["PACK-AUDIO-011"]
+    },
+    {
+      "id": "PACK-AUDIO-013",
+      "title": "Add strong haptic feedback on epic reveal",
+      "description": "Trigger strong vibration for epic card on Android.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate(150) call on epic reveal",
+        "Test on Android device",
+        "Vibration feels strong and impactful",
+        "Add try-catch for iOS",
+        "Vibration pattern: single strong pulse"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "haptic", "epic", "mobile"],
+      "dependsOn": ["PACK-AUDIO-011"]
+    },
+    {
+      "id": "PACK-AUDIO-014",
+      "title": "Add heavy haptic feedback on legendary reveal",
+      "description": "Trigger heavy vibration pattern for legendary card.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate([200, 100, 200]) call on legendary",
+        "Pattern: strong-medium-strong (3 pulses)",
+        "Test on Android device",
+        "Vibration feels very dramatic",
+        "Add try-catch for iOS"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "haptic", "legendary", "mobile"],
+      "dependsOn": ["PACK-AUDIO-011"]
+    },
+    {
+      "id": "PACK-AUDIO-015",
+      "title": "Add extreme haptic feedback on mythic reveal",
+      "description": "Trigger maximum vibration pattern for mythic card.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate([300, 100, 300, 100, 300]) call",
+        "Pattern: 5 intense pulses (mythic level)",
+        "Test on Android device",
+        "Vibration feels as intense as device allows",
+        "Add try-catch for iOS",
+        "Consider user motion sickness sensitivity"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "haptic", "mythic", "mobile"],
+      "dependsOn": ["PACK-AUDIO-011"]
+    },
+    {
+      "id": "PACK-AUDIO-016",
+      "title": "Add haptic feedback on pack tear",
+      "description": "Light vibration when pack tears open.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add vibrate(80) on pack_tear_animate state",
+        "Test on Android device",
+        "Vibration syncs with tear sound",
+        "Add try-catch for iOS",
+        "Vibration feels satisfying"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "haptic", "pack-tear"],
+      "dependsOn": ["PACK-AUDIO-011", "PACK-AUDIO-001"]
+    },
+    {
+      "id": "PACK-AUDIO-017",
+      "title": "Create haptic intensity settings",
+      "description": "Allow users to control haptic feedback strength.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add haptic intensity dropdown (Off/Light/Medium/Heavy)",
+        "Off: no haptic feedback",
+        "Light: 50% vibration duration",
+        "Medium: 100% vibration duration (default)",
+        "Heavy: 150% vibration duration",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "settings", "haptic", "accessibility"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-018",
+      "title": "Add master volume slider (0-100%)",
+      "description": "Create master audio volume control.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add range input for master volume (0-100)",
+        "Default value: 80%",
+        "Show current volume percentage",
+        "All SFX volume scales by master setting",
+        "Setting persists to localStorage"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "settings", "volume", "master"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-019",
+      "title": "Add SFX volume slider (0-100%)",
+      "description": "Create separate sound effects volume control.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add range input for SFX volume (0-100)",
+        "Default value: 100%",
+        "SFX includes: pack tear, card flips, holo shimmer",
+        "SFX volume scales by master × SFX setting",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "settings", "volume", "sfx"],
+      "dependsOn": ["PACK-AUDIO-018"]
+    },
+    {
+      "id": "PACK-AUDIO-020",
+      "title": "Add music volume slider (0-100%)",
+      "description": "Create music volume control for future background music.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add range input for music volume (0-100)",
+        "Default value: 50% (when music exists)",
+        "Label: 'Music (Coming Soon)' if no music yet",
+        "Music volume scales by master × music setting",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "settings", "volume", "music"],
+      "dependsOn": ["PACK-AUDIO-018"]
+    },
+    {
+      "id": "PACK-AUDIO-021",
+      "title": "Add mute toggle button",
+      "description": "Quick mute button to disable all audio.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add mute toggle button (speaker icon)",
+        "Muting sets master volume to 0%",
+        "Unmuting restores previous volume",
+        "Mute state persists to localStorage",
+        "Icon shows mute status (speaker X vs speaker)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "settings", "mute", "toggle"],
+      "dependsOn": ["PACK-AUDIO-018"]
+    },
+    {
+      "id": "PACK-AUDIO-022",
+      "title": "Add sound settings to navigation",
+      "description": "Quick access to sound controls from nav bar.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Navigation.svelte",
+        "Add gear/settings icon to navigation",
+        "Clicking opens settings modal",
+        "Settings modal shows all audio controls",
+        "Modal closes on backdrop click",
+        "Settings accessible from any page"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "settings", "navigation", "ui"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-023",
+      "title": "Implement audio state persistence",
+      "description": "Save audio settings to localStorage.",
+      "acceptanceCriteria": [
+        "Open src/stores/audio.ts",
+        "Add audioSettings atom object",
+        "Settings include: masterVolume, sfxVolume, musicVolume, muted",
+        "Load settings from localStorage on init",
+        "Save settings to localStorage on change",
+        "Test settings persist across browser sessions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "persistence", "settings", "state"],
+      "dependsOn": ["PACK-AUDIO-018", "PACK-AUDIO-021"]
+    },
+    {
+      "id": "PACK-AUDIO-024",
+      "title": "Add per-category volume controls",
+      "description": "Fine-grained volume control for each sound category.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add volume sliders for: pack tears, card flips, holo shimmer",
+        "Each category 0-100% range",
+        "Each scales by master × category setting",
+        "Default all categories to 100%",
+        "Settings persist to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "settings", "volume", "categories"],
+      "dependsOn": ["PACK-AUDIO-018", "PACK-AUDIO-019"]
+    },
+    {
+      "id": "PACK-AUDIO-025",
+      "title": "Compress audio files for web delivery",
+      "description": "Optimize audio file sizes for fast loading.",
+      "acceptanceCriteria": [
+        "Audit all audio files in public/sounds/",
+        "Compress to MP3 at 128kbps or OGG at 96kbps",
+        "Ensure each file is under 50KB",
+        "Maintain acceptable audio quality",
+        "Test compressed files sound good",
+        "Update file references in code"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "performance", "compression", "assets"],
+      "dependsOn": ["PACK-AUDIO-002"]
+    },
+    {
+      "id": "PACK-AUDIO-026",
+      "title": "Test audio works on iOS Safari",
+      "description": "Verify audio playback on iOS devices.",
+      "acceptanceCriteria": [
+        "Test on iPhone/iPad with Safari",
+        "Verify pack tear sound plays",
+        "Verify card flip sounds play",
+        "Verify volume controls work",
+        "Check for iOS autoplay restrictions",
+        "Document any iOS-specific issues"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "testing", "ios", "mobile"],
+      "dependsOn": ["PACK-AUDIO-001", "PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-027",
+      "title": "Test audio works on Android Chrome",
+      "description": "Verify audio playback on Android devices.",
+      "acceptanceCriteria": [
+        "Test on Android device with Chrome",
+        "Verify pack tear sound plays",
+        "Verify card flip sounds play",
+        "Verify haptic feedback works",
+        "Check for Android autoplay restrictions",
+        "Document any Android-specific issues"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "testing", "android", "mobile"],
+      "dependsOn": ["PACK-AUDIO-001", "PACK-AUDIO-003", "PACK-AUDIO-011"]
+    },
+    {
+      "id": "PACK-AUDIO-028",
+      "title": "Add audio fade-out on pack complete",
+      "description": "Fade out background sounds when pack opening finishes.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect pack_results state",
+        "Fade out any playing sounds over 1s",
+        "Use Web Audio API gain node for fade",
+        "Test fade feels natural",
+        "Ensure no abrupt audio cutoff"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "fade", "pack-complete"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-029",
+      "title": "Implement sound queue system",
+      "description": "Queue sounds to prevent overlapping audio.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Create sound queue for playing SFX",
+        "Only one sound per category plays at once",
+        "New sounds in same category replace previous",
+        "Different categories can overlap (SFX + holo shimmer)",
+        "Test no audio overlap issues"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "queue", "system", "overlap"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-030",
+      "title": "Add accessibility option to disable haptics",
+      "description": "Allow users to disable all haptic feedback.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add haptic enabled/disabled toggle",
+        "When disabled, no vibrate() calls execute",
+        "Default: enabled on Android, disabled on iOS",
+        "Setting persists to localStorage",
+        "Test haptics respect toggle"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "haptic", "accessibility", "settings"],
+      "dependsOn": ["PACK-AUDIO-011"]
+    },
+    {
+      "id": "PACK-AUDIO-031",
+      "title": "Create audio fallback for no-sound devices",
+      "description": "Graceful degradation when audio unavailable.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Add Web Audio API support detection",
+        "If audio not supported, skip all audio calls",
+        "Log audio failure to console (debug only)",
+        "App remains fully functional without audio",
+        "Test on desktop with no audio hardware"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["audio", "fallback", "graceful-degradation"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-032",
+      "title": "Add audio visualization setting",
+      "description": "Optional audio visual feedback for hearing impaired.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add audio visualization toggle",
+        "When enabled, show wave/pulse on sounds",
+        "Visual appears on corner of screen",
+        "Pulse intensity matches sound volume",
+        "Test helps users 'see' the audio"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "accessibility", "visualization", "a11y"],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-033",
+      "title": "Implement audio ducking for multiple sounds",
+      "description": "Lower other sounds when important sound plays.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Create duckSound() function",
+        "When legendary sound plays, duck others by 50%",
+        "Ducking lasts duration of priority sound",
+        "Others restore volume after",
+        "Test legendary sounds cut through mix"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "ducking", "mixing", "priority"],
+      "dependsOn": ["PACK-AUDIO-007", "PACK-AUDIO-008"]
+    },
+    {
+      "id": "PACK-AUDIO-034",
+      "title": "Add sound test button in settings",
+      "description": "Allow users to test each sound effect.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add 'Test Sounds' button in audio section",
+        "Clicking plays each sound in sequence",
+        "Shows sound name being tested",
+        "Users can verify audio works",
+        "Useful for troubleshooting"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "settings", "test", "troubleshooting"],
+      "dependsOn": ["PACK-AUDIO-018"]
+    },
+    {
+      "id": "PACK-AUDIO-035",
+      "title": "Cache audio files in browser cache",
+      "description": "Ensure audio files are cached for repeat plays.",
+      "acceptanceCriteria": [
+        "Open public/sounds/ directory",
+        "Add Cache-Control headers to audio files",
+        "Set max-age to 365 days (1 year)",
+        "Add ETag for cache validation",
+        "Verify browser caches audio after first load",
+        "Test subsequent loads use cached audio"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "caching", "performance", "browser"],
+      "dependsOn": ["PACK-AUDIO-010"]
+    },
+    {
+      "id": "PACK-AUDIO-036",
+      "title": "Create rarity-specific jingles for epic+",
+      "description": "Short musical jingles for high rarity cards.",
+      "acceptanceCriteria": [
+        "Source or create epic jingle (2 seconds)",
+        "Source or create legendary jingle (3 seconds)",
+        "Source or create mythic jingle (5 seconds)",
+        "Jingles layer over flip sounds",
+        "Save to public/sounds/epic-jingle.mp3 etc",
+        "Test jingles feel celebratory"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "jingles", "epic+", "music"],
+      "dependsOn": ["PACK-AUDIO-006", "PACK-AUDIO-007", "PACK-AUDIO-008"]
+    },
+    {
+      "id": "PACK-AUDIO-037",
+      "title": "Add ambient background music option",
+      "description": "Optional background music during pack opening.",
+      "acceptanceCriteria": [
+        "Source copyright-free ambient track",
+        "Music should be subtle (doesn't distract)",
+        "Loops seamlessly during pack opening",
+        "Fades out when pack complete",
+        "Volume controlled by music slider",
+        "Save to public/music/pack-opening.mp3"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "music", "ambient", "background"],
+      "dependsOn": ["PACK-AUDIO-020"]
+    },
+    {
+      "id": "PACK-AUDIO-038",
+      "title": "Implement audio spatial positioning",
+      "description": "Pan sounds left/right based on card position.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Calculate card position in results layout",
+        "Pan card flip sound to match position",
+        "Left cards pan left, right cards pan right",
+        "Subtle effect (10-20% pan max)",
+        "Test adds spatial depth to sounds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "spatial", "pan", "3d"],
+      "dependsOn": ["PACK-AUDIO-003"]
+    },
+    {
+      "id": "PACK-AUDIO-039",
+      "title": "Add audio settings quick toggle in pack view",
+      "description": "Quick mute button accessible during pack opening.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add small speaker icon in corner",
+        "Click toggles mute on/off",
+        "Icon shows current mute state",
+        "Changes volume immediately",
+        "Test users can quickly silence sounds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "ui", "mute", "quick-toggle"],
+      "dependsOn": ["PACK-AUDIO-021"]
+    },
+    {
+      "id": "PACK-AUDIO-040",
+      "title": "Profile audio memory usage",
+      "description": "Measure audio system memory consumption.",
+      "acceptanceCriteria": [
+        "Open Chrome DevTools Memory tab",
+        "Take heap snapshot before audio preload",
+        "Take heap snapshot after audio preload",
+        "Measure memory increase from audio assets",
+        "Ensure audio cache stays under 10MB",
+        "Document audio memory footprint"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["audio", "performance", "memory", "profiling"],
+      "dependsOn": ["PACK-AUDIO-010"]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "1.0.0",
+    "totalTasks": 40,
+    "focus": "Audio and haptic feedback for pack opening"
+  }
+}

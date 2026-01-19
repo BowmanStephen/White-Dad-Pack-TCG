@@ -54,7 +54,7 @@
   const BASE_PHASE_DURATIONS = {
     appear: 400,   // Pack appears with scale
     glow: 600,     // Glow intensifies
-    tear: 500,     // Tear animation
+    tear: 1200,    // Tear animation (PACK-VFX-009: 1.2s for standard tear)
     burst: 300,    // Final burst and fade
   };
 

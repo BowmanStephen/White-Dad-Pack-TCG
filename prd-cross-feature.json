@@ -1,0 +1,689 @@
+{
+  "name": "DadDeck™ - Cross-Feature Polish",
+  "description": "Micro-tasks for shared UX, theme, mobile, analytics, and accessibility improvements across the entire app.",
+  "branchName": "feature/cross-feature",
+  "userStories": [
+    {
+      "id": "CROSS-001",
+      "title": "Add dark mode toggle to navigation",
+      "description": "Theme switcher in main navigation bar.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Navigation.svelte",
+        "Add sun/moon icon toggle to nav",
+        "Clicking toggles between light and dark mode",
+        "Icon shows current theme (sun = light, moon = dark)",
+        "Toggle has smooth transition animation",
+        "Test toggle switches theme instantly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["theme", "dark-mode", "toggle", "navigation"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-002",
+      "title": "Implement theme persistence in localStorage",
+      "description": "Save theme preference across sessions.",
+      "acceptanceCriteria": [
+        "Open src/stores/theme.ts",
+        "Add theme atom ('light' | 'dark' | 'auto')",
+        "On theme change, save to localStorage",
+        "On app load, read from localStorage",
+        "Default to 'auto' (system preference)",
+        "Test theme persists across browser sessions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["theme", "persistence", "settings", "state"],
+      "dependsOn": ["CROSS-001"]
+    },
+    {
+      "id": "CROSS-003",
+      "title": "Add auto theme detection",
+      "description": "Detect system dark mode preference.",
+      "acceptanceCriteria": [
+        "Open src/stores/theme.ts",
+        "Use window.matchMedia('(prefers-color-scheme: dark)')",
+        "Listen for changes in system preference",
+        "Update theme automatically when system changes",
+        "Only applies when theme set to 'auto'",
+        "Test auto detection follows system setting"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["theme", "auto", "system-preference", "detection"],
+      "dependsOn": ["CROSS-002"]
+    },
+    {
+      "id": "CROSS-004",
+      "title": "Create dark mode CSS classes",
+      "description": "Style adjustments for dark theme.",
+      "acceptanceCriteria": [
+        "Open tailwind.config.mjs",
+        "Add dark mode class strategy",
+        "Create dark: prefix for dark mode variants",
+        "Background colors: dark-gray-900 for backgrounds, gray-100 for text",
+        "Apply dark: classes to all components",
+        "Test dark mode looks good and readable"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["theme", "dark-mode", "css", "tailwind"],
+      "dependsOn": ["CROSS-001"]
+    },
+    {
+      "id": "CROSS-005",
+      "title": "Add smooth theme transition animation",
+      "description": "Fade between light and dark themes.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add CSS transition to theme colors",
+        "Transition duration: 0.3s ease-in-out",
+        "All themed properties transition smoothly",
+        "Background, text, borders all fade",
+        "Test transition is not jarring"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["theme", "transition", "animation", "polish"],
+      "dependsOn": ["CROSS-004"]
+    },
+    {
+      "id": "CROSS-006",
+      "title": "Add high contrast mode option",
+      "description": "Accessibility-focused high contrast theme.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add 'High Contrast' toggle to theme settings",
+        "When enabled, use maximum contrast colors",
+        "Black backgrounds, white text, no grays",
+        "Helps users with visual impairments",
+        "Test high contrast mode is very readable"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["theme", "accessibility", "contrast", "a11y"],
+      "dependsOn": ["CROSS-002"]
+    },
+    {
+      "id": "CROSS-007",
+      "title": "Optimize touch targets to 44px minimum",
+      "description": "Ensure all interactive elements are touch-friendly.",
+      "acceptanceCriteria": [
+        "Audit all buttons and interactive elements",
+        "Ensure minimum touch target size is 44×44px",
+        "Add padding to small buttons to reach 44px",
+        "Check navigation links, pack open button, filters",
+        "Test all buttons easy to tap on mobile",
+        "Document any elements below 44px for fixing"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["mobile", "touch", "accessibility", "44px"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-008",
+      "title": "Add swipe gestures for card navigation",
+      "description": "Swipe left/right to browse cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/CardDetailModal.svelte",
+        "Implement touch event listeners (touchstart, touchend)",
+        "Swipe right shows next card",
+        "Swipe left shows previous card",
+        "Add visual feedback during swipe (card follows finger)",
+        "Test gestures work on mobile"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["mobile", "gesture", "swipe", "navigation"],
+      "dependsOn": ["COLL-UI-024"]
+    },
+    {
+      "id": "CROSS-009",
+      "title": "Implement pull-to-refresh on collection",
+      "description": "Pull down to refresh collection view.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add pull-to-refresh handler",
+        "When user pulls down, show loading indicator",
+        "On release, reload collection data from IndexedDB",
+        "Add 'Refreshed just now' toast",
+        "Test refresh updates collection"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["mobile", "pull-to-refresh", "gesture", "collection"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-010",
+      "title": "Configure responsive breakpoints",
+      "description": "Define standard breakpoints for design.",
+      "acceptanceCriteria": [
+        "Open tailwind.config.mjs",
+        "Set custom breakpoints in theme.screens",
+        "Mobile: 320px (small phones)",
+        "Tablet: 768px (tablets)",
+        "Laptop: 1024px (small laptops)",
+        "Desktop: 1280px (desktops)",
+        "Test layouts work at all breakpoints"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["mobile", "responsive", "breakpoints", "tailwind"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-011",
+      "title": "Add pack opening analytics event",
+      "description": "Track when users open packs.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/events.ts",
+        "Create trackPackOpen() function",
+        "Log event with: packId, pack type, card count",
+        "Send to Google Analytics or Plausible",
+        "Event name: 'pack_open'",
+        "Test events appear in analytics dashboard"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["analytics", "tracking", "pack-opening", "events"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-012",
+      "title": "Track filter usage in collection",
+      "description": "Track which filters users apply most.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/events.ts",
+        "Log filter change events",
+        "Track: filter type (rarity, type, holo), filter value",
+        "Send to analytics on filter apply",
+        "Event name: 'collection_filter'",
+        "Test filter tracking works"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["analytics", "tracking", "collection", "filters"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-013",
+      "title": "Implement performance monitoring",
+      "description": "Track key performance metrics.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/performance.ts",
+        "Measure pack generation time (ms)",
+        "Measure page load time (ms)",
+        "Measure FPS during animations",
+        "Log metrics to analytics (or console in dev)",
+        "Alert if metrics exceed thresholds",
+        "Test monitoring catches performance issues"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["analytics", "performance", "monitoring", "metrics"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-014",
+      "title": "Add ARIA labels to all interactive elements",
+      "description": "Screen reader accessibility improvements.",
+      "acceptanceCriteria": [
+        "Audit all buttons, links, inputs for missing ARIA",
+        "Add aria-label to icon-only buttons (e.g., share icon)",
+        "Add aria-label to search inputs ('Search cards by name')",
+        "Add aria-label to filter buttons",
+        "Test screen reader announces all elements"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["accessibility", "a11y", "aria", "screen-reader"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-015",
+      "title": "Implement keyboard navigation",
+      "description": "Full keyboard control without mouse.",
+      "acceptanceCriteria": [
+        "Add tabindex to all interactive elements",
+        "Ensure logical tab order (left to right, top to bottom)",
+        "Add focus visible styles (outline or glow)",
+        "Pack opening: Space to skip, Arrows to navigate cards",
+        "Collection: Tab to browse cards, Enter to open detail",
+        "Test entire app works with keyboard only"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["accessibility", "keyboard", "navigation", "a11y"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-016",
+      "title": "Add screen reader announcements",
+      "description": "Announce important events to screen readers.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add aria-live region for pack status",
+        "Announce pack opening: 'Opening pack...'",
+        "Announce card reveals: 'Revealed Mythic BBQ Dad'",
+        "Announce pack complete: 'Pack opening complete, 7 cards revealed'",
+        "Test announcements inform blind users"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["accessibility", "screen-reader", "announcement", "a11y"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-017",
+      "title": "Add skip to main content link",
+      "description": "Allow keyboard users to skip navigation.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Navigation.svelte",
+        "Add 'Skip to content' link at top of page",
+        "Link is visible on keyboard focus (hidden otherwise)",
+        "Pressing Tab from top shows link first",
+        "Enter moves focus to main content",
+        "Test skip link improves navigation"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["accessibility", "skip-link", "navigation", "a11y"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-018",
+      "title": "Add focus trap in modals",
+      "description": "Keyboard focus stays within modal.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Modal.svelte",
+        "When modal opens, move focus to first focusable element",
+        "Tab cycles focus within modal only",
+        "Shift+Tab cycles backwards",
+        "Escape key closes modal and returns focus",
+        "Test focus trap works correctly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["accessibility", "modal", "focus", "keyboard"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-019",
+      "title": "Add error boundary with fallback UI",
+      "description": "Graceful error handling across entire app.",
+      "acceptanceCriteria": [
+        "Open src/components/error/ErrorBoundary.svelte",
+        "Wrap entire app in error boundary",
+        "On error, show friendly error UI (not blank screen)",
+        "Error message explains what went wrong",
+        "Add 'Try Again' button to reload",
+        "Test errors don't crash app"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["error-handling", "graceful-degradation", "ui"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-020",
+      "title": "Implement offline detection",
+      "description": "Show offline page when no internet.",
+      "acceptanceCriteria": [
+        "Add offline event listener to window",
+        "When offline, show /offline page",
+        "Offline page explains app requires internet",
+        "Offer 'Retry' button to check connection",
+        "When back online, redirect to requested page",
+        "Test offline page appears correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["offline", "pwa", "network", "fallback"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-021",
+      "title": "Add loading skeleton for pack generation",
+      "description": "Show loading state while pack generates.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add skeleton during 'generating' state",
+        "Skeleton shows pulsing pack outline",
+        "Skeleton has 'Generating pack...' text",
+        "When generation complete, skeleton fades out",
+        "Test skeleton makes wait feel shorter"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["loading", "skeleton", "pack", "ux"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-022",
+      "title": "Add toast notification system",
+      "description": "Reusable toast notifications for feedback.",
+      "acceptanceCriteria": [
+        "Create src/components/ui/Toast.svelte",
+        "Show toast for: errors, successes, info",
+        "Toast appears in corner (bottom-right or top-center)",
+        "Toast auto-dismisses after 3-5 seconds",
+        "Toast has close button for manual dismiss",
+        "Test toasts are informative and non-intrusive"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["ui", "toast", "notification", "feedback"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-023",
+      "title": "Add favicon for browser tabs",
+      "description": "Show icon in browser tab bar.",
+      "acceptanceCriteria": [
+        "Create or source favicon.ico file",
+        "Add favicon to public/favicon.ico",
+        "Add favicon link tags to src/layouts/BaseLayout.astro",
+        "Include sizes: 16x16, 32x32",
+        "Test favicon appears in browser tab"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["branding", "favicon", "browser", "meta"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-024",
+      "title": "Configure dynamic meta tags",
+      "description": "SEO-optimized meta tags per page.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add dynamic title and description per route",
+        "Pack page: 'Open Packs | DadDeck'",
+        "Collection page: 'Collection | DadDeck'",
+        "Include DadDeck™ in titles",
+        "Test titles are descriptive and unique"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["seo", "meta", "title", "description"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-025",
+      "title": "Add Open Graph tags for sharing",
+      "description": "Rich link previews on social platforms.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add og:title, og:description, og:image meta tags",
+        "og:image points to DadDeck logo or card image",
+        "og:type: 'website'",
+        "Test link preview on Twitter/Facebook"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["seo", "opengraph", "social", "meta"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-026",
+      "title": "Add Twitter Card meta tags",
+      "description": "Twitter-specific rich previews.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add twitter:card (summary_large_image)",
+        "Add twitter:title, twitter:description, twitter:image",
+        "Test tweet preview shows card image"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["seo", "twitter", "meta", "social"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-027",
+      "title": "Generate sitemap.xml",
+      "description": "Create sitemap for search engines.",
+      "acceptanceCriteria": [
+        "Run bun run generate-sitemap (already exists)",
+        "Verify sitemap.xml includes all pages",
+        "Sitemap includes: /, /pack, /collection, /settings",
+        "Add lastmod date for each page",
+        "Submit sitemap to Google Search Console",
+        "Test sitemap is valid XML"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["seo", "sitemap", "search-engine", "xml"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-028",
+      "title": "Add robots.txt file",
+      "description": "Configure search engine crawling.",
+      "acceptanceCriteria": [
+        "Create public/robots.txt file",
+        "Allow all bots: 'User-agent: * Allow: /'",
+        "Disallow any admin/private routes if they exist",
+        "Add sitemap reference: 'Sitemap: /sitemap.xml'",
+        "Test robots.txt is accessible"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["seo", "robots.txt", "crawling", "search"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-029",
+      "title": "Optimize initial page load",
+      "description": "Achieve <3s First Contentful Paint.",
+      "acceptanceCriteria": [
+        "Run Lighthouse audit on homepage",
+        "Identify render-blocking resources",
+        "Defer non-critical JavaScript",
+        "Optimize critical CSS delivery (inline)",
+        "Lazy load below-fold images",
+        "Test Lighthouse Performance score > 90"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["performance", "lighthouse", "optimization", "load-time"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-030",
+      "title": "Add service worker for offline support",
+      "description": "Cache assets for offline viewing.",
+      "acceptanceCriteria": [
+        "Create public/sw.js service worker",
+        "Cache core assets: HTML, CSS, JS, images",
+        "Cache version: use build hash in cache names",
+        "Add offline fallback page",
+        "Register service worker in src/layouts/BaseLayout.astro",
+        "Test site works offline"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["pwa", "offline", "service-worker", "caching"],
+      "dependsOn": ["CROSS-020"]
+    },
+    {
+      "id": "CROSS-031",
+      "title": "Add manifest.json for PWA",
+      "description": "Progressive Web App manifest.",
+      "acceptanceCriteria": [
+        "Create public/manifest.json",
+        "Add app name: 'DadDeck™'",
+        "Add short_name: 'DadDeck'",
+        "Add description, theme_color, background_color",
+        "Add icons (192x192, 512x512)",
+        "Link manifest in BaseLayout.astro",
+        "Test app is installable on mobile"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["pwa", "manifest", "installable", "mobile"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-032",
+      "title": "Add add to homescreen prompt",
+      "description": "Prompt mobile users to install app.",
+      "acceptanceCriteria": [
+        "Implement beforeinstallprompt event listener",
+        "Show 'Add to Home Screen' modal on iOS",
+        "Show native install prompt on Android",
+        "Explain benefits: 'Open packs offline, faster access'",
+        "Track install/dismiss in analytics",
+        "Test prompt appears at appropriate time"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["pwa", "install", "mobile", "prompt"],
+      "dependsOn": ["CROSS-031"]
+    },
+    {
+      "id": "CROSS-033",
+      "title": "Add app theme color to browser UI",
+      "description": "Theme color affects browser chrome.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add theme-color meta tag",
+        "Color changes with theme (light/dark)",
+        "Light: #ffffff (white)",
+        "Dark: #0f172a (slate-900)",
+        "Test browser address bar color matches theme"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["theme", "meta", "browser-chrome", "polish"],
+      "dependsOn": ["CROSS-001", "CROSS-004"]
+    },
+    {
+      "id": "CROSS-034",
+      "title": "Add 404 error page",
+      "description": "Custom 404 not found page.",
+      "acceptanceCriteria": [
+        "Create src/pages/404.astro",
+        "Add friendly '404 - Page Not Found' message",
+        "Add DadDeck™ mascot or illustration",
+        "Add 'Back Home' button to landing page",
+        "Ensure 404 page has theme support",
+        "Test 404 page appears for invalid routes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["error", "404", "page", "ux"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-035",
+      "title": "Add keyboard shortcuts help modal",
+      "description": "Show available keyboard shortcuts.",
+      "acceptanceCriteria": [
+        "Create src/components/help/KeyboardShortcuts.svelte",
+        "Add '?' button to navigation",
+        "Clicking opens keyboard shortcuts modal",
+        "List shortcuts: Space (skip), Enter (open), Arrows (navigate), Esc (close)",
+        "Organize by context (pack, collection, general)",
+        "Test modal helps users discover shortcuts"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["help", "keyboard", "shortcuts", "documentation"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-036",
+      "title": "Add progressive enhancement for JavaScript",
+      "description": "Core features work without JavaScript.",
+      "acceptanceCriteria": [
+        "Verify critical links work with JS disabled",
+        "Ensure pack opening page requires JS (expected)",
+        "Add <noscript> tag with message",
+        "Message: 'For best experience, please enable JavaScript'",
+        "Test basic navigation works without JS"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["progressive-enhancement", "noscript", "graceful-degradation"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-037",
+      "title": "Add link prefetching for faster navigation",
+      "description": "Prefetch likely next pages.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add <link rel='prefetch'> for likely next pages",
+        "Prefetch: pack page from landing, collection from pack",
+        "Use DNS prefetch for external domains",
+        "Test navigation to prefetched pages is instant",
+        "Monitor bandwidth usage (don't over-prefetch)"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["performance", "prefetch", "navigation", "optimization"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-038",
+      "title": "Add console error logging to analytics",
+      "description": "Track errors that occur in production.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/errors.ts",
+        "Add global error listener to window.onerror",
+        "Log error: message, url, line number, stack",
+        "Send errors to analytics (Sentry or GA)",
+        "Exclude sensitive data from logs",
+        "Test errors are tracked"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["analytics", "error-tracking", "logging", "production"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-039",
+      "title": "Add user feedback widget",
+      "description": "Allow users to send feedback.",
+      "acceptanceCriteria": [
+        "Add feedback button to footer or navigation",
+        "Clicking opens feedback modal",
+        "Modal includes: feedback type dropdown, message input, email",
+        "On submit, send to feedback service or email",
+        "Show 'Thank you for feedback!' toast",
+        "Test feedback submission works"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["feedback", "user-input", "communication", "support"],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-040",
+      "title": "Add cookie consent banner",
+      "description": "GDPR-compliant cookie consent.",
+      "acceptanceCriteria": [
+        "Add cookie consent banner component",
+        "Banner appears on first visit",
+        "Explains cookies used: 'We use analytics'",
+        "\"Accept\" button closes banner and sets consent cookie",
+        "Link to privacy policy page",
+        "Test banner appears only once"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["legal", "cookies", "gdpr", "consent"],
+      "dependsOn": []
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "1.0.0",
+    "totalTasks": 40,
+    "focus": "Cross-feature polish and shared UX improvements"
+  }
+}

@@ -1,0 +1,1163 @@
+{
+  "name": "DadDeck™ - Pack Opening Visual Effects",
+  "description": "Micro-tasks for exceptional pack opening VFX - particles, animations, screen effects, and performance optimizations.",
+  "branchName": "feature/pack-vfx",
+  "userStories": [
+    {
+      "id": "PACK-VFX-001",
+      "title": "Adjust common particle burst velocity to 150px/s",
+      "description": "Set particle velocity for common rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG common particle settings",
+        "Set particle velocity to 150px/s",
+        "Test particle burst on common reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "common",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-002",
+      "title": "Adjust uncommon particle burst velocity to 175px/s",
+      "description": "Set particle velocity for uncommon rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG uncommon particle settings",
+        "Set particle velocity to 175px/s",
+        "Test particle burst on uncommon reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "uncommon",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-003",
+      "title": "Adjust rare particle burst velocity to 200px/s",
+      "description": "Set particle velocity for rare rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG rare particle settings",
+        "Set particle velocity to 200px/s",
+        "Test particle burst on rare reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "rare",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-004",
+      "title": "Adjust epic particle burst velocity to 225px/s",
+      "description": "Set particle velocity for epic rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG epic particle settings",
+        "Set particle velocity to 225px/s",
+        "Test particle burst on epic reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "epic",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-005",
+      "title": "Adjust legendary particle burst velocity to 250px/s",
+      "description": "Set particle velocity for legendary rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG legendary particle settings",
+        "Set particle velocity to 250px/s",
+        "Test particle burst on legendary reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "legendary",
+        "timing"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-006",
+      "title": "Adjust mythic particle burst velocity to 300px/s",
+      "description": "Set particle velocity for mythic rarity card reveals to create dramatic effect.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG mythic particle settings",
+        "Set particle velocity to 300px/s (up from current value)",
+        "Test particle burst on mythic reveal",
+        "Verify particles spread radially from center",
+        "Check 60fps performance on iPhone 12"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "timing"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-007",
+      "title": "Add particle fade-in easing for all rarities",
+      "description": "Implement smooth fade-in effect for particles on all card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add opacity animation to particle system",
+        "Set fade-in duration to 0.3s with ease-out",
+        "Apply fade-in to all rarity particles",
+        "Test fade-in on common, rare, legendary reveals",
+        "Ensure smooth visual transition"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "easing",
+        "all-rarities"
+      ],
+      "dependsOn": [
+        "PACK-VFX-001",
+        "PACK-VFX-006"
+      ]
+    },
+    {
+      "id": "PACK-VFX-008",
+      "title": "Implement particle color interpolation for mythic rarity",
+      "description": "Add color gradient interpolation for mythic particle burst.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate mythic particle color configuration",
+        "Implement color interpolation across 6 rarity colors",
+        "Particles transition through colors during lifetime",
+        "Create prismatic rainbow effect",
+        "Test color transitions on mythic reveal"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "colors"
+      ],
+      "dependsOn": [
+        "PACK-VFX-006"
+      ]
+    },
+    {
+      "id": "PACK-VFX-009",
+      "title": "Set pack tear animation duration to 1.2s",
+      "description": "Configure standard pack tear animation timing.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Locate pack tear animation CSS/transitions",
+        "Set tear animation duration to 1.2s",
+        "Test standard pack tear feels natural",
+        "Ensure animation doesn't feel too slow or fast",
+        "Verify smooth easing curve applied"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "pack-tear"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-010",
+      "title": "Add slow pack tear animation variant (2.0s)",
+      "description": "Create slower tear animation for dramatic effect.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add slowTear variant to tear animation options",
+        "Set slow tear duration to 2.0s",
+        "Randomly trigger slow tear on 10% of packs",
+        "Test slow tear feels more dramatic",
+        "Ensure doesn't negatively impact UX"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "variety"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-011",
+      "title": "Add explosive pack tear animation variant (0.6s)",
+      "description": "Create fast explosive tear animation for excitement.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add explosiveTear variant to tear animation options",
+        "Set explosive tear duration to 0.6s",
+        "Randomly trigger explosive tear on 5% of packs",
+        "Test explosive tear feels energetic",
+        "Ensure screen shake accompanies tear"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "variety"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-012",
+      "title": "Set card flip delay to 300ms between cards",
+      "description": "Configure timing delay between individual card reveals.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Locate card reveal timing configuration",
+        "Set delay between card flips to 300ms",
+        "Test 7-card pack reveal timing feels natural",
+        "Ensure not too slow (boring) or too fast (overwhelming)",
+        "Verify user can skip with spacebar"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "card-reveal"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-013",
+      "title": "Add rare+ card reveal delay of 500ms",
+      "description": "Extra pause for rare and better cards during reveal.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect when card rarity is rare or better",
+        "Add extra 200ms delay before next card (500ms total)",
+        "Test rare reveal gets moment to shine",
+        "Ensure doesn't break flow of pack opening",
+        "Verify skip button still works immediately"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "rare+"
+      ],
+      "dependsOn": [
+        "PACK-VFX-012"
+      ]
+    },
+    {
+      "id": "PACK-VFX-014",
+      "title": "Add mythic card reveal delay of 1000ms",
+      "description": "Extended pause for mythic card reveals for maximum impact.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect when card rarity is mythic",
+        "Add extended 700ms delay (1000ms total)",
+        "Test mythic reveal gets dramatic pause",
+        "Ensure confetti and effects trigger during pause",
+        "Verify skip button still works for impatient users"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "mythic"
+      ],
+      "dependsOn": [
+        "PACK-VFX-012",
+        "PACK-VFX-013"
+      ]
+    },
+    {
+      "id": "PACK-VFX-015",
+      "title": "Configure cinematic mode pack tear to 1.8s",
+      "description": "Slower pack tear for cinematic mode.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add cinematic mode detection",
+        "Set pack tear duration to 1.8s in cinematic mode",
+        "Test cinematic tear feels more dramatic",
+        "Ensure smooth slow-motion effect",
+        "Verify normal mode unaffected"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "cinematic",
+        "timing"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-016",
+      "title": "Configure cinematic mode card reveal to 600ms",
+      "description": "Slower card reveals for cinematic mode.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Set card reveal delay to 600ms in cinematic mode",
+        "Test cinematic reveal pacing",
+        "Ensure enhanced particle effects trigger",
+        "Verify dramatic camera zoom on each card",
+        "Confirm normal mode timing unchanged"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "cinematic",
+        "timing"
+      ],
+      "dependsOn": [
+        "PACK-VFX-015"
+      ]
+    },
+    {
+      "id": "PACK-VFX-017",
+      "title": "Add mythic prismatic glow effect on reveal",
+      "description": "Create rotating prismatic color glow for mythic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS animation for mythic card glow",
+        "Implement color rotation through 6 rarity colors",
+        "Set rotation duration to 3s with infinite loop",
+        "Apply glow only to mythic rarity cards",
+        "Test effect is dramatic but not seizure-inducing"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "glow",
+        "prismatic"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-018",
+      "title": "Set legendary glow intensity to 1.5x",
+      "description": "Configure glow brightness for legendary cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Locate legendary card glow CSS",
+        "Set box-shadow spread to 1.5x current value",
+        "Test legendary glow is prominent",
+        "Ensure doesn't overwhelm card artwork",
+        "Verify WCAG AA contrast compliance"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "legendary",
+        "glow",
+        "intensity"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-019",
+      "title": "Set epic glow intensity to 1.3x",
+      "description": "Configure glow brightness for epic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Locate epic card glow CSS",
+        "Set box-shadow spread to 1.3x current value",
+        "Test epic glow is visible",
+        "Ensure less prominent than legendary",
+        "Verify WCAG AA contrast compliance"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "epic",
+        "glow",
+        "intensity"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-020",
+      "title": "Configure epic particle count to 15",
+      "description": "Set number of particles for epic card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG epic particle count",
+        "Set particle count to 15",
+        "Test epic reveal has good particle density",
+        "Ensure more particles than rare (10)",
+        "Check performance on mobile"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "epic",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-021",
+      "title": "Configure legendary particle count to 25",
+      "description": "Set number of particles for legendary card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG legendary particle count",
+        "Set particle count to 25",
+        "Test legendary reveal has dense particle effect",
+        "Ensure significantly more particles than epic",
+        "Check performance on mobile"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "legendary",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-022",
+      "title": "Configure mythic particle count to 40",
+      "description": "Set maximum particle count for mythic card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG mythic particle count",
+        "Set particle count to 40 (maximum)",
+        "Test mythic reveal has explosive particle effect",
+        "Ensure most dramatic particle density",
+        "Verify 60fps on iPhone 12"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-023",
+      "title": "Add screen shake on mythic card reveal",
+      "description": "Implement subtle screen shake effect for mythic pulls.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add CSS keyframe animation for screen shake",
+        "Trigger shake on mythic card reveal",
+        "Set shake intensity to 3px translate X/Y oscillation",
+        "Set shake duration to 0.3s",
+        "Test effect is dramatic but not nausea-inducing"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "screen-shake",
+        "impact"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-024",
+      "title": "Add flash effect on holo card reveal",
+      "description": "Create white flash effect when holographic cards are revealed.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/Card.svelte",
+        "Add CSS animation for white flash overlay",
+        "Trigger flash when holo variant card revealed",
+        "Set flash duration to 0.2s with fade-out",
+        "Ensure flash doesn't obscure card details",
+        "Test on standard, reverse, and full-art holo"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "holo",
+        "flash",
+        "reveal"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-025",
+      "title": "Add confetti effect for legendary+ pulls",
+      "description": "Implement confetti particles on legendary and mythic reveals.",
+      "acceptanceCriteria": [
+        "Create confetti particle system component",
+        "Trigger confetti on legendary card reveal",
+        "Trigger double confetti on mythic card reveal",
+        "Use confetti colors matching card rarity",
+        "Set confetti duration to 3 seconds",
+        "Implement physics (gravity, velocity, rotation)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "confetti",
+        "legendary+"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-026",
+      "title": "Profile particle system performance on low-end device",
+      "description": "Measure particle rendering performance on minimum spec device.",
+      "acceptanceCriteria": [
+        "Open Chrome DevTools Performance tab",
+        "Test pack opening on low-end Android device",
+        "Record FPS during mythic particle burst (40 particles)",
+        "Measure frame time for each particle update",
+        "Identify performance bottlenecks",
+        "Document minimum device specs for 60fps"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "performance",
+        "profiling",
+        "particles"
+      ],
+      "dependsOn": [
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-027",
+      "title": "Optimize animation frame rate for particles",
+      "description": "Ensure particle animations maintain 60fps on mid-tier devices.",
+      "acceptanceCriteria": [
+        "Review particle system code for optimization opportunities",
+        "Use requestAnimationFrame for smooth updates",
+        "Implement object pooling for particle reuse",
+        "Test particle burst maintains 60fps on iPhone 12",
+        "Verify no frame drops during multi-card reveals",
+        "Profile before and after optimization"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "performance",
+        "optimization",
+        "60fps"
+      ],
+      "dependsOn": [
+        "PACK-VFX-026"
+      ]
+    },
+    {
+      "id": "PACK-VFX-028",
+      "title": "Test VFX on low-end mobile device",
+      "description": "Verify all visual effects work on slowest target device.",
+      "acceptanceCriteria": [
+        "Test on iPhone SE (2020) or equivalent Android",
+        "Open 10 packs and observe performance",
+        "Verify no lag during particle effects",
+        "Check screen shake doesn't cause jank",
+        "Ensure confetti renders smoothly",
+        "Document which effects need reduction for low-end"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "testing",
+        "mobile",
+        "low-end"
+      ],
+      "dependsOn": [
+        "PACK-VFX-027"
+      ]
+    },
+    {
+      "id": "PACK-VFX-029",
+      "title": "Add particle system intensity slider in settings",
+      "description": "Allow users to control particle effect intensity.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add particle intensity slider (1-5 scale)",
+        "1 = minimal particles (20% of normal)",
+        "3 = normal particle count",
+        "5 = maximum particles (200% of normal)",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "settings",
+        "particles",
+        "accessibility"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-030",
+      "title": "Create particle effect preset system",
+      "description": "Allow users to choose particle effect quality presets.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add particle quality dropdown (Low/Medium/High/Ultra)",
+        "Low: 50% particles, no screen shake",
+        "Medium: 75% particles, reduced effects",
+        "High: 100% particles, all effects (default)",
+        "Ultra: 150% particles, maximum drama"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "settings",
+        "particles",
+        "presets"
+      ],
+      "dependsOn": [
+        "PACK-VFX-029"
+      ]
+    },
+    {
+      "id": "PACK-VFX-031",
+      "title": "Add particle burst spawn delay variation",
+      "description": "Stagger particle spawn timing for more natural effect.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add random delay to particle spawn (0-50ms)",
+        "Each particle spawns at slightly different time",
+        "Test burst feels more organic/less mechanical",
+        "Ensure total burst duration unchanged",
+        "Apply to all rarity particles"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "timing",
+        "natural"
+      ],
+      "dependsOn": [
+        "PACK-VFX-007"
+      ]
+    },
+    {
+      "id": "PACK-VFX-032",
+      "title": "Implement particle size variation by rarity",
+      "description": "Larger particles for higher rarity cards.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Set common particle size to 4px",
+        "Set uncommon particle size to 5px",
+        "Set rare particle size to 6px",
+        "Set epic particle size to 7px",
+        "Set legendary particle size to 8px",
+        "Set mythic particle size to 10px"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "size",
+        "rarity-gradient"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-033",
+      "title": "Add particle rotation animation",
+      "description": "Particles rotate as they fly outward from card.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add random rotation speed to each particle",
+        "Set rotation range to -180deg/s to +180deg/s",
+        "Test particles spin as they move",
+        "Ensure rotation doesn't affect performance",
+        "Apply rotation to all particles"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "rotation",
+        "animation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-034",
+      "title": "Implement particle trail effect for mythic",
+      "description": "Mythic particles leave fading trails as they move.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add trail rendering for mythic particles only",
+        "Trail fades over 200ms",
+        "Trail is 50% opacity of particle",
+        "Test mythic reveal has enhanced sense of motion",
+        "Ensure trails don't clutter visuals"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "trails"
+      ],
+      "dependsOn": [
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-035",
+      "title": "Add card flip 3D rotation effect",
+      "description": "Cards flip with 3D perspective during reveal.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS transform: rotateY for flip animation",
+        "Set flip duration to 0.4s",
+        "Use ease-out timing function",
+        "Add perspective to parent container",
+        "Test flip has depth and feels premium"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "flip",
+        "3d"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-036",
+      "title": "Add card scale-in effect on reveal start",
+      "description": "Cards scale up from 0 to full size when reveal starts.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS transform scale animation on reveal start",
+        "Scale from 0.2x to 1.0x over 0.3s",
+        "Use elastic ease for bounce effect",
+        "Test card pops into view energetically",
+        "Ensure scale doesn't cause layout shift"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "scale",
+        "reveal"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-037",
+      "title": "Add card hover lift effect in results screen",
+      "description": "Cards lift slightly when hovered in results view.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS transform translateY on hover",
+        "Lift card by -8px on hover",
+        "Add box-shadow increase on hover",
+        "Set transition duration to 0.2s ease-out",
+        "Test hover feels responsive and tactile"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "hover",
+        "results"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-038",
+      "title": "Implement glow pulse animation for rare+ cards",
+      "description": "Rare and better cards have pulsing glow effect.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS keyframe animation for glow pulse",
+        "Pulse opacity from 70% to 100% and back",
+        "Set pulse duration to 2s infinite loop",
+        "Apply only to rare, epic, legendary, mythic",
+        "Test pulse draws attention without being annoying"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "glow",
+        "pulse",
+        "rare+"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-039",
+      "title": "Add shimmer effect for holo cards",
+      "description": "Holographic cards have diagonal shimmer sweep effect.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS gradient shimmer overlay",
+        "Shimmer sweeps diagonally across card",
+        "Set shimmer duration to 3s infinite loop",
+        "Apply only to holo variant cards",
+        "Test shimmer catches light realistically"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "holo",
+        "shimmer"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-040",
+      "title": "Create particle burst pattern variations",
+      "description": "Different particle spread patterns for variety.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add 3 particle spread patterns: radial, fountain, vortex",
+        "Randomly select pattern on each pack open",
+        "Radial: particles spread equally in all directions",
+        "Fountain: particles arc upward then fall",
+        "Vortex: particles spiral outward from center",
+        "Test each pattern looks distinct and cool"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "variety",
+        "patterns"
+      ],
+      "dependsOn": [
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-041",
+      "title": "Add card border glow animation on reveal",
+      "description": "Card border lights up with rarity color on reveal.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS animation to card border",
+        "Border color matches card rarity",
+        "Glow starts from one corner and spreads",
+        "Animation duration 0.5s",
+        "Test border glow frames card beautifully"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "border",
+        "glow"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-042",
+      "title": "Implement pack shake before tear animation",
+      "description": "Pack shakes briefly before tearing open.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add CSS shake animation to pack element",
+        "Shake for 0.3s before tear starts",
+        "Use rapid small oscillations (2px)",
+        "Test shake builds anticipation",
+        "Ensure shake stops when tear begins"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "pack",
+        "shake",
+        "anticipation"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-043",
+      "title": "Add pack glow before opening animation",
+      "description": "Pack glows briefly before tearing open.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add CSS glow effect to pack element",
+        "Glow starts 0.5s before tear",
+        "Glow fades as tear begins",
+        "Glow color matches pack type",
+        "Test glow creates magical moment"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "pack",
+        "glow",
+        "anticipation"
+      ],
+      "dependsOn": [
+        "PACK-VFX-042"
+      ]
+    },
+    {
+      "id": "PACK-VFX-044",
+      "title": "Create slow-motion effect for mythic reveal",
+      "description": "Time slows down briefly when mythic card is revealed.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect mythic rarity during reveal",
+        "Slow card flip animation to 0.6s (normally 0.4s)",
+        "Slow background particles to 50% speed",
+        "Effect lasts 1s then returns to normal",
+        "Test slow-mo makes mythic feel epic"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "slow-mo",
+        "dramatic"
+      ],
+      "dependsOn": [
+        "PACK-VFX-014",
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-045",
+      "title": "Add chromatic aberration effect for mythic",
+      "description": "Subtle RGB split effect for mythic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS text-shadow with RGB offset",
+        "Offset red channel by 2px left",
+        "Offset blue channel by 2px right",
+        "Apply only to mythic rarity",
+        "Test effect adds depth without being distracting"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "chromatic",
+        "aberration"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-046",
+      "title": "Implement ambient particle background in results",
+      "description": "Subtle floating particles in results screen background.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add canvas-based particle system to background",
+        "Particles float gently (no burst)",
+        "Particle count: 20-30 max",
+        "Particles fade over 5s then respawn",
+        "Test particles add life without distraction"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "background",
+        "ambient",
+        "particles"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-047",
+      "title": "Add card tilt effect on mouse move",
+      "description": "Cards tilt in 3D based on mouse position.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Track mouse position over card",
+        "Calculate tilt angle based on mouse position",
+        "Apply transform: rotateX and rotateY",
+        "Max tilt: 10 degrees in any direction",
+        "Test tilt adds interactivity and depth"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "tilt",
+        "3d",
+        "interactive"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-048",
+      "title": "Create sparkle effect for mythic holo cards",
+      "description": "Additional sparkles for mythic holographic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add mini sparkle particles on mythic holo cards",
+        "Sparkles are 2px white dots",
+        "Sparkle count: 15-20 random",
+        "Sparkles twinkle (fade in/out over 1s)",
+        "Test mythic holo looks extra special"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "holo",
+        "sparkles"
+      ],
+      "dependsOn": [
+        "PACK-VFX-039"
+      ]
+    },
+    {
+      "id": "PACK-VFX-049",
+      "title": "Add card stack animation for pack results",
+      "description": "Cards stack with offset in results view.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Arrange revealed cards in overlapping stack",
+        "Each card offset by 10px horizontally",
+        "Cards in back have lower z-index",
+        "Hovering card brings to front (z-index boost)",
+        "Test stack looks organized and stylish"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "results",
+        "stack",
+        "layout"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-050",
+      "title": "Implement rarity color gradient background",
+      "description": "Subtle gradient background matching best card rarity.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Detect highest rarity in pack",
+        "Set background gradient to rarity color",
+        "Gradient opacity: 5% (very subtle)",
+        "Gradient animates slowly (10s cycle)",
+        "Test gradient adds polish without overwhelming"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "background",
+        "gradient",
+        "rarity"
+      ],
+      "dependsOn": []
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "1.0.0",
+    "totalTasks": 50,
+    "focus": "Visual effects and animations for pack opening",
+    "updatedAt": "2026-01-19T05:50:24.955Z"
+  }
+}

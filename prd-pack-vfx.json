@@ -1,0 +1,4880 @@
+{
+  "name": "DadDeck™ - Complete MVP Enhancement (All Features)",
+  "description": "All micro-tasks for pack opening, collection, audio, social, and cross-feature enhancements.",
+  "branchName": "feature/pack-vfx",
+  "userStories": [
+    {
+      "id": "PACK-VFX-001",
+      "title": "Adjust common particle burst velocity to 150px/s",
+      "description": "Set particle velocity for common rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG common particle settings",
+        "Set particle velocity to 150px/s",
+        "Test particle burst on common reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "common",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-002",
+      "title": "Adjust uncommon particle burst velocity to 175px/s",
+      "description": "Set particle velocity for uncommon rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG uncommon particle settings",
+        "Set particle velocity to 175px/s",
+        "Test particle burst on uncommon reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "uncommon",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-003",
+      "title": "Adjust rare particle burst velocity to 200px/s",
+      "description": "Set particle velocity for rare rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG rare particle settings",
+        "Set particle velocity to 200px/s",
+        "Test particle burst on rare reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "rare",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-004",
+      "title": "Adjust epic particle burst velocity to 225px/s",
+      "description": "Set particle velocity for epic rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG epic particle settings",
+        "Set particle velocity to 225px/s",
+        "Test particle burst on epic reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "epic",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-005",
+      "title": "Adjust legendary particle burst velocity to 250px/s",
+      "description": "Set particle velocity for legendary rarity card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG legendary particle settings",
+        "Set particle velocity to 250px/s",
+        "Test particle burst on legendary reveal",
+        "Verify particles spread radially from card center",
+        "Check 60fps performance on mobile device"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "legendary",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-006",
+      "title": "Adjust mythic particle burst velocity to 300px/s",
+      "description": "Set particle velocity for mythic rarity card reveals to create dramatic effect.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG mythic particle settings",
+        "Set particle velocity to 300px/s (up from current value)",
+        "Test particle burst on mythic reveal",
+        "Verify particles spread radially from center",
+        "Check 60fps performance on iPhone 12"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "timing"
+      ],
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-007",
+      "title": "Add particle fade-in easing for all rarities",
+      "description": "Implement smooth fade-in effect for particles on all card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add opacity animation to particle system",
+        "Set fade-in duration to 0.3s with ease-out",
+        "Apply fade-in to all rarity particles",
+        "Test fade-in on common, rare, legendary reveals",
+        "Ensure smooth visual transition"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "easing",
+        "all-rarities"
+      ],
+      "dependsOn": [
+        "PACK-VFX-001",
+        "PACK-VFX-006"
+      ],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-008",
+      "title": "Implement particle color interpolation for mythic rarity",
+      "description": "Add color gradient interpolation for mythic particle burst.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate mythic particle color configuration",
+        "Implement color interpolation across 6 rarity colors",
+        "Particles transition through colors during lifetime",
+        "Create prismatic rainbow effect",
+        "Test color transitions on mythic reveal"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "colors"
+      ],
+      "dependsOn": [
+        "PACK-VFX-006"
+      ],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "PACK-VFX-009",
+      "title": "Set pack tear animation duration to 1.2s",
+      "description": "Configure standard pack tear animation timing.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Locate pack tear animation CSS/transitions",
+        "Set tear animation duration to 1.2s",
+        "Test standard pack tear feels natural",
+        "Ensure animation doesn't feel too slow or fast",
+        "Verify smooth easing curve applied"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "pack-tear"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-010",
+      "title": "Add slow pack tear animation variant (2.0s)",
+      "description": "Create slower tear animation for dramatic effect.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add slowTear variant to tear animation options",
+        "Set slow tear duration to 2.0s",
+        "Randomly trigger slow tear on 10% of packs",
+        "Test slow tear feels more dramatic",
+        "Ensure doesn't negatively impact UX"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "variety"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-011",
+      "title": "Add explosive pack tear animation variant (0.6s)",
+      "description": "Create fast explosive tear animation for excitement.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add explosiveTear variant to tear animation options",
+        "Set explosive tear duration to 0.6s",
+        "Randomly trigger explosive tear on 5% of packs",
+        "Test explosive tear feels energetic",
+        "Ensure screen shake accompanies tear"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "variety"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-012",
+      "title": "Set card flip delay to 300ms between cards",
+      "description": "Configure timing delay between individual card reveals.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Locate card reveal timing configuration",
+        "Set delay between card flips to 300ms",
+        "Test 7-card pack reveal timing feels natural",
+        "Ensure not too slow (boring) or too fast (overwhelming)",
+        "Verify user can skip with spacebar"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "card-reveal"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-013",
+      "title": "Add rare+ card reveal delay of 500ms",
+      "description": "Extra pause for rare and better cards during reveal.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect when card rarity is rare or better",
+        "Add extra 200ms delay before next card (500ms total)",
+        "Test rare reveal gets moment to shine",
+        "Ensure doesn't break flow of pack opening",
+        "Verify skip button still works immediately"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "rare+"
+      ],
+      "dependsOn": [
+        "PACK-VFX-012"
+      ]
+    },
+    {
+      "id": "PACK-VFX-014",
+      "title": "Add mythic card reveal delay of 1000ms",
+      "description": "Extended pause for mythic card reveals for maximum impact.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect when card rarity is mythic",
+        "Add extended 700ms delay (1000ms total)",
+        "Test mythic reveal gets dramatic pause",
+        "Ensure confetti and effects trigger during pause",
+        "Verify skip button still works for impatient users"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "timing",
+        "mythic"
+      ],
+      "dependsOn": [
+        "PACK-VFX-012",
+        "PACK-VFX-013"
+      ]
+    },
+    {
+      "id": "PACK-VFX-015",
+      "title": "Configure cinematic mode pack tear to 1.8s",
+      "description": "Slower pack tear for cinematic mode.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add cinematic mode detection",
+        "Set pack tear duration to 1.8s in cinematic mode",
+        "Test cinematic tear feels more dramatic",
+        "Ensure smooth slow-motion effect",
+        "Verify normal mode unaffected"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "cinematic",
+        "timing"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-016",
+      "title": "Configure cinematic mode card reveal to 600ms",
+      "description": "Slower card reveals for cinematic mode.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Set card reveal delay to 600ms in cinematic mode",
+        "Test cinematic reveal pacing",
+        "Ensure enhanced particle effects trigger",
+        "Verify dramatic camera zoom on each card",
+        "Confirm normal mode timing unchanged"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "animation",
+        "cinematic",
+        "timing"
+      ],
+      "dependsOn": [
+        "PACK-VFX-015"
+      ]
+    },
+    {
+      "id": "PACK-VFX-017",
+      "title": "Add mythic prismatic glow effect on reveal",
+      "description": "Create rotating prismatic color glow for mythic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS animation for mythic card glow",
+        "Implement color rotation through 6 rarity colors",
+        "Set rotation duration to 3s with infinite loop",
+        "Apply glow only to mythic rarity cards",
+        "Test effect is dramatic but not seizure-inducing"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "glow",
+        "prismatic"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-018",
+      "title": "Set legendary glow intensity to 1.5x",
+      "description": "Configure glow brightness for legendary cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Locate legendary card glow CSS",
+        "Set box-shadow spread to 1.5x current value",
+        "Test legendary glow is prominent",
+        "Ensure doesn't overwhelm card artwork",
+        "Verify WCAG AA contrast compliance"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "legendary",
+        "glow",
+        "intensity"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-019",
+      "title": "Set epic glow intensity to 1.3x",
+      "description": "Configure glow brightness for epic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Locate epic card glow CSS",
+        "Set box-shadow spread to 1.3x current value",
+        "Test epic glow is visible",
+        "Ensure less prominent than legendary",
+        "Verify WCAG AA contrast compliance"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "epic",
+        "glow",
+        "intensity"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-020",
+      "title": "Configure epic particle count to 15",
+      "description": "Set number of particles for epic card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG epic particle count",
+        "Set particle count to 15",
+        "Test epic reveal has good particle density",
+        "Ensure more particles than rare (10)",
+        "Check performance on mobile"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "epic",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-021",
+      "title": "Configure legendary particle count to 25",
+      "description": "Set number of particles for legendary card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG legendary particle count",
+        "Set particle count to 25",
+        "Test legendary reveal has dense particle effect",
+        "Ensure significantly more particles than epic",
+        "Check performance on mobile"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "legendary",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-022",
+      "title": "Configure mythic particle count to 40",
+      "description": "Set maximum particle count for mythic card reveals.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Locate RARITY_CONFIG mythic particle count",
+        "Set particle count to 40 (maximum)",
+        "Test mythic reveal has explosive particle effect",
+        "Ensure most dramatic particle density",
+        "Verify 60fps on iPhone 12"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-023",
+      "title": "Add screen shake on mythic card reveal",
+      "description": "Implement subtle screen shake effect for mythic pulls.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add CSS keyframe animation for screen shake",
+        "Trigger shake on mythic card reveal",
+        "Set shake intensity to 3px translate X/Y oscillation",
+        "Set shake duration to 0.3s",
+        "Test effect is dramatic but not nausea-inducing"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "screen-shake",
+        "impact"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-024",
+      "title": "Add flash effect on holo card reveal",
+      "description": "Create white flash effect when holographic cards are revealed.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/Card.svelte",
+        "Add CSS animation for white flash overlay",
+        "Trigger flash when holo variant card revealed",
+        "Set flash duration to 0.2s with fade-out",
+        "Ensure flash doesn't obscure card details",
+        "Test on standard, reverse, and full-art holo"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "holo",
+        "flash",
+        "reveal"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-025",
+      "title": "Add confetti effect for legendary+ pulls",
+      "description": "Implement confetti particles on legendary and mythic reveals.",
+      "acceptanceCriteria": [
+        "Create confetti particle system component",
+        "Trigger confetti on legendary card reveal",
+        "Trigger double confetti on mythic card reveal",
+        "Use confetti colors matching card rarity",
+        "Set confetti duration to 3 seconds",
+        "Implement physics (gravity, velocity, rotation)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "confetti",
+        "legendary+"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-026",
+      "title": "Profile particle system performance on low-end device",
+      "description": "Measure particle rendering performance on minimum spec device.",
+      "acceptanceCriteria": [
+        "Open Chrome DevTools Performance tab",
+        "Test pack opening on low-end Android device",
+        "Record FPS during mythic particle burst (40 particles)",
+        "Measure frame time for each particle update",
+        "Identify performance bottlenecks",
+        "Document minimum device specs for 60fps"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "performance",
+        "profiling",
+        "particles"
+      ],
+      "dependsOn": [
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-027",
+      "title": "Optimize animation frame rate for particles",
+      "description": "Ensure particle animations maintain 60fps on mid-tier devices.",
+      "acceptanceCriteria": [
+        "Review particle system code for optimization opportunities",
+        "Use requestAnimationFrame for smooth updates",
+        "Implement object pooling for particle reuse",
+        "Test particle burst maintains 60fps on iPhone 12",
+        "Verify no frame drops during multi-card reveals",
+        "Profile before and after optimization"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "performance",
+        "optimization",
+        "60fps"
+      ],
+      "dependsOn": [
+        "PACK-VFX-026"
+      ]
+    },
+    {
+      "id": "PACK-VFX-028",
+      "title": "Test VFX on low-end mobile device",
+      "description": "Verify all visual effects work on slowest target device.",
+      "acceptanceCriteria": [
+        "Test on iPhone SE (2020) or equivalent Android",
+        "Open 10 packs and observe performance",
+        "Verify no lag during particle effects",
+        "Check screen shake doesn't cause jank",
+        "Ensure confetti renders smoothly",
+        "Document which effects need reduction for low-end"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "testing",
+        "mobile",
+        "low-end"
+      ],
+      "dependsOn": [
+        "PACK-VFX-027"
+      ]
+    },
+    {
+      "id": "PACK-VFX-029",
+      "title": "Add particle system intensity slider in settings",
+      "description": "Allow users to control particle effect intensity.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add particle intensity slider (1-5 scale)",
+        "1 = minimal particles (20% of normal)",
+        "3 = normal particle count",
+        "5 = maximum particles (200% of normal)",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "settings",
+        "particles",
+        "accessibility"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-030",
+      "title": "Create particle effect preset system",
+      "description": "Allow users to choose particle effect quality presets.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add particle quality dropdown (Low/Medium/High/Ultra)",
+        "Low: 50% particles, no screen shake",
+        "Medium: 75% particles, reduced effects",
+        "High: 100% particles, all effects (default)",
+        "Ultra: 150% particles, maximum drama"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "settings",
+        "particles",
+        "presets"
+      ],
+      "dependsOn": [
+        "PACK-VFX-029"
+      ]
+    },
+    {
+      "id": "PACK-VFX-031",
+      "title": "Add particle burst spawn delay variation",
+      "description": "Stagger particle spawn timing for more natural effect.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add random delay to particle spawn (0-50ms)",
+        "Each particle spawns at slightly different time",
+        "Test burst feels more organic/less mechanical",
+        "Ensure total burst duration unchanged",
+        "Apply to all rarity particles"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "timing",
+        "natural"
+      ],
+      "dependsOn": [
+        "PACK-VFX-007"
+      ]
+    },
+    {
+      "id": "PACK-VFX-032",
+      "title": "Implement particle size variation by rarity",
+      "description": "Larger particles for higher rarity cards.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Set common particle size to 4px",
+        "Set uncommon particle size to 5px",
+        "Set rare particle size to 6px",
+        "Set epic particle size to 7px",
+        "Set legendary particle size to 8px",
+        "Set mythic particle size to 10px"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "size",
+        "rarity-gradient"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-033",
+      "title": "Add particle rotation animation",
+      "description": "Particles rotate as they fly outward from card.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add random rotation speed to each particle",
+        "Set rotation range to -180deg/s to +180deg/s",
+        "Test particles spin as they move",
+        "Ensure rotation doesn't affect performance",
+        "Apply rotation to all particles"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "rotation",
+        "animation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-034",
+      "title": "Implement particle trail effect for mythic",
+      "description": "Mythic particles leave fading trails as they move.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add trail rendering for mythic particles only",
+        "Trail fades over 200ms",
+        "Trail is 50% opacity of particle",
+        "Test mythic reveal has enhanced sense of motion",
+        "Ensure trails don't clutter visuals"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "mythic",
+        "trails"
+      ],
+      "dependsOn": [
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-035",
+      "title": "Add card flip 3D rotation effect",
+      "description": "Cards flip with 3D perspective during reveal.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS transform: rotateY for flip animation",
+        "Set flip duration to 0.4s",
+        "Use ease-out timing function",
+        "Add perspective to parent container",
+        "Test flip has depth and feels premium"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "flip",
+        "3d"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-036",
+      "title": "Add card scale-in effect on reveal start",
+      "description": "Cards scale up from 0 to full size when reveal starts.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS transform scale animation on reveal start",
+        "Scale from 0.2x to 1.0x over 0.3s",
+        "Use elastic ease for bounce effect",
+        "Test card pops into view energetically",
+        "Ensure scale doesn't cause layout shift"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "scale",
+        "reveal"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-037",
+      "title": "Add card hover lift effect in results screen",
+      "description": "Cards lift slightly when hovered in results view.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS transform translateY on hover",
+        "Lift card by -8px on hover",
+        "Add box-shadow increase on hover",
+        "Set transition duration to 0.2s ease-out",
+        "Test hover feels responsive and tactile"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "hover",
+        "results"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-038",
+      "title": "Implement glow pulse animation for rare+ cards",
+      "description": "Rare and better cards have pulsing glow effect.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS keyframe animation for glow pulse",
+        "Pulse opacity from 70% to 100% and back",
+        "Set pulse duration to 2s infinite loop",
+        "Apply only to rare, epic, legendary, mythic",
+        "Test pulse draws attention without being annoying"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "glow",
+        "pulse",
+        "rare+"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-039",
+      "title": "Add shimmer effect for holo cards",
+      "description": "Holographic cards have diagonal shimmer sweep effect.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS gradient shimmer overlay",
+        "Shimmer sweeps diagonally across card",
+        "Set shimmer duration to 3s infinite loop",
+        "Apply only to holo variant cards",
+        "Test shimmer catches light realistically"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "holo",
+        "shimmer"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-040",
+      "title": "Create particle burst pattern variations",
+      "description": "Different particle spread patterns for variety.",
+      "acceptanceCriteria": [
+        "Open src/lib/pack/generator.ts",
+        "Add 3 particle spread patterns: radial, fountain, vortex",
+        "Randomly select pattern on each pack open",
+        "Radial: particles spread equally in all directions",
+        "Fountain: particles arc upward then fall",
+        "Vortex: particles spiral outward from center",
+        "Test each pattern looks distinct and cool"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "particles",
+        "variety",
+        "patterns"
+      ],
+      "dependsOn": [
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-041",
+      "title": "Add card border glow animation on reveal",
+      "description": "Card border lights up with rarity color on reveal.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS animation to card border",
+        "Border color matches card rarity",
+        "Glow starts from one corner and spreads",
+        "Animation duration 0.5s",
+        "Test border glow frames card beautifully"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "border",
+        "glow"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-042",
+      "title": "Implement pack shake before tear animation",
+      "description": "Pack shakes briefly before tearing open.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add CSS shake animation to pack element",
+        "Shake for 0.3s before tear starts",
+        "Use rapid small oscillations (2px)",
+        "Test shake builds anticipation",
+        "Ensure shake stops when tear begins"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "pack",
+        "shake",
+        "anticipation"
+      ],
+      "dependsOn": [
+        "PACK-VFX-009"
+      ]
+    },
+    {
+      "id": "PACK-VFX-043",
+      "title": "Add pack glow before opening animation",
+      "description": "Pack glows briefly before tearing open.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add CSS glow effect to pack element",
+        "Glow starts 0.5s before tear",
+        "Glow fades as tear begins",
+        "Glow color matches pack type",
+        "Test glow creates magical moment"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "pack",
+        "glow",
+        "anticipation"
+      ],
+      "dependsOn": [
+        "PACK-VFX-042"
+      ]
+    },
+    {
+      "id": "PACK-VFX-044",
+      "title": "Create slow-motion effect for mythic reveal",
+      "description": "Time slows down briefly when mythic card is revealed.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect mythic rarity during reveal",
+        "Slow card flip animation to 0.6s (normally 0.4s)",
+        "Slow background particles to 50% speed",
+        "Effect lasts 1s then returns to normal",
+        "Test slow-mo makes mythic feel epic"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "slow-mo",
+        "dramatic"
+      ],
+      "dependsOn": [
+        "PACK-VFX-014",
+        "PACK-VFX-022"
+      ]
+    },
+    {
+      "id": "PACK-VFX-045",
+      "title": "Add chromatic aberration effect for mythic",
+      "description": "Subtle RGB split effect for mythic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add CSS text-shadow with RGB offset",
+        "Offset red channel by 2px left",
+        "Offset blue channel by 2px right",
+        "Apply only to mythic rarity",
+        "Test effect adds depth without being distracting"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "chromatic",
+        "aberration"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-046",
+      "title": "Implement ambient particle background in results",
+      "description": "Subtle floating particles in results screen background.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add canvas-based particle system to background",
+        "Particles float gently (no burst)",
+        "Particle count: 20-30 max",
+        "Particles fade over 5s then respawn",
+        "Test particles add life without distraction"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "background",
+        "ambient",
+        "particles"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-047",
+      "title": "Add card tilt effect on mouse move",
+      "description": "Cards tilt in 3D based on mouse position.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Track mouse position over card",
+        "Calculate tilt angle based on mouse position",
+        "Apply transform: rotateX and rotateY",
+        "Max tilt: 10 degrees in any direction",
+        "Test tilt adds interactivity and depth"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "card",
+        "tilt",
+        "3d",
+        "interactive"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-048",
+      "title": "Create sparkle effect for mythic holo cards",
+      "description": "Additional sparkles for mythic holographic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add mini sparkle particles on mythic holo cards",
+        "Sparkles are 2px white dots",
+        "Sparkle count: 15-20 random",
+        "Sparkles twinkle (fade in/out over 1s)",
+        "Test mythic holo looks extra special"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "mythic",
+        "holo",
+        "sparkles"
+      ],
+      "dependsOn": [
+        "PACK-VFX-039"
+      ]
+    },
+    {
+      "id": "PACK-VFX-049",
+      "title": "Add card stack animation for pack results",
+      "description": "Cards stack with offset in results view.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Arrange revealed cards in overlapping stack",
+        "Each card offset by 10px horizontally",
+        "Cards in back have lower z-index",
+        "Hovering card brings to front (z-index boost)",
+        "Test stack looks organized and stylish"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "results",
+        "stack",
+        "layout"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-VFX-050",
+      "title": "Implement rarity color gradient background",
+      "description": "Subtle gradient background matching best card rarity.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Detect highest rarity in pack",
+        "Set background gradient to rarity color",
+        "Gradient opacity: 5% (very subtle)",
+        "Gradient animates slowly (10s cycle)",
+        "Test gradient adds polish without overwhelming"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "vfx",
+        "background",
+        "gradient",
+        "rarity"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-001",
+      "title": "Add pack tear sound effect trigger",
+      "description": "Play sound when pack tear animation starts.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Import audio utility from src/lib/utils/audio.ts",
+        "Trigger tear sound on pack_tear_animate state",
+        "Sound plays once, doesn't loop",
+        "Test sound syncs with tear animation",
+        "Ensure sound works on mobile (iOS/Android)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "pack-tear",
+        "trigger"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-002",
+      "title": "Source or create pack tear sound file",
+      "description": "Obtain sound effect for pack opening.",
+      "acceptanceCriteria": [
+        "Find copyright-free pack tear sound",
+        "Or create synthesized tear sound using Web Audio API",
+        "Sound should be ripping paper/crunching",
+        "Duration: 0.5-0.8 seconds",
+        "Format: MP3 or OGG (compressed)",
+        "Save to public/sounds/pack-tear.mp3"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "assets",
+        "pack-tear"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-003",
+      "title": "Add card flip sound for common rarity",
+      "description": "Play subtle flip sound when common card revealed.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger flip sound on common card reveal",
+        "Sound should be subtle card flip/click",
+        "Duration: 0.2-0.3 seconds",
+        "Volume: 50% of master",
+        "Test sound doesn't get annoying"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "card-flip",
+        "common"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-004",
+      "title": "Add card flip sound for uncommon rarity",
+      "description": "Play slightly enhanced flip sound for uncommon cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger enhanced flip sound on uncommon reveal",
+        "Sound has slight pitch boost from common",
+        "Duration: 0.3 seconds",
+        "Volume: 60% of master",
+        "Test sound indicates higher rarity"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "card-flip",
+        "uncommon"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-005",
+      "title": "Add card flip sound for rare rarity",
+      "description": "Play distinctive flip sound for rare cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger distinctive flip sound on rare reveal",
+        "Sound has metallic shimmer quality",
+        "Duration: 0.4 seconds",
+        "Volume: 70% of master",
+        "Test sound feels special"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "card-flip",
+        "rare"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-006",
+      "title": "Add card reveal sound for epic rarity",
+      "description": "Play triumphant sound for epic card reveals.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger triumphant sound on epic reveal",
+        "Sound has chord/harmony quality",
+        "Duration: 0.6 seconds",
+        "Volume: 80% of master",
+        "Test sound feels rewarding"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "card-flip",
+        "epic"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-007",
+      "title": "Add card reveal sound for legendary rarity",
+      "description": "Play epic orchestral hit for legendary cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger orchestral hit on legendary reveal",
+        "Sound has full orchestral quality",
+        "Duration: 1.0 seconds",
+        "Volume: 90% of master",
+        "Test sound feels legendary"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "card-flip",
+        "legendary"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-008",
+      "title": "Add card reveal sound for mythic rarity",
+      "description": "Play celebration sequence for mythic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Trigger celebration sound on mythic reveal",
+        "Sound has full choir/celebration quality",
+        "Duration: 1.5 seconds",
+        "Volume: 100% of master",
+        "Test sound feels mythic"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "card-flip",
+        "mythic"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-009",
+      "title": "Add holo shimmer sound effect",
+      "description": "Play subtle shimmer for holographic cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Detect holo variant card reveal",
+        "Trigger shimmer sound (sparkle/twinkle)",
+        "Duration: 0.5 seconds",
+        "Volume: 60% of master",
+        "Layer over card flip sound",
+        "Test sound adds premium feel"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "sfx",
+        "holo",
+        "shimmer"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-010",
+      "title": "Implement sound preload on page load",
+      "description": "Preload all sound effects when app loads.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Create preloadSounds() function",
+        "Preload all pack opening SFX on app init",
+        "Sounds cached in memory for instant playback",
+        "Show loading indicator while preloading",
+        "Test no delay when first sound plays"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "performance",
+        "preload"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-011",
+      "title": "Add light haptic feedback on common reveal",
+      "description": "Trigger light vibration for common card on Android.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Import navigator.vibrate API",
+        "Add vibrate(50) call on common reveal",
+        "Test on Android device (vibration works)",
+        "Add try-catch for iOS (no haptic support)",
+        "Vibration feels like light tap"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "common",
+        "mobile"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-012",
+      "title": "Add medium haptic feedback on rare reveal",
+      "description": "Trigger medium vibration for rare card on Android.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate(100) call on rare reveal",
+        "Test on Android device",
+        "Vibration feels more noticeable than common",
+        "Add try-catch for iOS",
+        "Vibration pattern: single medium pulse"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "rare",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-011"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-013",
+      "title": "Add strong haptic feedback on epic reveal",
+      "description": "Trigger strong vibration for epic card on Android.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate(150) call on epic reveal",
+        "Test on Android device",
+        "Vibration feels strong and impactful",
+        "Add try-catch for iOS",
+        "Vibration pattern: single strong pulse"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "epic",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-011"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-014",
+      "title": "Add heavy haptic feedback on legendary reveal",
+      "description": "Trigger heavy vibration pattern for legendary card.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate([200, 100, 200]) call on legendary",
+        "Pattern: strong-medium-strong (3 pulses)",
+        "Test on Android device",
+        "Vibration feels very dramatic",
+        "Add try-catch for iOS"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "legendary",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-011"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-015",
+      "title": "Add extreme haptic feedback on mythic reveal",
+      "description": "Trigger maximum vibration pattern for mythic card.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Add vibrate([300, 100, 300, 100, 300]) call",
+        "Pattern: 5 intense pulses (mythic level)",
+        "Test on Android device",
+        "Vibration feels as intense as device allows",
+        "Add try-catch for iOS",
+        "Consider user motion sickness sensitivity"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "mythic",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-011"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-016",
+      "title": "Add haptic feedback on pack tear",
+      "description": "Light vibration when pack tears open.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add vibrate(80) on pack_tear_animate state",
+        "Test on Android device",
+        "Vibration syncs with tear sound",
+        "Add try-catch for iOS",
+        "Vibration feels satisfying"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "pack-tear"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-011",
+        "PACK-AUDIO-001"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-017",
+      "title": "Create haptic intensity settings",
+      "description": "Allow users to control haptic feedback strength.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add haptic intensity dropdown (Off/Light/Medium/Heavy)",
+        "Off: no haptic feedback",
+        "Light: 50% vibration duration",
+        "Medium: 100% vibration duration (default)",
+        "Heavy: 150% vibration duration",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "haptic",
+        "accessibility"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-018",
+      "title": "Add master volume slider (0-100%)",
+      "description": "Create master audio volume control.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add range input for master volume (0-100)",
+        "Default value: 80%",
+        "Show current volume percentage",
+        "All SFX volume scales by master setting",
+        "Setting persists to localStorage"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "volume",
+        "master"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-019",
+      "title": "Add SFX volume slider (0-100%)",
+      "description": "Create separate sound effects volume control.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add range input for SFX volume (0-100)",
+        "Default value: 100%",
+        "SFX includes: pack tear, card flips, holo shimmer",
+        "SFX volume scales by master × SFX setting",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "volume",
+        "sfx"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-018"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-020",
+      "title": "Add music volume slider (0-100%)",
+      "description": "Create music volume control for future background music.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add range input for music volume (0-100)",
+        "Default value: 50% (when music exists)",
+        "Label: 'Music (Coming Soon)' if no music yet",
+        "Music volume scales by master × music setting",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "volume",
+        "music"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-018"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-021",
+      "title": "Add mute toggle button",
+      "description": "Quick mute button to disable all audio.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add mute toggle button (speaker icon)",
+        "Muting sets master volume to 0%",
+        "Unmuting restores previous volume",
+        "Mute state persists to localStorage",
+        "Icon shows mute status (speaker X vs speaker)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "mute",
+        "toggle"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-018"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-022",
+      "title": "Add sound settings to navigation",
+      "description": "Quick access to sound controls from nav bar.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Navigation.svelte",
+        "Add gear/settings icon to navigation",
+        "Clicking opens settings modal",
+        "Settings modal shows all audio controls",
+        "Modal closes on backdrop click",
+        "Settings accessible from any page"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "navigation",
+        "ui"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-023",
+      "title": "Implement audio state persistence",
+      "description": "Save audio settings to localStorage.",
+      "acceptanceCriteria": [
+        "Open src/stores/audio.ts",
+        "Add audioSettings atom object",
+        "Settings include: masterVolume, sfxVolume, musicVolume, muted",
+        "Load settings from localStorage on init",
+        "Save settings to localStorage on change",
+        "Test settings persist across browser sessions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "persistence",
+        "settings",
+        "state"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-018",
+        "PACK-AUDIO-021"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-024",
+      "title": "Add per-category volume controls",
+      "description": "Fine-grained volume control for each sound category.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add volume sliders for: pack tears, card flips, holo shimmer",
+        "Each category 0-100% range",
+        "Each scales by master × category setting",
+        "Default all categories to 100%",
+        "Settings persist to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "volume",
+        "categories"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-018",
+        "PACK-AUDIO-019"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-025",
+      "title": "Compress audio files for web delivery",
+      "description": "Optimize audio file sizes for fast loading.",
+      "acceptanceCriteria": [
+        "Audit all audio files in public/sounds/",
+        "Compress to MP3 at 128kbps or OGG at 96kbps",
+        "Ensure each file is under 50KB",
+        "Maintain acceptable audio quality",
+        "Test compressed files sound good",
+        "Update file references in code"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "performance",
+        "compression",
+        "assets"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-002"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-026",
+      "title": "Test audio works on iOS Safari",
+      "description": "Verify audio playback on iOS devices.",
+      "acceptanceCriteria": [
+        "Test on iPhone/iPad with Safari",
+        "Verify pack tear sound plays",
+        "Verify card flip sounds play",
+        "Verify volume controls work",
+        "Check for iOS autoplay restrictions",
+        "Document any iOS-specific issues"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "testing",
+        "ios",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-001",
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-027",
+      "title": "Test audio works on Android Chrome",
+      "description": "Verify audio playback on Android devices.",
+      "acceptanceCriteria": [
+        "Test on Android device with Chrome",
+        "Verify pack tear sound plays",
+        "Verify card flip sounds play",
+        "Verify haptic feedback works",
+        "Check for Android autoplay restrictions",
+        "Document any Android-specific issues"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "testing",
+        "android",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-001",
+        "PACK-AUDIO-003",
+        "PACK-AUDIO-011"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-028",
+      "title": "Add audio fade-out on pack complete",
+      "description": "Fade out background sounds when pack opening finishes.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Detect pack_results state",
+        "Fade out any playing sounds over 1s",
+        "Use Web Audio API gain node for fade",
+        "Test fade feels natural",
+        "Ensure no abrupt audio cutoff"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "fade",
+        "pack-complete"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-029",
+      "title": "Implement sound queue system",
+      "description": "Queue sounds to prevent overlapping audio.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Create sound queue for playing SFX",
+        "Only one sound per category plays at once",
+        "New sounds in same category replace previous",
+        "Different categories can overlap (SFX + holo shimmer)",
+        "Test no audio overlap issues"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "queue",
+        "system",
+        "overlap"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-030",
+      "title": "Add accessibility option to disable haptics",
+      "description": "Allow users to disable all haptic feedback.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add haptic enabled/disabled toggle",
+        "When disabled, no vibrate() calls execute",
+        "Default: enabled on Android, disabled on iOS",
+        "Setting persists to localStorage",
+        "Test haptics respect toggle"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "haptic",
+        "accessibility",
+        "settings"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-011"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-031",
+      "title": "Create audio fallback for no-sound devices",
+      "description": "Graceful degradation when audio unavailable.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Add Web Audio API support detection",
+        "If audio not supported, skip all audio calls",
+        "Log audio failure to console (debug only)",
+        "App remains fully functional without audio",
+        "Test on desktop with no audio hardware"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "audio",
+        "fallback",
+        "graceful-degradation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-032",
+      "title": "Add audio visualization setting",
+      "description": "Optional audio visual feedback for hearing impaired.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add audio visualization toggle",
+        "When enabled, show wave/pulse on sounds",
+        "Visual appears on corner of screen",
+        "Pulse intensity matches sound volume",
+        "Test helps users 'see' the audio"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "accessibility",
+        "visualization",
+        "a11y"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-AUDIO-033",
+      "title": "Implement audio ducking for multiple sounds",
+      "description": "Lower other sounds when important sound plays.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/audio.ts",
+        "Create duckSound() function",
+        "When legendary sound plays, duck others by 50%",
+        "Ducking lasts duration of priority sound",
+        "Others restore volume after",
+        "Test legendary sounds cut through mix"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "ducking",
+        "mixing",
+        "priority"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-007",
+        "PACK-AUDIO-008"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-034",
+      "title": "Add sound test button in settings",
+      "description": "Allow users to test each sound effect.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add 'Test Sounds' button in audio section",
+        "Clicking plays each sound in sequence",
+        "Shows sound name being tested",
+        "Users can verify audio works",
+        "Useful for troubleshooting"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "settings",
+        "test",
+        "troubleshooting"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-018"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-035",
+      "title": "Cache audio files in browser cache",
+      "description": "Ensure audio files are cached for repeat plays.",
+      "acceptanceCriteria": [
+        "Open public/sounds/ directory",
+        "Add Cache-Control headers to audio files",
+        "Set max-age to 365 days (1 year)",
+        "Add ETag for cache validation",
+        "Verify browser caches audio after first load",
+        "Test subsequent loads use cached audio"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "caching",
+        "performance",
+        "browser"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-010"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-036",
+      "title": "Create rarity-specific jingles for epic+",
+      "description": "Short musical jingles for high rarity cards.",
+      "acceptanceCriteria": [
+        "Source or create epic jingle (2 seconds)",
+        "Source or create legendary jingle (3 seconds)",
+        "Source or create mythic jingle (5 seconds)",
+        "Jingles layer over flip sounds",
+        "Save to public/sounds/epic-jingle.mp3 etc",
+        "Test jingles feel celebratory"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "jingles",
+        "epic+",
+        "music"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-006",
+        "PACK-AUDIO-007",
+        "PACK-AUDIO-008"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-037",
+      "title": "Add ambient background music option",
+      "description": "Optional background music during pack opening.",
+      "acceptanceCriteria": [
+        "Source copyright-free ambient track",
+        "Music should be subtle (doesn't distract)",
+        "Loops seamlessly during pack opening",
+        "Fades out when pack complete",
+        "Volume controlled by music slider",
+        "Save to public/music/pack-opening.mp3"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "music",
+        "ambient",
+        "background"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-020"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-038",
+      "title": "Implement audio spatial positioning",
+      "description": "Pan sounds left/right based on card position.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Calculate card position in results layout",
+        "Pan card flip sound to match position",
+        "Left cards pan left, right cards pan right",
+        "Subtle effect (10-20% pan max)",
+        "Test adds spatial depth to sounds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "spatial",
+        "pan",
+        "3d"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-003"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-039",
+      "title": "Add audio settings quick toggle in pack view",
+      "description": "Quick mute button accessible during pack opening.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add small speaker icon in corner",
+        "Click toggles mute on/off",
+        "Icon shows current mute state",
+        "Changes volume immediately",
+        "Test users can quickly silence sounds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "ui",
+        "mute",
+        "quick-toggle"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-021"
+      ]
+    },
+    {
+      "id": "PACK-AUDIO-040",
+      "title": "Profile audio memory usage",
+      "description": "Measure audio system memory consumption.",
+      "acceptanceCriteria": [
+        "Open Chrome DevTools Memory tab",
+        "Take heap snapshot before audio preload",
+        "Take heap snapshot after audio preload",
+        "Measure memory increase from audio assets",
+        "Ensure audio cache stays under 10MB",
+        "Document audio memory footprint"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "audio",
+        "performance",
+        "memory",
+        "profiling"
+      ],
+      "dependsOn": [
+        "PACK-AUDIO-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-001",
+      "title": "Add share button to pack results screen",
+      "description": "Create share button in pack results UI.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add share button (icon + label) to results",
+        "Position button prominently (top right)",
+        "Button is clickable and has hover state",
+        "Icon uses share symbol (arrow/box)",
+        "Test button is easy to find"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "ui",
+        "button"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-002",
+      "title": "Create share confirmation modal",
+      "description": "Modal appears when share button clicked.",
+      "acceptanceCriteria": [
+        "Create src/components/share/ShareModal.svelte",
+        "Modal shows on share button click",
+        "Modal title: 'Share Your Pull'",
+        "Modal backdrop closes modal on click",
+        "Modal has close button (X)",
+        "Test modal opens smoothly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "modal",
+        "ui"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-001"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-003",
+      "title": "Add platform selection buttons to share modal",
+      "description": "Show Twitter, Facebook, Copy Link options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add Twitter share button (bird icon)",
+        "Add Facebook share button (F icon)",
+        "Add Copy Link button (link icon)",
+        "Buttons arranged horizontally",
+        "Each button has brand color",
+        "Test all buttons visible"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "platforms",
+        "ui"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-002"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-004",
+      "title": "Implement Twitter share intent",
+      "description": "Generate Twitter share URL with pre-filled text.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "On Twitter button click, generate share URL",
+        "URL format: https://twitter.com/intent/tweet",
+        "Pre-filled text: 'Check out my [rarity] pull in DadDeck!'",
+        "Include link to DadDeck site",
+        "Test tweet opens in new tab with text"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "twitter",
+        "sharing",
+        "intent"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-003"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-005",
+      "title": "Implement Facebook share dialog",
+      "description": "Generate Facebook share URL.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "On Facebook button click, generate share URL",
+        "URL format: https://www.facebook.com/sharer",
+        "Include DadDeck site URL",
+        "Test share opens in new tab",
+        "Verify Facebook fetches page metadata"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "facebook",
+        "sharing",
+        "dialog"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-003"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-006",
+      "title": "Implement clipboard copy link",
+      "description": "Copy shareable link to clipboard.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "On Copy Link button click, copy URL to clipboard",
+        "Generate unique pack URL (or main site URL)",
+        "Use navigator.clipboard.writeText() API",
+        "Show 'Link copied!' toast notification",
+        "Test clipboard has correct URL"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "clipboard",
+        "copy",
+        "link"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-003"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-007",
+      "title": "Add custom message input field",
+      "description": "Allow users to customize share text.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add text input to share modal",
+        "Label: 'Add a message (optional)'",
+        "Pre-fill with default message",
+        "User can edit text before sharing",
+        "Character limit: 280 chars (Twitter limit)",
+        "Test custom message used in share"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "message",
+        "custom"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-002"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-008",
+      "title": "Add preset message templates",
+      "description": "Quick-select message templates for sharing.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add dropdown of preset messages",
+        "Presets: 'So excited!', 'Finally got a mythic!', 'Dad life!'",
+        "Selecting preset fills message input",
+        "User can still edit after selecting preset",
+        "Test presets save time"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "presets",
+        "templates"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-007"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-009",
+      "title": "Add dad joke quotes to share templates",
+      "description": "Include dad jokes in preset messages.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Create array of dad joke quotes",
+        "Add 'Dad Joke' category to preset dropdown",
+        "Examples: 'I yi yiyi!', 'Pull my finger', etc.",
+        "Randomly select joke when Dad Joke chosen",
+        "Test jokes add humor to shares"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "sharing",
+        "humor",
+        "jokes"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-008"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-010",
+      "title": "Capture card image on reveal",
+      "description": "Generate screenshot of revealed card.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/CardReveal.svelte",
+        "Use html2canvas library to capture card element",
+        "Generate screenshot when card fully revealed",
+        "Screenshot captures card art, stats, name",
+        "Output as data URL (base64 image)",
+        "Test screenshot looks accurate"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "screenshot",
+        "image",
+        "capture"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-011",
+      "title": "Add rarity watermark to card screenshots",
+      "description": "Overlay rarity badge on shared screenshots.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/screenshot.ts",
+        "After capturing card image, add rarity watermark",
+        "Watermark shows: 'MYTHIC', 'LEGENDARY', etc.",
+        "Watermark in corner, semi-transparent",
+        "Watermark uses rarity color",
+        "Test watermark doesn't obscure card"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "screenshot",
+        "watermark",
+        "branding"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-012",
+      "title": "Add DadDeck logo to screenshots",
+      "description": "Include logo branding on shared images.",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/screenshot.ts",
+        "Add DadDeck™ logo to all screenshots",
+        "Logo in bottom corner, subtle opacity",
+        "Logo size: 80x40px",
+        "Test branding visible but not obtrusive"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "screenshot",
+        "branding",
+        "logo"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-011"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-013",
+      "title": "Implement batch screenshot for full pack",
+      "description": "Create combined image of all cards in pack.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add 'Screenshot All' button to share modal",
+        "Generate canvas with all 7 cards arranged",
+        "Cards arranged in grid (4 top, 3 bottom)",
+        "Include rarity watermarks on each card",
+        "Test full pack screenshot looks great"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "screenshot",
+        "batch",
+        "full-pack"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010",
+        "PACK-SOCIAL-011",
+        "PACK-SOCIAL-012"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-014",
+      "title": "Add image download button",
+      "description": "Allow users to download screenshot images.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add 'Download Image' button to modal",
+        "Button generates screenshot and triggers download",
+        "Filename format: daddeck-[rarity]-[timestamp].png",
+        "Test image downloads to device",
+        "Verify downloaded image looks correct"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "screenshot",
+        "download",
+        "save"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-015",
+      "title": "Track share count per pack",
+      "description": "Count how many times each pack is shared.",
+      "acceptanceCriteria": [
+        "Open src/stores/analytics.ts",
+        "Add shareCount property to pack metadata",
+        "Increment count when share action completes",
+        "Count persists to IndexedDB",
+        "Show share count in pack history",
+        "Test count increments correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "analytics",
+        "tracking",
+        "shares"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-016",
+      "title": "Display shared pulls in history",
+      "description": "Show which packs have been shared.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add shared icon to history entries",
+        "Icon appears if pack was shared (shareCount > 0)",
+        "Icon shows share count as badge",
+        "Hover shows share details (platform, date)",
+        "Test users can see sharing history"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "history",
+        "tracking",
+        "ui"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-015"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-017",
+      "title": "Add share analytics event",
+      "description": "Track share actions in analytics.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/events.ts",
+        "Create trackShare() function",
+        "Log share event with: platform, packId, rarity",
+        "Send to Google Analytics or Plausible",
+        "Event name: 'pack_share'",
+        "Test events appear in analytics dashboard"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "analytics",
+        "tracking",
+        "events"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-018",
+      "title": "Add Open Graph meta tags for sharing",
+      "description": "Configure meta tags for rich link previews.",
+      "acceptanceCriteria": [
+        "Open src/pages/pack.astro",
+        "Add dynamic OG meta tags to page",
+        "og:title shows pack best card",
+        "og:description shows pack summary",
+        "og:image points to card screenshot",
+        "Test link preview on Twitter/Facebook"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "seo",
+        "opengraph",
+        "meta"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-019",
+      "title": "Add Twitter Card meta tags",
+      "description": "Configure Twitter-specific meta tags.",
+      "acceptanceCriteria": [
+        "Open src/pages/pack.astro",
+        "Add twitter:card meta tag (summary_large_image)",
+        "Add twitter:title, twitter:description",
+        "Add twitter:image (points to card screenshot)",
+        "Test rich preview on Twitter",
+        "Verify image appears in tweets"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "seo",
+        "twitter",
+        "meta"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-018"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-020",
+      "title": "Create shareable pack URL",
+      "description": "Generate unique URL for each pack (if backend exists).",
+      "acceptanceCriteria": [
+        "Open src/lib/utils/share.ts",
+        "Generate unique pack ID (UUID)",
+        "Create share URL: /pack?id=[uuid]",
+        "URL displays pack in 'viewer only' mode",
+        "Pack can be viewed but not opened again",
+        "Test URL loads correct pack"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "url",
+        "sharing",
+        "link"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-021",
+      "title": "Add Reddit share button",
+      "description": "Include Reddit in share options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add Reddit share button (alien icon)",
+        "Generate Reddit share URL",
+        "Pre-fill title with pack summary",
+        "Test share opens Reddit submit page"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "reddit",
+        "sharing",
+        "platform"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-003"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-022",
+      "title": "Add WhatsApp share button",
+      "description": "Include WhatsApp in share options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add WhatsApp share button (phone icon)",
+        "Generate WhatsApp share URL (wa.me)",
+        "Pre-fill message with pack summary",
+        "Test share opens WhatsApp chat"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "whatsapp",
+        "sharing",
+        "platform"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-003"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-023",
+      "title": "Add Discord share button",
+      "description": "Include Discord in share options.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add Discord share button (discord icon)",
+        "Generate Discord webhook URL (if configured)",
+        "Pre-fill message with pack summary",
+        "Test share opens Discord or copies link"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "discord",
+        "sharing",
+        "platform"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-003"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-024",
+      "title": "Implement QR code generation for sharing",
+      "description": "Generate QR code linking to pack result.",
+      "acceptanceCriteria": [
+        "Install qrcode library (qrcode npm package)",
+        "Open src/components/share/ShareModal.svelte",
+        "Add 'Show QR' button to modal",
+        "Generate QR code for pack URL",
+        "Display QR code in modal",
+        "Test QR code scans to correct URL"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "qr-code",
+        "sharing",
+        "mobile"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-020"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-025",
+      "title": "Add 'Share Again' button in history",
+      "description": "Quick reshare of previously shared packs.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add share button to history entries",
+        "Button only appears if pack was shared before",
+        "Clicking opens share modal with that pack",
+        "Test reshare is easy and convenient"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "history",
+        "reshare",
+        "ui"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-015"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-026",
+      "title": "Create share success notification",
+      "description": "Show toast when share completes successfully.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "After share action completes, show toast",
+        "Toast message: 'Shared to [platform]!'",
+        "Toast auto-dismisses after 3 seconds",
+        "Toast has success icon (checkmark)",
+        "Test toast confirms share worked"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "notification",
+        "toast",
+        "feedback"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-004"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-027",
+      "title": "Add share error handling",
+      "description": "Gracefully handle share failures.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add try-catch around share actions",
+        "If share fails, show error toast",
+        "Error message: 'Share failed. Try again.'",
+        "Log error details to console",
+        "Test error handling is user-friendly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "social",
+        "error-handling",
+        "graceful-degradation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "PACK-SOCIAL-028",
+      "title": "Add share privacy note",
+      "description": "Inform users what data is shared.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add small text: 'Only card image and rarity are shared'",
+        "Text appears below platform buttons",
+        "Text is subtle, smaller font, gray color",
+        "Link to privacy policy if available",
+        "Test transparency builds user trust"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "privacy",
+        "transparency",
+        "ui"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-002"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-029",
+      "title": "Implement screenshot quality settings",
+      "description": "Allow users to choose screenshot resolution.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add screenshot quality dropdown (1x/2x/3x)",
+        "1x = standard resolution (faster)",
+        "2x = 2x resolution (default, balance)",
+        "3x = 3x resolution (larger file, slower)",
+        "Setting persists to localStorage"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "screenshot",
+        "settings",
+        "quality"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-030",
+      "title": "Add share button hover animation",
+      "description": "Make share button more interactive.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Add CSS hover effect to share button",
+        "Button scales up slightly (1.1x) on hover",
+        "Add background color shift on hover",
+        "Smooth transition (0.2s ease-out)",
+        "Test hover invites clicking"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "ui",
+        "hover",
+        "animation"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-001"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-031",
+      "title": "Create share achievement when first share",
+      "description": "Celebrate user's first share action.",
+      "acceptanceCriteria": [
+        "Open src/stores/achievements.ts",
+        "Track if user has ever shared",
+        "On first share, trigger celebration",
+        "Show confetti animation",
+        "Display 'First Share!' badge/toast",
+        "Test first share feels special"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "achievement",
+        "milestone",
+        "celebration"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-004"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-032",
+      "title": "Add share streak counter",
+      "description": "Track consecutive days with shares.",
+      "acceptanceCriteria": [
+        "Open src/stores/analytics.ts",
+        "Track days when user shares packs",
+        "Calculate streak (consecutive days with share)",
+        "Display streak in share modal: '3 day share streak!'",
+        "Streak motivates regular sharing",
+        "Test streak counts correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "streak",
+        "gamification",
+        "motivation"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-015"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-033",
+      "title": "Implement share cooldown",
+      "description": "Prevent share spam with rate limiting.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Add 5-second cooldown after share",
+        "During cooldown, share button is disabled",
+        "Show countdown: 'Share again in 4s'",
+        "Prevents accidental duplicate shares",
+        "Test cooldown works and resets"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "cooldown",
+        "rate-limit",
+        "ux"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-001"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-034",
+      "title": "Add share history export",
+      "description": "Allow users to export share history.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Export Share History' button",
+        "Export CSV with: date, platform, packId",
+        "Filename: share-history-[timestamp].csv",
+        "Download triggers automatically",
+        "Test export contains correct data"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "export",
+        "history",
+        "data"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-016"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-035",
+      "title": "Create shareable GIF animation",
+      "description": "Generate animated GIF of card reveal.",
+      "acceptanceCriteria": [
+        "Install gif.js library (or similar)",
+        "Open src/components/pack/CardReveal.svelte",
+        "Record card flip animation as GIF",
+        "GIF duration: 2 seconds (full reveal)",
+        "GIF loops seamlessly",
+        "Use GIF as shareable image instead of PNG",
+        "Test GIF plays on social platforms"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "gif",
+        "animation",
+        "shareable"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-036",
+      "title": "Add share button to card detail modal",
+      "description": "Allow sharing individual cards from collection.",
+      "acceptanceCriteria": [
+        "Open src/components/card/CardDetailModal.svelte",
+        "Add share button to card detail view",
+        "Button generates screenshot of single card",
+        "Share includes card name and rarity",
+        "Test sharing single cards works"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "collection",
+        "card",
+        "sharing"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-037",
+      "title": "Add 'Share All Mythics' feature",
+      "description": "Special share when pack has multiple mythics.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "Detect if pack has 2+ mythic cards",
+        "Add special 'Share Mythics!' button",
+        "Button creates collage of just mythic cards",
+        "Share text: 'DOUBLE MYTHIC!' or similar",
+        "Test feature celebrates rare occurrence"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "mythic",
+        "special",
+        "celebration"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-038",
+      "title": "Implement share preview in modal",
+      "description": "Show preview of what will be shared.",
+      "acceptanceCriteria": [
+        "Open src/components/share/ShareModal.svelte",
+        "Generate preview image before user shares",
+        "Show preview in modal (above platform buttons)",
+        "Preview includes card(s) + watermark + logo",
+        "User can see exactly what will be shared",
+        "Test preview matches final share"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "preview",
+        "ui",
+        "transparency"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-010",
+        "PACK-SOCIAL-012"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-039",
+      "title": "Add share reminder on pack complete",
+      "description": "Prompt user to share after pack opening.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackResults.svelte",
+        "After all cards revealed, show subtle reminder",
+        "Message: 'Love your pull? Share it!'",
+        "Reminder appears near share button",
+        "Add 'Don't show again' checkbox",
+        "Test reminder encourages sharing without being annoying"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "prompt",
+        "nudge",
+        "ux"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-001"
+      ]
+    },
+    {
+      "id": "PACK-SOCIAL-040",
+      "title": "Create share leaderboard",
+      "description": "Show most shared packs of all time.",
+      "acceptanceCriteria": [
+        "Open src/pages/leaderboard.astro (or create)",
+        "Add 'Most Shared' tab to leaderboard",
+        "Show top 50 most shared packs",
+        "Display: share count, best card, sharer name",
+        "Requires backend for global tracking",
+        "Test leaderboard displays correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "social",
+        "leaderboard",
+        "ranking",
+        "backend"
+      ],
+      "dependsOn": [
+        "PACK-SOCIAL-015"
+      ]
+    },
+    {
+      "id": "COLL-UI-001",
+      "title": "Add rarity multi-select dropdown",
+      "description": "Filter collection by multiple rarities at once.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add rarity filter dropdown component",
+        "Dropdown shows all 6 rarities with checkboxes",
+        "Multiple rarities can be selected",
+        "Shows selected count (e.g., 'Rarity (3)')",
+        "Apply filters to gallery immediately",
+        "Test multiple rarities show correctly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "rarity",
+        "multi-select"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-002",
+      "title": "Implement dad type filter checkboxes",
+      "description": "Filter collection by multiple dad types.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add dad type filter section",
+        "Show checkboxes for all 15 dad types",
+        "Multiple types can be selected",
+        "Arrange types alphabetically",
+        "Show selected count (e.g., 'Dad Types (5)')",
+        "Test filters work together"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "dad-type",
+        "checkboxes"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-003",
+      "title": "Add holo variant filter toggle",
+      "description": "Filter by holographic variants.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add holo filter dropdown with options",
+        "Options: All, Holo Only, Non-Holo Only",
+        "Selecting filters collection by holo status",
+        "Test holo-only shows just holo cards",
+        "Test non-holo shows no holo cards"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "holo",
+        "toggle"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-004",
+      "title": "Create saved filter preset system",
+      "description": "Allow users to save and load filter combinations.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add 'Save Preset' button",
+        "Button saves current filter combination",
+        "Prompt for preset name",
+        "Add dropdown of saved presets",
+        "Selecting preset loads those filters",
+        "Test presets save and load correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "presets",
+        "saved"
+      ],
+      "dependsOn": [
+        "COLL-UI-001",
+        "COLL-UI-002",
+        "COLL-UI-003"
+      ]
+    },
+    {
+      "id": "COLL-UI-005",
+      "title": "Add debounced search input",
+      "description": "Search collection with debounce for performance.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add search input field",
+        "Implement debounce utility (300ms delay)",
+        "Search fires 300ms after user stops typing",
+        "Search filters by card name and flavor text",
+        "Show loading indicator during debounce",
+        "Test debounce reduces unnecessary filtering"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "search",
+        "debounce",
+        "performance"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-006",
+      "title": "Implement search by card name",
+      "description": "Search filters cards by name field.",
+      "acceptanceCriteria": [
+        "Open src/lib/collection/filter-manager.ts",
+        "Add name filtering logic",
+        "Case-insensitive search (grill matches Grill)",
+        "Partial matching (grill matches BBQ Grill Dad)",
+        "Search works on entire card name",
+        "Test search finds cards by name"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "search",
+        "name",
+        "filtering"
+      ],
+      "dependsOn": [
+        "COLL-UI-005"
+      ]
+    },
+    {
+      "id": "COLL-UI-007",
+      "title": "Implement search by flavor text",
+      "description": "Search filters cards by flavor text field.",
+      "acceptanceCriteria": [
+        "Open src/lib/collection/filter-manager.ts",
+        "Add flavor text filtering logic",
+        "Search includes flavor text field",
+        "Case-insensitive search",
+        "Partial matching works",
+        "Test search finds cards by flavor text"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "search",
+        "flavor",
+        "filtering"
+      ],
+      "dependsOn": [
+        "COLL-UI-005"
+      ]
+    },
+    {
+      "id": "COLL-UI-008",
+      "title": "Show search result count",
+      "description": "Display how many cards match current filters.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add result count display",
+        "Format: 'Showing 45 of 173 cards'",
+        "Updates in real-time as filters change",
+        "Shows 'No cards match your filters' when empty",
+        "Test count updates accurately"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "search",
+        "count",
+        "feedback"
+      ],
+      "dependsOn": [
+        "COLL-UI-005"
+      ]
+    },
+    {
+      "id": "COLL-UI-009",
+      "title": "Add clear all filters button",
+      "description": "Quick reset button to clear all active filters.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add 'Clear All' button next to filters",
+        "Button disabled when no filters active",
+        "On click, reset all filters to default (show all)",
+        "Add subtle animation on clear",
+        "Test button resets all filters"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "clear",
+        "reset"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-010",
+      "title": "Configure responsive grid columns (2-7)",
+      "description": "Card grid adapts to screen size.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Set responsive grid columns",
+        "Mobile (320px+): 2 columns",
+        "Tablet (768px+): 3 columns",
+        "Laptop (1024px+): 4 columns",
+        "Desktop (1280px+): 5 columns",
+        "Wide (1536px+): 6 columns",
+        "Ultra-wide (1920px+): 7 columns",
+        "Test grid adapts to screen sizes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "grid",
+        "responsive",
+        "layout"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-011",
+      "title": "Add card size toggle (small/medium/large)",
+      "description": "Allow users to adjust card display size.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add card size toggle buttons",
+        "Options: Small (150px), Medium (200px), Large (250px)",
+        "Small: shows more cards, less detail",
+        "Large: shows fewer cards, more detail",
+        "Size preference persists to localStorage",
+        "Test cards resize smoothly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "grid",
+        "size",
+        "toggle"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-012",
+      "title": "Implement virtual scrolling",
+      "description": "Efficient rendering for large collections.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Implement virtual scrolling (or Svelte virtual list)",
+        "Only render visible cards + buffer",
+        "Buffer size: 10 cards above/below viewport",
+        "Test scrolling through 173 cards is smooth",
+        "Verify no lag with large collections"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "grid",
+        "virtual-scroll",
+        "performance"
+      ],
+      "dependsOn": [
+        "COLL-UI-010"
+      ]
+    },
+    {
+      "id": "COLL-UI-013",
+      "title": "Add empty state illustration",
+      "description": "Show friendly empty state when no cards match.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add empty state component",
+        "Shows illustration when filter results empty",
+        "Message: 'No cards match your filters'",
+        "Add 'Clear All Filters' button in empty state",
+        "Test empty state appears when appropriate"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "empty-state",
+        "ui",
+        "ux"
+      ],
+      "dependsOn": [
+        "COLL-UI-009"
+      ]
+    },
+    {
+      "id": "COLL-UI-014",
+      "title": "Add sort by date acquired toggle",
+      "description": "Sort collection by when cards were obtained.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add 'Date Acquired' sort option",
+        "Toggle between newest first and oldest first",
+        "Default: newest first",
+        "Test sort orders cards correctly",
+        "Verify date from pack timestamp"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "sort",
+        "date",
+        "ordering"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-015",
+      "title": "Add sort by rarity",
+      "description": "Sort collection by card rarity tier.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add 'Rarity' sort option",
+        "Sorts by rarity (mythic > legendary > epic > rare > uncommon > common)",
+        "Within same rarity, sort by date acquired",
+        "Test sort groups cards by rarity"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "sort",
+        "rarity",
+        "ordering"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-016",
+      "title": "Add sort by dad type",
+      "description": "Sort collection alphabetically by dad type.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add 'Dad Type' sort option",
+        "Sorts alphabetically by dad type",
+        "Within same type, sort by rarity",
+        "Test sort groups cards by type"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "sort",
+        "dad-type",
+        "ordering"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-017",
+      "title": "Add ascending/descending toggle",
+      "description": "Reverse sort order with toggle.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add asc/desc toggle button next to sort dropdown",
+        "Icon shows arrow direction (up/down)",
+        "Clicking toggles between ascending and descending",
+        "Toggle state persists per sort option",
+        "Test toggle reverses sort order"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "sort",
+        "toggle",
+        "direction"
+      ],
+      "dependsOn": [
+        "COLL-UI-014",
+        "COLL-UI-015",
+        "COLL-UI-016"
+      ]
+    },
+    {
+      "id": "COLL-UI-018",
+      "title": "Create sort dropdown UI",
+      "description": "Dropdown menu for selecting sort option.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add sort dropdown component",
+        "Options: Date Acquired, Rarity, Dad Type, Total Stats",
+        "Show currently selected sort",
+        "Dropdown closes on selection",
+        "Test all sort options work"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "sort",
+        "dropdown",
+        "ui"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-019",
+      "title": "Add stat range filter",
+      "description": "Filter cards by stat value range.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add stat range filter (e.g., 'Grill Skill: 80-100')",
+        "Filter works for all 8 stats",
+        "Min and max inputs for range",
+        "Cards must have stat within range to show",
+        "Add multiple stat range filters possible",
+        "Test stat range filters work"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "stats",
+        "range"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-020",
+      "title": "Add has ability filter",
+      "description": "Filter cards by whether they have abilities.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add 'Has Ability' checkbox filter",
+        "Options: All, Has Ability, No Ability",
+        "Filters cards based on ability field",
+        "Test has-ability shows cards with abilities",
+        "Test no-ability shows cards without"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "ability",
+        "boolean"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-021",
+      "title": "Sync filters to URL query params",
+      "description": "Filters persist in URL for sharing/bookmarking.",
+      "acceptanceCriteria": [
+        "Open src/lib/collection/filter-manager.ts",
+        "On filter change, update URL query params",
+        "Format: ?rarity=legendary,mythic&type=BBQ,Fix-It",
+        "URL can be bookmarked or shared",
+        "On page load, read filters from URL",
+        "Test URL filtering works on load"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "url",
+        "sync"
+      ],
+      "dependsOn": [
+        "COLL-UI-001",
+        "COLL-UI-002",
+        "COLL-UI-003"
+      ]
+    },
+    {
+      "id": "COLL-UI-022",
+      "title": "Add filter count badge",
+      "description": "Show number of active filters.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add badge showing active filter count",
+        "Badge appears on filter icon/button",
+        "Badge shows count (e.g., '3' when 3 filters active)",
+        "Badge is red when filters active",
+        "Badge hidden when no filters",
+        "Test badge updates correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "filter",
+        "badge",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-023",
+      "title": "Add card hover detail preview",
+      "description": "Show quick preview on card hover.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add hover delay (300ms)",
+        "After delay, show tooltip with key info",
+        "Tooltip shows: name, rarity, 3 stats",
+        "Tooltip follows cursor",
+        "Test preview helps without clicking"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "card",
+        "hover",
+        "preview"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-024",
+      "title": "Add card click to detail modal",
+      "description": "Clicking card opens full detail view.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add click handler to card",
+        "Click opens CardDetailModal",
+        "Modal shows all card info: stats, abilities, flavor text",
+        "Modal has previous/next to browse collection",
+        "Test click opens modal smoothly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "card",
+        "modal",
+        "detail"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-025",
+      "title": "Add collection stats panel",
+      "description": "Show overview stats about collection.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add stats panel to collection page",
+        "Stats show: total cards, unique cards, pack count",
+        "Show rarity breakdown (e.g., '5 Mythic, 12 Legendary')",
+        "Calculate collection completion %",
+        "Test stats are accurate and informative"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "stats",
+        "overview",
+        "panel"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-026",
+      "title": "Add pack history panel",
+      "description": "Show history of opened packs.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add pack history section to collection page",
+        "Show last 10 packs opened (timestamp + best card)",
+        "Click pack to expand and see all cards",
+        "Load more as user scrolls (infinite or button)",
+        "Test history shows recent packs"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "collection",
+        "history",
+        "packs",
+        "timeline"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-027",
+      "title": "Add duplicate count indicator on cards",
+      "description": "Show how many copies of each card owned.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add badge showing duplicate count",
+        "Only shows if count > 1",
+        "Format: 'x3' (3 copies owned)",
+        "Badge appears in corner of card",
+        "Test badge helps track duplicates"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "card",
+        "duplicate",
+        "count"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-028",
+      "title": "Add new card badge indicator",
+      "description": "Highlight newly acquired cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add 'NEW' badge to cards from latest pack",
+        "Badge appears for 5 minutes after acquisition",
+        "Badge is green/teal color",
+        "Badge fades out smoothly after 5 min",
+        "Test badge highlights new cards"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "card",
+        "new",
+        "badge"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-029",
+      "title": "Implement filter animation",
+      "description": "Smooth animation when filters apply.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add fade-out animation when filters change",
+        "Old cards fade out over 0.2s",
+        "New cards fade in over 0.3s",
+        "Use stagger for each card (10ms delay)",
+        "Test animation feels smooth and polished"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "animation",
+        "filter",
+        "polish"
+      ],
+      "dependsOn": [
+        "COLL-UI-005"
+      ]
+    },
+    {
+      "id": "COLL-UI-030",
+      "title": "Add loading skeleton for collection",
+      "description": "Show skeleton cards while collection loads.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add loading skeleton component",
+        "Show card-shaped skeletons while loading",
+        "Skeletons have shimmer animation",
+        "Number of skeletons matches expected cards",
+        "Skeletons fade out when real cards load",
+        "Test skeleton makes load feel faster"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "loading",
+        "skeleton",
+        "ux"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-031",
+      "title": "Add collection export button",
+      "description": "Allow users to export collection data.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Export Collection' button",
+        "Export generates JSON file of all cards",
+        "Filename: collection-[timestamp].json",
+        "Download triggers automatically",
+        "Test export contains correct data"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "export",
+        "data",
+        "backup"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-032",
+      "title": "Add collection import button",
+      "description": "Allow users to import collection data.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Import Collection' button",
+        "Button opens file picker for JSON files",
+        "Validate imported JSON structure",
+        "Merge imported cards with existing collection",
+        "Show import success/error toast",
+        "Test import adds cards correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "import",
+        "data",
+        "restore"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-033",
+      "title": "Add clear collection confirmation",
+      "description": "Prevent accidental collection deletion.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Clear Collection' button (dangerous action)",
+        "Clicking opens confirmation modal",
+        "Modal warns: 'This will delete all cards. Irreversible!'",
+        "Require user to type 'DELETE' to confirm",
+        "Test confirmation prevents accidents"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "clear",
+        "confirmation",
+        "safety"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-034",
+      "title": "Add collection progress bar",
+      "description": "Show completion progress toward collecting all cards.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add progress bar to stats panel",
+        "Progress shows: (unique cards / total cards) × 100",
+        "Total cards = 173 (all cards in game)",
+        "Progress bar colored by completion % (red < 20%, yellow < 50%, green > 50%)",
+        "Test progress updates as cards added"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "progress",
+        "completion",
+        "gamification"
+      ],
+      "dependsOn": [
+        "COLL-UI-025"
+      ]
+    },
+    {
+      "id": "COLL-UI-035",
+      "title": "Add rarity distribution chart",
+      "description": "Visual breakdown of collection by rarity.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionStats.svelte",
+        "Add pie or bar chart showing rarity distribution",
+        "Chart shows count of each rarity owned",
+        "Hovering shows exact count and percentage",
+        "Chart uses rarity colors",
+        "Test chart visualizes collection well"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "stats",
+        "chart",
+        "visualization"
+      ],
+      "dependsOn": [
+        "COLL-UI-025"
+      ]
+    },
+    {
+      "id": "COLL-UI-036",
+      "title": "Add dad type breakdown stats",
+      "description": "Show collection breakdown by dad type.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionStats.svelte",
+        "Add bar chart showing count per dad type",
+        "Chart includes all 15 dad types",
+        "Hovering shows type name and count",
+        "Bars sorted by count (most to least)",
+        "Test chart shows type distribution"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "stats",
+        "chart",
+        "breakdown"
+      ],
+      "dependsOn": [
+        "COLL-UI-025"
+      ]
+    },
+    {
+      "id": "COLL-UI-037",
+      "title": "Add best card highlight in pack history",
+      "description": "Show the best card from each pack in history.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "For each pack entry, show thumbnail of best card",
+        "Best card = highest rarity in pack",
+        "If tie, pick highest total stats",
+        "Thumbnail shows card art and rarity border",
+        "Test thumbnails help identify good pulls"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "history",
+        "best-card",
+        "highlight"
+      ],
+      "dependsOn": [
+        "COLL-UI-026"
+      ]
+    },
+    {
+      "id": "COLL-UI-038",
+      "title": "Add pack date grouping in history",
+      "description": "Group packs by date in history view.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Group packs by date (Today, Yesterday, This Week, Older)",
+        "Show date headers above each group",
+        "Packs within group sorted by time (newest first)",
+        "Collapse/expand date groups",
+        "Test grouping makes history navigable"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "history",
+        "grouping",
+        "date"
+      ],
+      "dependsOn": [
+        "COLL-UI-026"
+      ]
+    },
+    {
+      "id": "COLL-UI-039",
+      "title": "Add compact view toggle for history",
+      "description": "Switch between detailed and compact history.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add view toggle: Detailed / Compact",
+        "Detailed: Shows all cards in pack",
+        "Compact: Shows only timestamp and best card",
+        "Toggle preference persists to localStorage",
+        "Test both views work correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "history",
+        "view",
+        "toggle"
+      ],
+      "dependsOn": [
+        "COLL-UI-026"
+      ]
+    },
+    {
+      "id": "COLL-UI-040",
+      "title": "Add collection share button",
+      "description": "Share collection stats on social media.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Share Stats' button to stats panel",
+        "Clicking opens share modal with collection stats",
+        "Generates image with stats chart",
+        "Shareable image shows completion % and best cards",
+        "Test share creates impressive image"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "collection",
+        "social",
+        "share",
+        "stats"
+      ],
+      "dependsOn": [
+        "COLL-UI-025",
+        "COLL-UI-035"
+      ]
+    },
+    {
+      "id": "CROSS-001",
+      "title": "Add dark mode toggle to navigation",
+      "description": "Theme switcher in main navigation bar.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Navigation.svelte",
+        "Add sun/moon icon toggle to nav",
+        "Clicking toggles between light and dark mode",
+        "Icon shows current theme (sun = light, moon = dark)",
+        "Toggle has smooth transition animation",
+        "Test toggle switches theme instantly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "theme",
+        "dark-mode",
+        "toggle",
+        "navigation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-002",
+      "title": "Implement theme persistence in localStorage",
+      "description": "Save theme preference across sessions.",
+      "acceptanceCriteria": [
+        "Open src/stores/theme.ts",
+        "Add theme atom ('light' | 'dark' | 'auto')",
+        "On theme change, save to localStorage",
+        "On app load, read from localStorage",
+        "Default to 'auto' (system preference)",
+        "Test theme persists across browser sessions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "theme",
+        "persistence",
+        "settings",
+        "state"
+      ],
+      "dependsOn": [
+        "CROSS-001"
+      ]
+    },
+    {
+      "id": "CROSS-003",
+      "title": "Add auto theme detection",
+      "description": "Detect system dark mode preference.",
+      "acceptanceCriteria": [
+        "Open src/stores/theme.ts",
+        "Use window.matchMedia('(prefers-color-scheme: dark)')",
+        "Listen for changes in system preference",
+        "Update theme automatically when system changes",
+        "Only applies when theme set to 'auto'",
+        "Test auto detection follows system setting"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "theme",
+        "auto",
+        "system-preference",
+        "detection"
+      ],
+      "dependsOn": [
+        "CROSS-002"
+      ]
+    },
+    {
+      "id": "CROSS-004",
+      "title": "Create dark mode CSS classes",
+      "description": "Style adjustments for dark theme.",
+      "acceptanceCriteria": [
+        "Open tailwind.config.mjs",
+        "Add dark mode class strategy",
+        "Create dark: prefix for dark mode variants",
+        "Background colors: dark-gray-900 for backgrounds, gray-100 for text",
+        "Apply dark: classes to all components",
+        "Test dark mode looks good and readable"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "theme",
+        "dark-mode",
+        "css",
+        "tailwind"
+      ],
+      "dependsOn": [
+        "CROSS-001"
+      ]
+    },
+    {
+      "id": "CROSS-005",
+      "title": "Add smooth theme transition animation",
+      "description": "Fade between light and dark themes.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add CSS transition to theme colors",
+        "Transition duration: 0.3s ease-in-out",
+        "All themed properties transition smoothly",
+        "Background, text, borders all fade",
+        "Test transition is not jarring"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "theme",
+        "transition",
+        "animation",
+        "polish"
+      ],
+      "dependsOn": [
+        "CROSS-004"
+      ]
+    },
+    {
+      "id": "CROSS-006",
+      "title": "Add high contrast mode option",
+      "description": "Accessibility-focused high contrast theme.",
+      "acceptanceCriteria": [
+        "Open src/components/settings/SettingsManager.svelte",
+        "Add 'High Contrast' toggle to theme settings",
+        "When enabled, use maximum contrast colors",
+        "Black backgrounds, white text, no grays",
+        "Helps users with visual impairments",
+        "Test high contrast mode is very readable"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "theme",
+        "accessibility",
+        "contrast",
+        "a11y"
+      ],
+      "dependsOn": [
+        "CROSS-002"
+      ]
+    },
+    {
+      "id": "CROSS-007",
+      "title": "Optimize touch targets to 44px minimum",
+      "description": "Ensure all interactive elements are touch-friendly.",
+      "acceptanceCriteria": [
+        "Audit all buttons and interactive elements",
+        "Ensure minimum touch target size is 44×44px",
+        "Add padding to small buttons to reach 44px",
+        "Check navigation links, pack open button, filters",
+        "Test all buttons easy to tap on mobile",
+        "Document any elements below 44px for fixing"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "touch",
+        "accessibility",
+        "44px"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-008",
+      "title": "Add swipe gestures for card navigation",
+      "description": "Swipe left/right to browse cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/CardDetailModal.svelte",
+        "Implement touch event listeners (touchstart, touchend)",
+        "Swipe right shows next card",
+        "Swipe left shows previous card",
+        "Add visual feedback during swipe (card follows finger)",
+        "Test gestures work on mobile"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "gesture",
+        "swipe",
+        "navigation"
+      ],
+      "dependsOn": [
+        "COLL-UI-024"
+      ]
+    },
+    {
+      "id": "CROSS-009",
+      "title": "Implement pull-to-refresh on collection",
+      "description": "Pull down to refresh collection view.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add pull-to-refresh handler",
+        "When user pulls down, show loading indicator",
+        "On release, reload collection data from IndexedDB",
+        "Add 'Refreshed just now' toast",
+        "Test refresh updates collection"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "pull-to-refresh",
+        "gesture",
+        "collection"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-010",
+      "title": "Configure responsive breakpoints",
+      "description": "Define standard breakpoints for design.",
+      "acceptanceCriteria": [
+        "Open tailwind.config.mjs",
+        "Set custom breakpoints in theme.screens",
+        "Mobile: 320px (small phones)",
+        "Tablet: 768px (tablets)",
+        "Laptop: 1024px (small laptops)",
+        "Desktop: 1280px (desktops)",
+        "Test layouts work at all breakpoints"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "mobile",
+        "responsive",
+        "breakpoints",
+        "tailwind"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-011",
+      "title": "Add pack opening analytics event",
+      "description": "Track when users open packs.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/events.ts",
+        "Create trackPackOpen() function",
+        "Log event with: packId, pack type, card count",
+        "Send to Google Analytics or Plausible",
+        "Event name: 'pack_open'",
+        "Test events appear in analytics dashboard"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "analytics",
+        "tracking",
+        "pack-opening",
+        "events"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-012",
+      "title": "Track filter usage in collection",
+      "description": "Track which filters users apply most.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/events.ts",
+        "Log filter change events",
+        "Track: filter type (rarity, type, holo), filter value",
+        "Send to analytics on filter apply",
+        "Event name: 'collection_filter'",
+        "Test filter tracking works"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "analytics",
+        "tracking",
+        "collection",
+        "filters"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-013",
+      "title": "Implement performance monitoring",
+      "description": "Track key performance metrics.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/performance.ts",
+        "Measure pack generation time (ms)",
+        "Measure page load time (ms)",
+        "Measure FPS during animations",
+        "Log metrics to analytics (or console in dev)",
+        "Alert if metrics exceed thresholds",
+        "Test monitoring catches performance issues"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "analytics",
+        "performance",
+        "monitoring",
+        "metrics"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-014",
+      "title": "Add ARIA labels to all interactive elements",
+      "description": "Screen reader accessibility improvements.",
+      "acceptanceCriteria": [
+        "Audit all buttons, links, inputs for missing ARIA",
+        "Add aria-label to icon-only buttons (e.g., share icon)",
+        "Add aria-label to search inputs ('Search cards by name')",
+        "Add aria-label to filter buttons",
+        "Test screen reader announces all elements"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "a11y",
+        "aria",
+        "screen-reader"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-015",
+      "title": "Implement keyboard navigation",
+      "description": "Full keyboard control without mouse.",
+      "acceptanceCriteria": [
+        "Add tabindex to all interactive elements",
+        "Ensure logical tab order (left to right, top to bottom)",
+        "Add focus visible styles (outline or glow)",
+        "Pack opening: Space to skip, Arrows to navigate cards",
+        "Collection: Tab to browse cards, Enter to open detail",
+        "Test entire app works with keyboard only"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "keyboard",
+        "navigation",
+        "a11y"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-016",
+      "title": "Add screen reader announcements",
+      "description": "Announce important events to screen readers.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add aria-live region for pack status",
+        "Announce pack opening: 'Opening pack...'",
+        "Announce card reveals: 'Revealed Mythic BBQ Dad'",
+        "Announce pack complete: 'Pack opening complete, 7 cards revealed'",
+        "Test announcements inform blind users"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "screen-reader",
+        "announcement",
+        "a11y"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-017",
+      "title": "Add skip to main content link",
+      "description": "Allow keyboard users to skip navigation.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Navigation.svelte",
+        "Add 'Skip to content' link at top of page",
+        "Link is visible on keyboard focus (hidden otherwise)",
+        "Pressing Tab from top shows link first",
+        "Enter moves focus to main content",
+        "Test skip link improves navigation"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "skip-link",
+        "navigation",
+        "a11y"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-018",
+      "title": "Add focus trap in modals",
+      "description": "Keyboard focus stays within modal.",
+      "acceptanceCriteria": [
+        "Open src/components/common/Modal.svelte",
+        "When modal opens, move focus to first focusable element",
+        "Tab cycles focus within modal only",
+        "Shift+Tab cycles backwards",
+        "Escape key closes modal and returns focus",
+        "Test focus trap works correctly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "accessibility",
+        "modal",
+        "focus",
+        "keyboard"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-019",
+      "title": "Add error boundary with fallback UI",
+      "description": "Graceful error handling across entire app.",
+      "acceptanceCriteria": [
+        "Open src/components/error/ErrorBoundary.svelte",
+        "Wrap entire app in error boundary",
+        "On error, show friendly error UI (not blank screen)",
+        "Error message explains what went wrong",
+        "Add 'Try Again' button to reload",
+        "Test errors don't crash app"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "error-handling",
+        "graceful-degradation",
+        "ui"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-020",
+      "title": "Implement offline detection",
+      "description": "Show offline page when no internet.",
+      "acceptanceCriteria": [
+        "Add offline event listener to window",
+        "When offline, show /offline page",
+        "Offline page explains app requires internet",
+        "Offer 'Retry' button to check connection",
+        "When back online, redirect to requested page",
+        "Test offline page appears correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "offline",
+        "pwa",
+        "network",
+        "fallback"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-021",
+      "title": "Add loading skeleton for pack generation",
+      "description": "Show loading state while pack generates.",
+      "acceptanceCriteria": [
+        "Open src/components/pack/PackOpener.svelte",
+        "Add skeleton during 'generating' state",
+        "Skeleton shows pulsing pack outline",
+        "Skeleton has 'Generating pack...' text",
+        "When generation complete, skeleton fades out",
+        "Test skeleton makes wait feel shorter"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "loading",
+        "skeleton",
+        "pack",
+        "ux"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-022",
+      "title": "Add toast notification system",
+      "description": "Reusable toast notifications for feedback.",
+      "acceptanceCriteria": [
+        "Create src/components/ui/Toast.svelte",
+        "Show toast for: errors, successes, info",
+        "Toast appears in corner (bottom-right or top-center)",
+        "Toast auto-dismisses after 3-5 seconds",
+        "Toast has close button for manual dismiss",
+        "Test toasts are informative and non-intrusive"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "ui",
+        "toast",
+        "notification",
+        "feedback"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-023",
+      "title": "Add favicon for browser tabs",
+      "description": "Show icon in browser tab bar.",
+      "acceptanceCriteria": [
+        "Create or source favicon.ico file",
+        "Add favicon to public/favicon.ico",
+        "Add favicon link tags to src/layouts/BaseLayout.astro",
+        "Include sizes: 16x16, 32x32",
+        "Test favicon appears in browser tab"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "branding",
+        "favicon",
+        "browser",
+        "meta"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-024",
+      "title": "Configure dynamic meta tags",
+      "description": "SEO-optimized meta tags per page.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add dynamic title and description per route",
+        "Pack page: 'Open Packs | DadDeck'",
+        "Collection page: 'Collection | DadDeck'",
+        "Include DadDeck™ in titles",
+        "Test titles are descriptive and unique"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "seo",
+        "meta",
+        "title",
+        "description"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-025",
+      "title": "Add Open Graph tags for sharing",
+      "description": "Rich link previews on social platforms.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add og:title, og:description, og:image meta tags",
+        "og:image points to DadDeck logo or card image",
+        "og:type: 'website'",
+        "Test link preview on Twitter/Facebook"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "seo",
+        "opengraph",
+        "social",
+        "meta"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-026",
+      "title": "Add Twitter Card meta tags",
+      "description": "Twitter-specific rich previews.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add twitter:card (summary_large_image)",
+        "Add twitter:title, twitter:description, twitter:image",
+        "Test tweet preview shows card image"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "seo",
+        "twitter",
+        "meta",
+        "social"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-027",
+      "title": "Generate sitemap.xml",
+      "description": "Create sitemap for search engines.",
+      "acceptanceCriteria": [
+        "Run bun run generate-sitemap (already exists)",
+        "Verify sitemap.xml includes all pages",
+        "Sitemap includes: /, /pack, /collection, /settings",
+        "Add lastmod date for each page",
+        "Submit sitemap to Google Search Console",
+        "Test sitemap is valid XML"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "seo",
+        "sitemap",
+        "search-engine",
+        "xml"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-028",
+      "title": "Add robots.txt file",
+      "description": "Configure search engine crawling.",
+      "acceptanceCriteria": [
+        "Create public/robots.txt file",
+        "Allow all bots: 'User-agent: * Allow: /'",
+        "Disallow any admin/private routes if they exist",
+        "Add sitemap reference: 'Sitemap: /sitemap.xml'",
+        "Test robots.txt is accessible"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "seo",
+        "robots.txt",
+        "crawling",
+        "search"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-029",
+      "title": "Optimize initial page load",
+      "description": "Achieve <3s First Contentful Paint.",
+      "acceptanceCriteria": [
+        "Run Lighthouse audit on homepage",
+        "Identify render-blocking resources",
+        "Defer non-critical JavaScript",
+        "Optimize critical CSS delivery (inline)",
+        "Lazy load below-fold images",
+        "Test Lighthouse Performance score > 90"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "performance",
+        "lighthouse",
+        "optimization",
+        "load-time"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-030",
+      "title": "Add service worker for offline support",
+      "description": "Cache assets for offline viewing.",
+      "acceptanceCriteria": [
+        "Create public/sw.js service worker",
+        "Cache core assets: HTML, CSS, JS, images",
+        "Cache version: use build hash in cache names",
+        "Add offline fallback page",
+        "Register service worker in src/layouts/BaseLayout.astro",
+        "Test site works offline"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "pwa",
+        "offline",
+        "service-worker",
+        "caching"
+      ],
+      "dependsOn": [
+        "CROSS-020"
+      ]
+    },
+    {
+      "id": "CROSS-031",
+      "title": "Add manifest.json for PWA",
+      "description": "Progressive Web App manifest.",
+      "acceptanceCriteria": [
+        "Create public/manifest.json",
+        "Add app name: 'DadDeck™'",
+        "Add short_name: 'DadDeck'",
+        "Add description, theme_color, background_color",
+        "Add icons (192x192, 512x512)",
+        "Link manifest in BaseLayout.astro",
+        "Test app is installable on mobile"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "pwa",
+        "manifest",
+        "installable",
+        "mobile"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-032",
+      "title": "Add add to homescreen prompt",
+      "description": "Prompt mobile users to install app.",
+      "acceptanceCriteria": [
+        "Implement beforeinstallprompt event listener",
+        "Show 'Add to Home Screen' modal on iOS",
+        "Show native install prompt on Android",
+        "Explain benefits: 'Open packs offline, faster access'",
+        "Track install/dismiss in analytics",
+        "Test prompt appears at appropriate time"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "pwa",
+        "install",
+        "mobile",
+        "prompt"
+      ],
+      "dependsOn": [
+        "CROSS-031"
+      ]
+    },
+    {
+      "id": "CROSS-033",
+      "title": "Add app theme color to browser UI",
+      "description": "Theme color affects browser chrome.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add theme-color meta tag",
+        "Color changes with theme (light/dark)",
+        "Light: #ffffff (white)",
+        "Dark: #0f172a (slate-900)",
+        "Test browser address bar color matches theme"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "theme",
+        "meta",
+        "browser-chrome",
+        "polish"
+      ],
+      "dependsOn": [
+        "CROSS-001",
+        "CROSS-004"
+      ]
+    },
+    {
+      "id": "CROSS-034",
+      "title": "Add 404 error page",
+      "description": "Custom 404 not found page.",
+      "acceptanceCriteria": [
+        "Create src/pages/404.astro",
+        "Add friendly '404 - Page Not Found' message",
+        "Add DadDeck™ mascot or illustration",
+        "Add 'Back Home' button to landing page",
+        "Ensure 404 page has theme support",
+        "Test 404 page appears for invalid routes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "error",
+        "404",
+        "page",
+        "ux"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-035",
+      "title": "Add keyboard shortcuts help modal",
+      "description": "Show available keyboard shortcuts.",
+      "acceptanceCriteria": [
+        "Create src/components/help/KeyboardShortcuts.svelte",
+        "Add '?' button to navigation",
+        "Clicking opens keyboard shortcuts modal",
+        "List shortcuts: Space (skip), Enter (open), Arrows (navigate), Esc (close)",
+        "Organize by context (pack, collection, general)",
+        "Test modal helps users discover shortcuts"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "help",
+        "keyboard",
+        "shortcuts",
+        "documentation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-036",
+      "title": "Add progressive enhancement for JavaScript",
+      "description": "Core features work without JavaScript.",
+      "acceptanceCriteria": [
+        "Verify critical links work with JS disabled",
+        "Ensure pack opening page requires JS (expected)",
+        "Add <noscript> tag with message",
+        "Message: 'For best experience, please enable JavaScript'",
+        "Test basic navigation works without JS"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "progressive-enhancement",
+        "noscript",
+        "graceful-degradation"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-037",
+      "title": "Add link prefetching for faster navigation",
+      "description": "Prefetch likely next pages.",
+      "acceptanceCriteria": [
+        "Open src/layouts/BaseLayout.astro",
+        "Add <link rel='prefetch'> for likely next pages",
+        "Prefetch: pack page from landing, collection from pack",
+        "Use DNS prefetch for external domains",
+        "Test navigation to prefetched pages is instant",
+        "Monitor bandwidth usage (don't over-prefetch)"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "performance",
+        "prefetch",
+        "navigation",
+        "optimization"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-038",
+      "title": "Add console error logging to analytics",
+      "description": "Track errors that occur in production.",
+      "acceptanceCriteria": [
+        "Open src/lib/analytics/errors.ts",
+        "Add global error listener to window.onerror",
+        "Log error: message, url, line number, stack",
+        "Send errors to analytics (Sentry or GA)",
+        "Exclude sensitive data from logs",
+        "Test errors are tracked"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": [
+        "analytics",
+        "error-tracking",
+        "logging",
+        "production"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-039",
+      "title": "Add user feedback widget",
+      "description": "Allow users to send feedback.",
+      "acceptanceCriteria": [
+        "Add feedback button to footer or navigation",
+        "Clicking opens feedback modal",
+        "Modal includes: feedback type dropdown, message input, email",
+        "On submit, send to feedback service or email",
+        "Show 'Thank you for feedback!' toast",
+        "Test feedback submission works"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "feedback",
+        "user-input",
+        "communication",
+        "support"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "CROSS-040",
+      "title": "Add cookie consent banner",
+      "description": "GDPR-compliant cookie consent.",
+      "acceptanceCriteria": [
+        "Add cookie consent banner component",
+        "Banner appears on first visit",
+        "Explains cookies used: 'We use analytics'",
+        "\"Accept\" button closes banner and sets consent cookie",
+        "Link to privacy policy page",
+        "Test banner appears only once"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": [
+        "legal",
+        "cookies",
+        "gdpr",
+        "consent"
+      ],
+      "dependsOn": []
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "2.0.0",
+    "totalTasks": 210,
+    "focus": "Complete MVP polish for all features",
+    "updatedAt": "2026-01-19T06:00:11.272Z"
+  }
+}

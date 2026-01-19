@@ -1642,6 +1642,139 @@ The following features were **removed in MVP scope reduction** (January 18, 2026
 
 ---
 
+## 💡 Getting Help
+
+### Internal Documentation
+- **`STATUS.md`** - Current project status, recent changes, and known issues
+- **`PRD.md`** - Complete Product Requirements Document
+- **`docs/`** - Additional documentation:
+  - `TCG_BEST_PRACTICES.md` - Market research and TCG simulator patterns
+  - `CARD_MECHANICS.md` - Detailed card collecting mechanics
+  - `RALPH_LOOP_ARCHITECTURE.md` - Agentic loop UX patterns
+  - `COMPLETE_FEATURE_INVENTORY.md` - Full feature list (active + archived)
+
+### External Resources
+- **[Astro Docs](https://docs.astro.build)** - Framework documentation
+- **[Svelte Docs](https://svelte.dev/docs)** - Component framework
+- **[Nanostores Docs](https://nanostores.nanostores.query)** - State management
+- **[Tailwind Docs](https://tailwindcss.com/docs)** - Utility-first CSS
+- **[Vitest Docs](https://vitest.dev)** - Testing framework
+
+### When You're Stuck
+
+**1. Check the error message first**
+```
+Error: Cannot find module '@/types/card'
+→ Fix: Import from '@/types' instead (barrel file)
+```
+
+**2. Check recent changes in STATUS.md**
+→ Maybe something broke in the latest update
+
+**3. Search the codebase**
+```bash
+# Find where a type is used
+grep -r "PackState" src/
+
+# Find component usage
+grep -r "PackOpener" src/
+```
+
+**4. Check test files for examples**
+```bash
+# See how others use the store
+cat tests/stores/pack.test.ts
+
+# See how components work
+cat tests/unit/components/pack/PackOpener.test.ts
+```
+
+**5. Ask Claude Code**
+→ Be specific: "How do I add a new rarity tier to the pack generator?"
+
+### Common Questions
+
+**Q: How do I add a new page?**
+```bash
+# 1. Create page in src/pages/
+touch src/pages/my-new-page.astro
+
+# 2. Add content (see src/pages/index.astro for template)
+
+# 3. Update navigation in src/components/common/Navigation.svelte
+
+# 4. Add to sitemap (auto-generated on build)
+```
+
+**Q: How do I add a new card to the database?**
+```json
+// Add to src/data/cards.json
+{
+  "id": "dad_174",
+  "name": "New Card",
+  "rarity": "rare",
+  "dadType": "bbq",
+  "stats": { "dadJoke": 75, "grillSkill": 90, ... },
+  "ability": { "name": "...", "description": "..." }
+}
+```
+
+**Q: How do I modify the pack opening animation?**
+→ Edit `src/components/pack/PackAnimation.svelte`
+→ Adjust timing in CSS classes
+→ Modify particle effects in `src/types/constants.ts` (RARITY_CONFIG)
+
+**Q: How do I add a new test?**
+```typescript
+// Create test file
+touch tests/unit/my-new-test.test.ts
+
+// Add test
+import { describe, it, expect } from 'vitest';
+
+describe('My New Feature', () => {
+  it('should work', () => {
+    expect(true).toBe(true);
+  });
+});
+```
+
+**Q: How do I debug a store not updating?**
+```typescript
+// Add logging to see state changes
+import { currentPack } from '@/stores/pack';
+
+currentPack.subscribe((pack) => {
+  console.log('Pack state changed:', pack);
+});
+
+// Check you're using immutable updates
+// ❌ WRONG: Direct mutation
+const p = pack.get();
+p.cards.push(newCard);
+
+// ✅ RIGHT: Immutable update
+const p = pack.get();
+pack.set({ ...p, cards: [...p.cards, newCard] });
+```
+
+### Project-Specific Tips
+
+**For UX Designers:**
+- **Component props** = Inputs you send to a component
+- **Stores** = Global state that any component can access
+- **Events** = Actions that happen (click, submit, etc.)
+- **Reactivity** = When state changes, UI updates automatically
+
+**For Developers:**
+- Always use `@/` imports (never relative paths like `../../../types`)
+- Use Svelte 5 runes (`$state`, `$derived`) for local component state
+- Use Nanostores for global/shared state
+- Test your stores with `beforeEach` to reset state
+- Use type guards for runtime validation
+
+---
+
 **Last updated:** January 18, 2026 (Type File Split Migration Complete)
 **Recent Updates:**
 - **Type System Refactor** (Jan 18, 2026): Split monolithic `index.ts` (~3,096 lines) into modular feature files. `index.ts` is now a barrel file (~106 lines) that re-exports all types. All imports via `@/types` continue to work (backward compatible).

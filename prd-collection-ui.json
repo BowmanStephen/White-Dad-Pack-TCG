@@ -1,0 +1,703 @@
+{
+  "name": "DadDeck™ - Collection UI Enhancements",
+  "description": "Micro-tasks for exceptional collection management UI - filtering, search, display, and sorting.",
+  "branchName": "feature/collection-ui",
+  "userStories": [
+    {
+      "id": "COLL-UI-001",
+      "title": "Add rarity multi-select dropdown",
+      "description": "Filter collection by multiple rarities at once.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add rarity filter dropdown component",
+        "Dropdown shows all 6 rarities with checkboxes",
+        "Multiple rarities can be selected",
+        "Shows selected count (e.g., 'Rarity (3)')",
+        "Apply filters to gallery immediately",
+        "Test multiple rarities show correctly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "filter", "rarity", "multi-select"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-002",
+      "title": "Implement dad type filter checkboxes",
+      "description": "Filter collection by multiple dad types.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add dad type filter section",
+        "Show checkboxes for all 15 dad types",
+        "Multiple types can be selected",
+        "Arrange types alphabetically",
+        "Show selected count (e.g., 'Dad Types (5)')",
+        "Test filters work together"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "filter", "dad-type", "checkboxes"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-003",
+      "title": "Add holo variant filter toggle",
+      "description": "Filter by holographic variants.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add holo filter dropdown with options",
+        "Options: All, Holo Only, Non-Holo Only",
+        "Selecting filters collection by holo status",
+        "Test holo-only shows just holo cards",
+        "Test non-holo shows no holo cards"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "filter", "holo", "toggle"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-004",
+      "title": "Create saved filter preset system",
+      "description": "Allow users to save and load filter combinations.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add 'Save Preset' button",
+        "Button saves current filter combination",
+        "Prompt for preset name",
+        "Add dropdown of saved presets",
+        "Selecting preset loads those filters",
+        "Test presets save and load correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "filter", "presets", "saved"],
+      "dependsOn": ["COLL-UI-001", "COLL-UI-002", "COLL-UI-003"]
+    },
+    {
+      "id": "COLL-UI-005",
+      "title": "Add debounced search input",
+      "description": "Search collection with debounce for performance.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add search input field",
+        "Implement debounce utility (300ms delay)",
+        "Search fires 300ms after user stops typing",
+        "Search filters by card name and flavor text",
+        "Show loading indicator during debounce",
+        "Test debounce reduces unnecessary filtering"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "search", "debounce", "performance"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-006",
+      "title": "Implement search by card name",
+      "description": "Search filters cards by name field.",
+      "acceptanceCriteria": [
+        "Open src/lib/collection/filter-manager.ts",
+        "Add name filtering logic",
+        "Case-insensitive search (grill matches Grill)",
+        "Partial matching (grill matches BBQ Grill Dad)",
+        "Search works on entire card name",
+        "Test search finds cards by name"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "search", "name", "filtering"],
+      "dependsOn": ["COLL-UI-005"]
+    },
+    {
+      "id": "COLL-UI-007",
+      "title": "Implement search by flavor text",
+      "description": "Search filters cards by flavor text field.",
+      "acceptanceCriteria": [
+        "Open src/lib/collection/filter-manager.ts",
+        "Add flavor text filtering logic",
+        "Search includes flavor text field",
+        "Case-insensitive search",
+        "Partial matching works",
+        "Test search finds cards by flavor text"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "search", "flavor", "filtering"],
+      "dependsOn": ["COLL-UI-005"]
+    },
+    {
+      "id": "COLL-UI-008",
+      "title": "Show search result count",
+      "description": "Display how many cards match current filters.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add result count display",
+        "Format: 'Showing 45 of 173 cards'",
+        "Updates in real-time as filters change",
+        "Shows 'No cards match your filters' when empty",
+        "Test count updates accurately"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "search", "count", "feedback"],
+      "dependsOn": ["COLL-UI-005"]
+    },
+    {
+      "id": "COLL-UI-009",
+      "title": "Add clear all filters button",
+      "description": "Quick reset button to clear all active filters.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add 'Clear All' button next to filters",
+        "Button disabled when no filters active",
+        "On click, reset all filters to default (show all)",
+        "Add subtle animation on clear",
+        "Test button resets all filters"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "filter", "clear", "reset"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-010",
+      "title": "Configure responsive grid columns (2-7)",
+      "description": "Card grid adapts to screen size.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Set responsive grid columns",
+        "Mobile (320px+): 2 columns",
+        "Tablet (768px+): 3 columns",
+        "Laptop (1024px+): 4 columns",
+        "Desktop (1280px+): 5 columns",
+        "Wide (1536px+): 6 columns",
+        "Ultra-wide (1920px+): 7 columns",
+        "Test grid adapts to screen sizes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "grid", "responsive", "layout"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-011",
+      "title": "Add card size toggle (small/medium/large)",
+      "description": "Allow users to adjust card display size.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add card size toggle buttons",
+        "Options: Small (150px), Medium (200px), Large (250px)",
+        "Small: shows more cards, less detail",
+        "Large: shows fewer cards, more detail",
+        "Size preference persists to localStorage",
+        "Test cards resize smoothly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "grid", "size", "toggle"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-012",
+      "title": "Implement virtual scrolling",
+      "description": "Efficient rendering for large collections.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Implement virtual scrolling (or Svelte virtual list)",
+        "Only render visible cards + buffer",
+        "Buffer size: 10 cards above/below viewport",
+        "Test scrolling through 173 cards is smooth",
+        "Verify no lag with large collections"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "grid", "virtual-scroll", "performance"],
+      "dependsOn": ["COLL-UI-010"]
+    },
+    {
+      "id": "COLL-UI-013",
+      "title": "Add empty state illustration",
+      "description": "Show friendly empty state when no cards match.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add empty state component",
+        "Shows illustration when filter results empty",
+        "Message: 'No cards match your filters'",
+        "Add 'Clear All Filters' button in empty state",
+        "Test empty state appears when appropriate"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "empty-state", "ui", "ux"],
+      "dependsOn": ["COLL-UI-009"]
+    },
+    {
+      "id": "COLL-UI-014",
+      "title": "Add sort by date acquired toggle",
+      "description": "Sort collection by when cards were obtained.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add 'Date Acquired' sort option",
+        "Toggle between newest first and oldest first",
+        "Default: newest first",
+        "Test sort orders cards correctly",
+        "Verify date from pack timestamp"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "sort", "date", "ordering"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-015",
+      "title": "Add sort by rarity",
+      "description": "Sort collection by card rarity tier.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add 'Rarity' sort option",
+        "Sorts by rarity (mythic > legendary > epic > rare > uncommon > common)",
+        "Within same rarity, sort by date acquired",
+        "Test sort groups cards by rarity"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "sort", "rarity", "ordering"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-016",
+      "title": "Add sort by dad type",
+      "description": "Sort collection alphabetically by dad type.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add 'Dad Type' sort option",
+        "Sorts alphabetically by dad type",
+        "Within same type, sort by rarity",
+        "Test sort groups cards by type"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "sort", "dad-type", "ordering"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-017",
+      "title": "Add ascending/descending toggle",
+      "description": "Reverse sort order with toggle.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add asc/desc toggle button next to sort dropdown",
+        "Icon shows arrow direction (up/down)",
+        "Clicking toggles between ascending and descending",
+        "Toggle state persists per sort option",
+        "Test toggle reverses sort order"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "sort", "toggle", "direction"],
+      "dependsOn": ["COLL-UI-014", "COLL-UI-015", "COLL-UI-016"]
+    },
+    {
+      "id": "COLL-UI-018",
+      "title": "Create sort dropdown UI",
+      "description": "Dropdown menu for selecting sort option.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionSort.svelte",
+        "Add sort dropdown component",
+        "Options: Date Acquired, Rarity, Dad Type, Total Stats",
+        "Show currently selected sort",
+        "Dropdown closes on selection",
+        "Test all sort options work"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "sort", "dropdown", "ui"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-019",
+      "title": "Add stat range filter",
+      "description": "Filter cards by stat value range.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add stat range filter (e.g., 'Grill Skill: 80-100')",
+        "Filter works for all 8 stats",
+        "Min and max inputs for range",
+        "Cards must have stat within range to show",
+        "Add multiple stat range filters possible",
+        "Test stat range filters work"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "filter", "stats", "range"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-020",
+      "title": "Add has ability filter",
+      "description": "Filter cards by whether they have abilities.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add 'Has Ability' checkbox filter",
+        "Options: All, Has Ability, No Ability",
+        "Filters cards based on ability field",
+        "Test has-ability shows cards with abilities",
+        "Test no-ability shows cards without"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "filter", "ability", "boolean"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-021",
+      "title": "Sync filters to URL query params",
+      "description": "Filters persist in URL for sharing/bookmarking.",
+      "acceptanceCriteria": [
+        "Open src/lib/collection/filter-manager.ts",
+        "On filter change, update URL query params",
+        "Format: ?rarity=legendary,mythic&type=BBQ,Fix-It",
+        "URL can be bookmarked or shared",
+        "On page load, read filters from URL",
+        "Test URL filtering works on load"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "filter", "url", "sync"],
+      "dependsOn": ["COLL-UI-001", "COLL-UI-002", "COLL-UI-003"]
+    },
+    {
+      "id": "COLL-UI-022",
+      "title": "Add filter count badge",
+      "description": "Show number of active filters.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/FilterBar.svelte",
+        "Add badge showing active filter count",
+        "Badge appears on filter icon/button",
+        "Badge shows count (e.g., '3' when 3 filters active)",
+        "Badge is red when filters active",
+        "Badge hidden when no filters",
+        "Test badge updates correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "filter", "badge", "count"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-023",
+      "title": "Add card hover detail preview",
+      "description": "Show quick preview on card hover.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add hover delay (300ms)",
+        "After delay, show tooltip with key info",
+        "Tooltip shows: name, rarity, 3 stats",
+        "Tooltip follows cursor",
+        "Test preview helps without clicking"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "card", "hover", "preview"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-024",
+      "title": "Add card click to detail modal",
+      "description": "Clicking card opens full detail view.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add click handler to card",
+        "Click opens CardDetailModal",
+        "Modal shows all card info: stats, abilities, flavor text",
+        "Modal has previous/next to browse collection",
+        "Test click opens modal smoothly"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "card", "modal", "detail"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-025",
+      "title": "Add collection stats panel",
+      "description": "Show overview stats about collection.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add stats panel to collection page",
+        "Stats show: total cards, unique cards, pack count",
+        "Show rarity breakdown (e.g., '5 Mythic, 12 Legendary')",
+        "Calculate collection completion %",
+        "Test stats are accurate and informative"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "stats", "overview", "panel"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-026",
+      "title": "Add pack history panel",
+      "description": "Show history of opened packs.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add pack history section to collection page",
+        "Show last 10 packs opened (timestamp + best card)",
+        "Click pack to expand and see all cards",
+        "Load more as user scrolls (infinite or button)",
+        "Test history shows recent packs"
+      ],
+      "priority": 2,
+      "passes": false,
+      "labels": ["collection", "history", "packs", "timeline"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-027",
+      "title": "Add duplicate count indicator on cards",
+      "description": "Show how many copies of each card owned.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add badge showing duplicate count",
+        "Only shows if count > 1",
+        "Format: 'x3' (3 copies owned)",
+        "Badge appears in corner of card",
+        "Test badge helps track duplicates"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "card", "duplicate", "count"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-028",
+      "title": "Add new card badge indicator",
+      "description": "Highlight newly acquired cards.",
+      "acceptanceCriteria": [
+        "Open src/components/card/Card.svelte",
+        "Add 'NEW' badge to cards from latest pack",
+        "Badge appears for 5 minutes after acquisition",
+        "Badge is green/teal color",
+        "Badge fades out smoothly after 5 min",
+        "Test badge highlights new cards"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "card", "new", "badge"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-029",
+      "title": "Implement filter animation",
+      "description": "Smooth animation when filters apply.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add fade-out animation when filters change",
+        "Old cards fade out over 0.2s",
+        "New cards fade in over 0.3s",
+        "Use stagger for each card (10ms delay)",
+        "Test animation feels smooth and polished"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "animation", "filter", "polish"],
+      "dependsOn": ["COLL-UI-005"]
+    },
+    {
+      "id": "COLL-UI-030",
+      "title": "Add loading skeleton for collection",
+      "description": "Show skeleton cards while collection loads.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/Gallery.svelte",
+        "Add loading skeleton component",
+        "Show card-shaped skeletons while loading",
+        "Skeletons have shimmer animation",
+        "Number of skeletons matches expected cards",
+        "Skeletons fade out when real cards load",
+        "Test skeleton makes load feel faster"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "loading", "skeleton", "ux"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-031",
+      "title": "Add collection export button",
+      "description": "Allow users to export collection data.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Export Collection' button",
+        "Export generates JSON file of all cards",
+        "Filename: collection-[timestamp].json",
+        "Download triggers automatically",
+        "Test export contains correct data"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "export", "data", "backup"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-032",
+      "title": "Add collection import button",
+      "description": "Allow users to import collection data.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Import Collection' button",
+        "Button opens file picker for JSON files",
+        "Validate imported JSON structure",
+        "Merge imported cards with existing collection",
+        "Show import success/error toast",
+        "Test import adds cards correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "import", "data", "restore"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-033",
+      "title": "Add clear collection confirmation",
+      "description": "Prevent accidental collection deletion.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Clear Collection' button (dangerous action)",
+        "Clicking opens confirmation modal",
+        "Modal warns: 'This will delete all cards. Irreversible!'",
+        "Require user to type 'DELETE' to confirm",
+        "Test confirmation prevents accidents"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "clear", "confirmation", "safety"],
+      "dependsOn": []
+    },
+    {
+      "id": "COLL-UI-034",
+      "title": "Add collection progress bar",
+      "description": "Show completion progress toward collecting all cards.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add progress bar to stats panel",
+        "Progress shows: (unique cards / total cards) × 100",
+        "Total cards = 173 (all cards in game)",
+        "Progress bar colored by completion % (red < 20%, yellow < 50%, green > 50%)",
+        "Test progress updates as cards added"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "progress", "completion", "gamification"],
+      "dependsOn": ["COLL-UI-025"]
+    },
+    {
+      "id": "COLL-UI-035",
+      "title": "Add rarity distribution chart",
+      "description": "Visual breakdown of collection by rarity.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionStats.svelte",
+        "Add pie or bar chart showing rarity distribution",
+        "Chart shows count of each rarity owned",
+        "Hovering shows exact count and percentage",
+        "Chart uses rarity colors",
+        "Test chart visualizes collection well"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "stats", "chart", "visualization"],
+      "dependsOn": ["COLL-UI-025"]
+    },
+    {
+      "id": "COLL-UI-036",
+      "title": "Add dad type breakdown stats",
+      "description": "Show collection breakdown by dad type.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionStats.svelte",
+        "Add bar chart showing count per dad type",
+        "Chart includes all 15 dad types",
+        "Hovering shows type name and count",
+        "Bars sorted by count (most to least)",
+        "Test chart shows type distribution"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "stats", "chart", "breakdown"],
+      "dependsOn": ["COLL-UI-025"]
+    },
+    {
+      "id": "COLL-UI-037",
+      "title": "Add best card highlight in pack history",
+      "description": "Show the best card from each pack in history.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "For each pack entry, show thumbnail of best card",
+        "Best card = highest rarity in pack",
+        "If tie, pick highest total stats",
+        "Thumbnail shows card art and rarity border",
+        "Test thumbnails help identify good pulls"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "history", "best-card", "highlight"],
+      "dependsOn": ["COLL-UI-026"]
+    },
+    {
+      "id": "COLL-UI-038",
+      "title": "Add pack date grouping in history",
+      "description": "Group packs by date in history view.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Group packs by date (Today, Yesterday, This Week, Older)",
+        "Show date headers above each group",
+        "Packs within group sorted by time (newest first)",
+        "Collapse/expand date groups",
+        "Test grouping makes history navigable"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "history", "grouping", "date"],
+      "dependsOn": ["COLL-UI-026"]
+    },
+    {
+      "id": "COLL-UI-039",
+      "title": "Add compact view toggle for history",
+      "description": "Switch between detailed and compact history.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/PackHistoryPanel.svelte",
+        "Add view toggle: Detailed / Compact",
+        "Detailed: Shows all cards in pack",
+        "Compact: Shows only timestamp and best card",
+        "Toggle preference persists to localStorage",
+        "Test both views work correctly"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "history", "view", "toggle"],
+      "dependsOn": ["COLL-UI-026"]
+    },
+    {
+      "id": "COLL-UI-040",
+      "title": "Add collection share button",
+      "description": "Share collection stats on social media.",
+      "acceptanceCriteria": [
+        "Open src/components/collection/CollectionManager.svelte",
+        "Add 'Share Stats' button to stats panel",
+        "Clicking opens share modal with collection stats",
+        "Generates image with stats chart",
+        "Shareable image shows completion % and best cards",
+        "Test share creates impressive image"
+      ],
+      "priority": 3,
+      "passes": false,
+      "labels": ["collection", "social", "share", "stats"],
+      "dependsOn": ["COLL-UI-025", "COLL-UI-035"]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "1.0.0",
+    "totalTasks": 40,
+    "focus": "Collection UI enhancements"
+  }
+}

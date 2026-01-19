@@ -1,0 +1,243 @@
+{
+  "name": "DadDeck™ - Archived Features (Not MVP)",
+  "description": "Features removed from MVP scope - may return in Phase 2. These features are NOT active and have been moved to src/_archived/.",
+  "branchName": "archived/features",
+  "userStories": [
+    {
+      "id": "ARCHIVE-BATTLE-001",
+      "title": "Battle Arena - Turn-Based Combat System (ARCHIVED)",
+      "description": "Sophisticated battle system with stat-based combat, type advantages, status effects. Built and tested but removed from MVP scope to focus on pack opening and collection.",
+      "acceptanceCriteria": [
+        "Code exists in src/_archived/components/battle/",
+        "Turn-based combat with detailed mechanics",
+        "Status effects system (poison, burn, freeze, etc.)",
+        "Critical hits and damage calculations",
+        "Type advantages (rock-paper-scissors style)",
+        "Animation system with screen shake, particles",
+        "Tutorial system for new players",
+        "Battle replay functionality",
+        "Professional UI with health bars, move animations",
+        "All code archived January 18, 2026"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "battle", "phase-2", "high-quality"],
+      "notes": "Complete and polished - removed for MVP focus only"
+    },
+    {
+      "id": "ARCHIVE-TRADING-001",
+      "title": "Trading Hub - Card-for-Card Trading (ARCHIVED)",
+      "description": "Trading system with trade history, offer creation. Removed from MVP to focus on pack opening and collection management.",
+      "acceptanceCriteria": [
+        "Features card-for-card trading mechanics",
+        "Trade offer creation system",
+        "Trade history and tracking",
+        "All code archived to src/_archived/",
+        "Would require backend API for Phase 2",
+        "Sophisticated but removed for MVP scope"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "trading", "phase-2", "backend"],
+      "notes": "Requires backend infrastructure"
+    },
+    {
+      "id": "ARCHIVE-CRAFTING-001",
+      "title": "Crafting Station - Card Combining (ARCHIVED)",
+      "description": "Card crafting system with recipes and materials. Removed from MVP.",
+      "acceptanceCriteria": [
+        "Crafting system with recipe database",
+        "Material collection from duplicates",
+        "Success rate variations by rarity",
+        "Crafting animation (fusing effect)",
+        "Code archived but could return in Phase 2",
+        "Removed for MVP scope reduction"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "crafting", "phase-2"],
+      "notes": "Would add depth to collection system"
+    },
+    {
+      "id": "ARCHIVE-ACHIEVEMENTS-001",
+      "title": "Achievements System - Popup Notifications (ARCHIVED)",
+      "description": "Achievement popup notifications and gallery. Removed from MVP.",
+      "acceptanceCriteria": [
+        "Achievement popup system built",
+        "Achievement gallery for tracking progress",
+        "Achievements: 'First Pack', 'Collector', 'Mythic Hunter', 'Dedicated'",
+        "All code archived to src/_archived/",
+        "Removed to focus on core pack opening and collection"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "achievements", "gamification", "phase-2"],
+      "notes": "Would add engagement and long-term goals"
+    },
+    {
+      "id": "ARCHIVE-DAILY-REWARDS-001",
+      "title": "Daily Rewards - Login Streak Bonuses (ARCHIVED)",
+      "description": "Daily login streak tracking with bonus packs. Removed from MVP.",
+      "acceptanceCriteria": [
+        "Daily login streak tracking system",
+        "Bonus pack rewards for consecutive logins",
+        "Streak reset fairness mechanics",
+        "Claim button with countdown timer",
+        "Notification when reward available",
+        "Archived for MVP simplification"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "daily-rewards", "retention", "phase-2"],
+      "notes": "Would improve daily active users (DAU)"
+    },
+    {
+      "id": "ARCHIVE-LEADERBOARD-001",
+      "title": "Leaderboards - Global Rankings (ARCHIVED)",
+      "description": "Global and friends leaderboards. Removed from MVP as requires backend.",
+      "acceptanceCriteria": [
+        "Leaderboard: Most Packs Opened",
+        "Leaderboard: Most Unique Cards",
+        "Leaderboard: Most Mythic Cards",
+        "Global and Friends tabs",
+        "Player ranking with position",
+        "Requires username/pseudonym system",
+        "Top 100 displayed",
+        "Archived - requires backend"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "leaderboard", "social", "backend"],
+      "notes": "Would add competitive element"
+    },
+    {
+      "id": "ARCHIVE-BATCH-001",
+      "title": "Batch Opening - Multi-Pack Opener (ARCHIVED)",
+      "description": "'Open 10 Packs' fast-forward feature. Archived for MVP simplification.",
+      "acceptanceCriteria": [
+        "Batch opening system with fast-forward mode",
+        "Progress indicator: 'Opening pack 3 of 10'",
+        "Cancel button to stop batch",
+        "Results summary + individual pack review",
+        "Feature built but removed to focus on single pack experience",
+        "Could return in Phase 2 for convenience"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "batch", "convenience", "phase-2"],
+      "notes": "Quality of life feature for power users"
+    },
+    {
+      "id": "ARCHIVE-UPGRADE-001",
+      "title": "Upgrade System - Card Leveling (ARCHIVED)",
+      "description": "Sacrifice duplicate cards to level up favorites. Archived for MVP.",
+      "acceptanceCriteria": [
+        "Upgrade system: sacrifice 5 duplicates for +5 stats",
+        "Rarity cannot increase (keeps rarity)",
+        "Max upgrades: 3 per card (+15 total)",
+        "Visual indicator: star or badge for upgraded cards",
+        "Upgrade history tracking",
+        "Archived to focus on core collection mechanics"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "upgrade", "progression", "phase-2"],
+      "notes": "Would add depth to collection management"
+    },
+    {
+      "id": "ARCHIVE-WISHLIST-001",
+      "title": "Wishlist - Track Desired Cards (ARCHIVED)",
+      "description": "Wishlist system for tracking wanted cards. Archived for MVP.",
+      "acceptanceCriteria": [
+        "Wishlist feature to track desired cards",
+        "Add cards to wishlist from collection or database",
+        "Visual indicator when wished card obtained in pack",
+        "Sort wishlist by priority or date",
+        "Archived to simplify collection UI",
+        "Would be great for Phase 2"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "wishlist", "collection", "phase-2"],
+      "notes": "Would help players track goals"
+    },
+    {
+      "id": "ARCHIVE-DADPASS-001",
+      "title": "Premium/DadPass - Monetization (ARCHIVED)",
+      "description": "Premium pass system for recurring revenue. Archived - no monetization in MVP.",
+      "acceptanceCriteria": [
+        "DadPass: 30-day pass ($4.99)",
+        "Daily rewards unlocked with pass",
+        "Exclusive card unlocked at tier 10",
+        "Premium pack every 3 days",
+        "Progress tracking in UI",
+        "Auto-renew option",
+        "Archived - MVP is free with no monetization"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "monetization", "premium", "phase-3"],
+      "notes": "Would add revenue but conflicts with free-to-play vision"
+    },
+    {
+      "id": "ARCHIVE-REFERRAL-001",
+      "title": "Referral System - Growth Loop (ARCHIVED)",
+      "description": "Refer-a-friend system with rewards. Archived for MVP.",
+      "acceptanceCriteria": [
+        "Unique referral code per user",
+        "Share referral link via social/email",
+        "Reward: 5 packs when friend opens 10 packs",
+        "Friend gets bonus: 2 free packs",
+        "Referral tracking dashboard",
+        "Leaderboard: Top referrers",
+        "Archived - marketing feature for Phase 3"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "referral", "growth", "marketing"],
+      "notes": "Would help viral growth but complicates MVP"
+    },
+    {
+      "id": "ARCHIVE-SEASON-001",
+      "title": "Season System - Rotating Content (ARCHIVED)",
+      "description": "Seasonal content with rotating card sets. Archived for MVP.",
+      "acceptanceCriteria": [
+        "Season 1: Base set (173 cards)",
+        "Season 2: Summer BBQ Dads (30 new cards)",
+        "Seasonal indicator on cards",
+        "Seasonal pack designs",
+        "Archive previous seasons (still collectible)",
+        "Season launch events",
+        "Archived - base set is sufficient for MVP"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "season", "content", "phase-3"],
+      "notes": "Would add variety but base set is already large"
+    },
+    {
+      "id": "ARCHIVE-DECK-BUILDER-001",
+      "title": "Deck Builder - Strategic Card Organization (ARCHIVED)",
+      "description": "Deck building system for card organization. Archived for MVP.",
+      "acceptanceCriteria": [
+        "Create deck with name and description",
+        "Add/remove cards from collection to deck",
+        "Deck stats: total stats, card count, rarity breakdown",
+        "Save multiple decks (up to 10)",
+        "Duplicate allowed in decks (only visual, not actual cards)",
+        "Share deck list (text format)",
+        "Archived - no battle system to use decks in MVP"
+      ],
+      "priority": 4,
+      "passes": false,
+      "labels": ["archived", "deck-builder", "strategy", "phase-2"],
+      "notes": "Would make sense if battle system was active"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-01-18T22:45:00Z",
+    "version": "1.0.0",
+    "totalTasks": 11,
+    "focus": "Archived features that may return in future phases"
+  }
+}
