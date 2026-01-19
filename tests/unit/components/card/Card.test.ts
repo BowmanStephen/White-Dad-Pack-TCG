@@ -72,26 +72,6 @@ const mockOpenLightbox = vi.fn();
 describe('Card Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mock lightbox store
-    vi.doMock('@/stores/lightbox', () => ({
-      openLightbox: mockOpenLightbox
-    }));
-
-    // Mock utilities
-    vi.doMock('@/lib/utils/image-generation', () => ({
-      downloadCardImage: vi.fn(),
-      shareCardImage: vi.fn(),
-      checkShareSupport: () => ({
-        webShareAPI: false,
-        webShareFiles: false
-      })
-    }));
-
-    // Mock jokes
-    vi.doMock('@/lib/jokes', () => ({
-      getRandomJoke: () => '"Random joke for testing"'
-    }));
   });
 
   describe('Basic Rendering', () => {

@@ -133,3 +133,66 @@ bun run test:run         # Run tests
 
 **Status**: 🟢 MVP SCOPE LOCKED
 **Last Updated**: January 18, 2026
+
+---
+
+## 🚨 Known Blockers
+
+### Component Tests Blocked by Vitest Environment Issue (CRITICAL)
+
+**Status**: 🔴 BLOCKING COMPONENT TEST DEVELOPMENT
+
+**Problem**: 
+- `tests/components/` directory cannot run any tests
+- All tests fail with `ReferenceError: document is not defined`
+- Vitest 4.0.17 jsdom environment is not initializing properly
+- @testing-library/svelte@5.3.1 requires jsdom DOM to access `document.body`
+
+**Impact**:
+- ❌ Cannot create CardDetailModal tests (~50 lines, ~10 tests)
+- ❌ Cannot re-create Gallery.test.ts with proper environment
+- ❌ Cannot re-create CollectionManager.test.ts with proper environment
+- ❌ Cannot create AnimatedNumber.test.ts (~80 lines)
+- ❌ Existing tests/unit/components/pack/PackOpener.test.ts cannot be verified
+
+**What Works**:
+- ✅ Unit tests (tests/unit/) - 278 pass, 150 fail
+- ✅ Pack generation tests (tests/pack/)
+- ✅ Card database tests (tests/card/)
+- ✅ All non-component tests don't use @testing-library/svelte render()
+
+**Root Cause**:
+Vitest 4.0.17's `environment: 'jsdom'` setting is not loading jsdom globals (`document`, `window`, etc.) before test files import @testing-library/svelte. The library's `render()` function immediately tries to access `document.body`, which is undefined.
+
+**Attempted Fixes** (all unsuccessful):
+1. Updated vitest.config.mjs with `environment: 'jsdom'` and full options
+2. Created custom environment files (vitest-env-jsdom.mjs, vitest-env-happy-dom.mjs)
+3. Added manual jsdom setup in tests/setup.ts
+4. Tried `environment: 'happy-dom'` instead
+5. Added `environmentMatchGlobs: ['**/*']`
+6. Disabled svelteTesting() plugin temporarily
+7. Manually set jsdom globals at top of vitest.config.mjs
+8. Cleared node_modules/.vite and .cache directories
+9. Verified latest package versions (@testing-library/svelte@5.3.1, jsdom@27.4.0, vitest@4.0.17)
+
+**Documentation**: See `TESTS_COMPONENTS_ENV_ISSUE.md` for full analysis and potential solutions.
+
+**Recommended Solutions**:
+1. **Wait for Svelte 5.5+** (RECOMMENDED - Q1-Q2 2026)
+   - Native Svelte test utilities will remove need for @testing-library/svelte
+   - Cleaner approach, no environment setup issues
+
+2. **Downgrade to Vitest 3.x** (TEMPORARY WORKAROUND)
+   - Vitest 3.x has proven compatibility with @testing-library/svelte
+   - Command: `bun install --save-dev vitest@3.x.x`
+
+3. **Create custom Vitest environment package** (ADVANCED)
+   - Build local npm package that properly sets up jsdom
+   - Reference: TESTS_COMPONENTS_ENV_ISSUE.md for implementation guide
+
+**Next Steps**:
+- ⏸ Document this blocker in CLAUDE.md
+- ⏸ Decide on approach: wait for Svelte 5.5+ vs downgrade Vitest
+- ⏸ Once environment is fixed, create blocked component tests (Task 2, 4)
+
+---

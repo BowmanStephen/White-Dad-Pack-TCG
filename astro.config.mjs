@@ -74,6 +74,12 @@ export default defineConfig({
       APP_VERSION: JSON.stringify(APP_VERSION),
       __SENTRY_DEBUG__: JSON.stringify(false),
     },
+    // Exclude archived components from being processed
+    server: {
+      watch: {
+        ignored: ['**/src/_archived/**']
+      }
+    },
     ssr: {
       noExternal: []
     },

@@ -1,57 +1,9 @@
 /**
  * Global test setup for Vitest
- * DOM environment is set up by vitest.config.mjs
+ * DOM environment is set up by vitest.config.mjs (environment: 'happy-dom')
  * This file provides common mocks and utilities
  */
 import { vi, beforeEach, afterEach } from 'vitest';
-import { JSDOM } from 'jsdom';
-
-// Debug: Check current state
-console.log('Setup file loaded');
-console.log('typeof document:', typeof document);
-console.log('typeof global.document:', typeof global.document);
-console.log('typeof globalThis.document:', typeof globalThis.document);
-
-// Manually set up jsdom if not already set up
-if (typeof document === 'undefined' || typeof document.body === 'undefined') {
-  console.log('Setting up jsdom manually...');
-
-  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
-    url: 'http://localhost',
-    pretendToBeVisual: true,
-    resources: 'usable',
-  });
-
-  // Define globals manually (must be defined BEFORE any other imports run)
-  globalThis.window = dom.window;
-  globalThis.document = dom.window.document;
-  globalThis.navigator = dom.window.navigator;
-  globalThis.HTMLElement = dom.window.HTMLElement;
-  globalThis.HTMLAnchorElement = dom.window.HTMLAnchorElement;
-  globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
-  globalThis.HTMLDivElement = dom.window.HTMLDivElement;
-  globalThis.HTMLSpanElement = dom.window.HTMLSpanElement;
-  globalThis.HTMLImageElement = dom.window.HTMLImageElement;
-  globalThis.HTMLAudioElement = dom.window.HTMLAudioElement;
-  globalThis.Text = dom.window.Text;
-  globalThis.Node = dom.window.Node;
-  globalThis.Element = dom.window.Element;
-  globalThis.Event = dom.window.Event;
-  globalThis.EventTarget = dom.window.EventTarget;
-  globalThis.CustomEvent = dom.window.CustomEvent;
-  globalThis.localStorage = dom.window.localStorage;
-  globalThis.sessionStorage = dom.window.sessionStorage;
-
-  // Browser APIs that Svelte needs
-  globalThis.requestAnimationFrame = dom.window.requestAnimationFrame;
-  globalThis.cancelAnimationFrame = dom.window.cancelAnimationFrame;
-  globalThis.requestIdleCallback = dom.window.requestIdleCallback;
-  globalThis.performance = dom.window.performance;
-
-  console.log('jsdom globals set up successfully');
-} else {
-  console.log('Document already defined, skipping jsdom setup');
-}
 import '@testing-library/jest-dom/vitest';
 
 // Mock localStorage for all tests

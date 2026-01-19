@@ -361,6 +361,7 @@ export function resetPack(): void {
   currentCardIndex.set(0);
   revealedCards.set(new Set());
   isSkipping.set(false);
+  packError.set(null);
   storageError.set(null);
 }
 

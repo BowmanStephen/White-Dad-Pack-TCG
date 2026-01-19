@@ -34,6 +34,45 @@ bun run build            # Build for production
 
 ---
 
+## 🚨 CRITICAL: Tests/Components Environment Issue
+
+**Status:** 🔴 BLOCKER - Component tests cannot run
+
+**Problem:**
+- `tests/components/` directory is completely blocked
+- All component tests fail with: `ReferenceError: document is not defined`
+- Vitest 4.0.17's jsdom environment is not initializing properly
+- @testing-library/svelte@5.3.1 requires `document` global which is undefined
+
+**Impact:**
+- ❌ Cannot create CardDetailModal tests (Task 2 - blocked)
+- ❌ Cannot re-create Gallery.test.ts (Task 4 - blocked)
+- ❌ Cannot re-create CollectionManager.test.ts (Task 4 - blocked)
+- ❌ Cannot create AnimatedNumber.test.ts (Task 4 - blocked)
+
+**Current State:**
+- ✅ Unit tests work (tests/unit/ - 278 pass, 150 fail)
+- ❌ Component tests blocked (tests/components/ - all failing)
+
+**Documentation:** See `TESTS_COMPONENTS_ENV_ISSUE.md` for full analysis and solutions
+
+**Recommended Solution:**
+1. **Wait for Svelte 5.5+** (recommended - expected Q1-Q2 2026)
+   - Native Svelte test utilities won't need jsdom
+   - Cleanest long-term solution
+
+2. **Downgrade to Vitest 3.x** (temporary workaround)
+   - Proven compatibility with @testing-library/svelte
+   - Command: `bun install --save-dev vitest@3.x.x`
+
+3. **Create custom Vitest environment package** (advanced fix)
+   - Build local environment that properly sets up jsdom
+   - See TESTS_COMPONENTS_ENV_ISSUE.md for implementation
+
+---
+
+---
+
 ## ⚠️ MVP SCOPE NOTICE (January 18, 2026)
 
 **This project has undergone a significant scope reduction.** The codebase now focuses on **2 core features only**:

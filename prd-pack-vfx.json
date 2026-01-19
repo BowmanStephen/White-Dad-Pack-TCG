@@ -263,7 +263,7 @@
       "dependsOn": [
         "PACK-VFX-009"
       ],
-      "completionNotes": "Completed by agent - Set explosive tear duration to 0.6s with 5% probability and intense screen shake"
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-012",
@@ -4878,6 +4878,6 @@
     "version": "2.0.0",
     "totalTasks": 210,
     "focus": "Complete MVP polish for all features",
-    "updatedAt": "2026-01-19T06:09:44.678Z"
+    "updatedAt": "2026-01-19T06:15:00.770Z"
   }
 }

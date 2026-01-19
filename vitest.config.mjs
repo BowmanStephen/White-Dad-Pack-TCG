@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { svelteTesting } from '@testing-library/svelte/vite';
 
 export default defineConfig({
   plugins: [
@@ -12,7 +11,6 @@ export default defineConfig({
         hydratable: false,
       },
     }),
-    svelteTesting()
   ],
   test: {
     environmentOptions: {
@@ -21,9 +19,8 @@ export default defineConfig({
       pretendToBeVisual: true,
       resources: 'usable',
     },
-    environment: 'jsdom',
+    environment: 'happy-dom',
     globals: true,
-    environmentMatchGlobs: ['**/*'],
     setupFiles: ['./tests/setup.ts'],
     include: [
       'tests/**/*.test.ts',
