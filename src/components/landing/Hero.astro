@@ -1,5 +1,5 @@
 ---
-import Button from '../common/Button.astro';
+import Button from '../common/Button.svelte';
 import PackPreview from './PackPreview.astro';
 
 const t = {
@@ -46,7 +46,7 @@ const t = {
             <span class="mr-2">🎴</span>
             {t.cta}
           </a>
-          <Button variant="secondary" size="lg" href="#features">
+          <Button variant="secondary" size="lg" href="#features" client:load>
             {t.learnMore}
           </Button>
         </div>

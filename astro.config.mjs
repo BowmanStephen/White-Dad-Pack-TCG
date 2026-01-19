@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
 import sentry from '@sentry/astro';
-import { imagetools } from 'vite-imagetools';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
@@ -69,7 +68,7 @@ export default defineConfig({
 
   // Vite configuration for optimal bundling
   vite: {
-    plugins: [imagetools()],
+    plugins: [],
     define: {
       // Inject app version for Sentry
       APP_VERSION: JSON.stringify(APP_VERSION),
