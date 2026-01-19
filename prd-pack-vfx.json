@@ -594,7 +594,7 @@
         "legendary+"
       ],
       "dependsOn": [],
-      "completionNotes": "Already fully implemented in ConfettiEffects.svelte. All acceptance criteria verified: confetti particle system with physics (gravity, velocity, rotation), rarity-specific colors, 3s duration, legendary (100 particles) and mythic (150 particles) triggers."
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-026",
@@ -609,7 +609,7 @@
         "Document minimum device specs for 60fps"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "labels": [
         "vfx",
         "performance",
@@ -618,7 +618,8 @@
       ],
       "dependsOn": [
         "PACK-VFX-022"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     },
     {
       "id": "PACK-VFX-027",
@@ -4892,6 +4893,6 @@
     "version": "2.0.0",
     "totalTasks": 210,
     "focus": "Complete MVP polish for all features",
-    "updatedAt": "2026-01-19T07:05:38.826Z"
+    "updatedAt": "2026-01-19T07:16:00.950Z"
   }
 }
