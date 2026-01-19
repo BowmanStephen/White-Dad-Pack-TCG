@@ -262,7 +262,7 @@ export const TEAR_ANIMATION_CONFIG: Record<TearAnimation, TearAnimationConfig> =
   explosive: {
     name: 'Explosive Tear',
     description: 'Quick burst open with particles',
-    duration: 1000, // 1.0s total
+    duration: 600, // 0.6s total (PACK-VFX-011)
     phaseMultipliers: {
       appear: 0.8,
       glow: 0.5, // Short anticipation
