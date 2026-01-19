@@ -1,0 +1,1216 @@
+{
+  "cards": [
+    {
+      "id": "001",
+      "name": "Grill Master Gary the Groin-Griller",
+      "subtitle": "Propane Makes Me Hard",
+      "type": "BBQ_DICKTATOR",
+      "rarity": "rare",
+      "artwork": "/cards/bbq/grill-master-gary.png",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 100,
+        "fixIt": 30,
+        "napPower": 40,
+        "remoteControl": 50,
+        "thermostat": 60,
+        "sockSandal": 70,
+        "beerSnob": 75
+      },
+      "flavorText": "I fucked my grill 'til it screamed fire! Big McDonald's hides lizard DNA in nuggets—my propane's the only pure heat!",
+      "abilities": [
+        {
+          "name": "Flame On Fuckery",
+          "description": "Sets everything ablaze. +50 burn damage. Includes neighbor's fence."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "002",
+      "name": "Thermostat Tyrant Tim",
+      "subtitle": "68°F or Fuck Off",
+      "type": "COUCH_CUMMANDER",
+      "rarity": "epic",
+      "artwork": "/cards/couch/thermostat-tyrant.png",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 40,
+        "fixIt": 50,
+        "napPower": 70,
+        "remoteControl": 80,
+        "thermostat": 100,
+        "sockSandal": 60,
+        "beerSnob": 55
+      },
+      "flavorText": "Kids touched my 'stat so I told 'em I'd fuck their fingers off! Big HVAC's tracking my temp with spy sensors!",
+      "abilities": [
+        {
+          "name": "Temperature Tit-Lock",
+          "description": "Feels every touch on thermostat from anywhere. +30 defense when invaded."
+        },
+        {
+          "name": "Bill Boner Rage",
+          "description": "+500% damage when electric bill arrives. Opponent takes +15 stress."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 2,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "003",
+      "name": "New Balance Nathan Nut-Kicker",
+      "subtitle": "Fashion Fuckery Since 2004",
+      "type": "FASHION_FUCK",
+      "rarity": "common",
+      "artwork": "/cards/fashion/new-balance-nathan.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 50,
+        "fixIt": 40,
+        "napPower": 50,
+        "remoteControl": 60,
+        "thermostat": 45,
+        "sockSandal": 100,
+        "beerSnob": 30
+      },
+      "flavorText": "Podiatrist said these shoes fuck me back with love! Marriage counselor said my dick's divorced—fuck Gucci spy soles!",
+      "abilities": [
+        {
+          "name": "Maximum Cockfort",
+          "description": "Gain +20 defense against fashion snobs. Zero fucks given about style."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 3,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "004",
+      "name": "Lawn Legend Larry the Landscape-Lover",
+      "subtitle": "GET OFF MY LAWN",
+      "type": "LAWN_LUNATIC",
+      "rarity": "uncommon",
+      "artwork": "/cards/lawn/lawn-legend-larry.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 60,
+        "fixIt": 70,
+        "napPower": 40,
+        "remoteControl": 35,
+        "thermostat": 55,
+        "sockSandal": 70,
+        "beerSnob": 45
+      },
+      "flavorText": "I've spent 20 years fucking this grass! HOA can suck my ass! These fertilizer brands are govt chemtrail fronts!",
+      "abilities": [
+        {
+          "name": "Grass Stare Cock-Vigil",
+          "description": "Detect single imperfect blade from 100 yards. +25 perception damage. Paranoia level: EXTREME."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 4,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "005",
+      "name": "Remote Control Randy",
+      "subtitle": "Don't Touch The Buttons",
+      "type": "COUCH_CUMMANDER",
+      "rarity": "common",
+      "artwork": "/cards/couch/remote-control-randy.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 35,
+        "fixIt": 30,
+        "napPower": 95,
+        "remoteControl": 100,
+        "thermostat": 60,
+        "sockSandal": 60,
+        "beerSnob": 40
+      },
+      "flavorText": "I'm not asleep, I'm conducting REM research! Netflix brainwashes us with gay frogs! Pass the remote—NOW!",
+      "abilities": [
+        {
+          "name": "Button Memory Cock-Vision",
+          "description": "Knows exactly which button was touched. Claims remote has govt tracking chip. Uses it anyway."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 5,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "006",
+      "name": "Handyman Hank the Home-Fixer",
+      "subtitle": "Duct Tape & WD-40",
+      "type": "FIX_IT_FUCKBOY",
+      "rarity": "uncommon",
+      "artwork": "/cards/fixit/handyman-hank.png",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 50,
+        "fixIt": 100,
+        "napPower": 35,
+        "remoteControl": 45,
+        "thermostat": 60,
+        "sockSandal": 70,
+        "beerSnob": 50
+      },
+      "flavorText": "Plumber wanted $800. I fixed it myself for $15 and a trip to the ER. Home Depot's a front for Area 51 aliens!",
+      "abilities": [
+        {
+          "name": "YouTube Master Cock-Fix",
+          "description": "Watched 10-min video. Basically an expert now. +40 repair damage. Ignores actual experts."
+        },
+        {
+          "name": "Hardware Store Wizard Dick",
+          "description": "Navigate Home Depot blindfolded. Claims store layout changes weekly for 'security.' Shops there daily."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 6,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "007",
+      "name": "Bogey Bob the Ball-Basher",
+      "subtitle": "It's Not About The Score",
+      "type": "GOLF_GONAD",
+      "rarity": "common",
+      "artwork": "/cards/golf/bogey-bob.png",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 60,
+        "fixIt": 30,
+        "napPower": 75,
+        "remoteControl": 40,
+        "thermostat": 50,
+        "sockSandal": 80,
+        "beerSnob": 90
+      },
+      "flavorText": "I fuck golf balls raw! Course designer put 5G in the holes! The fairways are govt surveillance strips!",
+      "abilities": [
+        {
+          "name": "Swing Stroke Furor",
+          "description": "+40 power hit. Ball goes way too far. Neighbor's window destroyed (again). Worth it."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 7,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "008",
+      "name": "Smoker Steve Meat-Masher",
+      "subtitle": "Low & Slow Cock-Legend",
+      "type": "BBQ_DICKTATOR",
+      "rarity": "rare",
+      "artwork": "/cards/bbq/smoker-steve.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 100,
+        "fixIt": 40,
+        "napPower": 60,
+        "remoteControl": 30,
+        "thermostat": 70,
+        "sockSandal": 50,
+        "beerSnob": 95
+      },
+      "flavorText": "I smoke brisket and chemtrails! Big BBQ's got conspiracy marinades! Ronald McFuckface controls weather!",
+      "abilities": [
+        {
+          "name": "Smoke Ring Cum-Summon",
+          "description": "Creates +30 damage smoke cloud. Blinds opponent for 1 turn. Also blinds self—worth it."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 8,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "009",
+      "name": "Car Cock Captain Carl",
+      "subtitle": "Transmission Tranny-Fucker",
+      "type": "CAR_COCKSMAN",
+      "rarity": "uncommon",
+      "artwork": "/cards/car/car-captain-carl.png",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 95,
+        "napPower": 50,
+        "remoteControl": 45,
+        "thermostat": 65,
+        "sockSandal": 75,
+        "beerSnob": 70
+      },
+      "flavorText": "I fuck transmissions raw! My car's the only vehicle the govt hasn't bugged yet! OBD scanners are SPYWARE!",
+      "abilities": [
+        {
+          "name": "Engine Erection Performance",
+          "description": "+50 horsepower. Can outrun any opponent. Claims mechanics are govt agents."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 9,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "010",
+      "name": "Office Asshole Oscar",
+      "subtitle": "Cubicle Cock-Commander",
+      "type": "OFFICE_DORK",
+      "rarity": "common",
+      "artwork": "/cards/office/office-oscar.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 50,
+        "napPower": 40,
+        "remoteControl": 70,
+        "thermostat": 80,
+        "sockSandal": 60,
+        "beerSnob": 65
+      },
+      "flavorText": "I fucked my stapler raw! Corporate's got microchip compliance forms! HR is an oppression TRAP!",
+      "abilities": [
+        {
+          "name": "Spreadsheet Stroke Domination",
+          "description": "+35 bureaucratic damage. Can weaponize PowerPoint. Meeting lasts 3 hours longer."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 10,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "011",
+      "name": "Cool Ass Clint Crypto-Captain",
+      "subtitle": "Blockchain Boner-Billionaire",
+      "type": "COOL_COCKSMITH",
+      "rarity": "rare",
+      "artwork": "/cards/cool/cool-clint.png",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 55,
+        "fixIt": 60,
+        "napPower": 45,
+        "remoteControl": 75,
+        "thermostat": 70,
+        "sockSandal": 40,
+        "beerSnob": 85
+      },
+      "flavorText": "I fuck Bitcoin raw! Banks are Illuminati puppet masters! Blockchain is the ONLY truth! Decentralized dick energy!",
+      "abilities": [
+        {
+          "name": "Crypto Cum Volatility",
+          "description": "+60 random damage fluctuation. Portfolio swings wildly. Emotionally unstable but DIAMOND HANDS."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 11,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "012",
+      "name": "Coach Cock Crusher Casey",
+      "subtitle": "Whistle-Blowing Ass-Whoopper",
+      "type": "COACH_COCKSMITH",
+      "rarity": "uncommon",
+      "artwork": "/cards/coach/coach-casey.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 50,
+        "fixIt": 40,
+        "napPower": 55,
+        "remoteControl": 50,
+        "thermostat": 60,
+        "sockSandal": 75,
+        "beerSnob": 80
+      },
+      "flavorText": "I blow this whistle raw! Refs are govt plants controlling the game! My team's plays NEVER work because of SABOTAGE!",
+      "abilities": [
+        {
+          "name": "Whistle Wank Dominance",
+          "description": "+40 authority damage. Calls penalties on opponent for 'existing.' Ejection card issued."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 12,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "013",
+      "name": "Chef Cock Destroyer Derek",
+      "subtitle": "Saucepan Sodomy Specialist",
+      "type": "CHEF_COCKSMITH",
+      "rarity": "rare",
+      "artwork": "/cards/chef/chef-derek.png",
+      "stats": {
+        "dadJoke": 85,
+        "grillSkill": 70,
+        "fixIt": 50,
+        "napPower": 30,
+        "remoteControl": 45,
+        "thermostat": 65,
+        "sockSandal": 55,
+        "beerSnob": 95
+      },
+      "flavorText": "I fuck kitchen tools raw! Food Network is FAKE! Real cooking has NO govt oversight! My secret ingredient is PARANOIA!",
+      "abilities": [
+        {
+          "name": "Recipe Rage Fucker",
+          "description": "+50 flavor damage. Opponent can't taste anything but rage. Refuses Gordon Ramsay's advice."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 13,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "014",
+      "name": "Holiday Hank the Tacky-Decorator",
+      "subtitle": "Lights & Louder Lights Cocksman",
+      "type": "HOLIDAY_HORNY",
+      "rarity": "uncommon",
+      "artwork": "/cards/holiday/holiday-hank.png",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 45,
+        "fixIt": 55,
+        "napPower": 50,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 65,
+        "beerSnob": 55
+      },
+      "flavorText": "I fuck Christmas lights raw! Neighbors' electric bills prove govt tracks power usage! MY display's 500K watts of FREEDOM!",
+      "abilities": [
+        {
+          "name": "Seizure Strobe Cock",
+          "description": "+45 visual damage. Opponent blinded by lights. HOA filing complaints. Worth it."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 14,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "015",
+      "name": "Warehouse Willy the Industrial-Fucker",
+      "subtitle": "Pallet-Penetrating Pussy-Prowler",
+      "type": "WAREHOUSE_WARRIOR",
+      "rarity": "rare",
+      "artwork": "/cards/warehouse/warehouse-willy.png",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 80,
+        "napPower": 50,
+        "remoteControl": 55,
+        "thermostat": 60,
+        "sockSandal": 70,
+        "beerSnob": 75
+      },
+      "flavorText": "I fuck forklifts raw! Warehouse scanners are RFID govt surveillance! Nobody reads the fine print on those shipping forms!",
+      "abilities": [
+        {
+          "name": "Forklift Fucker Fury",
+          "description": "+55 lifting damage. Can move opponent's entire game board. OSHA violations everywhere."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 15,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "016",
+      "name": "The Ultimate Dicktator Daddy",
+      "subtitle": "Hi Hungry, I'm Fuckin' Dad",
+      "type": "BBQ_DICKTATOR",
+      "rarity": "mythic",
+      "artwork": "/cards/bbq/ultimate-dicktator.png",
+      "stats": {
+        "dadJoke": 100,
+        "grillSkill": 95,
+        "fixIt": 90,
+        "napPower": 85,
+        "remoteControl": 80,
+        "thermostat": 90,
+        "sockSandal": 95,
+        "beerSnob": 100
+      },
+      "flavorText": "Peak suburban depravity. This dad has achieved MAXIMUM fuckery. All conspiracy theories converge simultaneously in his brain.",
+      "abilities": [
+        {
+          "name": "Dad Joke Dickery",
+          "description": "All puns +40 damage. Opponent groans involuntarily. Takes psychological damage."
+        },
+        {
+          "name": "Conspiracy Combo Maximum",
+          "description": "Every ability references 3+ conspiracies. +30 insanity damage. Accuracy: uncertain but CERTAIN."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 16,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "017",
+      "name": "Vintage Vinyl Victor",
+      "subtitle": "Turntable Taint-Toucher",
+      "type": "VINTAGE_VANDAL",
+      "rarity": "uncommon",
+      "artwork": "/cards/vintage/vintage-victor.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 35,
+        "fixIt": 70,
+        "napPower": 65,
+        "remoteControl": 60,
+        "thermostat": 65,
+        "sockSandal": 80,
+        "beerSnob": 85
+      },
+      "flavorText": "Vinyl's the only REAL sound! CDs are govt brainwash delivery systems! My turntable cost more than my house—worth it!",
+      "abilities": [
+        {
+          "name": "Analog Ass-Assault",
+          "description": "+40 nostalgic damage. Opponent forced to listen to 12-minute rant about 'back in my day.' Quality argument: questionable."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 17,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "018",
+      "name": "Smoker Steve the Meat-Smoker",
+      "subtitle": "Low & Slow Cock-Legend",
+      "type": "BBQ_DICKTATOR",
+      "rarity": "rare",
+      "artwork": "/cards/bbq/smoker-steve-v2.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 100,
+        "fixIt": 40,
+        "napPower": 60,
+        "remoteControl": 30,
+        "thermostat": 70,
+        "sockSandal": 50,
+        "beerSnob": 95
+      },
+      "flavorText": "Smoked brisket for 47 hours straight! I AM the smoke! Smoke inhalation? Government EXPERIMENT on my lungs!",
+      "abilities": [
+        {
+          "name": "Smoke Ring God-Mode",
+          "description": "+45 smoking damage. Creates perfect ring texture. Opponent chokes from secondhand paranoia."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 18,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "019",
+      "name": "Fashion Fuck Frank the Flannel-Philosopher",
+      "subtitle": "Plaid Pussy-Protector",
+      "type": "FASHION_FUCK",
+      "rarity": "common",
+      "artwork": "/cards/fashion/fashion-frank.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 55,
+        "fixIt": 65,
+        "napPower": 60,
+        "remoteControl": 55,
+        "thermostat": 60,
+        "sockSandal": 95,
+        "beerSnob": 75
+      },
+      "flavorText": "Flannel is the only fashion! Designers are Illuminati tailors! My shirt cost $15 at Goodwill—TRUE AUTHENTICITY!",
+      "abilities": [
+        {
+          "name": "Authentic Asshole Energy",
+          "description": "+30 irony damage. Opponent can't tell if serious. Probably isn't. Definitely is."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 19,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "020",
+      "name": "Tech Guru Tim the Silicon-Sodomizer",
+      "subtitle": "Startup Asshole CEO-Cock",
+      "type": "TECH_DICK",
+      "rarity": "rare",
+      "artwork": "/cards/tech/tech-tim.png",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 25,
+        "fixIt": 75,
+        "napPower": 30,
+        "remoteControl": 90,
+        "thermostat": 70,
+        "sockSandal": 35,
+        "beerSnob": 60
+      },
+      "flavorText": "I fuck algorithms raw! Big Tech harvests our DATA as CURRENCY! My smartwatch is tracking my DICK'S PULSE!",
+      "abilities": [
+        {
+          "name": "Code Cock Crunch",
+          "description": "+50 computational damage. Can crash opponent's entire deck with a well-timed bug report."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 20,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "021",
+      "name": "Beer Bastard Bruce the Brewmaster",
+      "subtitle": "IPA Imperial Ass-Burner",
+      "type": "BEER_BONER",
+      "rarity": "uncommon",
+      "artwork": "/cards/beer/beer-bruce.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 70,
+        "fixIt": 45,
+        "napPower": 50,
+        "remoteControl": 55,
+        "thermostat": 60,
+        "sockSandal": 65,
+        "beerSnob": 100
+      },
+      "flavorText": "I fuck IPAs raw! Bud Light is govt population control! Miller colluded with FLUORIDE! My microbrew has 47 ABV%!",
+      "abilities": [
+        {
+          "name": "Drunk Damage Doubler",
+          "description": "+40 intoxication effect. Opponent loses coherence for 2 turns. Can't spell 'conspiracy' correctly."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 21,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "022",
+      "name": "Garden Gnome Gary",
+      "subtitle": "Ornament Obsession Operator",
+      "type": "LAWN_LUNATIC",
+      "rarity": "rare",
+      "artwork": "/cards/lawn/garden-gnome-gary.png",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 60,
+        "napPower": 70,
+        "remoteControl": 50,
+        "thermostat": 55,
+        "sockSandal": 85,
+        "beerSnob": 70
+      },
+      "flavorText": "300 gnomes in my yard! Each one's a govt surveillance decoy! I've named them all—they're my ARMY!",
+      "abilities": [
+        {
+          "name": "Gnome Invasion Force-Field",
+          "description": "+50 defensive formation. Summons 50 tiny ceramic soldiers. Opponent confused by absurdity."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 22,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "023",
+      "name": "Weber Wiener 3000 Grill",
+      "subtitle": "The Sacred Fuck-Flame",
+      "type": "ITEM",
+      "rarity": "legendary",
+      "artwork": "/cards/items/weber-3000.png",
+      "stats": {
+        "dadJoke": 80,
+        "grillSkill": 100,
+        "fixIt": 50,
+        "napPower": 0,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 0,
+        "beerSnob": 0
+      },
+      "flavorText": "Four burners of pure cock-power! I fucked this grill harder than I love my kids! Neighbors jerk off to my flames!",
+      "abilities": [
+        {
+          "name": "Perfect Heat Hump",
+          "description": "No hot spots, just pure fuck-fire everywhere. +30 grill boost for any BBQ_DICKTATOR."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 23,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "024",
+      "name": "Remote Control Deluxe 7000",
+      "subtitle": "Programmable Pussy-Controller",
+      "type": "ITEM",
+      "rarity": "rare",
+      "artwork": "/cards/items/remote-deluxe.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 0,
+        "fixIt": 0,
+        "napPower": 0,
+        "remoteControl": 100,
+        "thermostat": 80,
+        "sockSandal": 0,
+        "beerSnob": 0
+      },
+      "flavorText": "17 macro buttons of pure CONTROL! Government hardcoded backdoors in every button! I disconnected the WiFi—SAFE NOW!",
+      "abilities": [
+        {
+          "name": "Universal Cock-Controller",
+          "description": "+35 remote range extension. Can control opponent's devices. They're horrified & impressed."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 24,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "025",
+      "name": "Margarita Machine Macho Mike",
+      "subtitle": "Blender Cock-Blaster",
+      "type": "ITEM",
+      "rarity": "uncommon",
+      "artwork": "/cards/items/margarita-machine.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 50,
+        "fixIt": 0,
+        "napPower": 0,
+        "remoteControl": 0,
+        "thermostat": 0,
+        "sockSandal": 0,
+        "beerSnob": 85
+      },
+      "flavorText": "Frozen cocktails on DEMAND! Big Tequila uses CHEM-SALT! My margaritas taste like FREEDOM & PARANOIA!",
+      "abilities": [
+        {
+          "name": "Brain Freeze Assault",
+          "description": "+30 cold damage. Opponent dizzy from booze & government conspiracy ice crystals."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 25,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "026",
+      "name": "Gaming PC The Ultimate Gamer Cock",
+      "subtitle": "RGB Lighting Ass-Blaster",
+      "type": "ITEM",
+      "rarity": "legendary",
+      "artwork": "/cards/items/gaming-pc.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 0,
+        "fixIt": 40,
+        "napPower": 0,
+        "remoteControl": 50,
+        "thermostat": 0,
+        "sockSandal": 0,
+        "beerSnob": 0
+      },
+      "flavorText": "My gaming rig cost $12K! RGB lights are government HYPNOTISM! I'm immune—I think. Wait, why am I buying more RGB?",
+      "abilities": [
+        {
+          "name": "Framerate Fury",
+          "description": "+60 computational damage. 144 FPS conspiracy delivery system. Opponent can't look away."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 26,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "DUNE_001",
+      "name": "Paul Atreides Ass-Traitor",
+      "subtitle": "Muad'Dib Meat-Masher",
+      "type": "CROSSOVER_DUNE",
+      "rarity": "legendary",
+      "artwork": "/cards/crossovers/paul-atreides.png",
+      "stats": {
+        "dadJoke": 90,
+        "grillSkill": 40,
+        "fixIt": 70,
+        "napPower": 60,
+        "remoteControl": 80,
+        "thermostat": 85,
+        "sockSandal": 75,
+        "beerSnob": 70
+      },
+      "flavorText": "I fuck spice raw! Frank Herbert's got Fed plots in every sand grain! I see the future—it's ALL chemtrails!",
+      "abilities": [
+        {
+          "name": "Spice Stroke",
+          "description": "+50 mind control damage. Predict opponent's move but rant 5 minutes about it."
+        },
+        {
+          "name": "Desert Conspiracy",
+          "description": "+30 desert terrain boost. Government terraforming DETECTED! Arrakis freedom fighters RISE!"
+        }
+      ],
+      "series": "Dune Crossover",
+      "cardNumber": 1,
+      "totalInSeries": 4,
+      "artist": "DadDeck Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "DUNE_002",
+      "name": "Leto Lawnreides II",
+      "subtitle": "God-Emperor Groin-Grinder",
+      "type": "CROSSOVER_DUNE",
+      "rarity": "mythic",
+      "artwork": "/cards/crossovers/leto-lawnreides.png",
+      "stats": {
+        "dadJoke": 95,
+        "grillSkill": 35,
+        "fixIt": 75,
+        "napPower": 65,
+        "remoteControl": 85,
+        "thermostat": 90,
+        "sockSandal": 80,
+        "beerSnob": 75
+      },
+      "flavorText": "I hump sandworms 'til I bust! Warner Bros. got 5G in my worm suit! Thousand-year reign of dad conspiracy!",
+      "abilities": [
+        {
+          "name": "Worm Wank",
+          "description": "+60 AOE sand damage. Summons conspiracy sandworms. HBO paid for this silencing."
+        },
+        {
+          "name": "Prescience Cock-Vision",
+          "description": "Know opponent's 3-turn strategy. Still wrong about EVERYTHING. Hubris included."
+        }
+      ],
+      "series": "Dune Crossover",
+      "cardNumber": 2,
+      "totalInSeries": 4,
+      "artist": "DadDeck Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "DUNE_003",
+      "name": "Baron Harkonnen the Blob-Bastard",
+      "subtitle": "Anti-Gravity Asshole",
+      "type": "CROSSOVER_DUNE",
+      "rarity": "epic",
+      "artwork": "/cards/crossovers/baron-harkonnen.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 50,
+        "fixIt": 60,
+        "napPower": 50,
+        "remoteControl": 75,
+        "thermostat": 85,
+        "sockSandal": 45,
+        "beerSnob": 80
+      },
+      "flavorText": "My fat is govt ARMOR! They pump poison to control my weight! Anti-gravity belt's protecting me from SURVEILLANCE LASERS!",
+      "abilities": [
+        {
+          "name": "Toxic Cock-Cloud",
+          "description": "+45 poison damage. Opponent gagging. Environmental hazard: APPROVED."
+        }
+      ],
+      "series": "Dune Crossover",
+      "cardNumber": 3,
+      "totalInSeries": 4,
+      "artist": "DadDeck Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "DUNE_004",
+      "name": "Feyd-Rautha the Fury-Fucker",
+      "subtitle": "Poison & Pleasure Prison-Prowler",
+      "type": "CROSSOVER_DUNE",
+      "rarity": "rare",
+      "artwork": "/cards/crossovers/feyd-rautha.png",
+      "stats": {
+        "dadJoke": 65,
+        "grillSkill": 40,
+        "fixIt": 50,
+        "napPower": 40,
+        "remoteControl": 60,
+        "thermostat": 70,
+        "sockSandal": 55,
+        "beerSnob": 75
+      },
+      "flavorText": "I fuck poison taboo-style! Uncle Baron's govt breeding program! My dick's a biological WEAPON of MASS PARANOIA!",
+      "abilities": [
+        {
+          "name": "Poison Cock-Combatant",
+          "description": "+40 blade combat damage. Opponent poisoned & confused. Family values: QUESTIONABLE."
+        }
+      ],
+      "series": "Dune Crossover",
+      "cardNumber": 4,
+      "totalInSeries": 4,
+      "artist": "DadDeck Studios",
+      "seasonId": 2
+    },
+    {
+      "id": "CURSE_001",
+      "name": "Chemtrail Cock-Block",
+      "subtitle": "Sky Sperm Suppression",
+      "type": "CURSE",
+      "rarity": "rare",
+      "artwork": "/cards/curses/chemtrail-block.png",
+      "flavorText": "Sky's fuckin' my dick dry! Big Gov's sprayin' boner-killer clouds! Can't get it up!",
+      "effect": "Target opponent's dad loses -30 attack for 3 turns; can't use grillSkill.",
+      "cardType": "DAD_DAMNATION",
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 10,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "CURSE_002",
+      "name": "Microwave Mind-Control Cock-Jam",
+      "subtitle": "Radiation Rape Brain-Scrambler",
+      "type": "CURSE",
+      "rarity": "uncommon",
+      "artwork": "/cards/curses/microwave-control.png",
+      "flavorText": "Microwave satellites beam thoughts into my skull! Can't think straight! My paranoia's AMPLIFIED!",
+      "effect": "Opponent loses -20 mental clarity. Makes random plays for 2 turns.",
+      "cardType": "DAD_DAMNATION",
+      "series": 1,
+      "cardNumber": 2,
+      "totalInSeries": 10,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "CURSE_003",
+      "name": "Fluoride Fuckery Curse",
+      "subtitle": "Water Supply Stupidity Serum",
+      "type": "CURSE",
+      "rarity": "common",
+      "artwork": "/cards/curses/fluoride-curse.png",
+      "flavorText": "They put FLUORIDE in our water to make us OBEDIENT! My thoughts are FUZZY! Resistance is FUTILE!",
+      "effect": "Opponent loses -15 intelligence for entire match. Plays become increasingly irrational.",
+      "cardType": "DAD_DAMNATION",
+      "series": 1,
+      "cardNumber": 3,
+      "totalInSeries": 10,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "TRAP_001",
+      "name": "Garage Sale Gangbang",
+      "subtitle": "Bargain Basement Boner-Trap",
+      "type": "TRAP",
+      "rarity": "rare",
+      "artwork": "/cards/traps/garage-sale.png",
+      "flavorText": "I fucked your garage sale finds! eBay's govt pawn shop! GOTCHA!",
+      "triggerCondition": "Opponent plays an ITEM card",
+      "effect": "Steal their ITEM and boost your dad's attack by +30.",
+      "cardType": "SUBURBAN_SUCKERPUNCH",
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 10,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "TRAP_002",
+      "name": "HOA Violation Vortex",
+      "subtitle": "Suburban Regulation Rape-Trap",
+      "type": "TRAP",
+      "rarity": "uncommon",
+      "artwork": "/cards/traps/hoa-violation.png",
+      "flavorText": "Caught YOUR lawn care SLIPPING! HOA's watching! FINED & FURIOUS!",
+      "triggerCondition": "Opponent controls a LAWN-type card",
+      "effect": "Opponent loses -40 health. Must pay fine of 2 resource tokens.",
+      "cardType": "SUBURBAN_SUCKERPUNCH",
+      "series": 1,
+      "cardNumber": 2,
+      "totalInSeries": 10,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "SUBURBAN_SPY_001",
+      "name": "Binocular Boner-Bugger",
+      "subtitle": "Peep My Prick, Neighbor",
+      "type": "SUBURBAN_SPY",
+      "rarity": "rare",
+      "artwork": "/cards/suburban-spy/binocular-bugger.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 40,
+        "napPower": 50,
+        "remoteControl": 80,
+        "thermostat": 70,
+        "sockSandal": 65,
+        "beerSnob": 60
+      },
+      "flavorText": "I fuck binoculars raw! The Smiths are CIA plants spyin' on my BBQ! I'll spy back!",
+      "abilities": [
+        {
+          "name": "Snoop Stroke",
+          "description": "+30 stealth damage. See opponent's hand. It's a govt right."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "GAMER_GIZZARD_001",
+      "name": "Controller Cock-Crusher",
+      "subtitle": "Joystick Jizz-Jolt",
+      "type": "GAMER_GIZZARD",
+      "rarity": "rare",
+      "artwork": "/cards/gamer/controller-crusher.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 20,
+        "fixIt": 40,
+        "napPower": 60,
+        "remoteControl": 90,
+        "thermostat": 70,
+        "sockSandal": 55,
+        "beerSnob": 60
+      },
+      "flavorText": "I fuck controllers raw! Nintendo's got brainwash CODES in Mario! Govt loves video games!",
+      "abilities": [
+        {
+          "name": "Button Bash Boner",
+          "description": "+30 precision damage. Rapid-fire attacks confuse opponent. Screams at screen."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "PREPPER_PENIS_001",
+      "name": "Bunker Boner-Bunker",
+      "subtitle": "Apocalypse Ass-Annihilator",
+      "type": "PREPPER_PENIS",
+      "rarity": "rare",
+      "artwork": "/cards/prepper/bunker-boner.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 40,
+        "fixIt": 60,
+        "napPower": 50,
+        "remoteControl": 60,
+        "thermostat": 80,
+        "sockSandal": 70,
+        "beerSnob": 65
+      },
+      "flavorText": "I fuck my bunker raw! Big Gov's got FEMA camps ready for Y2K 2.0! I'm PREPARED!",
+      "abilities": [
+        {
+          "name": "Spam Stockpile",
+          "description": "+30 defense hoard. Survive opponent attacks for 2 extra turns."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "SON_SPAWN_001",
+      "name": "Skater Spawn Shawn",
+      "subtitle": "Deck Dick-Dropper",
+      "type": "SON_SPAWN",
+      "rarity": "rare",
+      "artwork": "/cards/family/skater-spawn.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 20,
+        "fixIt": 40,
+        "napPower": 60,
+        "remoteControl": 75,
+        "thermostat": 65,
+        "sockSandal": 85,
+        "beerSnob": 60
+      },
+      "flavorText": "I fuck skateboards raw! Dad's a CIA stooge trackin' my TikTok! Govt hates skateboard culture!",
+      "abilities": [
+        {
+          "name": "Grind Groin",
+          "description": "+30 agility damage. Dodge attacks, triple-flip away from consequences."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "DAUGHTER_DINGBAT_001",
+      "name": "Selfie Slut Sarah",
+      "subtitle": "Filter Fuck-Face",
+      "type": "DAUGHTER_DINGBAT",
+      "rarity": "rare",
+      "artwork": "/cards/family/selfie-sarah.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 20,
+        "fixIt": 30,
+        "napPower": 60,
+        "remoteControl": 80,
+        "thermostat": 70,
+        "sockSandal": 85,
+        "beerSnob": 65
+      },
+      "flavorText": "I fuck selfies raw! Dad's a patriarchal Fed trackin' my Insta! Instagram is MIND CONTROL!",
+      "abilities": [
+        {
+          "name": "Snap Stroke",
+          "description": "+30 charm damage. Steal opponent's secrets via DM."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "UNCLE_UPROAR_001",
+      "name": "Uncle Useless Ulysses",
+      "subtitle": "Basement Boner-Bum",
+      "type": "UNCLE_UPROAR",
+      "rarity": "rare",
+      "artwork": "/cards/family/uncle-useless.png",
+      "stats": {
+        "dadJoke": 75,
+        "grillSkill": 30,
+        "fixIt": 60,
+        "napPower": 70,
+        "remoteControl": 65,
+        "thermostat": 75,
+        "sockSandal": 80,
+        "beerSnob": 70
+      },
+      "flavorText": "I fuck old junk raw! Thanksgiving's a govt plot to track my turkey! The basement is my KINGDOM!",
+      "abilities": [
+        {
+          "name": "Creep Cum",
+          "description": "+30 weird damage. Opponent loses -15 confidence. Uncomfortable vibes."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    },
+    {
+      "id": "SUBURBAN_SIDEKICK_001",
+      "name": "Mailman Meat-Molester",
+      "subtitle": "Package Pussy-Prowler",
+      "type": "SUBURBAN_SIDEKICK",
+      "rarity": "rare",
+      "artwork": "/cards/sidekicks/mailman.png",
+      "stats": {
+        "dadJoke": 70,
+        "grillSkill": 30,
+        "fixIt": 50,
+        "napPower": 60,
+        "remoteControl": 70,
+        "thermostat": 65,
+        "sockSandal": 75,
+        "beerSnob": 60
+      },
+      "flavorText": "I fuck packages raw! USPS got Deep State trackers in my mailbag! The mail is MONITORED!",
+      "abilities": [
+        {
+          "name": "Delivery Dick",
+          "description": "+30 stealth damage. Deliver bad news or good packages. Usually both."
+        }
+      ],
+      "series": 1,
+      "cardNumber": 1,
+      "totalInSeries": 200,
+      "artist": "DadDeck Studios",
+      "seasonId": 1
+    }
+  ]
+}
