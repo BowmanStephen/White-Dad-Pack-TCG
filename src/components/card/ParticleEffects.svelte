@@ -38,6 +38,24 @@
       MAX_PARTICLES_MOBILE
     )
   );
+
+  // PACK-VFX-008: Color interpolation for mythic rarity
+  // Prismatic rainbow effect transitioning through all 6 rarity colors
+  function getMythicParticleColor(index: number): string {
+    const colors = [
+      '#6b7280', // common (gray)
+      '#3b82f6', // uncommon (blue)
+      '#d97706', // rare (amber)
+      '#9333ea', // epic (purple)
+      '#ea580c', // legendary (orange)
+      '#db2777', // mythic (pink)
+    ];
+
+    // Each particle cycles through colors based on its index
+    const colorIndex = index % colors.length;
+    return colors[colorIndex];
+  }
+
   let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string }> = [];
 
   // Track cleanup function for effect
@@ -52,16 +70,23 @@
     );
 
     if (particleCount > 0) {
-      particles = Array.from({ length: particleCount }, (_, i) => ({
-        id: i,
-        x: 50,
-        y: 50,
-        vx: (Math.random() - 0.5) * 40,
-        vy: (Math.random() - 0.5) * 40,
-        size: Math.random() * 6 + 2,
-        delay: Math.random() * 300,
-        color: Math.random() > 0.5 ? config.color : config.glowColor.replace(/[^,]+(?=\))/, '0.8'),
-      }));
+      particles = Array.from({ length: particleCount }, (_, i) => {
+        // PACK-VFX-008: Use prismatic color interpolation for mythic rarity
+        const particleColor = rarity === 'mythic'
+          ? getMythicParticleColor(i)
+          : (Math.random() > 0.5 ? config.color : config.glowColor.replace(/[^,]+(?=\))/, '0.8'));
+
+        return {
+          id: i,
+          x: 50,
+          y: 50,
+          vx: (Math.random() - 0.5) * 40,
+          vy: (Math.random() - 0.5) * 40,
+          size: Math.random() * 6 + 2,
+          delay: Math.random() * 300,
+          color: particleColor,
+        };
+      });
     } else {
       particles = [];
     }
