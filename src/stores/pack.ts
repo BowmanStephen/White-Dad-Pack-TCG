@@ -170,26 +170,74 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
           throw new Error('Generated pack has no cards');
         }
 
-        // Ensure collection is initialized before saving
-        await ensureCollectionInitialized();
-
-        // Save pack to collection (IndexedDB) - await to ensure persistence
-        const saveResult = await addPackToCollection(pack);
-        if (!saveResult.success) {
-          // Create storage error but don't block the pack opening
-          const storageAppError = createAppError(
-            'storage',
-            saveResult.error || 'Failed to save pack to collection',
-            [
-              {
-                label: 'Dismiss',
-                action: () => storageError.set(null),
-              },
-            ]
-          );
-          storageError.set(storageAppError);
-          logError(storageAppError, saveResult.error);
+        // Try to ensure collection is initialized, but don't block if it fails
+        try {
+          await Promise.race([
+            ensureCollectionInitialized(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Collection init timeout')), 2000))
+          ]);
+        } catch (initError) {
+          console.warn('[Pack] Collection initialization failed or timed out, continuing without persistence:', initError);
         }
+
+        // Save pack to collection (IndexedDB) - COMPLETELY NON-BLOCKING
+        // This runs in background and won't affect pack opening if it fails
+        // Uses setTimeout to break out of Promise chain and prevent blocking
+        setTimeout(() => {
+          addPackToCollection(pack)
+            .then(saveResult => {
+              if (saveResult.success) {
+                // UX-007: Show visual confirmation toast when cards are saved
+                showToast('✨ Cards saved to your collection!', 'success');
+              } else {
+                // Create user-friendly error message
+                const storageAppError = createAppError(
+                  'storage',
+                  'Pack saved to temporary storage. Your collection may not persist after browser refresh.',
+                  [
+                    {
+                      label: 'Manage Storage',
+                      action: () => {
+                        storageError.set(null);
+                        window.location.href = '/settings';
+                      },
+                      primary: true,
+                    },
+                    {
+                      label: 'Dismiss',
+                      action: () => storageError.set(null),
+                    },
+                  ]
+                );
+                storageError.set(storageAppError);
+                logError(storageAppError, saveResult.error);
+              }
+            })
+            .catch(error => {
+              // Last resort error handler - should never reach here
+              console.error('[Pack] Critical storage error:', error);
+
+              const fallbackError = createAppError(
+                'storage',
+                'Pack saved to temporary storage. Your collection may not persist after browser refresh.',
+                [
+                  {
+                    label: 'Manage Storage',
+                    action: () => {
+                      storageError.set(null);
+                      window.location.href = '/settings';
+                    },
+                    primary: true,
+                  },
+                  {
+                    label: 'Dismiss',
+                    action: () => storageError.set(null),
+                  },
+                ]
+              );
+              storageError.set(fallbackError);
+            });
+        }, 0);
 
         // SEC-002: Record pack open for rate limiting
         recordPackOpen();

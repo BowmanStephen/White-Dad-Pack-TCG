@@ -30,13 +30,20 @@ if (typeof window !== 'undefined') {
 // STORAGE INTERFACE
 // ============================================================================
 
-// Check if storage is available
+// Check if storage is available with timeout
 export async function isStorageAvailable(): Promise<boolean> {
   try {
-    await localforage.setItem('__test__', 'ok');
-    await localforage.removeItem('__test__');
-    return true;
+    const timeout = new Promise<boolean>((_, reject) => 
+      setTimeout(() => reject(new Error('Storage check timeout')), 2000)
+    );
+    const check = (async () => {
+      await localforage.setItem('__test__', 'ok');
+      await localforage.removeItem('__test__');
+      return true;
+    })();
+    return await Promise.race([check, timeout]);
   } catch {
+    console.warn('[IndexedDB] Storage not available or timed out');
     return false;
   }
 }

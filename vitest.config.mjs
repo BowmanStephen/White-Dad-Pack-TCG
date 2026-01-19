@@ -33,8 +33,6 @@ export default defineConfig({
       'tests/visual',
       'tests/e2e',
       'tests/_archived/**',
-      'tests/unit/components/card/Card.test.ts',  // TEMPORARY: DOM environment not loading - happy-dom/jsdom compatibility issue
-      'tests/unit/components/pack/PackOpener.test.ts' // TEMPORARY: Same DOM environment issue
     ],
     coverage: {
       provider: 'v8',
@@ -59,6 +57,7 @@ export default defineConfig({
     },
   },
   resolve: {
+    conditions: ['browser', 'svelte'],
     alias: {
       '@': resolve(__dirname, './src'),
       '@components': resolve(__dirname, './src/components'),
