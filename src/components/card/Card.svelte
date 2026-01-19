@@ -586,48 +586,7 @@
   {/if}
 {/if}
 
-<!-- Wishlist Button (PACK-020) -->
-{#if showWishlistButton && !isFlipped}
-  <div class="flex justify-center mt-3">
-    <button
-      on:click={handleWishlistToggle}
-      class="wishlist-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
-      class:wishlisted={isWishlisted}
-      style={!isWishlisted
-        ? "background: linear-gradient(135deg, #64748b, #475569); color: white; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);"
-        : "background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);"}
-      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-    >
-      {#if isWishlisted}
-        <span class="wishlist-star" aria-hidden="true">⭐</span>
-        <span>Wishlisted</span>
-      {:else}
-        <span class="wishlist-star" aria-hidden="true">☆</span>
-        <span>Add to Wishlist</span>
-      {/if}
-    </button>
-  </div>
-{/if}
 
-<!-- Upgrade Button (US085) -->
-{#if showUpgradeButton && !isFlipped && onUpgradeClick}
-  <div class="flex justify-center mt-3">
-    <button
-      on:click={onUpgradeClick}
-      class="upgrade-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
-      style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);"
-      aria-label="Upgrade {card.name}"
-    >
-      <span>⚡</span>
-      <span>Upgrade Card</span>
-      {#if upgradeLevel > 0}
-        <span class="upgrade-badge" style="background: rgba(255,255,255,0.2); padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.625rem;">
-          Lv.{upgradeLevel}
-        </span>
-      {/if}
-    </button>
-  </div>
-{/if}
 
 <style>
   .card-perspective {

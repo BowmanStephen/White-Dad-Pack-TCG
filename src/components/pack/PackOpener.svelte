@@ -31,6 +31,7 @@
   import ErrorMessage from '../common/ErrorMessage.svelte';
   import CinematicToggle from '../common/CinematicToggle.svelte';
   import AnimationControls from './AnimationControls.svelte';
+  import RateLimitBanner from './RateLimitBanner.svelte';
   import { skipAnimations } from '@/stores/ui';
 
 
@@ -183,6 +184,9 @@
     <ErrorMessage error={storageError} compact={true} />
   </div>
 {/if}
+
+<!-- SEC-002: Rate limit banner (appears below storage warning) -->
+<RateLimitBanner />
 
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
   <!-- PACK-028: Animation controls (skip/fast-forward) - top right -->

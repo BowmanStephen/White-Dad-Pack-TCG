@@ -18,17 +18,20 @@ export function debounce<T extends (...args: any[]) => any>(
   fn: T,
   delay: number = 100
 ): (...args: Parameters<T>) => void {
-  let timeoutId: number | undefined;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   let lastArgs: Parameters<T> | undefined;
+
+  const setTimeoutFn = typeof window !== 'undefined' ? window.setTimeout : setTimeout;
+  const clearTimeoutFn = typeof window !== 'undefined' ? window.clearTimeout : clearTimeout;
 
   return function debounced(...args: Parameters<T>) {
     lastArgs = args;
 
     if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
+      clearTimeoutFn(timeoutId);
     }
 
-    timeoutId = window.setTimeout(() => {
+    timeoutId = setTimeoutFn(() => {
       fn(...lastArgs!);
       timeoutId = undefined;
       lastArgs = undefined;
@@ -48,6 +51,10 @@ export function throttle<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
   let lastArgs: Parameters<T> | undefined;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const setTimeoutFn = typeof window !== 'undefined' ? window.setTimeout : setTimeout;
+  const clearTimeoutFn = typeof window !== 'undefined' ? window.clearTimeout : clearTimeout;
 
   return function throttled(...args: Parameters<T>) {
     lastArgs = args;
@@ -56,12 +63,17 @@ export function throttle<T extends (...args: any[]) => any>(
       fn(...args);
       inThrottle = true;
 
-      setTimeout(() => {
+      if (timeoutId !== undefined) {
+        clearTimeoutFn(timeoutId);
+      }
+
+      timeoutId = setTimeoutFn(() => {
         inThrottle = false;
         if (lastArgs) {
           fn(...lastArgs);
           lastArgs = undefined;
         }
+        timeoutId = undefined;
       }, limit);
     }
   };

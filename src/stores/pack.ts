@@ -1,7 +1,7 @@
 import { atom, computed } from 'nanostores';
 import type { Pack, PackState, PackType, DadType, TearAnimation } from '../types';
 import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
-import { addPackToCollection, getPityCounter } from './collection';
+import { addPackToCollection, getPityCounter, ensureCollectionInitialized } from './collection';
 import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
@@ -9,6 +9,7 @@ import { wishlist } from './wishlist';
 import { findPulledWishlistedCards } from '../lib/collection/utils';
 import { selectRandomTearAnimation } from '../types';
 import { skipAnimations as skipAnimationsStore, showToast } from './ui';
+import { checkRateLimit, recordPackOpen, getRateLimitStatus } from '../lib/utils/rate-limiter';
 
 // Current pack type selection (for UI state)
 export const selectedPackType = atom<PackType>('standard');
@@ -40,6 +41,12 @@ export const packError = atom<AppError | null>(null);
 
 // Storage error state with full AppError object
 export const storageError = atom<AppError | null>(null);
+
+// SEC-002: Rate limit status (reactive)
+export const rateLimitStatus = computed(
+  [], // No dependencies - will be updated manually
+  () => getRateLimitStatus()
+);
 
 // Computed: Get the current card being viewed
 export const currentCard = computed(
@@ -85,6 +92,31 @@ export const isLoading = computed(packState, (state) => {
 
 // Start opening a new pack with specified type (PACK-001)
 export async function openNewPack(packType?: PackType, themeType?: DadType): Promise<void> {
+  // SEC-002: Check rate limit before opening pack
+  const rateLimitCheck = checkRateLimit();
+  if (!rateLimitCheck.allowed) {
+    // Create rate limit error with retry time
+    const rateLimitError = createAppError(
+      'security',
+      rateLimitCheck.error || 'Rate limit exceeded',
+      [
+        {
+          label: 'Go Home',
+          action: () => {
+            window.location.href = '/';
+          },
+        },
+      ]
+    );
+    packError.set(rateLimitError);
+    packState.set('idle');
+    return;
+  }
+
+  // CRITICAL: Ensure collection is loaded before opening packs
+  // This prevents race conditions where packs overwrite loaded data
+  await ensureCollectionInitialized();
+
   // Use provided pack type or fall back to store selection
   const finalPackType = packType || selectedPackType.get();
   const finalThemeType = themeType !== undefined ? themeType : selectedThemeType.get();
@@ -171,6 +203,9 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
           // Store wishlisted card IDs for notification display
           (pack as any).wishlistedCards = wishlistedCardIds;
         }
+
+        // SEC-002: Record pack open for rate limiting
+        recordPackOpen();
 
         // Track pack open event
         trackEvent({
