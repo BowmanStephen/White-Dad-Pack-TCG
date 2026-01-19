@@ -344,7 +344,7 @@
   >
     <!-- Card Front -->
     <div
-      class="card-face absolute inset-0 overflow-hidden {hasBaseGlow || isHovered ? 'card-glow' : ''}"
+      class="card-face absolute inset-0 overflow-hidden {hasBaseGlow || isHovered ? 'card-glow' : ''} {card.rarity === 'mythic' ? 'mythic-prismatic' : ''}"
       style="border: {borderStyle}; box-shadow: {glowStyle};"
     >
       <!-- Upgrade Star Badge -->
@@ -722,11 +722,73 @@
     }
   }
 
+  /* Mythic prismatic glow effect - PACK-VFX-017 */
+  .card-face:has(.upgrade-star-badge) ~ .card-back.mythic-prismatic,
+  .card-face.mythic-prismatic {
+    animation: mythic-prismatic-glow 3s linear infinite;
+  }
+
+  @keyframes mythic-prismatic-glow {
+    0% {
+      box-shadow:
+        0 0 30px #9ca3af,
+        0 0 60px #9ca3af55,
+        0 0 90px #9ca3af33,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    16.67% {
+      box-shadow:
+        0 0 30px #3b82f6,
+        0 0 60px #3b82f655,
+        0 0 90px #3b82f633,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    33.33% {
+      box-shadow:
+        0 0 30px #eab308,
+        0 0 60px #eab30855,
+        0 0 90px #eab30833,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    50% {
+      box-shadow:
+        0 0 30px #a855f7,
+        0 0 60px #a855f755,
+        0 0 90px #a855f733,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    66.67% {
+      box-shadow:
+        0 0 30px #f97316,
+        0 0 60px #f9731655,
+        0 0 90px #f9731633,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    83.33% {
+      box-shadow:
+        0 0 30px #ec4899,
+        0 0 60px #ec489955,
+        0 0 90px #ec489933,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    100% {
+      box-shadow:
+        0 0 30px #9ca3af,
+        0 0 60px #9ca3af55,
+        0 0 90px #9ca3af33,
+        inset 0 0 30px rgba(0,0,0,0.5);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .wishlist-btn,
     .wishlist-star {
       animation: none !important;
       transition: none !important;
+    }
+
+    .card-face.mythic-prismatic {
+      animation: none !important;
     }
   }
 </style>
