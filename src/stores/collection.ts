@@ -15,6 +15,7 @@ import {
 import { updatePityCounter, DEFAULT_PITY_COUNTER } from '@/lib/pack/pity';
 import type { PityCounter, StreakCounter } from '@/types/collection';
 import { onBrowser } from '@/lib/utils/browser';
+import localforage from 'localforage';
 
 // ============================================================================
 // STORAGE LAYER (INDEXEDDB)
@@ -56,28 +57,54 @@ let loadedCollection: Collection = DEFAULT_COLLECTION;
 let isHydrated = false;
 let hydrationPromise: Promise<void> | null = null;
 
-// Async load from IndexedDB
+// Async load from IndexedDB with timeout
 async function initializeCollection() {
   if (isHydrated) return;
-  
-  try {
-    // Check if migration is needed
-    if (await needsLocalStorageMigration()) {
-      const migrationResult = await migrateFromLocalStorage();
-      if (!migrationResult.success) {
-        console.error('[Collection] Migration failed:', migrationResult.error);
-      }
-    }
 
-    // Load from IndexedDB
-    const loaded = await loadFromIndexedDB();
-    if (loaded) {
-      loadedCollection = loaded;
-      collectionStore.set(loaded);
-    }
+  const INIT_TIMEOUT = 5000; // FIX: Increased to 5 seconds for slower devices
+
+  // FIX: Use a flag to prevent stale writes after timeout
+  let didTimeout = false;
+
+  try {
+    // FIX: Guard against stale writes after timeout by using a flag
+    const initPromise = (async () => {
+      // Check if migration is needed
+      if (await needsLocalStorageMigration()) {
+        const migrationResult = await migrateFromLocalStorage();
+        if (!migrationResult.success) {
+          console.error('[Collection] Migration failed:', migrationResult.error);
+        }
+      }
+
+      // Load from IndexedDB
+      const loaded = await loadFromIndexedDB();
+      // Only set if we haven't timed out (prevents stale overwrites)
+      if (!didTimeout && loaded) {
+        loadedCollection = loaded;
+        collectionStore.set(loaded);
+      }
+    })();
+
+    const timeoutPromise = new Promise<void>((_, reject) =>
+      setTimeout(() => {
+        didTimeout = true;
+        reject(new Error('Collection initialization timed out'));
+      }, INIT_TIMEOUT)
+    );
+
+    await Promise.race([initPromise, timeoutPromise]);
     isHydrated = true;
   } catch (error) {
     console.error('[Collection] Failed to initialize:', error);
+    // FIX: Even on timeout, try to ensure localforage is ready for writes
+    // This allows pack saves to succeed even if initial load times out
+    try {
+      // Force localforage to be ready by doing a dummy operation
+      await localforage.ready();
+    } catch (forageError) {
+      console.error('[Collection] localforage not ready:', forageError);
+    }
     isHydrated = true; // Mark as hydrated even on error to prevent infinite retries
   }
 }

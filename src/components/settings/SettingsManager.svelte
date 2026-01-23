@@ -1190,6 +1190,8 @@
 
   /* Select Input */
   .select-input {
+    position: relative;
+    z-index: 100;
     padding: 0.5rem 2rem 0.5rem 1rem;
     background: rgba(30, 41, 59, 0.8);
     border: 2px solid #475569;
@@ -1198,14 +1200,20 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fbbf24' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    /* FIX: Ensure dropdown works across all browsers - use appearance: auto for native behavior */
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    /* Keep custom chevron as fallback for browsers that support it with auto */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
     transition: all 0.2s ease;
     min-width: 150px;
   }
 
+  /* Rotate chevron on hover for visual feedback */
   .select-input:hover {
     border-color: #fbbf24;
     background-color: rgba(251, 191, 36, 0.1);
@@ -1215,6 +1223,31 @@
     outline: none;
     border-color: #fbbf24;
     box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+    position: relative;
+    z-index: 1000;
+  }
+
+  /* Ensure select dropdown options are visible */
+  .select-input:focus-visible {
+    z-index: 9999;
+  }
+
+  /* Add active state for when select is open (clicked) */
+  .select-input:active {
+    transform: scale(0.98);
+  }
+
+  /* Style options within select */
+  .select-input option {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 0.5rem;
+  }
+
+  .select-input option:hover,
+  .select-input option:checked {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
   }
 
   /* Description Box */

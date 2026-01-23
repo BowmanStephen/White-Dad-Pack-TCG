@@ -53,7 +53,7 @@
   // Base phase durations that will be multiplied by tear animation config
   const BASE_PHASE_DURATIONS = {
     appear: 400,   // Pack appears with scale
-    glow: 600,     // Glow intensifies
+    glow: 900,     // Glow intensifies (extended to 900ms for better UX - allows users to see swipe hint)
     tear: 1200,    // Tear animation (PACK-VFX-009: 1.2s for standard tear)
     burst: 300,    // Final burst and fade
   };
@@ -495,26 +495,28 @@
 
   <!-- Particle burst (60fps optimized) -->
   {#if (phase === 'tear' || phase === 'burst') && !reducedMotion}
-    <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute inset-0 pointer-events-none particle-container">
       {#each particles as particle, i}
         <div
-          class="absolute rounded-full"
+          class="absolute rounded-full particle"
           style:left="{particle.x}%"
           style:top="{particle.y}%"
           style:width="{particle.size}px"
           style:height="{particle.size}px"
           style:background={rarityConfig.color}
           style:opacity={particle.alpha}
-          style:transform="translate(-50%, -50%)"
+          style:transform="translate(-50%, -50%) translateZ(0)"
         ></div>
       {/each}
     </div>
   {/if}
 
-  <!-- Skip hint -->
-  <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2 text-slate-500 text-sm transition-opacity duration-300"
-       class:opacity-0={phase === 'burst'}>
-    Click or press Space to skip
+  <!-- Skip hint - Persistent until burst ends + 500ms -->
+  <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2 text-slate-400 text-sm transition-opacity duration-500 font-semibold"
+       class:opacity-0={phase === 'burst'}
+       role="status"
+       aria-label="Interaction hint">
+    💡 Click or press Space to skip
   </div>
 </div>
 
@@ -697,6 +699,8 @@
   .animate-tear-line-golden,
   .animate-burst-golden {
     will-change: transform, opacity;
+    /* Performance: contain layout to prevent full reflows */
+    contain: layout style paint;
   }
 
   /* GPU acceleration hint for pack container */
@@ -723,5 +727,19 @@
 
   .animate-pulse {
     animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Particle performance optimizations */
+  .particle-container {
+    contain: strict;
+    transform: translateZ(0);
+    will-change: contents;
+  }
+
+  .particle {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    contain: layout style paint;
   }
 </style>

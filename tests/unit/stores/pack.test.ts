@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { atom } from 'nanostores';
 import {
   openNewPack,
   completePackAnimation,
@@ -70,6 +71,10 @@ vi.mock('@/stores/collection', () => ({
 }));
 vi.mock('@/stores/analytics', () => ({
   trackEvent: vi.fn()
+}));
+vi.mock('@/stores/ui', () => ({
+  showToast: vi.fn(),
+  skipAnimations: atom(false)
 }));
 vi.mock('@/lib/utils/errors', () => ({
   createAppError: vi.fn(),
@@ -374,7 +379,10 @@ describe('Pack Store', () => {
       expect(packState.get()).toBe('pack_animate');
       expect(currentPack.get()).not.toBeNull();
 
-      // Storage error should be set
+      // Wait for setTimeout to execute (storage error happens in background)
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Storage error should be set (after setTimeout executes)
       expect(storageError.get()).not.toBeNull();
       expect(storageError.get()?.category).toBe('storage');
     });

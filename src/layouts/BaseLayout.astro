@@ -4,6 +4,7 @@ import PageLoader from '../components/common/PageLoader.svelte';
 import InstallPrompt from '../components/pwa/InstallPrompt.svelte';
 import OfflineBanner from '../components/common/OfflineBanner.svelte';
 import CookieConsent from '../components/common/CookieConsent.svelte';
+// import AgeGate from '../components/common/AgeGate.svelte'; // DISABLED: Age verification removed
 import BrowserUpgradeBanner from '../components/common/BrowserUpgradeBanner.svelte';
 import CardLightbox from '../components/card/CardLightbox.svelte';
 import NotificationInitializer from '../components/notifications/NotificationInitializer.svelte';
@@ -157,6 +158,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- SKELETON-003: Page Transition Loading State -->
     <PageLoader client:load />
+
+    <!-- Age Gate (Adult Content Warning) - DISABLED -->
+    <!-- <AgeGate client:only="svelte" /> -->
 
     <!-- Browser Upgrade Banner -->
     <BrowserUpgradeBanner client:load />

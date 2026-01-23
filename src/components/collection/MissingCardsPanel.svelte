@@ -310,10 +310,17 @@
       {/each}
     {/if}
 
-    {#if missingCardsList.length === 0}
+    {#if missingCardsList.length === 0 && completionStats.uniqueOwned > 0}
       <div class="complete-message">
         <span class="complete-icon">🎉</span>
         <p class="complete-text">🎉 Complete! You've collected all cards!</p>
+      </div>
+    {:else if missingCardsList.length === 0 && completionStats.uniqueOwned === 0}
+      <div class="empty-state-message">
+        <span class="empty-icon">📦</span>
+        <p class="empty-text">No cards yet!</p>
+        <p class="empty-subtext">Open some packs to start building your collection.</p>
+        <a href="/pack" class="empty-cta">Open Your First Pack</a>
       </div>
     {/if}
   </div>
@@ -731,6 +738,52 @@
     font-weight: 600;
     color: #22c55e;
     margin: 0;
+  }
+
+  /* Empty State Message */
+  .empty-state-message {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px dashed rgba(71, 85, 105, 0.5);
+    border-radius: 0.75rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+  }
+
+  .empty-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .empty-subtext {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .empty-cta {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: white;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+  }
+
+  .empty-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
   }
 
   /* Details Modal */

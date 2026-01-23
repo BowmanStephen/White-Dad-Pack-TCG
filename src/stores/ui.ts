@@ -347,7 +347,7 @@ const getInitialParticlePreset = (): ParticlePreset => {
     null,
     (value): value is ParticlePreset => ['low', 'medium', 'high', 'ultra'].includes(value as ParticlePreset)
   );
-  return saved ?? 'high';
+  return saved ?? 'medium'; // Use 'medium' as default for better performance on most devices
 };
 
 export const $particlePreset = atom<ParticlePreset>(getInitialParticlePreset());
