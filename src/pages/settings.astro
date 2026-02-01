@@ -11,12 +11,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SettingsManager from '@/components/settings/SettingsManager.svelte';
 import Navigation from '@/components/common/Navigation.svelte';
 import ErrorBoundary from '@/components/common/ErrorBoundary.svelte';
-import { getFullURL } from '@/lib/seo';
 
 // Enhanced SEO for settings page
 const title = "Settings - DadDeck Trading Card Game";
 const description = "Customize your DadDeck experience. Adjust audio volume, configure animations, and choose your language preference in the free browser TCG simulator.";
-const settingsPageURL = getFullURL('/settings');
+const settingsPageURL = new URL('/settings', 'https://daddeck.com').href;
 ---
 
 <BaseLayout
