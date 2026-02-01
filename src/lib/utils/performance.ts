@@ -109,15 +109,6 @@ export function rafSchedule(fn: () => void): () => void {
 }
 
 /**
- * Batch multiple DOM reads to prevent layout thrashing
- * @param reads Array of read functions
- * @returns Results of all reads
- */
-export function batchReads<T>(reads: (() => T)[]): T[] {
-  return reads.map(read => read());
-}
-
-/**
  * Schedule function during browser idle time
  * @param fn Function to execute when idle
  * @param timeout Maximum wait time in ms (default: 2000ms)

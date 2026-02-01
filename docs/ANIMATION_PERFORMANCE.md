@@ -122,28 +122,31 @@ element1.style.height = element1.offsetHeight + 10 + 'px';  // Read
 element2.style.height = element2.offsetHeight + 10 + 'px';  // Read (layout recalc!)
 ```
 
-### Solution: Batch DOM Reads
+### Solution: Read-then-Write Pattern
 
-**`src/lib/utils/performance.ts:104-106`**
 ```typescript
-export function batchReads<T>(reads: (() => T)[]): T[] {
-  return reads.map(read => read());
-}
-```
+// ✅ GOOD: All reads first
+const height1 = element1.offsetHeight;
+const height2 = element2.offsetHeight;
 
-**Usage:**
-```typescript
-// ✅ GOOD: Batch reads first
-const [height1, height2] = batchReads([
-  () => element1.offsetHeight,
-  () => element2.offsetHeight
-]);
-
-// Then batch writes
+// Then batch all writes in a single rAF
 requestAnimationFrame(() => {
   element1.style.height = height1 + 10 + 'px';
   element2.style.height = height2 + 10 + 'px';
 });
+```
+
+For write batching, use `batchWrites` from `src/lib/utils/performance.ts`:
+```typescript
+import { batchWrites } from '@/lib/utils/performance';
+
+const height1 = element1.offsetHeight;
+const height2 = element2.offsetHeight;
+
+batchWrites([
+  () => { element1.style.height = height1 + 10 + 'px'; },
+  () => { element2.style.height = height2 + 10 + 'px'; }
+]);
 ```
 
 ### Implementation Locations

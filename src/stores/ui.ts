@@ -431,14 +431,8 @@ export const particleIntensity = $particleIntensity;
  */
 export function getParticleIntensityMultiplier(): number {
   const intensity = $particleIntensity.get();
-
-  // Scale 1-5 to 0.2-2.0 multiplier
-  // 1 = 0.2 (20% of normal)
-  // 2 = 0.6 (60% of normal)
-  // 3 = 1.0 (100% - normal)
-  // 4 = 1.5 (150% of normal)
-  // 5 = 2.0 (200% of normal)
-  return intensity === 1 ? 0.2 : intensity === 2 ? 0.6 : intensity === 3 ? 1.0 : intensity === 4 ? 1.5 : 2.0;
+  const multipliers: Record<number, number> = { 1: 0.2, 2: 0.6, 3: 1.0, 4: 1.5, 5: 2.0 };
+  return multipliers[intensity] ?? 1.0;
 }
 
 /**

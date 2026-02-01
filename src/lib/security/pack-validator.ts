@@ -161,8 +161,7 @@ export function detectDuplicatePack(pack: Pack): ValidationResult {
  */
 export function validateRarityDistribution(
   pack: Pack,
-  config: PackConfig,
-  tolerance: number = 2.0 // Standard deviations tolerance
+  config: PackConfig
 ): ValidationResult {
   const violations: ValidationViolation[] = [];
   const warnings: ValidationWarning[] = [];
@@ -648,14 +647,14 @@ export function clearActivityLogs(): void {
  * Quick validation check for development/testing
  * Only validates critical violations
  */
-export function quickValidatePack(pack: Pack, config: PackConfig): boolean {
-  const result = validatePackBeforeOpen(pack, config, {
+export async function quickValidatePack(pack: Pack, config: PackConfig): Promise<boolean> {
+  const result = await validatePackBeforeOpen(pack, config, {
     checkDuplicates: false, // Skip cache check in quick mode
     checkAnomalies: false, // Skip statistical analysis
     checkEntropy: false, // Skip entropy check
   });
 
-  return result.then((r) => r.valid) as unknown as boolean;
+  return result.valid;
 }
 
 /**

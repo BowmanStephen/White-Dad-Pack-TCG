@@ -447,13 +447,6 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
 
       // We should have at least 1 card from the probability pool across all such slots
       // This is a soft check - it's possible (though unlikely) to get 0
-      if (poolCount === 0 && Math.random() < 0.01) {
-        // Only warn 1% of the time to avoid spamming
-        console.warn(
-          `Pack generation warning: no cards from probability pool ${poolRarities.join(', ')} ` +
-          `in this pack. This may be due to bad luck or missing cards.`
-        );
-      }
     }
   }
 
@@ -514,9 +507,7 @@ export function generatePack(
   let pityRarity: Rarity | null = null;
   if (pityCounter) {
     pityRarity = getHighestPityTier(pityCounter);
-    if (pityRarity) {
-      console.log(`[Pity System] Triggering ${pityRarity} pity (bad luck protection)`);
-    }
+    // Pity rarity applied - will be used to override slot 6 below
   }
 
   // Process each slot in the pack
@@ -531,7 +522,6 @@ export function generatePack(
       // and this is the last slot (slot 6 - the rare or better slot)
       if (pityRarity && slot.slot === 6) {
         rarity = pityRarity;
-        console.log(`[Pity System] Overriding slot 6 rarity to ${rarity} (bad luck protection)`);
       } else {
         // Random rarity from probability pool
         rarity = weightedRandom(slot.probability, rng);

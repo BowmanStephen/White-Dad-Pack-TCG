@@ -145,10 +145,7 @@ export const collectionStore = atom<Collection>(loadedCollection);
 // Re-export as collection for backward compatibility
 export const collection = collectionStore;
 
-// Track save timeout for debouncing
 let saveTimeout: number | null = null;
-
-// Track if an immediate save is pending (to avoid duplicate saves)
 let immediateSavePending = false;
 
 // Save to IndexedDB (debounced) - PACK-045: With quota warning handling

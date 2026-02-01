@@ -98,7 +98,7 @@ export function filterCardsByHolo(cards: CollectionDisplayCard[], holoOnly: bool
  * Filter cards by dad types (multi-select)
  */
 export function filterCardsByTypes(cards: CollectionDisplayCard[], selectedTypes: Set<DadType>): CollectionDisplayCard[] {
-  if (selectedTypes.size === 0) return cards;
+  if (!selectedTypes.size) return cards;
   return cards.filter((card) => selectedTypes.has(card.type));
 }
 
@@ -319,7 +319,7 @@ export function filterCardsByHoloVariants(
   cards: CollectionDisplayCard[],
   holoVariants: Set<HoloVariant>
 ): CollectionDisplayCard[] {
-  if (holoVariants.size === 0) return cards;
+  if (!holoVariants.size) return cards;
 
   return cards.filter((card) => {
     // Check if card's holoType matches any of the selected variants
