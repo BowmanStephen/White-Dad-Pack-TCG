@@ -69,7 +69,7 @@
 
   .new-badge.animate {
     transform: scale(1);
-    animation: badgePop 0.6s ease-out, badgePulse 2s ease-in-out infinite;
+    /* badgePulse infinite animation REMOVED for performance */
   }
 
   .badge-text {
@@ -86,13 +86,7 @@
     width: 12px;
     height: 12px;
     color: #fef3c7;
-    filter: drop-shadow(0 0 4px rgba(254, 243, 199, 0.8));
-    animation: sparkleRotate 3s linear infinite;
-  }
-
-  .sparkle-icon:last-child {
-    animation-delay: 1.5s;
-    animation-direction: reverse;
+    /* filter and animation REMOVED for performance */
   }
 
   @keyframes badgePop {

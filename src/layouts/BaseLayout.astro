@@ -127,6 +127,9 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- DadDeck Typography System: MTG craft meets suburban rage -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Archivo+Black&family=Barlow+Condensed:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <!-- DNS prefetch for potential external resources -->
     <link rel="dns-prefetch" href="https://dadddeck.com" />
 
@@ -272,13 +275,13 @@ const fullImageURL = new URL(image, Astro.site!).href;
   @tailwind components;
   @tailwind utilities;
 
-  /* Smooth theme transition (SETTINGS-003) */
+  /* PERFORMANCE MODE: Disable ALL animations globally */
   *,
   *::before,
   *::after {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 
   /* Skip Navigation Link */
@@ -388,6 +391,27 @@ const fullImageURL = new URL(image, Astro.site!).href;
     --theme-transition: background-color 0.3s ease, color 0.3s ease,
                        border-color 0.3s ease, box-shadow 0.3s ease,
                        background 0.3s ease;
+
+    /* DadDeck Typography System */
+    --font-scream: 'Bebas Neue', 'Impact', sans-serif;  /* YELLING card names */
+    --font-header: 'Archivo Black', 'Oswald', sans-serif;  /* Bold headers */
+    --font-condensed: 'Barlow Condensed', 'Oswald', sans-serif;  /* Tight labels */
+    --font-body: 'Work Sans', 'Segoe UI', sans-serif;  /* Clean body text */
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;  /* Stats/numbers */
+
+    /* Suburban Color System - Saturated to 11 */
+    --lawn-green: #22c55e;
+    --lawn-dark: #15803d;
+    --pool-blue: #0ea5e9;
+    --pool-deep: #0369a1;
+    --grill-orange: #f97316;
+    --grill-fire: #ea580c;
+    --khaki-tan: #d4a574;
+    --concrete-gray: #64748b;
+    --vinyl-white: #f8fafc;
+    --deck-brown: #78350f;
+    --beer-gold: #fbbf24;
+    --rage-red: #dc2626;
   }
 
   /* Light mode (default) - Light backgrounds, dark text */
@@ -460,11 +484,5 @@ const fullImageURL = new URL(image, Astro.site!).href;
     color: white;
   }
 
-  /* Smooth transitions for all theme-aware elements */
-  body,
-  .card-bg,
-  ::-webkit-scrollbar-track,
-  ::-webkit-scrollbar-thumb {
-    transition: var(--theme-transition);
-  }
+  /* Theme transitions REMOVED for performance */
 </style>

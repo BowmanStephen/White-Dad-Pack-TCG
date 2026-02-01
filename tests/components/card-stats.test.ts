@@ -278,6 +278,7 @@ describe('CardStats Component', () => {
         rarityConfig: RARITY_CONFIG.rare,
         cardRarity: 'rare',
         compact: false,
+        showRadarChart: true,
       });
 
       const radarChart = container.querySelector('.radar-chart-wrapper');
@@ -377,6 +378,7 @@ describe('CardStats Component', () => {
         rarityConfig: RARITY_CONFIG.rare,
         cardRarity: 'rare',
         cardType: 'BBQ_DICKTATOR',
+        showRadarChart: true,
       });
 
       expect(container.querySelector('.stats-grid')).toBeTruthy();
