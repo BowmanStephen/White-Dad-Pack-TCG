@@ -24,6 +24,9 @@ pnpm-debug.log*
 .idea/
 .vercel
 
+# Claude Code / MCP tool configs
+.serena/
+
 # Ralph TUI (local automation state)
 .ralph-tui/
 ralph-tui-*.sh
