@@ -45,6 +45,7 @@ bun test                      # Watch mode
 bun run test:run              # Single run (all tests)
 bun run test:run tests/unit/  # Run specific folder
 bun run test:run tests/unit/pack.test.ts  # Single file
+bun run test:coverage         # Coverage report
 bun run test:e2e              # Playwright (all browsers)
 bun run test:e2e:chromium     # Playwright (Chromium only)
 bun run test:visual           # Visual regression tests
@@ -65,9 +66,11 @@ bun run format:check          # Check formatting
 - `src/stores/pack.ts` — Pack opening state machine and generation
 - `src/stores/collection.ts` — Card collection with IndexedDB persistence
 - `src/lib/pack/` — Pack generation logic and validation
+- `src/lib/security/pack-validator.ts` — Anti-cheat validation
 - `src/components/pack/` — Pack opening UI components
 - `src/components/collection/` — Collection management UI
 - `src/data/cards.json` — Card database (173 cards)
+- `src/types/` — Modular type files (add to existing feature file, not new files)
 
 ---
 
