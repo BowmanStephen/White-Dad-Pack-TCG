@@ -1,4 +1,6 @@
-# CLAUDE.md — DadDeck TCG
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **Version:** 2.2.1 | **Status:** MVP (Pack Opening + Collection only) | **Stack:** Astro 5 + Svelte 5 + Tailwind + Bun
 
@@ -78,13 +80,27 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 
 ---
 
-## Test Commands
+## Commands
 
 ```bash
+# Development
+bun install              # Install dependencies (MUST use Bun)
+bun run dev              # Dev server at localhost:4321
+bun run build            # Production build → ./dist/
+
+# Testing
 bun test                 # Watch mode (562 pass, 32 skipped for archived)
 bun run test:run         # Single run
 bun run test:e2e         # Playwright E2E
 bun run test:visual      # Visual regression
+
+# Single test file
+bun test tests/unit/pack/generator.test.ts
+
+# Linting & formatting
+bun run lint             # ESLint check
+bun run lint:fix         # ESLint auto-fix
+bun run format           # Prettier format
 ```
 
 **Coverage thresholds:** 60% lines/functions, 55% branches
@@ -97,6 +113,8 @@ bun run test:visual      # Visual regression
 2. **State mutation:** Use immutable updates (`{...obj}`) — direct mutation won't trigger reactivity
 3. **Test environment:** Component tests blocked (see blocker above), only write unit tests
 4. **Type imports:** Import from `@/types` barrel file, not individual type files
+5. **Svelte 5 runes:** Use `$state`, `$derived`, `$effect` for reactivity (not legacy `$:`)
+6. **Nanostores in Svelte 5:** Access stores with `$derived(myStore.get())`, not `$myStore`
 
 ---
 
@@ -117,9 +135,21 @@ src/
 
 ---
 
+## Architecture Overview
+
+**4-Layer Model:**
+1. **UI Layer** — Astro pages + Svelte islands (components hydrate with `client:load/visible`)
+2. **State Layer** — Nanostores with LocalStorage/IndexedDB persistence
+3. **Logic Layer** — Pure functions in `src/lib/` (pack generation, validation, security)
+4. **Data Layer** — Static JSON (`src/data/cards.json`)
+
+**Store → Component pattern:** Components subscribe to stores, trigger store actions (logic lives in stores, not components).
+
+---
+
 ## Not Covered Here
 
 - **How to work with Stephen:** See global `~/.claude/CLAUDE.md`
-- **Architecture details:** See `docs/` folder
+- **Architecture diagrams:** See `ARCHITECTURE.md`
 - **Full PRD:** See `PRD.md`
 - **Card mechanics:** See `docs/CARD_MECHANICS.md`
