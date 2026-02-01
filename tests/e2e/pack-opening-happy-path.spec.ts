@@ -14,11 +14,17 @@ import type { Page } from '@playwright/test';
 
 /**
  * Helper: Click the "Open Pack" button with proper hydration wait
- * Svelte components need time to hydrate before they're interactive
+ * Svelte components need time to hydrate before they're interactive.
+ * Wait for button to be enabled AND wait additional time for event handlers.
  */
 async function clickOpenPackButton(page: Page) {
   const openPackButton = page.locator('button.btn-primary').filter({ hasText: 'Open Pack' });
   await openPackButton.waitFor({ state: 'visible', timeout: 10000 });
+
+  // Wait for Svelte hydration to complete - button needs event handlers attached
+  // This extra wait ensures onMount() has fired and subscriptions are established
+  await page.waitForTimeout(1000);
+
   await openPackButton.click();
 }
 
@@ -39,6 +45,13 @@ test.describe('Pack Opening Happy Path', () => {
     // Clear IndexedDB before each test to start fresh
     await page.goto('/');
     await page.evaluate(() => {
+      // Dismiss cookie consent to prevent dialog blocking interactions
+      localStorage.setItem('daddeck-cookie-preferences', JSON.stringify({
+        consent: 'accepted',
+        categories: { necessary: true, analytics: false, marketing: false },
+        timestamp: Date.now()
+      }));
+
       return new Promise<void>((resolve) => {
         const request = indexedDB.deleteDatabase('daddeck-collection');
         request.onsuccess = () => resolve();
@@ -83,10 +96,14 @@ test.describe('Pack Opening Happy Path', () => {
   test('should open pack and show results', async ({ page }) => {
     await page.goto('/pack');
     await page.waitForLoadState('networkidle');
-    
+
     // Click "Open Pack" button (wait for hydration)
     const openPackButton = page.locator('button.btn-primary').filter({ hasText: 'Open Pack' });
     await openPackButton.waitFor({ state: 'visible', timeout: 10000 });
+
+    // Wait for Svelte hydration - onMount needs to fire before click handlers work
+    await page.waitForTimeout(1000);
+
     await openPackButton.click();
     
     // Wait for pack animation to complete (or skip it)
@@ -315,6 +332,13 @@ test.describe('Pack Opening Edge Cases', () => {
     // Clear IndexedDB before each test to start fresh
     await page.goto('/');
     await page.evaluate(() => {
+      // Dismiss cookie consent to prevent dialog blocking interactions
+      localStorage.setItem('daddeck-cookie-preferences', JSON.stringify({
+        consent: 'accepted',
+        categories: { necessary: true, analytics: false, marketing: false },
+        timestamp: Date.now()
+      }));
+
       return new Promise<void>((resolve) => {
         const request = indexedDB.deleteDatabase('daddeck-collection');
         request.onsuccess = () => resolve();

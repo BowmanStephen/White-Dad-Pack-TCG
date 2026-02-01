@@ -34,10 +34,17 @@ async function openPackAndSkipToResults(page: Page) {
 }
 
 /**
- * Helper: Clear IndexedDB before test
+ * Helper: Clear IndexedDB and dismiss cookie consent before test
  */
 async function clearStorage(page: Page) {
   await page.evaluate(() => {
+    // Dismiss cookie consent to prevent dialog blocking interactions
+    localStorage.setItem('daddeck-cookie-preferences', JSON.stringify({
+      consent: 'accepted',
+      categories: { necessary: true, analytics: false, marketing: false },
+      timestamp: Date.now()
+    }));
+
     return new Promise<void>((resolve) => {
       const request = indexedDB.deleteDatabase('daddeck-collection');
       request.onsuccess = () => resolve();
