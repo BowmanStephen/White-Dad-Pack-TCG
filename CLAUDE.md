@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## IMPORTANT: Known Blockers
+## Known Blockers
 
-### Component Tests Blocked (Vitest 4.x + Svelte 5)
+**Component Tests Blocked (Vitest 4.x + Svelte 5)**
 `tests/components/` cannot run — `ReferenceError: document is not defined`. No workaround; unit tests work fine.
 
 ---
@@ -21,27 +21,53 @@ import type { Card, Pack } from '@/types';
 import { packStore } from '@/stores/pack';
 // NEVER use relative imports like '../../../types'
 ```
-Available aliases: `@/*`, `@components/*`, `@lib/*`, `@stores/*`, `@data/*`, `@types/*`, `@mocks/*`
+Available: `@/*`, `@components/*`, `@lib/*`, `@stores/*`, `@data/*`, `@types/*`, `@mocks/*`
 
 ### Package Manager — Bun only
 ```bash
-bun install && bun run dev    # localhost:4321
-bun run build                 # Production build → ./dist/
-bun run preview               # Preview production build
+bun install              # Install dependencies
+bun run dev              # Dev server → localhost:4321
+bun run build            # Production build → ./dist/
+bun run preview          # Preview production build
+```
+
+### MVP Scope — Do not touch archived features
+Only 2 features active: **Pack Opening** (`src/stores/pack.ts`) and **Collection** (`src/components/collection/`).
+Everything in `src/_archived/` is frozen — do not modify, import from, or reference.
+
+---
+
+## Commands
+
+### Testing
+```bash
 bun test                      # Watch mode
 bun run test:run              # Single run (all tests)
-bun run test:run path/to/test # Single test file
+bun run test:run tests/unit/  # Run specific folder
+bun run test:run tests/unit/pack.test.ts  # Single file
 bun run test:e2e              # Playwright (all browsers)
 bun run test:e2e:chromium     # Playwright (Chromium only)
+bun run test:visual           # Visual regression tests
+```
+
+### Linting & Formatting
+```bash
 bun run lint                  # ESLint check
 bun run lint:fix              # ESLint auto-fix
 bun run format                # Prettier format all
 bun run format:check          # Check formatting
 ```
 
-### MVP Scope
-Only 2 features active: **Pack Opening** (`src/stores/pack.ts`) and **Collection** (`src/components/collection/`).
-Everything else is in `src/_archived/` — do not modify.
+---
+
+## Key Files
+
+- `src/stores/pack.ts` — Pack opening state machine and generation
+- `src/stores/collection.ts` — Card collection with IndexedDB persistence
+- `src/lib/pack/` — Pack generation logic and validation
+- `src/components/pack/` — Pack opening UI components
+- `src/components/collection/` — Collection management UI
+- `src/data/cards.json` — Card database (173 cards)
 
 ---
 
@@ -64,14 +90,17 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 ## Gotchas
 
 1. **Svelte in Astro:** Always add `client:load` to Svelte components in .astro files
-2. **Nanostores:** Access with `$derived(myStore.get())`, not `$myStore`
+2. **Nanostores in Svelte 5:** Access with `$derived(myStore.get())`, not `$myStore`
+3. **Store actions:** Logic lives in stores (`src/stores/`), not components — components call store functions
 
 ---
 
 ## Architecture
 
-**4 Layers:** UI (Astro + Svelte islands) → State (Nanostores + IndexedDB) → Logic (`src/lib/`) → Data (`cards.json`)
+**4 Layers:** UI (Astro + Svelte islands) → State (Nanostores + IndexedDB) → Logic (`src/lib/`) → Data (`src/data/cards.json`)
 
-Components subscribe to stores and trigger store actions — logic lives in stores, not components.
-
-**Test Organization:** `tests/unit/` (stores, lib), `tests/e2e/` (Playwright), `tests/visual/` (snapshots), `tests/pack|card|art/` (domain)
+**Test Organization:**
+- `tests/unit/` — stores, lib functions
+- `tests/e2e/` — Playwright browser tests
+- `tests/visual/` — screenshot snapshots
+- `tests/pack/`, `tests/card/`, `tests/art/` — domain-specific tests
