@@ -1,15 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 **Stack:** Astro 5 + Svelte 5 + Tailwind + Bun | **Status:** MVP (Pack Opening + Collection only)
 
 ---
 
 ## Known Blockers
 
-**Component Tests Blocked (Vitest 4.x + Svelte 5)**
-`tests/components/` cannot run — `ReferenceError: document is not defined`. No workaround; unit tests work fine.
+**Component Tests Blocked** — `tests/components/` cannot run (Vitest 4.x + Svelte 5 incompatibility). Unit tests work fine.
 
 ---
 
@@ -24,60 +21,11 @@ import { packStore } from '@/stores/pack';
 Available: `@/*`, `@components/*`, `@lib/*`, `@stores/*`, `@data/*`, `@types/*`, `@mocks/*`
 
 ### Package Manager — Bun only
-```bash
-bun install              # Install dependencies
-bun run dev              # Dev server → localhost:4321
-bun run build            # Production build → ./dist/
-bun run preview          # Preview production build
-```
+Run `bun run` to see available scripts. Key commands: `bun test`, `bun run test:e2e`, `bun run build`.
 
 ### MVP Scope — Do not touch archived features
-Only 2 features active: **Pack Opening** (`src/stores/pack.ts`) and **Collection** (`src/components/collection/`).
+Only 2 features active: **Pack Opening** and **Collection**.
 Everything in `src/_archived/` is frozen — do not modify, import from, or reference.
-
----
-
-## Commands
-
-### Testing
-```bash
-bun test                      # Watch mode
-bun run test:run              # Single run (all tests)
-bun run test:run tests/unit/  # Run specific folder
-bun run test:run tests/unit/pack.test.ts  # Single file
-bun run test:coverage         # Coverage report
-bun run test:e2e              # Playwright (all browsers)
-bun run test:e2e:chromium     # Playwright (Chromium only)
-bun run test:visual           # Visual regression tests
-bun run test:visual:update    # Update visual snapshots
-```
-
-### Linting & Formatting
-```bash
-bun run lint                  # ESLint check
-bun run lint:fix              # ESLint auto-fix
-bun run format                # Prettier format all
-bun run format:check          # Check formatting
-```
-
-### Other Tools
-```bash
-bun run storybook             # Component playground (port 6006)
-bun run discord-bot:dev       # Discord bot with hot reload
-```
-
----
-
-## Key Files
-
-- `src/stores/pack.ts` — Pack opening state machine and generation
-- `src/stores/collection.ts` — Card collection with IndexedDB persistence
-- `src/lib/pack/` — Pack generation logic and validation
-- `src/lib/security/pack-validator.ts` — Anti-cheat validation
-- `src/components/pack/` — Pack opening UI components
-- `src/components/collection/` — Collection management UI
-- `src/data/cards.json` — Card database (173 cards)
-- `src/types/` — Modular type files (add to existing feature file, not new files)
 
 ---
 
@@ -101,19 +49,11 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 
 1. **Svelte in Astro:** Always add `client:load` to Svelte components in .astro files
 2. **Nanostores in Svelte 5:** Access with `$derived(myStore.get())`, not `$myStore`
-3. **Store actions:** Logic lives in stores (`src/stores/`), not components — components call store functions
-4. **Types are modular:** 28 feature files in `src/types/` — add to existing files, never create new ones
+3. **Store actions:** Logic lives in stores (`src/stores/`), not components
+4. **Types are modular:** Add to existing files in `src/types/`, never create new ones
 
 ---
 
 ## Architecture
 
 **4 Layers:** UI (Astro + Svelte islands) → State (Nanostores + IndexedDB) → Logic (`src/lib/`) → Data (`src/data/cards.json`)
-
-**Test Organization:**
-- `tests/unit/` — stores, lib functions
-- `tests/e2e/` — Playwright browser tests
-- `tests/visual/` — screenshot snapshots
-- `tests/pack/`, `tests/card/`, `tests/art/` — domain-specific tests
-- `tests/mocks/` — shared test utilities and fixtures
-- `tests/_archived/` — tests for archived features (do not run)
