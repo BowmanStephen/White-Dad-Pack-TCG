@@ -1,186 +1,58 @@
-import { atom, computed } from 'nanostores';
-import type { Pack, PackState, PackType, DadType, TearAnimation } from '../types';
-import { generatePack, getPackStats, getPackConfig } from '../lib/pack/generator';
-import { addPackToCollection, getPityCounter, ensureCollectionInitialized } from './collection';
-import { trackEvent } from './analytics';
-import { createAppError, logError, type AppError } from '../lib/utils/errors';
-import { haptics } from '../lib/utils/haptics';
-import { selectRandomTearAnimation } from '../types';
-import { skipAnimations as skipAnimationsStore, showToast, quickReveal as quickRevealStore } from './ui';
-import { checkRateLimit, recordPackOpen, getRateLimitStatus } from '../lib/utils/rate-limiter';
+/**
+ * Pack Store - Actions Layer
+ *
+ * Contains all action functions for pack opening, revealing, and navigation.
+ * These functions mutate the state atoms defined in state.ts.
+ */
+import type { Pack, PackType, DadType } from '../../types';
+import { generatePack, getPackConfig } from '../../lib/pack/generator';
+import { getPityCounter, ensureCollectionInitialized } from '../collection';
+import { trackEvent } from '../analytics';
+import { createAppError, logError } from '../../lib/utils/errors';
+import { haptics } from '../../lib/utils/haptics';
+import { selectRandomTearAnimation } from '../../types';
+import { skipAnimations as skipAnimationsStore, showToast, quickReveal as quickRevealStore } from '../ui';
+import { checkRateLimit, recordPackOpen } from '../../lib/utils/rate-limiter';
 import {
-  SAVE_RETRY_CONFIG,
   PACK_GENERATION_CONFIG,
   ANIMATION_TIMINGS,
-} from '../lib/config/pack-config';
+} from '../../lib/config/pack-config';
 
-// Current pack type selection (for UI state)
-export const selectedPackType = atom<PackType>('standard');
-export const selectedThemeType = atom<DadType | undefined>(undefined);
+// Import state atoms
+import {
+  selectedPackType,
+  selectedThemeType,
+  currentTearAnimation,
+  currentPack,
+  packState,
+  currentCardIndex,
+  isSkipping,
+  revealedCards,
+  packError,
+  storageError,
+} from './state';
 
-// PACK-027: Current tear animation type
-export const currentTearAnimation = atom<TearAnimation>('standard');
+// Import persistence
+import { savePackWithRetry } from './persistence';
+
+// ============================================================================
+// INTERNAL STATE
+// ============================================================================
 
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
 
-// Current pack being opened
-export const currentPack = atom<Pack | null>(null);
+// Auto-reveal sequence state
+let autoRevealTimer: ReturnType<typeof setInterval> | null = null;
+let autoRevealIndex = 0;
 
-// Current state of the pack opening flow
-export const packState = atom<PackState>('idle');
-
-// Index of the currently viewed card
-export const currentCardIndex = atom<number>(0);
-
-// Whether the user is skipping animations
-export const isSkipping = atom<boolean>(false);
-
-// Track which cards have been revealed
-export const revealedCards = atom<Set<number>>(new Set());
-
-// Error state store with full AppError object
-export const packError = atom<AppError | null>(null);
-
-// Storage error state with full AppError object
-export const storageError = atom<AppError | null>(null);
-
-// SEC-002: Rate limit status (reactive)
-export const rateLimitStatus = computed(
-  [], // No dependencies - will be updated manually
-  () => getRateLimitStatus()
-);
-
-// Computed: Get the current card being viewed
-export const currentCard = computed(
-  [currentPack, currentCardIndex],
-  (pack, index) => {
-    if (!pack || index < 0 || index >= pack.cards.length) return null;
-    return pack.cards[index];
-  }
-);
-
-// Computed: Check if all cards are revealed
-export const allCardsRevealed = computed(
-  [currentPack, revealedCards],
-  (pack, revealed) => {
-    if (!pack) return false;
-    return revealed.size >= pack.cards.length;
-  }
-);
-
-// Computed: Get pack statistics
-export const packStats = computed(currentPack, (pack) => {
-  if (!pack) return null;
-  return getPackStats(pack);
-});
-
-// Computed: Progress through the pack (0-1)
-export const packProgress = computed(
-  [currentPack, revealedCards],
-  (pack, revealed) => {
-    if (!pack || pack.cards.length === 0) return 0;
-    return revealed.size / pack.cards.length;
-  }
-);
-
-// Computed: Loading state for pack operations
-export const isLoading = computed(packState, (state) => {
-  return state === 'generating' || state === 'pack_animate';
-});
-
-// Memory backup for packs that fail to save (ensures user never loses their pack)
-const pendingSaves: Pack[] = [];
+// ============================================================================
+// PACK OPENING ACTIONS
+// ============================================================================
 
 /**
- * Save pack to collection with retry logic and exponential backoff
- * Attempts MAX_ATTEMPTS times before falling back to memory-only storage
+ * Start opening a new pack with specified type (PACK-001)
  */
-async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
-  try {
-    const saveResult = await addPackToCollection(pack);
-
-    if (saveResult.success) {
-      // Remove from pending saves if it was there
-      const pendingIndex = pendingSaves.findIndex(p => p.id === pack.id);
-      if (pendingIndex !== -1) {
-        pendingSaves.splice(pendingIndex, 1);
-      }
-      // UX-007: Show visual confirmation toast when cards are saved
-      showToast('✨ Cards saved to your collection!', 'success');
-      return;
-    }
-
-    // Save failed - try again if we have attempts left
-    if (attempt < SAVE_RETRY_CONFIG.MAX_ATTEMPTS) {
-      const delayMs = SAVE_RETRY_CONFIG.BASE_DELAY_MS * Math.pow(2, attempt - 1); // 100, 200, 400ms
-      if (import.meta.env.DEV) console.warn(`[Pack] Save attempt ${attempt} failed, retrying in ${delayMs}ms...`);
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-      return savePackWithRetry(pack, attempt + 1);
-    }
-
-    // All retries exhausted - add to memory backup
-    handleSaveFailure(pack, saveResult.error || 'Unknown error');
-  } catch (error) {
-    // Unexpected error - try again if we have attempts left
-    if (attempt < SAVE_RETRY_CONFIG.MAX_ATTEMPTS) {
-      const delayMs = SAVE_RETRY_CONFIG.BASE_DELAY_MS * Math.pow(2, attempt - 1);
-      if (import.meta.env.DEV) console.warn(`[Pack] Save attempt ${attempt} threw error, retrying in ${delayMs}ms...`, error);
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-      return savePackWithRetry(pack, attempt + 1);
-    }
-
-    // All retries exhausted
-    handleSaveFailure(pack, error instanceof Error ? error.message : 'Critical storage error');
-  }
-}
-
-/**
- * Handle persistent save failure - store in memory and show error
- */
-function handleSaveFailure(pack: Pack, errorMessage: string): void {
-  if (import.meta.env.DEV) console.error('[Pack] All save attempts failed:', errorMessage);
-
-  // Add to memory backup to prevent data loss
-  if (!pendingSaves.find(p => p.id === pack.id)) {
-    pendingSaves.push(pack);
-  }
-
-  const fallbackError = createAppError(
-    'storage',
-    'Pack saved to temporary storage. Your collection may not persist after browser refresh.',
-    [
-      {
-        label: 'Manage Storage',
-        action: () => {
-          storageError.set(null);
-          window.location.href = '/settings';
-        },
-        primary: true,
-      },
-      {
-        label: 'Retry Save',
-        action: () => {
-          storageError.set(null);
-          // Retry all pending saves
-          pendingSaves.forEach(p => savePackWithRetry(p));
-        },
-      },
-      {
-        label: 'Dismiss',
-        action: () => storageError.set(null),
-      },
-    ]
-  );
-  storageError.set(fallbackError);
-  logError(fallbackError, errorMessage);
-}
-
-/**
- * Actions
- */
-
-// Start opening a new pack with specified type (PACK-001)
 export async function openNewPack(packType?: PackType, themeType?: DadType): Promise<void> {
   // SEC-002: Check rate limit before opening pack
   const rateLimitCheck = checkRateLimit();
@@ -330,7 +202,13 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
   }
 }
 
-// Reveal all cards and show results (vertical-slice flow)
+// ============================================================================
+// REVEAL ACTIONS
+// ============================================================================
+
+/**
+ * Reveal all cards and show results (vertical-slice flow)
+ */
 export function showPackResults(options: { skipped?: boolean } = {}): void {
   const pack = currentPack.get();
   if (!pack) return;
@@ -354,7 +232,9 @@ export function showPackResults(options: { skipped?: boolean } = {}): void {
   trackPackComplete(pack, skipped);
 }
 
-// Complete pack animation and show results
+/**
+ * Complete pack animation and show results
+ */
 export function completePackAnimation(): void {
   // PACK-028: Check if animations should be skipped
   const skipAnimations = skipAnimationsStore.get();
@@ -395,9 +275,11 @@ export function isQuickRevealEnabled(): boolean {
   return quickRevealStore.get();
 }
 
-// Reveal a specific card
-// NOTE: In the MVP vertical slice, we reveal the full pack at once.
-// This method remains for compatibility with existing components.
+/**
+ * Reveal a specific card
+ * NOTE: In the MVP vertical slice, we reveal the full pack at once.
+ * This method remains for compatibility with existing components.
+ */
 export function revealCard(
   index: number,
   options: { autoRevealed?: boolean } = {}
@@ -439,13 +321,21 @@ export function revealCard(
   packState.set('results');
 }
 
-// Reveal the current card
+/**
+ * Reveal the current card
+ */
 export function revealCurrentCard(): void {
   const index = currentCardIndex.get();
   revealCard(index);
 }
 
-// Navigate to next card
+// ============================================================================
+// NAVIGATION ACTIONS
+// ============================================================================
+
+/**
+ * Navigate to next card
+ */
 export function nextCard(): void {
   const pack = currentPack.get();
   if (!pack) return;
@@ -459,7 +349,9 @@ export function nextCard(): void {
   }
 }
 
-// Navigate to previous card
+/**
+ * Navigate to previous card
+ */
 export function prevCard(): void {
   const currentIndex = currentCardIndex.get();
   if (currentIndex > 0) {
@@ -467,14 +359,18 @@ export function prevCard(): void {
   }
 }
 
-// Go to a specific card
+/**
+ * Go to a specific card
+ */
 export function goToCard(index: number): void {
   const pack = currentPack.get();
   if (!pack || index < 0 || index >= pack.cards.length) return;
   currentCardIndex.set(index);
 }
 
-// Skip to results
+/**
+ * Skip to results
+ */
 export function skipToResults(): void {
   const pack = currentPack.get();
   if (!pack) return;
@@ -495,7 +391,9 @@ export function skipToResults(): void {
   trackPackComplete(pack, true);
 }
 
-// Reset to idle state
+/**
+ * Reset to idle state
+ */
 export function resetPack(): void {
   currentPack.set(null);
   packState.set('idle');
@@ -506,7 +404,9 @@ export function resetPack(): void {
   storageError.set(null);
 }
 
-// Show results screen
+/**
+ * Show results screen
+ */
 export function showResults(): void {
   const pack = currentPack.get();
   if (pack) {
@@ -516,40 +416,13 @@ export function showResults(): void {
   packState.set('results');
 }
 
-/**
- * Track pack completion event
- */
-function trackPackComplete(pack: Pack, skipped: boolean): void {
-  const duration = packOpenStartTime ? Date.now() - packOpenStartTime : 0;
-  const holoCount = pack.cards.filter((c) => c.isHolo).length;
-
-  trackEvent({
-    type: 'pack_complete',
-    data: {
-      packId: pack.id,
-      cardCount: pack.cards.length,
-      bestRarity: pack.bestRarity,
-      holoCount,
-      duration,
-      skipped,
-    },
-  });
-
-  // Show toast notification for pack opened (PACK-080)
-  const bestRarityLabel = pack.bestRarity.charAt(0).toUpperCase() + pack.bestRarity.slice(1);
-  showToast(`Pack opened! Best card: ${bestRarityLabel}${holoCount > 0 ? ` (${holoCount} holo)` : ''}`, 'success');
-
-  // Reset pack open start time
-  packOpenStartTime = null;
-}
-
-// Auto-reveal sequence state
-let autoRevealTimer: ReturnType<typeof setInterval> | null = null;
-let autoRevealIndex = 0;
+// ============================================================================
+// AUTO-REVEAL ACTIONS
+// ============================================================================
 
 /**
  * Start auto-reveal sequence with staggered timing
- * Cards reveal one-by-one with 0.3s delay between each
+ * Cards reveal one-by-one with delay between each
  * Can be cancelled by user interaction
  */
 export function startAutoReveal(): void {
@@ -592,4 +465,35 @@ export function stopAutoReveal(): void {
     autoRevealTimer = null;
   }
   autoRevealIndex = 0;
+}
+
+// ============================================================================
+// INTERNAL HELPERS
+// ============================================================================
+
+/**
+ * Track pack completion event
+ */
+function trackPackComplete(pack: Pack, skipped: boolean): void {
+  const duration = packOpenStartTime ? Date.now() - packOpenStartTime : 0;
+  const holoCount = pack.cards.filter((c) => c.isHolo).length;
+
+  trackEvent({
+    type: 'pack_complete',
+    data: {
+      packId: pack.id,
+      cardCount: pack.cards.length,
+      bestRarity: pack.bestRarity,
+      holoCount,
+      duration,
+      skipped,
+    },
+  });
+
+  // Show toast notification for pack opened (PACK-080)
+  const bestRarityLabel = pack.bestRarity.charAt(0).toUpperCase() + pack.bestRarity.slice(1);
+  showToast(`Pack opened! Best card: ${bestRarityLabel}${holoCount > 0 ? ` (${holoCount} holo)` : ''}`, 'success');
+
+  // Reset pack open start time
+  packOpenStartTime = null;
 }
