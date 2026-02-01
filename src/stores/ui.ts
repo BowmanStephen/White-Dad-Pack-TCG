@@ -15,6 +15,7 @@ const CINEMATIC_MODE_KEY = 'daddeck_cinematic_mode';
 const SKIP_ANIMATIONS_KEY = 'daddeck_skip_animations';
 const FAST_FORWARD_KEY = 'daddeck_fast_forward';
 const PARTICLE_INTENSITY_KEY = 'daddeck_particle_intensity';
+const QUICK_REVEAL_KEY = 'daddeck_quick_reveal';
 
 // Cinematic mode configuration (US083 - Pack Opening - Cinematic Mode)
 const CINEMATIC_CONFIGS: Record<CinematicMode, CinematicConfig> = {
@@ -273,6 +274,48 @@ export function setFastForward(enabled: boolean): void {
 export function toggleFastForward(): void {
   const current = $fastForward.get();
   setFastForward(!current);
+}
+
+// ============================================================================
+// QUICK REVEAL MODE (Skip pack animation, show brief flash then results)
+// ============================================================================
+
+// Quick reveal duration constant (300ms visual flash before results)
+export const QUICK_REVEAL_FLASH_MS = 300;
+
+// Quick reveal enabled state
+export const $quickReveal = atom<boolean>(getStoredBoolean(QUICK_REVEAL_KEY, false));
+export const quickReveal = $quickReveal;
+
+/**
+ * Set quick reveal preference
+ * When enabled, pack opening skips the tear animation and shows a brief flash before results
+ */
+export function setQuickReveal(enabled: boolean): void {
+  $quickReveal.set(enabled);
+
+  // Persist to localStorage
+  onBrowser(() => {
+    localStorage.setItem(QUICK_REVEAL_KEY, String(enabled));
+  });
+
+  // Track setting change
+  trackEvent({
+    type: 'settings_change',
+    data: {
+      setting: 'quickReveal',
+      previousValue: !enabled,
+      newValue: enabled,
+    },
+  });
+}
+
+/**
+ * Toggle quick reveal preference
+ */
+export function toggleQuickReveal(): void {
+  const current = $quickReveal.get();
+  setQuickReveal(!current);
 }
 
 /**

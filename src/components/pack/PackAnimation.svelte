@@ -1,80 +1,148 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import type { Rarity, PackDesign, TearAnimation } from '../../types';
   import { RARITY_CONFIG, PACK_DESIGN_CONFIG, TEAR_ANIMATION_CONFIG, type TearAnimationConfig } from '../../types';
   import * as uiStore from '../../stores/ui';
   import * as packStore from '../../stores/pack';
+  import { quickReveal as quickRevealStore, QUICK_REVEAL_FLASH_MS } from '../../stores/ui';
   import { playPackTear } from '../../stores/audio';
   import { isReducedMotion } from '../../stores/motion';
 
-  export let bestRarity: Rarity = 'common';
-  export let design: PackDesign = 'standard';
-  export let tearAnimation: TearAnimation = 'standard';
+  interface Props {
+    bestRarity?: Rarity;
+    design?: PackDesign;
+    tearAnimation?: TearAnimation;
+    oncomplete?: () => void;
+    onskip?: () => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let {
+    bestRarity = 'common',
+    design = 'standard',
+    tearAnimation = 'standard',
+    oncomplete,
+    onskip
+  }: Props = $props();
 
-  let phase: 'appear' | 'glow' | 'tear' | 'burst' = 'appear';
+  // Helper to dispatch events in both legacy and modern style
+  function dispatch(event: 'complete' | 'skip') {
+    if (event === 'complete' && oncomplete) oncomplete();
+    if (event === 'skip' && onskip) onskip();
+  }
+
+  let phase = $state<'appear' | 'glow' | 'tear' | 'burst'>('appear');
   let packElement: HTMLDivElement;
   let animationFrameId: number | null = null;
-  let particles: Array<{ x: number; y: number; vx: number; vy: number; size: number; alpha: number }> = [];
-  let reducedMotion = false;
+  let particles = $state<Array<{ x: number; y: number; vx: number; vy: number; size: number; alpha: number }>>([]);
+  let reducedMotion = $state(false);
 
   // Swipe-to-tear gesture state
-  let touchStartX = 0;
-  let isDragging = false;
-  let tearProgress = 0;
+  let touchStartX = $state(0);
+  let isDragging = $state(false);
+  let tearProgress = $state(0);
   const TEAR_THRESHOLD = 200; // Pixels to drag for complete tear
   const COMPLETE_TEAR_PERCENTAGE = 0.7; // 70% drag to complete tear
 
   // Hover and interaction state for shake animations
-  let isHovered = false;
-  let isHolding = false;
+  let isHovered = $state(false);
+  let isHolding = $state(false);
 
-  $: rarityConfig = RARITY_CONFIG[bestRarity];
-  $: packDesign = PACK_DESIGN_CONFIG[design];
-  $: glowColor = rarityConfig.glowColor;
+  // Derived values - converted from Svelte 4 $: to Svelte 5 $derived
+  const rarityConfig = $derived(RARITY_CONFIG[bestRarity]);
+  const packDesign = $derived(PACK_DESIGN_CONFIG[design]);
+  const glowColor = $derived(rarityConfig.glowColor);
 
   // PACK-027: Get tear animation configuration
-  $: tearConfig = TEAR_ANIMATION_CONFIG[tearAnimation];
+  const tearConfig = $derived(TEAR_ANIMATION_CONFIG[tearAnimation]);
 
   // Get cinematic configuration
-  $: cinematicConfig = uiStore.getCinematicConfig();
-  $: isCinematic = uiStore.$cinematicMode.get() === 'cinematic';
+  const cinematicConfig = $derived(uiStore.getCinematicConfig());
+  const isCinematic = $derived(uiStore.$cinematicMode.get() === 'cinematic');
 
   // Calculate particle count with tear animation and cinematic multipliers
-  $: baseParticleCount = reducedMotion ? 0 : rarityConfig.particleCount;
-  $: particleCount = Math.floor(
+  const baseParticleCount = $derived(reducedMotion ? 0 : rarityConfig.particleCount);
+  const particleCount = $derived(Math.floor(
     baseParticleCount *
     tearConfig.particleCount *
     cinematicConfig.particleMultiplier
-  );
+  ));
 
   // Animation timing (PACK-027: Varies by tear animation type)
   // Base phase durations that will be multiplied by tear animation config
+  // Optimized for snappy feel while maintaining excitement (1.4s total vs 2.8s before)
   const BASE_PHASE_DURATIONS = {
-    appear: 400,   // Pack appears with scale
-    glow: 900,     // Glow intensifies (extended to 900ms for better UX - allows users to see swipe hint)
-    tear: 1200,    // Tear animation (PACK-VFX-009: 1.2s for standard tear)
-    burst: 300,    // Final burst and fade
+    appear: 200,   // Pack appears with scale (was 400ms, -50%)
+    glow: 400,     // Glow intensifies - still shows swipe hint (was 900ms, -56%)
+    tear: 600,     // Tear animation (was 1200ms, -50%)
+    burst: 200,    // Final burst and fade (was 300ms, -33%)
   };
 
   // PACK-VFX-015: Cinematic mode pack tear set to 1.8s
   // Calculate tear duration based on cinematic mode (1.8s) vs normal mode
-  $: tearDuration = isCinematic ? 1800 : (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear);
+  const tearDuration = $derived(isCinematic ? 1800 : (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear));
 
-  $: phaseDurations = {
+  const phaseDurations = $derived({
     appear: (BASE_PHASE_DURATIONS.appear * tearConfig.phaseMultipliers.appear) / cinematicConfig.speedMultiplier,
     glow: (BASE_PHASE_DURATIONS.glow * tearConfig.phaseMultipliers.glow) / cinematicConfig.speedMultiplier,
     tear: tearDuration, // PACK-VFX-015: Use calculated tear duration (1.8s in cinematic)
     burst: (BASE_PHASE_DURATIONS.burst * tearConfig.phaseMultipliers.burst) / cinematicConfig.speedMultiplier,
-  };
+  });
 
   // PACK-027: Shake animation class based on tear animation intensity
-  $: shakeClass = (() => {
+  const shakeClass = $derived((() => {
     if (tearConfig.shakeIntensity === 'subtle') return 'animate-pack-shake-subtle';
     if (tearConfig.shakeIntensity === 'intense') return 'animate-pack-shake-intense';
     return 'animate-pack-shake';
-  })();
+  })());
+
+  // Rarity-specific effect state
+  let showScreenFlash = $state(false);
+  let showLightning = $state(false);
+  let showGoldenTrail = $state(false);
+
+  // Rarity tier helpers
+  const isLegendaryPlus = $derived(bestRarity === 'legendary' || bestRarity === 'mythic');
+  const isEpic = $derived(bestRarity === 'epic');
+  const isRare = $derived(bestRarity === 'rare');
+
+  // Rarity-specific shake intensity (overrides tear animation config for high rarities)
+  const effectiveShakeClass = $derived((() => {
+    if (isLegendaryPlus) return 'animate-pack-shake-legendary';
+    if (isEpic) return 'animate-pack-shake-intense';
+    return shakeClass;
+  })());
+
+  // Trigger rarity-specific effects during tear phase
+  function triggerRarityEffects(): void {
+    if (isLegendaryPlus) {
+      // Legendary+: Screen flash + camera shake (shake handled by CSS class)
+      showScreenFlash = true;
+      // Extended haptic feedback for legendary
+      if (navigator.vibrate) {
+        navigator.vibrate([50, 30, 100, 30, 50]); // Celebration pattern
+      }
+    } else if (isEpic) {
+      // Epic: Lightning effect
+      showLightning = true;
+      if (navigator.vibrate) {
+        navigator.vibrate([30, 20, 30]); // Double-buzz
+      }
+    } else if (isRare) {
+      // Rare: Golden particle trail
+      showGoldenTrail = true;
+    }
+  }
+
+  // Clear rarity effects
+  function clearRarityEffects(): void {
+    showScreenFlash = false;
+    showLightning = false;
+    showGoldenTrail = false;
+  }
+
+  // Failsafe timer to prevent stuck animations
+  let failsafeTimer: ReturnType<typeof setTimeout> | null = null;
+  const FAILSAFE_TIMEOUT_MS = 10000; // 10 seconds max animation time
 
   onMount(() => {
     // Subscribe to reduced motion preference (PACK-057)
@@ -82,12 +150,23 @@
       reducedMotion = value;
     });
 
+    // Set up failsafe timer - if animation gets stuck, force completion
+    failsafeTimer = setTimeout(() => {
+      console.warn('[PackAnimation] Failsafe triggered - forcing animation complete');
+      dispatch('complete');
+    }, FAILSAFE_TIMEOUT_MS);
+
     // Start animation
     runAnimation();
 
     // Cleanup function
     return () => {
       unsubscribe();
+      // Clear failsafe timer
+      if (failsafeTimer !== null) {
+        clearTimeout(failsafeTimer);
+        failsafeTimer = null;
+      }
       // Cleanup animation frame
       if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
@@ -96,6 +175,19 @@
   });
 
   async function runAnimation() {
+    // Check for quick reveal mode - skip to results after brief flash
+    if (quickRevealStore.get()) {
+      phase = 'appear';
+      await delay(QUICK_REVEAL_FLASH_MS);
+      // Clear failsafe timer since we're completing early
+      if (failsafeTimer !== null) {
+        clearTimeout(failsafeTimer);
+        failsafeTimer = null;
+      }
+      dispatch('complete');
+      return;
+    }
+
     // Check if tear already completed via swipe gesture
     if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
       // Skip tear phase if already completed
@@ -112,6 +204,9 @@
       // Phase 3: Pack tears open (the main event) - only runs if not swiped
       phase = 'tear';
 
+      // Trigger rarity-specific visual effects
+      triggerRarityEffects();
+
       // Play pack tear sound effect (enhanced in cinematic mode)
       if (cinematicConfig.audioEnhanced) {
         // Play louder/dramatic tear sound in cinematic mode
@@ -126,7 +221,12 @@
         animateParticles();
       }
 
-      await delay(phaseDurations.tear);
+      // For legendary+ cards, add slow-mo effect (extend tear duration by 50%)
+      const tearTime = isLegendaryPlus ? phaseDurations.tear * 1.5 : phaseDurations.tear;
+      await delay(tearTime);
+
+      // Clear effects before burst
+      clearRarityEffects();
     }
 
     // Phase 4: Burst and fade
@@ -141,6 +241,12 @@
 
     // Reset tear progress
     tearProgress = 0;
+
+    // Clear failsafe timer since we completed normally
+    if (failsafeTimer !== null) {
+      clearTimeout(failsafeTimer);
+      failsafeTimer = null;
+    }
 
     // Animation complete
     dispatch('complete');
@@ -324,6 +430,37 @@
       />
     </div>
   {/if}
+
+  <!-- RARITY EFFECTS: Screen flash for Legendary+ -->
+  {#if showScreenFlash}
+    <div class="fixed inset-0 z-50 pointer-events-none animate-screen-flash" style="background: {rarityConfig.glowColor};">
+    </div>
+  {/if}
+
+  <!-- RARITY EFFECTS: Lightning for Epic -->
+  {#if showLightning}
+    <div class="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+      <svg class="absolute inset-0 w-full h-full animate-lightning" viewBox="0 0 400 600">
+        <path
+          d="M 180 0 L 220 180 L 160 200 L 240 400 L 140 250 L 200 270 L 120 500"
+          fill="none"
+          stroke="#a855f7"
+          stroke-width="4"
+          stroke-linecap="round"
+          class="animate-lightning-bolt"
+          style="filter: drop-shadow(0 0 20px #a855f7) drop-shadow(0 0 40px #7c3aed);"
+        />
+      </svg>
+    </div>
+  {/if}
+
+  <!-- RARITY EFFECTS: Golden trail for Rare -->
+  {#if showGoldenTrail}
+    <div class="absolute inset-0 z-20 pointer-events-none overflow-hidden">
+      <div class="absolute inset-0 animate-golden-trail" style="background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.4) 0%, transparent 70%);"></div>
+    </div>
+  {/if}
+
   <!-- Glow effect (builds anticipation) -->
   <div
     class="absolute inset-0 rounded-2xl blur-3xl transition-all duration-300 ease-out"
@@ -348,7 +485,7 @@
     <!-- Pack wrapper with shake during tear (PACK-027: dynamic shake based on tear animation) -->
     <div
       class="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-transform duration-200 ease-out"
-      class:{shakeClass}={phase === 'tear'}
+      class:{effectiveShakeClass}={phase === 'tear'}
       class:animate-pack-hover={isHovered && !isHolding && phase !== 'tear' && phase !== 'burst'}
       class:animate-pack-hold={isHolding && phase !== 'tear' && phase !== 'burst'}
     >
@@ -566,6 +703,24 @@
     20%, 40%, 60%, 80% { transform: translateX(8px) rotate(2deg); }
   }
 
+  /* Legendary+ shake - maximum drama with camera shake effect */
+  .animate-pack-shake-legendary {
+    animation: packShakeLegendary 0.8s ease-out;
+  }
+
+  @keyframes packShakeLegendary {
+    0%, 100% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); }
+    10% { transform: translateX(-12px) translateY(-4px) rotate(-3deg) scale(1.02); }
+    20% { transform: translateX(12px) translateY(4px) rotate(3deg) scale(1.02); }
+    30% { transform: translateX(-10px) translateY(-2px) rotate(-2deg) scale(1.01); }
+    40% { transform: translateX(10px) translateY(2px) rotate(2deg) scale(1.01); }
+    50% { transform: translateX(-8px) translateY(-1px) rotate(-1.5deg) scale(1.005); }
+    60% { transform: translateX(8px) translateY(1px) rotate(1.5deg) scale(1.005); }
+    70% { transform: translateX(-4px) rotate(-1deg); }
+    80% { transform: translateX(4px) rotate(1deg); }
+    90% { transform: translateX(-2px) rotate(-0.5deg); }
+  }
+
   /* Pack shake animation - holiday (festive bounce) */
   .animate-pack-shake-festive {
     animation: packShakeFestive 0.5s ease-out;
@@ -741,5 +896,68 @@
     backface-visibility: hidden;
     perspective: 1000px;
     contain: layout style paint;
+  }
+
+  /* ============================================
+     RARITY-SPECIFIC EFFECTS
+     ============================================ */
+
+  /* Screen flash for Legendary+ pulls */
+  .animate-screen-flash {
+    animation: screenFlash 0.6s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes screenFlash {
+    0% { opacity: 0; }
+    15% { opacity: 0.8; }
+    30% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0; }
+  }
+
+  /* Lightning effect for Epic pulls */
+  .animate-lightning {
+    animation: lightningFlicker 0.4s ease-out;
+  }
+
+  @keyframes lightningFlicker {
+    0%, 100% { opacity: 0; }
+    10% { opacity: 1; }
+    20% { opacity: 0.3; }
+    30% { opacity: 1; }
+    50% { opacity: 0.5; }
+    70% { opacity: 1; }
+    90% { opacity: 0.2; }
+  }
+
+  .animate-lightning-bolt {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: lightningDraw 0.3s ease-out forwards;
+  }
+
+  @keyframes lightningDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Golden trail for Rare pulls */
+  .animate-golden-trail {
+    animation: goldenPulse 0.8s ease-in-out;
+  }
+
+  @keyframes goldenPulse {
+    0% { opacity: 0; transform: scale(0.8); }
+    30% { opacity: 0.8; transform: scale(1.1); }
+    60% { opacity: 0.6; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(1.5); }
+  }
+
+  /* Performance optimizations for rarity effects */
+  .animate-screen-flash,
+  .animate-lightning,
+  .animate-golden-trail {
+    will-change: opacity, transform;
+    contain: strict;
   }
 </style>

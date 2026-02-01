@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import type { Pack, PackCard } from '@/types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS } from '@/types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS, RARITY_ORDER } from '@/types';
   import { fade, fly, scale } from 'svelte/transition';
   import { backOut, elasticOut } from 'svelte/easing';
   import { shareToTwitter } from '@lib/utils/image-generation';
@@ -31,15 +31,6 @@
   let inspectIndex = $state(0);
   let showDetails = $state(false); // Toggle for pack quality details
 
-  const RARITY_ORDER: Record<string, number> = {
-    mythic: 6,
-    legendary: 5,
-    epic: 4,
-    rare: 3,
-    uncommon: 2,
-    common: 1,
-  };
-
   const DAD_MESSAGES = [
     "Now that's what I call a power move, champ!",
     "Legendary! This pull is more satisfying than a perfectly edged lawn.",
@@ -55,13 +46,45 @@
   const bestRarityConfig = $derived(RARITY_CONFIG[stats.bestCard.rarity]);
   const hasLegendaryOrBetter = $derived(stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic');
 
+  // Sort cards: common first, rare+ last (save the best for last during reveal)
+  // This creates anticipation as the pack reveals from lowest to highest rarity
   const sortedCards = $derived([...pack.cards].sort((a, b) => {
-    const rarityDiff = RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity];
+    // Sort by rarity ASCENDING (common first, legendary last)
+    const rarityDiff = RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity];
     if (rarityDiff !== 0) return rarityDiff;
-    if (a.isHolo && !b.isHolo) return -1;
-    if (!a.isHolo && b.isHolo) return 1;
+    // Within same rarity, non-holo before holo
+    if (a.isHolo && !b.isHolo) return 1;
+    if (!a.isHolo && b.isHolo) return -1;
     return 0;
   }));
+
+  // Get slam intensity based on rarity (used for entrance animation scale)
+  function getSlamIntensity(rarity: string): { y: number; scale: number; duration: number } {
+    switch (rarity) {
+      case 'mythic':
+        return { y: 80, scale: 1.3, duration: 600 };
+      case 'legendary':
+        return { y: 60, scale: 1.2, duration: 550 };
+      case 'epic':
+        return { y: 40, scale: 1.15, duration: 500 };
+      case 'rare':
+        return { y: 30, scale: 1.1, duration: 450 };
+      case 'uncommon':
+        return { y: 20, scale: 1.05, duration: 400 };
+      default:
+        return { y: 15, scale: 1.0, duration: 350 };
+    }
+  }
+
+  // Stagger delay increases for higher rarities (more anticipation)
+  const BASE_STAGGER_MS = 100;
+  function getCardDelay(index: number, rarity: string): number {
+    const baseDelay = 800; // Start after pack info loads
+    const staggerDelay = index * BASE_STAGGER_MS;
+    // Add extra delay for rare+ cards to build suspense
+    const rarityBonus = RARITY_ORDER[rarity] >= RARITY_ORDER.rare ? 150 : 0;
+    return baseDelay + staggerDelay + rarityBonus;
+  }
 
   const hasPrevious = $derived(inspectIndex > 0);
   const hasNext = $derived(inspectIndex < sortedCards.length - 1);
@@ -285,13 +308,16 @@
     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-4 md:gap-6">
       {#each sortedCards as card, i}
         {@const cardRarity = RARITY_CONFIG[card.rarity]}
+        {@const slam = getSlamIntensity(card.rarity)}
+        {@const isHighRarity = RARITY_ORDER[card.rarity] >= RARITY_ORDER.rare}
         <div
           role="button"
           tabindex="0"
           aria-label="Inspect {card.name}"
-          class="aspect-[2.5/3.5] rounded-xl overflow-hidden cursor-pointer transform transition-all hover:scale-110 hover:-translate-y-2 hover:z-20 relative group"
-          style="border: 2px solid {cardRarity.color}44; box-shadow: 0 10px 20px rgba(0,0,0,0.3);"
-          in:fly={{ y: 20, duration: 400, delay: 900 + (i * 60) }}
+          class="aspect-[2.5/3.5] rounded-xl overflow-hidden cursor-pointer transform transition-all hover:scale-110 hover:-translate-y-2 hover:z-20 relative group card-entrance"
+          class:card-slam-rare={isHighRarity}
+          style="border: 2px solid {cardRarity.color}44; box-shadow: 0 10px 20px rgba(0,0,0,0.3); --slam-scale: {slam.scale};"
+          in:fly={{ y: slam.y, duration: slam.duration, delay: getCardDelay(i, card.rarity), easing: backOut }}
           on:click={() => handleCardInspect(card)}
           on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardInspect(card); } }}
         >
@@ -361,5 +387,51 @@
   .card-container {
     perspective: 1500px;
     filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+  }
+
+  /* Staggered card entrance with slam effect */
+  .card-entrance {
+    --slam-scale: 1;
+    animation: cardSlam 0.3s ease-out forwards;
+    animation-delay: inherit;
+  }
+
+  @keyframes cardSlam {
+    0% {
+      transform: scale(var(--slam-scale));
+      filter: brightness(1.5);
+    }
+    50% {
+      transform: scale(1.02);
+      filter: brightness(1.2);
+    }
+    100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+  }
+
+  /* Enhanced slam for rare+ cards */
+  .card-slam-rare {
+    animation: cardSlamRare 0.4s ease-out forwards;
+  }
+
+  @keyframes cardSlamRare {
+    0% {
+      transform: scale(var(--slam-scale)) rotate(-2deg);
+      filter: brightness(2) drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+    }
+    30% {
+      transform: scale(1.1) rotate(1deg);
+      filter: brightness(1.5) drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+    }
+    60% {
+      transform: scale(1.02) rotate(-0.5deg);
+      filter: brightness(1.2);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      filter: brightness(1);
+    }
   }
 </style>

@@ -379,10 +379,11 @@ describe('Pack Store', () => {
       expect(packState.get()).toBe('pack_animate');
       expect(currentPack.get()).not.toBeNull();
 
-      // Wait for setTimeout to execute (storage error happens in background)
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for retry logic to exhaust (3 attempts with exponential backoff: 100 + 200 + 400 = 700ms)
+      // Plus some buffer for async execution
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Storage error should be set (after setTimeout executes)
+      // Storage error should be set after all retries exhausted
       expect(storageError.get()).not.toBeNull();
       expect(storageError.get()?.category).toBe('storage');
     });

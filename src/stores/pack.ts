@@ -6,7 +6,7 @@ import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
 import { selectRandomTearAnimation } from '../types';
-import { skipAnimations as skipAnimationsStore, showToast } from './ui';
+import { skipAnimations as skipAnimationsStore, showToast, quickReveal as quickRevealStore, QUICK_REVEAL_FLASH_MS } from './ui';
 import { checkRateLimit, recordPackOpen, getRateLimitStatus } from '../lib/utils/rate-limiter';
 
 // Current pack type selection (for UI state)
@@ -83,6 +83,96 @@ export const packProgress = computed(
 export const isLoading = computed(packState, (state) => {
   return state === 'generating' || state === 'pack_animate';
 });
+
+// Memory backup for packs that fail to save (ensures user never loses their pack)
+const pendingSaves: Pack[] = [];
+
+/**
+ * Save pack to collection with retry logic and exponential backoff
+ * Attempts 3 times before falling back to memory-only storage
+ */
+async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
+  const MAX_ATTEMPTS = 3;
+  const BASE_DELAY_MS = 100;
+
+  try {
+    const saveResult = await addPackToCollection(pack);
+
+    if (saveResult.success) {
+      // Remove from pending saves if it was there
+      const pendingIndex = pendingSaves.findIndex(p => p.id === pack.id);
+      if (pendingIndex !== -1) {
+        pendingSaves.splice(pendingIndex, 1);
+      }
+      // UX-007: Show visual confirmation toast when cards are saved
+      showToast('✨ Cards saved to your collection!', 'success');
+      return;
+    }
+
+    // Save failed - try again if we have attempts left
+    if (attempt < MAX_ATTEMPTS) {
+      const delayMs = BASE_DELAY_MS * Math.pow(2, attempt - 1); // 100, 200, 400ms
+      console.warn(`[Pack] Save attempt ${attempt} failed, retrying in ${delayMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      return savePackWithRetry(pack, attempt + 1);
+    }
+
+    // All retries exhausted - add to memory backup
+    handleSaveFailure(pack, saveResult.error || 'Unknown error');
+  } catch (error) {
+    // Unexpected error - try again if we have attempts left
+    if (attempt < MAX_ATTEMPTS) {
+      const delayMs = BASE_DELAY_MS * Math.pow(2, attempt - 1);
+      console.warn(`[Pack] Save attempt ${attempt} threw error, retrying in ${delayMs}ms...`, error);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      return savePackWithRetry(pack, attempt + 1);
+    }
+
+    // All retries exhausted
+    handleSaveFailure(pack, error instanceof Error ? error.message : 'Critical storage error');
+  }
+}
+
+/**
+ * Handle persistent save failure - store in memory and show error
+ */
+function handleSaveFailure(pack: Pack, errorMessage: string): void {
+  console.error('[Pack] All save attempts failed:', errorMessage);
+
+  // Add to memory backup to prevent data loss
+  if (!pendingSaves.find(p => p.id === pack.id)) {
+    pendingSaves.push(pack);
+  }
+
+  const fallbackError = createAppError(
+    'storage',
+    'Pack saved to temporary storage. Your collection may not persist after browser refresh.',
+    [
+      {
+        label: 'Manage Storage',
+        action: () => {
+          storageError.set(null);
+          window.location.href = '/settings';
+        },
+        primary: true,
+      },
+      {
+        label: 'Retry Save',
+        action: () => {
+          storageError.set(null);
+          // Retry all pending saves
+          pendingSaves.forEach(p => savePackWithRetry(p));
+        },
+      },
+      {
+        label: 'Dismiss',
+        action: () => storageError.set(null),
+      },
+    ]
+  );
+  storageError.set(fallbackError);
+  logError(fallbackError, errorMessage);
+}
 
 /**
  * Actions
@@ -180,63 +270,11 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
           console.warn('[Pack] Collection initialization failed or timed out, continuing without persistence:', initError);
         }
 
-        // Save pack to collection (IndexedDB) - COMPLETELY NON-BLOCKING
+        // Save pack to collection (IndexedDB) - NON-BLOCKING with retry logic
         // This runs in background and won't affect pack opening if it fails
         // Uses setTimeout to break out of Promise chain and prevent blocking
         setTimeout(() => {
-          addPackToCollection(pack)
-            .then(saveResult => {
-              if (saveResult.success) {
-                // UX-007: Show visual confirmation toast when cards are saved
-                showToast('✨ Cards saved to your collection!', 'success');
-              } else {
-                // Create user-friendly error message
-                const storageAppError = createAppError(
-                  'storage',
-                  'Pack saved to temporary storage. Your collection may not persist after browser refresh.',
-                  [
-                    {
-                      label: 'Manage Storage',
-                      action: () => {
-                        storageError.set(null);
-                        window.location.href = '/settings';
-                      },
-                      primary: true,
-                    },
-                    {
-                      label: 'Dismiss',
-                      action: () => storageError.set(null),
-                    },
-                  ]
-                );
-                storageError.set(storageAppError);
-                logError(storageAppError, saveResult.error);
-              }
-            })
-            .catch(error => {
-              // Last resort error handler - should never reach here
-              console.error('[Pack] Critical storage error:', error);
-
-              const fallbackError = createAppError(
-                'storage',
-                'Pack saved to temporary storage. Your collection may not persist after browser refresh.',
-                [
-                  {
-                    label: 'Manage Storage',
-                    action: () => {
-                      storageError.set(null);
-                      window.location.href = '/settings';
-                    },
-                    primary: true,
-                  },
-                  {
-                    label: 'Dismiss',
-                    action: () => storageError.set(null),
-                  },
-                ]
-              );
-              storageError.set(fallbackError);
-            });
+          savePackWithRetry(pack);
         }, 0);
 
         // SEC-002: Record pack open for rate limiting
@@ -329,6 +367,29 @@ export function completePackAnimation(): void {
 
   // In the MVP vertical slice, we go straight to results after the tear
   showPackResults({ skipped: false });
+}
+
+/**
+ * Handle quick reveal mode - brief visual flash then show results
+ * Called from pack animation when quick reveal is enabled
+ */
+export async function handleQuickReveal(): Promise<void> {
+  const quickReveal = quickRevealStore.get();
+
+  if (!quickReveal) return;
+
+  // Brief visual flash
+  await new Promise(resolve => setTimeout(resolve, QUICK_REVEAL_FLASH_MS));
+
+  // Skip directly to results
+  skipToResults();
+}
+
+/**
+ * Check if quick reveal mode is active
+ */
+export function isQuickRevealEnabled(): boolean {
+  return quickRevealStore.get();
 }
 
 // Reveal a specific card

@@ -23,17 +23,19 @@
 
 
   // Reactive state using Svelte 5 runes
-  let currentPack = $state<Pack | null>(null);
-  let packState = $state<PackState>('idle');
+  // Initialize from stores immediately to prevent race condition where component
+  // renders with default values before onMount subscriptions establish
+  let currentPack = $state<Pack | null>(packStore.get());
+  let packState = $state<PackState>(packStateStore.get());
   let packStats = $state<{
     totalCards: number;
     rarityBreakdown: Record<string, number>;
     holoCount: number;
     bestCard: PackCard;
-  } | null>(null);
-  let packError = $state<AppError | null>(null);
-  let storageError = $state<AppError | null>(null);
-  let currentTearAnimation = $state<'standard' | 'slow' | 'explosive'>('standard');
+  } | null>(packStatsStore.get());
+  let packError = $state<AppError | null>(packErrorStore.get() as AppError | null);
+  let storageError = $state<AppError | null>(storageErrorStore.get() as AppError | null);
+  let currentTearAnimation = $state<'standard' | 'slow' | 'explosive'>(currentTearAnimationStore.get());
 
   // MVP vertical slice: fixed pack settings
 
@@ -160,8 +162,8 @@
       bestRarity={currentPack.bestRarity}
       design={currentPack.design}
       tearAnimation={currentTearAnimation}
-      on:complete={completePackAnimationHandler}
-      on:skip={skipToResultsHandler}
+      oncomplete={completePackAnimationHandler}
+      onskip={skipToResultsHandler}
     />
 
   {:else if packState === 'results' && currentPack && packStats}
