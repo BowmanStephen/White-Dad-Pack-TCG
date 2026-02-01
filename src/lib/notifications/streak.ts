@@ -80,7 +80,7 @@ export function loadNotificationConfig(): void {
       }
     }
   } catch (error) {
-    console.error('Failed to load notification config:', error);
+    if (import.meta.env.DEV) console.error('Failed to load notification config:', error);
   }
 }
 
@@ -91,7 +91,7 @@ export function saveNotificationConfig(): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ config, history }));
   } catch (error) {
-    console.error('Failed to save notification config:', error);
+    if (import.meta.env.DEV) console.error('Failed to save notification config:', error);
   }
 }
 
@@ -143,7 +143,7 @@ export function getNotificationPermission(): NotificationPermission {
  */
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!areBrowserNotificationsSupported()) {
-    console.warn('Browser notifications not supported');
+    if (import.meta.env.DEV) console.warn('Browser notifications not supported');
     return false;
   }
 
@@ -169,7 +169,7 @@ export async function sendStreakNotification(warning: StreakWarning): Promise<bo
 
   const permission = getNotificationPermission();
   if (permission !== 'granted') {
-    console.warn('Browser notification permission not granted');
+    if (import.meta.env.DEV) console.warn('Browser notification permission not granted');
     return false;
   }
 
@@ -205,7 +205,7 @@ export async function sendStreakNotification(warning: StreakWarning): Promise<bo
 
     return true;
   } catch (error) {
-    console.error('Failed to send browser notification:', error);
+    if (import.meta.env.DEV) console.error('Failed to send browser notification:', error);
     return false;
   }
 }
@@ -299,13 +299,15 @@ export async function sendEmailReminder(warning: StreakWarning): Promise<boolean
   }
 
   // TODO: Implement actual email sending via backend API
-  // For now, just log to console
-  console.log('[EMAIL REMINDER]', {
-    to: config.emailAddress,
-    subject: `🎮 Your ${warning.streakLength}-Day Streak is About to Expire!`,
-    body: warning.message,
-    timestamp: new Date().toISOString()
-  });
+  // For now, just log to console in DEV mode
+  if (import.meta.env.DEV) {
+    console.log('[EMAIL REMINDER]', {
+      to: config.emailAddress,
+      subject: `🎮 Your ${warning.streakLength}-Day Streak is About to Expire!`,
+      body: warning.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 
   // Update history
   history.lastEmailSent = new Date();
@@ -368,7 +370,7 @@ export function initializeStreakNotifications(): void {
   if (config.browserNotifications && areBrowserNotificationsSupported()) {
     if (Notification.permission === 'default') {
       // Don't request immediately - wait for user interaction
-      console.log('[STREAK NOTIFICATIONS] Browser notifications available. Call requestNotificationPermission() after user interaction.');
+      if (import.meta.env.DEV) console.log('[STREAK NOTIFICATIONS] Browser notifications available. Call requestNotificationPermission() after user interaction.');
     }
   }
 
@@ -383,7 +385,7 @@ export function initializeStreakNotifications(): void {
           const streakLength = parsed.currentStreak || 0;
           checkAndNotifyStreak(lastLoginDate, streakLength);
         } catch (error) {
-          console.error('Failed to check streak notifications:', error);
+          if (import.meta.env.DEV) console.error('Failed to check streak notifications:', error);
         }
       }
     }, 30 * 60 * 1000); // 30 minutes

@@ -100,7 +100,7 @@ export async function getStorageQuotaInfo(): Promise<StorageQuotaInfo> {
         db.close();
       }
     } catch (error) {
-      console.warn('[QuotaManager] Could not estimate database size:', error);
+      if (import.meta.env.DEV) console.warn('[QuotaManager] Could not estimate database size:', error);
     }
 
     const percentage = (used / total) * 100;
@@ -114,7 +114,7 @@ export async function getStorageQuotaInfo(): Promise<StorageQuotaInfo> {
       isFull: percentage >= FULL_THRESHOLD * 100
     };
   } catch (error) {
-    console.error('[QuotaManager] Failed to get quota info:', error);
+    if (import.meta.env.DEV) console.error('[QuotaManager] Failed to get quota info:', error);
     return {
       used: 0,
       total: 50 * 1024 * 1024,
@@ -399,7 +399,7 @@ async function openDatabase(): Promise<IDBDatabase | null> {
   return new Promise((resolve) => {
     // Timeout after 2 seconds to prevent hanging in test environments
     const timeout = setTimeout(() => {
-      console.warn('[QuotaManager] IndexedDB open timed out');
+      if (import.meta.env.DEV) console.warn('[QuotaManager] IndexedDB open timed out');
       resolve(null);
     }, 2000);
     
@@ -412,12 +412,12 @@ async function openDatabase(): Promise<IDBDatabase | null> {
       };
       request.onerror = () => {
         clearTimeout(timeout);
-        console.warn('[QuotaManager] IndexedDB open failed:', request.error);
+        if (import.meta.env.DEV) console.warn('[QuotaManager] IndexedDB open failed:', request.error);
         resolve(null);
       };
     } catch (error) {
       clearTimeout(timeout);
-      console.warn('[QuotaManager] IndexedDB open exception:', error);
+      if (import.meta.env.DEV) console.warn('[QuotaManager] IndexedDB open exception:', error);
       resolve(null);
     }
   });
@@ -434,7 +434,7 @@ async function estimateDatabaseSize(db: IDBDatabase): Promise<number> {
       const size = await estimateObjectStoreSize(db, storeName);
       totalSize += size;
     } catch (error) {
-      console.warn(`[QuotaManager] Could not estimate size for store ${storeName}:`, error);
+      if (import.meta.env.DEV) console.warn(`[QuotaManager] Could not estimate size for store ${storeName}:`, error);
     }
   }
 

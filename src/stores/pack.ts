@@ -112,7 +112,7 @@ async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
     // Save failed - try again if we have attempts left
     if (attempt < MAX_ATTEMPTS) {
       const delayMs = BASE_DELAY_MS * Math.pow(2, attempt - 1); // 100, 200, 400ms
-      console.warn(`[Pack] Save attempt ${attempt} failed, retrying in ${delayMs}ms...`);
+      if (import.meta.env.DEV) console.warn(`[Pack] Save attempt ${attempt} failed, retrying in ${delayMs}ms...`);
       await new Promise(resolve => setTimeout(resolve, delayMs));
       return savePackWithRetry(pack, attempt + 1);
     }
@@ -123,7 +123,7 @@ async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
     // Unexpected error - try again if we have attempts left
     if (attempt < MAX_ATTEMPTS) {
       const delayMs = BASE_DELAY_MS * Math.pow(2, attempt - 1);
-      console.warn(`[Pack] Save attempt ${attempt} threw error, retrying in ${delayMs}ms...`, error);
+      if (import.meta.env.DEV) console.warn(`[Pack] Save attempt ${attempt} threw error, retrying in ${delayMs}ms...`, error);
       await new Promise(resolve => setTimeout(resolve, delayMs));
       return savePackWithRetry(pack, attempt + 1);
     }
@@ -137,7 +137,7 @@ async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
  * Handle persistent save failure - store in memory and show error
  */
 function handleSaveFailure(pack: Pack, errorMessage: string): void {
-  console.error('[Pack] All save attempts failed:', errorMessage);
+  if (import.meta.env.DEV) console.error('[Pack] All save attempts failed:', errorMessage);
 
   // Add to memory backup to prevent data loss
   if (!pendingSaves.find(p => p.id === pack.id)) {
@@ -267,7 +267,7 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
             new Promise((_, reject) => setTimeout(() => reject(new Error('Collection init timeout')), 2000))
           ]);
         } catch (initError) {
-          console.warn('[Pack] Collection initialization failed or timed out, continuing without persistence:', initError);
+          if (import.meta.env.DEV) console.warn('[Pack] Collection initialization failed or timed out, continuing without persistence:', initError);
         }
 
         // Save pack to collection (IndexedDB) - NON-BLOCKING with retry logic

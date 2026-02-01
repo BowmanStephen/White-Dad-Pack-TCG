@@ -43,7 +43,7 @@ export async function isStorageAvailable(): Promise<boolean> {
     })();
     return await Promise.race([check, timeout]);
   } catch {
-    console.warn('[IndexedDB] Storage not available or timed out');
+    if (import.meta.env.DEV) console.warn('[IndexedDB] Storage not available or timed out');
     return false;
   }
 }
@@ -68,7 +68,7 @@ export async function getStorageUsage(): Promise<{ used: number; total: number; 
 
     return { used, total, driver };
   } catch (error) {
-    console.error('[IndexedDB] Failed to get storage usage:', error);
+    if (import.meta.env.DEV) console.error('[IndexedDB] Failed to get storage usage:', error);
     return { used: 0, total: 50 * 1024 * 1024, driver: 'unknown' };
   }
 }
@@ -112,11 +112,11 @@ export async function saveCollection(collection: Collection): Promise<{ success:
 
     if (!quotaCheck.canSave) {
       // Try automatic cleanup
-      console.warn('[IndexedDB] Storage nearly full, attempting auto-cleanup...');
+      if (import.meta.env.DEV) console.warn('[IndexedDB] Storage nearly full, attempting auto-cleanup...');
       const cleanupResult = await autoManageQuota(collection);
 
       if (cleanupResult.success && cleanupResult.updatedCollection) {
-        console.log('[IndexedDB] Auto-cleanup successful:', cleanupResult.actions.join(', '));
+        if (import.meta.env.DEV) console.log('[IndexedDB] Auto-cleanup successful:', cleanupResult.actions.join(', '));
         // Save the cleaned-up collection instead
         await localforage.setItem(COLLECTION_KEY, cleanupResult.updatedCollection);
 

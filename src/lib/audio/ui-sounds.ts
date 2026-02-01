@@ -26,7 +26,7 @@ export function playButtonClick(): void {
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   audio.addEventListener('error', () => {
-    console.debug(`Button click sound not found`);
+    if (import.meta.env.DEV) console.debug(`Button click sound not found`);
   });
 
   audio.addEventListener('ended', () => {
@@ -34,7 +34,7 @@ export function playButtonClick(): void {
   });
 
   audio.play().catch(() => {
-    console.debug(`Button click sound playback prevented`);
+    if (import.meta.env.DEV) console.debug(`Button click sound playback prevented`);
   });
 }
 
@@ -54,7 +54,7 @@ export function playNavigationWhoosh(): void {
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   audio.addEventListener('error', () => {
-    console.debug(`Navigation whoosh sound not found`);
+    if (import.meta.env.DEV) console.debug(`Navigation whoosh sound not found`);
   });
 
   audio.addEventListener('ended', () => {
@@ -62,7 +62,7 @@ export function playNavigationWhoosh(): void {
   });
 
   audio.play().catch(() => {
-    console.debug(`Navigation whoosh sound playback prevented`);
+    if (import.meta.env.DEV) console.debug(`Navigation whoosh sound playback prevented`);
   });
 }
 
@@ -82,7 +82,7 @@ export function playAchievementChime(): void {
   audio.volume = Math.max(0, Math.min(1, finalVolume));
 
   audio.addEventListener('error', () => {
-    console.debug(`Achievement chime sound not found`);
+    if (import.meta.env.DEV) console.debug(`Achievement chime sound not found`);
   });
 
   audio.addEventListener('ended', () => {
@@ -90,7 +90,7 @@ export function playAchievementChime(): void {
   });
 
   audio.play().catch(() => {
-    console.debug(`Achievement chime sound playback prevented`);
+    if (import.meta.env.DEV) console.debug(`Achievement chime sound playback prevented`);
   });
 }
 

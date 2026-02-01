@@ -471,9 +471,11 @@ export function validateRecipes(recipes: any[]): ValidationResult {
 // ============================================================================
 
 /**
- * Log validation results to console
+ * Log validation results to console (DEV only)
  */
 export function logValidationResults(result: ValidationResult, dataType: 'cards' | 'recipes'): void {
+  if (!import.meta.env.DEV) return;
+
   if (result.isValid && result.warnings.length === 0) {
     console.log(`✅ ${dataType} validation passed: No issues found`);
     return;

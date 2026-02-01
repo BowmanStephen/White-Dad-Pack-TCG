@@ -51,7 +51,7 @@ export class RequestQueue {
    * Handle network coming back online
    */
   private handleOnline = () => {
-    console.log('[RequestQueue] Network online, processing queue...');
+    if (import.meta.env.DEV) console.log('[RequestQueue] Network online, processing queue...');
     this.processQueue();
   };
 
@@ -63,10 +63,10 @@ export class RequestQueue {
       const stored = localStorage.getItem(QUEUE_STORAGE_KEY);
       if (stored) {
         this.queue = JSON.parse(stored);
-        console.log(`[RequestQueue] Loaded ${this.queue.length} queued requests`);
+        if (import.meta.env.DEV) console.log(`[RequestQueue] Loaded ${this.queue.length} queued requests`);
       }
     } catch (error) {
-      console.error('[RequestQueue] Failed to load from storage:', error);
+      if (import.meta.env.DEV) console.error('[RequestQueue] Failed to load from storage:', error);
       this.queue = [];
     }
   }
@@ -78,7 +78,7 @@ export class RequestQueue {
     try {
       localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(this.queue));
     } catch (error) {
-      console.error('[RequestQueue] Failed to save to storage:', error);
+      if (import.meta.env.DEV) console.error('[RequestQueue] Failed to save to storage:', error);
     }
   }
 
@@ -109,7 +109,7 @@ export class RequestQueue {
 
     // Check queue size limit
     if (this.queue.length >= MAX_QUEUE_SIZE) {
-      console.warn('[RequestQueue] Queue full, removing oldest low-priority request');
+      if (import.meta.env.DEV) console.warn('[RequestQueue] Queue full, removing oldest low-priority request');
 
       // Remove oldest low-priority request
       const lowPriorityIndex = this.queue.findIndex(
@@ -133,7 +133,7 @@ export class RequestQueue {
 
     this.saveToStorage();
 
-    console.log(`[RequestQueue] Added request ${id} (${request.method} ${request.url})`);
+    if (import.meta.env.DEV) console.log(`[RequestQueue] Added request ${id} (${request.method} ${request.url})`);
 
     return id;
   }
@@ -143,12 +143,12 @@ export class RequestQueue {
    */
   async processQueue(): Promise<QueueStats> {
     if (this.processing) {
-      console.log('[RequestQueue] Already processing, skipping');
+      if (import.meta.env.DEV) console.log('[RequestQueue] Already processing, skipping');
       return this.getStats();
     }
 
     if (this.queue.length === 0) {
-      console.log('[RequestQueue] Queue empty');
+      if (import.meta.env.DEV) console.log('[RequestQueue] Queue empty');
       return this.getStats();
     }
 
@@ -161,7 +161,7 @@ export class RequestQueue {
       failed: 0,
     };
 
-    console.log(`[RequestQueue] Processing ${this.queue.length} requests`);
+    if (import.meta.env.DEV) console.log(`[RequestQueue] Processing ${this.queue.length} requests`);
 
     // Process requests in order
     const remaining: QueuedRequest[] = [];
@@ -172,16 +172,16 @@ export class RequestQueue {
 
         if (success) {
           stats.succeeded++;
-          console.log(`[RequestQueue] ✓ Request ${request.id} succeeded`);
+          if (import.meta.env.DEV) console.log(`[RequestQueue] ✓ Request ${request.id} succeeded`);
         } else {
           stats.failed++;
           remaining.push(request);
-          console.log(`[RequestQueue] ✗ Request ${request.id} failed after ${request.retryCount} attempts`);
+          if (import.meta.env.DEV) console.log(`[RequestQueue] ✗ Request ${request.id} failed after ${request.retryCount} attempts`);
         }
       } catch (error) {
         stats.failed++;
         remaining.push(request);
-        console.error(`[RequestQueue] ✗ Request ${request.id} error:`, error);
+        if (import.meta.env.DEV) console.error(`[RequestQueue] ✗ Request ${request.id} error:`, error);
       }
     }
 
@@ -190,7 +190,7 @@ export class RequestQueue {
     this.saveToStorage();
     this.processing = false;
 
-    console.log(`[RequestQueue] Processing complete: ${stats.succeeded} succeeded, ${stats.failed} failed`);
+    if (import.meta.env.DEV) console.log(`[RequestQueue] Processing complete: ${stats.succeeded} succeeded, ${stats.failed} failed`);
 
     return stats;
   }
@@ -208,7 +208,7 @@ export class RequestQueue {
       const delay = Math.pow(2, request.retryCount - 1) * 1000;
 
       if (request.retryCount > 1) {
-        console.log(`[RequestQueue] Retrying ${request.id} (attempt ${request.retryCount}/${maxRetries}) after ${delay}ms`);
+        if (import.meta.env.DEV) console.log(`[RequestQueue] Retrying ${request.id} (attempt ${request.retryCount}/${maxRetries}) after ${delay}ms`);
         await this.sleep(delay);
       }
 
@@ -228,16 +228,16 @@ export class RequestQueue {
 
         // Not OK but could be server error - retry
         if (response.status >= 500 || response.status === 429) {
-          console.warn(`[RequestQueue] Request ${request.id} returned ${response.status}, retrying...`);
+          if (import.meta.env.DEV) console.warn(`[RequestQueue] Request ${request.id} returned ${response.status}, retrying...`);
           continue;
         }
 
         // Client error (4xx) - don't retry
-        console.error(`[RequestQueue] Request ${request.id} returned ${response.status}, not retrying`);
+        if (import.meta.env.DEV) console.error(`[RequestQueue] Request ${request.id} returned ${response.status}, not retrying`);
         return false;
       } catch (error) {
         // Network error - retry
-        console.warn(`[RequestQueue] Request ${request.id} network error, retrying...`, error);
+        if (import.meta.env.DEV) console.warn(`[RequestQueue] Request ${request.id} network error, retrying...`, error);
         continue;
       }
     }
@@ -262,7 +262,7 @@ export class RequestQueue {
     if (index !== -1) {
       this.queue.splice(index, 1);
       this.saveToStorage();
-      console.log(`[RequestQueue] Removed request ${id}`);
+      if (import.meta.env.DEV) console.log(`[RequestQueue] Removed request ${id}`);
       return true;
     }
 
@@ -276,7 +276,7 @@ export class RequestQueue {
     const count = this.queue.length;
     this.queue = [];
     this.saveToStorage();
-    console.log(`[RequestQueue] Cleared ${count} requests`);
+    if (import.meta.env.DEV) console.log(`[RequestQueue] Cleared ${count} requests`);
   }
 
   /**
