@@ -204,12 +204,12 @@ async function saveToStorageImmediate(): Promise<{ success: boolean; error?: str
   }
 }
 
-// Subscribe to store changes and persist to IndexedDB (only in browser)
-onBrowser(() => {
-  collectionStore.subscribe(() => {
-    saveToStorage();
-  });
-});
+// PERF: Removed auto-save subscription that caused duplicate IndexedDB writes.
+// All saves now go through explicit saveToStorageImmediate() calls in:
+// - addPackToCollection() / updateCollectionWithPack()
+// - importCollection()
+// - clearUserCollection() / clearAllCollectionData()
+// This eliminates the reactive cascade where every store update triggered a debounced save.
 
 // ============================================================================
 // STORAGE EVENT DISPATCHING

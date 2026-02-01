@@ -98,8 +98,11 @@
 
   const packQuality = $derived(calculatePackQuality(pack.cards));
 
+  // PERF: Cache unique cards set once instead of calling collection.get() on every card render
+  const uniqueCardsSet = $derived(new Set(collection.get().metadata.uniqueCards));
+
   function isCardNew(cardId: string) {
-    return collection.get().metadata.uniqueCards.includes(cardId);
+    return uniqueCardsSet.has(cardId);
   }
 
   function goToPreviousCard() {
