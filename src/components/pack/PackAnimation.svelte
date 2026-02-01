@@ -13,6 +13,11 @@
     HAPTIC_PATTERNS,
     RARITY_ANIMATION_MODIFIERS,
   } from '../../lib/config/pack-config';
+  import {
+    getVisualEffectsForRarity,
+    triggerRarityHaptic,
+    isLegendaryPlus as checkLegendaryPlus,
+  } from '../../lib/effects/rarity-effects';
 
   interface Props {
     bestRarity?: Rarity;
@@ -117,23 +122,14 @@
 
   // Trigger rarity-specific effects during tear phase
   function triggerRarityEffects(): void {
-    if (isLegendaryPlus) {
-      // Legendary+: Screen flash + camera shake (shake handled by CSS class)
-      showScreenFlash = true;
-      // Extended haptic feedback for legendary
-      if (navigator.vibrate) {
-        navigator.vibrate(HAPTIC_PATTERNS.LEGENDARY_REVEAL);
-      }
-    } else if (isEpic) {
-      // Epic: Lightning effect
-      showLightning = true;
-      if (navigator.vibrate) {
-        navigator.vibrate(HAPTIC_PATTERNS.EPIC_REVEAL);
-      }
-    } else if (isRare) {
-      // Rare: Golden particle trail
-      showGoldenTrail = true;
-    }
+    // Get visual effects configuration from centralized module
+    const effects = getVisualEffectsForRarity(bestRarity);
+    showScreenFlash = effects.screenFlash;
+    showLightning = effects.lightning;
+    showGoldenTrail = effects.goldenTrail;
+
+    // Trigger haptic feedback based on rarity
+    triggerRarityHaptic(bestRarity);
   }
 
   // Clear rarity effects
