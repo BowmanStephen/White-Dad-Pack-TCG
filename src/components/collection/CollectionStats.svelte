@@ -6,7 +6,6 @@
   import { DAD_TYPE_COLORS } from '../../lib/art/dad-type-colors';
   import {
     formatCardCount,
-    formatPackCount,
     formatPercentage,
     formatLuckPercentage,
   } from '../../lib/utils/formatters';
@@ -48,29 +47,26 @@
   // Calculate duplicate count
   let duplicateCount = $derived(stats.totalCards - stats.uniqueCards);
 
-  // Compute rarity counts from all packs
-  function getRarityCounts(): Record<Rarity, number> {
-    const current = collection.get();
-    const counts: Record<Rarity, number> = {
-      common: 0,
-      uncommon: 0,
-      rare: 0,
-      epic: 0,
-      legendary: 0,
-      mythic: 0,
-    };
-
-    for (const pack of current.packs) {
-      for (const card of pack.cards) {
-        counts[card.rarity]++;
-      }
-    }
-
-    return counts;
-  }
-
-  // Reactive rarity counts
-  let rarityCounts = $derived(getRarityCounts());
+  // Reactive rarity counts - use precomputed metadata instead of iterating packs
+  let rarityCounts = $derived(
+    typeof window !== 'undefined'
+      ? collection.get().metadata.rarityCounts || {
+          common: 0,
+          uncommon: 0,
+          rare: 0,
+          epic: 0,
+          legendary: 0,
+          mythic: 0,
+        }
+      : {
+          common: 0,
+          uncommon: 0,
+          rare: 0,
+          epic: 0,
+          legendary: 0,
+          mythic: 0,
+        }
+  );
 
   // Calculate dad type counts from all unique cards
   function getDadTypeCounts(): Record<DadType, number> {
@@ -134,34 +130,18 @@
   // COLLECTION VALUE CALCULATION (PACK-023)
   // ============================================================================
 
-  // Get unique cards with duplicate counts
-  function getCardsWithValue(): Array<{ card: CollectionDisplayCard; value: number }> {
-    const current = collection.get();
-    const uniqueCards = getUniqueCardsWithCounts(current.packs);
-
-    return uniqueCards.map(card => ({
-      card,
-      value: calculateCardValue(card),
-    }));
-  }
-
-  // Calculate total collection value
-  let totalCollectionValue = $derived(
-    (() => {
-      const current = collection.get();
-      const uniqueCards = getUniqueCardsWithCounts(current.packs);
-      return calculateCollectionValue(uniqueCards);
-    })()
+  // Cache unique cards with counts - single computation, reused below
+  let uniqueCardsWithCounts = $derived(
+    typeof window !== 'undefined'
+      ? getUniqueCardsWithCounts(collection.get().packs)
+      : []
   );
 
-  // Get value breakdown by rarity
-  let valueBreakdown = $derived(
-    (() => {
-      const current = collection.get();
-      const uniqueCards = getUniqueCardsWithCounts(current.packs);
-      return getValueBreakdownByRarity(uniqueCards);
-    })()
-  );
+  // Calculate total collection value (uses cached uniqueCardsWithCounts)
+  let totalCollectionValue = $derived(calculateCollectionValue(uniqueCardsWithCounts));
+
+  // Get value breakdown by rarity (uses cached uniqueCardsWithCounts)
+  let valueBreakdown = $derived(getValueBreakdownByRarity(uniqueCardsWithCounts));
 
   // Calculate expected rarity percentages based on pack configuration
   function calculateExpectedRates(): Record<Rarity, number> {

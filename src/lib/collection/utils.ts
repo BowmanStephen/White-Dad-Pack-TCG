@@ -489,13 +489,12 @@ export function calculateCardValue(
 
   // Apply holographic bonus (+50%)
   if (card.isHolo) {
-    value = value * HOLO_BONUS_MULTIPLIER;
+    value *= HOLO_BONUS_MULTIPLIER;
   }
 
   // Apply upgrade bonus (+10% per level)
   if (upgradeLevel > 0) {
-    const upgradeBonus = 1 + (upgradeLevel * UPGRADE_BONUS_PER_LEVEL);
-    value = value * upgradeBonus;
+    value *= 1 + (upgradeLevel * UPGRADE_BONUS_PER_LEVEL);
   }
 
   return Math.round(value);

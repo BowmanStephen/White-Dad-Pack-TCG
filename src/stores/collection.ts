@@ -53,13 +53,15 @@ const DEFAULT_COLLECTION: Collection = {
 // Load collection from IndexedDB on init
 let loadedCollection: Collection = DEFAULT_COLLECTION;
 
-// Track hydration state
-let isHydrated = false;
+// Track hydration state (single source of truth)
 let hydrationPromise: Promise<void> | null = null;
+
+// Reactive hydration state for components
+export const collectionHydrated = atom<boolean>(false);
 
 // Async load from IndexedDB with timeout
 async function initializeCollection() {
-  if (isHydrated) return;
+  if (collectionHydrated.get()) return;
 
   const INIT_TIMEOUT = 5000; // FIX: Increased to 5 seconds for slower devices
 
@@ -94,7 +96,7 @@ async function initializeCollection() {
     );
 
     await Promise.race([initPromise, timeoutPromise]);
-    isHydrated = true;
+    collectionHydrated.set(true);
   } catch (error) {
     console.error('[Collection] Failed to initialize:', error);
     // FIX: Even on timeout, try to ensure localforage is ready for writes
@@ -105,34 +107,29 @@ async function initializeCollection() {
     } catch (forageError) {
       console.error('[Collection] localforage not ready:', forageError);
     }
-    isHydrated = true; // Mark as hydrated even on error to prevent infinite retries
+    collectionHydrated.set(true); // Mark as hydrated even on error to prevent infinite retries
   }
 }
 
 // Public function to ensure collection is initialized (awaitable)
 export async function ensureCollectionInitialized(): Promise<void> {
-  if (isHydrated) return;
-  
+  if (collectionHydrated.get()) return;
+
   if (!hydrationPromise) {
     hydrationPromise = initializeCollection();
   }
-  
+
   return hydrationPromise;
 }
 
-// Check if collection is hydrated
+// Check if collection is hydrated (convenience function)
 export function isCollectionHydrated(): boolean {
-  return isHydrated;
+  return collectionHydrated.get();
 }
-
-// Reactive hydration state for components
-export const collectionHydrated = atom<boolean>(false);
 
 // Initialize on module load (but don't block) - only in browser environment
 onBrowser(() => {
-  initializeCollection().then(() => {
-    collectionHydrated.set(true);
-  });
+  initializeCollection();
 });
 
 // ============================================================================

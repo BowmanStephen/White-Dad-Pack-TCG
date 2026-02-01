@@ -438,16 +438,6 @@ function validateRarityDistribution(cards: PackCard[], config: PackConfig): void
       }
     }
 
-    // For probability slots, we don't enforce exact counts (that's probabilistic)
-    // But we can add warnings if something looks very wrong
-    if (slot.rarityPool && slot.probability) {
-      // Check that at least some cards from the probability pool exist
-      const poolRarities = Object.keys(slot.probability) as Rarity[];
-      const poolCount = poolRarities.reduce((sum, rarity) => sum + rarityCounts[rarity], 0);
-
-      // We should have at least 1 card from the probability pool across all such slots
-      // This is a soft check - it's possible (though unlikely) to get 0
-    }
   }
 
   // Additional sanity check: ensure we have the expected total number of cards

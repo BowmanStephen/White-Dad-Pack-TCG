@@ -1,4 +1,6 @@
-# CLAUDE.md — DadDeck TCG
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **Stack:** Astro 5 + Svelte 5 + Tailwind + Bun | **Status:** MVP (Pack Opening + Collection only)
 
@@ -19,13 +21,18 @@ import type { Card, Pack } from '@/types';
 import { packStore } from '@/stores/pack';
 // NEVER use relative imports like '../../../types'
 ```
+Available aliases: `@/*`, `@components/*`, `@lib/*`, `@stores/*`, `@data/*`, `@types/*`, `@mocks/*`
 
 ### Package Manager — Bun only
 ```bash
 bun install && bun run dev    # localhost:4321
+bun run build                 # Production build → ./dist/
+bun run preview               # Preview production build
 bun test                      # Watch mode
-bun run test:run              # Single run
-bun run test:e2e              # Playwright
+bun run test:run              # Single run (all tests)
+bun run test:run path/to/test # Single test file
+bun run test:e2e              # Playwright (all browsers)
+bun run test:e2e:chromium     # Playwright (Chromium only)
 bun run lint:fix              # ESLint auto-fix
 ```
 
