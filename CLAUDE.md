@@ -7,9 +7,7 @@
 ## IMPORTANT: Known Blockers
 
 ### Component Tests Blocked (Vitest 4.x + Svelte 5)
-- `tests/components/` cannot run — `ReferenceError: document is not defined`
-- **Root cause:** Vitest 4.0.17's happy-dom doesn't initialize globals before Svelte imports
-- **Workaround:** None. Wait for Svelte 5.5+ native test utilities. Unit tests work fine.
+`tests/components/` cannot run — `ReferenceError: document is not defined`. No workaround; unit tests work fine.
 
 ---
 
@@ -55,11 +53,8 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 
 ## Gotchas
 
-1. **Svelte hydration:** Always add `client:load` to Svelte components in .astro files
-2. **State mutation:** Use immutable updates (`{...obj}`) — direct mutation won't trigger reactivity
-3. **Svelte 5 runes:** Use `$state`, `$derived`, `$effect` (not legacy `$:`)
-4. **Nanostores:** Access with `$derived(myStore.get())`, not `$myStore`
-5. **Type imports:** Import from `@/types` barrel, not individual type files
+1. **Svelte in Astro:** Always add `client:load` to Svelte components in .astro files
+2. **Nanostores:** Access with `$derived(myStore.get())`, not `$myStore`
 
 ---
 
@@ -68,11 +63,3 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 **4 Layers:** UI (Astro + Svelte islands) → State (Nanostores) → Logic (`src/lib/`) → Data (`cards.json`)
 
 Components subscribe to stores and trigger store actions — logic lives in stores, not components.
-
----
-
-## See Also
-
-- **Working with Stephen:** `~/.claude/CLAUDE.md`
-- **Architecture diagrams:** `ARCHITECTURE.md`
-- **Card mechanics:** `docs/CARD_MECHANICS.md`
