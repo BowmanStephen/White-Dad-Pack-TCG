@@ -49,6 +49,7 @@ bun run test:coverage         # Coverage report
 bun run test:e2e              # Playwright (all browsers)
 bun run test:e2e:chromium     # Playwright (Chromium only)
 bun run test:visual           # Visual regression tests
+bun run test:visual:update    # Update visual snapshots
 ```
 
 ### Linting & Formatting
@@ -57,6 +58,12 @@ bun run lint                  # ESLint check
 bun run lint:fix              # ESLint auto-fix
 bun run format                # Prettier format all
 bun run format:check          # Check formatting
+```
+
+### Other Tools
+```bash
+bun run storybook             # Component playground (port 6006)
+bun run discord-bot:dev       # Discord bot with hot reload
 ```
 
 ---
@@ -95,6 +102,7 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 1. **Svelte in Astro:** Always add `client:load` to Svelte components in .astro files
 2. **Nanostores in Svelte 5:** Access with `$derived(myStore.get())`, not `$myStore`
 3. **Store actions:** Logic lives in stores (`src/stores/`), not components — components call store functions
+4. **Types are modular:** 28 feature files in `src/types/` — add to existing files, never create new ones
 
 ---
 
@@ -107,3 +115,5 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 - `tests/e2e/` — Playwright browser tests
 - `tests/visual/` — screenshot snapshots
 - `tests/pack/`, `tests/card/`, `tests/art/` — domain-specific tests
+- `tests/mocks/` — shared test utilities and fixtures
+- `tests/_archived/` — tests for archived features (do not run)

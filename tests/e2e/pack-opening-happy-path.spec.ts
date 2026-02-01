@@ -110,27 +110,21 @@ test.describe('Pack Opening Happy Path', () => {
   test('should display pack quality grade', async ({ page }) => {
     await page.goto('/pack');
     await page.waitForLoadState('networkidle');
-    
-    // Open pack (wait for hydration)
-    const openPackButton = page.locator('button.btn-primary').filter({ hasText: 'Open Pack' });
-    await openPackButton.waitFor({ state: 'visible', timeout: 10000 });
-    await openPackButton.click();
-    await page.waitForTimeout(500);
-    await page.keyboard.press('Space');
-    
-    // Wait for results
-    await expect(page.locator('text=Collection Updated')).toBeVisible({ timeout: 10000 });
-    
-    // Verify pack grade is shown (collapsed by default)
-    const gradeButton = page.locator('button').filter({ hasText: /Pack Grade/i });
-    await expect(gradeButton).toBeVisible();
-    
+
+    // Open pack and skip to results
+    await openPackAndSkipToResults(page);
+
+    // Wait for grade button to be visible (may take time to render)
+    // The button text is "Pack Grade: [label]" plus score info
+    const gradeButton = page.locator('button[aria-expanded]').filter({ hasText: /Pack Grade/i });
+    await gradeButton.waitFor({ state: 'visible', timeout: 10000 });
+
     // Click to expand details
     await gradeButton.click();
-    
+
     // Verify expanded details show score breakdown
-    await expect(page.locator('text=Base Score')).toBeVisible();
-    await expect(page.locator('text=Holo Bonus')).toBeVisible();
+    await expect(page.locator('text=Base Score')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=Holo Bonus')).toBeVisible({ timeout: 5000 });
   });
 
   test('should display best card highlight', async ({ page }) => {
@@ -206,71 +200,71 @@ test.describe('Pack Opening Happy Path', () => {
   test('should allow going back to home', async ({ page }) => {
     await page.goto('/pack');
     await page.waitForLoadState('networkidle');
-    
+
     // Open pack and skip to results
     await openPackAndSkipToResults(page);
-    
-    // Click "Back to Street"
+
+    // Click "Back to Street" and wait for navigation
     const backButton = page.locator('button').filter({ hasText: /Back to Street/i });
-    await expect(backButton).toBeVisible();
-    await backButton.click();
-    
-    // Should navigate to home page
+    await backButton.waitFor({ state: 'visible', timeout: 10000 });
+
+    // Click triggers window.location.href navigation
+    await Promise.all([
+      page.waitForURL('/'),
+      backButton.click(),
+    ]);
+
+    // Verify we're on the home page
     await expect(page).toHaveURL('/');
   });
 
   test('should open card inspection modal', async ({ page }) => {
     await page.goto('/pack');
     await page.waitForLoadState('networkidle');
-    
+
     // Open pack and skip to results
     await openPackAndSkipToResults(page);
-    
+
     // Wait for the card grid to be visible
     const cardGrid = page.locator('[role="button"][aria-label^="Inspect"]');
     await expect(cardGrid.first()).toBeVisible({ timeout: 10000 });
-    
+
     // Click on a card in the grid (use force to bypass toast overlay)
     const firstCard = cardGrid.first();
     await firstCard.click({ force: true });
-    
-    // Verify card detail modal opened (not cookie banner)
-    // Card detail modal has aria-label starting with "Card details for"
+
+    // Verify card detail modal opened
     const cardModal = page.locator('[role="dialog"][aria-label^="Card details"]');
     await expect(cardModal).toBeVisible({ timeout: 5000 });
-    
+
     // Verify modal has card details - look for rarity badge or card name
     await expect(cardModal.locator('text=/Common|Uncommon|Rare|Epic|Legendary|Mythic/i').first()).toBeVisible();
 
-    // NOTE: Modal close functionality (Escape key and X button) has a known bug
-    // where the modal doesn't close. Skipping close verification until fixed.
-    // TODO: Fix CardInspectModal close handlers in PackResults
+    // Try to close modal to clean up (click outside or press Escape)
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(500);
   });
 
   test('should save cards to collection', async ({ page }) => {
     await page.goto('/pack');
     await page.waitForLoadState('networkidle');
-    
+
     // Open pack and skip to results
     await openPackAndSkipToResults(page);
-    
-    // Navigate to collection page
+
+    // Navigate to collection page (use domcontentloaded, not networkidle)
     await page.goto('/collection');
-    await page.waitForLoadState('networkidle');
-    
-    // Verify collection has cards
-    // The collection page should show the cards we just opened
-    // Wait for hydration
-    await page.waitForTimeout(1000);
-    
-    // Check that collection is not empty (should show cards or pack history)
+    await page.waitForLoadState('domcontentloaded');
+
+    // Wait for collection content to load
     const collectionContent = page.locator('main');
-    await expect(collectionContent).toBeVisible();
-    
-    // Verify we have at least one pack in history or cards displayed
-    // This depends on the collection page implementation
-    const hasContent = await page.locator('text=/\\d+ cards?|Pack #|No cards yet/i').first().isVisible();
-    expect(hasContent).toBeTruthy();
+    await expect(collectionContent).toBeVisible({ timeout: 10000 });
+
+    // Verify we have content (cards displayed or pack count)
+    const hasCards = await page.locator('text=/\\d+ (cards?|unique)/i').first().isVisible({ timeout: 5000 }).catch(() => false);
+    const hasPackCount = await page.locator('text=/\\d+ packs?/i').first().isVisible({ timeout: 5000 }).catch(() => false);
+
+    expect(hasCards || hasPackCount).toBeTruthy();
   });
 
   test('complete happy path: landing -> pack -> results -> collection', async ({ page }) => {
@@ -305,14 +299,13 @@ test.describe('Pack Opening Happy Path', () => {
     await cards.first().waitFor({ state: 'visible', timeout: 10000 });
     await expect(cards).toHaveCount(6);
     
-    // Step 7: Navigate to collection
+    // Step 7: Navigate to collection (use domcontentloaded, not networkidle)
     await page.goto('/collection');
-    await page.waitForLoadState('networkidle');
-    
+    await page.waitForLoadState('domcontentloaded');
+
     // Step 8: Verify collection page loaded
     await expect(page).toHaveURL('/collection');
-    
-    console.log('Happy path complete!');
+    await expect(page.locator('main')).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -334,21 +327,22 @@ test.describe('Pack Opening Edge Cases', () => {
   test('should handle rapid pack opening', async ({ page }) => {
     await page.goto('/pack');
     await page.waitForLoadState('networkidle');
-    
+
     // Open first pack and skip to results
     await openPackAndSkipToResults(page);
-    
-    // Immediately open another
+
+    // Click "Open Another Pack"
     const openAnotherButton = page.locator('button').filter({ hasText: /Open Another Pack/i });
     await openAnotherButton.click();
-    
-    // Wait for hydration and open second pack
-    await clickOpenPackButton(page);
-    await page.waitForTimeout(500);
-    await page.keyboard.press('Space');
-    
-    // Should still work
-    await expect(page.locator('text=Collection Updated')).toBeVisible({ timeout: 10000 });
+
+    // Wait for idle state to be restored
+    await expect(page.getByRole('heading', { name: 'Open a Pack' })).toBeVisible({ timeout: 10000 });
+
+    // Open second pack
+    await openPackAndSkipToResults(page);
+
+    // Should show results for second pack
+    await expect(page.locator('text=Signature Best Pull')).toBeVisible({ timeout: 5000 });
   });
 
   test('should skip animation with click', async ({ page }) => {
