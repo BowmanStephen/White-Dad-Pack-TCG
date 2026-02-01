@@ -6,8 +6,13 @@ import { trackEvent } from './analytics';
 import { createAppError, logError, type AppError } from '../lib/utils/errors';
 import { haptics } from '../lib/utils/haptics';
 import { selectRandomTearAnimation } from '../types';
-import { skipAnimations as skipAnimationsStore, showToast, quickReveal as quickRevealStore, QUICK_REVEAL_FLASH_MS } from './ui';
+import { skipAnimations as skipAnimationsStore, showToast, quickReveal as quickRevealStore } from './ui';
 import { checkRateLimit, recordPackOpen, getRateLimitStatus } from '../lib/utils/rate-limiter';
+import {
+  SAVE_RETRY_CONFIG,
+  PACK_GENERATION_CONFIG,
+  ANIMATION_TIMINGS,
+} from '../lib/config/pack-config';
 
 // Current pack type selection (for UI state)
 export const selectedPackType = atom<PackType>('standard');
@@ -89,12 +94,9 @@ const pendingSaves: Pack[] = [];
 
 /**
  * Save pack to collection with retry logic and exponential backoff
- * Attempts 3 times before falling back to memory-only storage
+ * Attempts MAX_ATTEMPTS times before falling back to memory-only storage
  */
 async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
-  const MAX_ATTEMPTS = 3;
-  const BASE_DELAY_MS = 100;
-
   try {
     const saveResult = await addPackToCollection(pack);
 
@@ -110,8 +112,8 @@ async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
     }
 
     // Save failed - try again if we have attempts left
-    if (attempt < MAX_ATTEMPTS) {
-      const delayMs = BASE_DELAY_MS * Math.pow(2, attempt - 1); // 100, 200, 400ms
+    if (attempt < SAVE_RETRY_CONFIG.MAX_ATTEMPTS) {
+      const delayMs = SAVE_RETRY_CONFIG.BASE_DELAY_MS * Math.pow(2, attempt - 1); // 100, 200, 400ms
       if (import.meta.env.DEV) console.warn(`[Pack] Save attempt ${attempt} failed, retrying in ${delayMs}ms...`);
       await new Promise(resolve => setTimeout(resolve, delayMs));
       return savePackWithRetry(pack, attempt + 1);
@@ -121,8 +123,8 @@ async function savePackWithRetry(pack: Pack, attempt = 1): Promise<void> {
     handleSaveFailure(pack, saveResult.error || 'Unknown error');
   } catch (error) {
     // Unexpected error - try again if we have attempts left
-    if (attempt < MAX_ATTEMPTS) {
-      const delayMs = BASE_DELAY_MS * Math.pow(2, attempt - 1);
+    if (attempt < SAVE_RETRY_CONFIG.MAX_ATTEMPTS) {
+      const delayMs = SAVE_RETRY_CONFIG.BASE_DELAY_MS * Math.pow(2, attempt - 1);
       if (import.meta.env.DEV) console.warn(`[Pack] Save attempt ${attempt} threw error, retrying in ${delayMs}ms...`, error);
       await new Promise(resolve => setTimeout(resolve, delayMs));
       return savePackWithRetry(pack, attempt + 1);
@@ -246,10 +248,11 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
         // Calculate pack generation time for UX delay
         const generationElapsed = performance.now() - generationStartTime;
 
-        // Ensure minimum delay for smooth UX (target: 200ms, max: 500ms)
-        const targetDelay = 200;
-        const maxDelay = 500;
-        const remainingDelay = Math.max(0, Math.min(targetDelay - generationElapsed, maxDelay - generationElapsed));
+        // Ensure minimum delay for smooth UX
+        const remainingDelay = Math.max(0, Math.min(
+          PACK_GENERATION_CONFIG.TARGET_DELAY_MS - generationElapsed,
+          PACK_GENERATION_CONFIG.MAX_DELAY_MS - generationElapsed
+        ));
 
         if (remainingDelay > 0) {
           await new Promise(resolve => setTimeout(resolve, remainingDelay));
@@ -264,7 +267,7 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
         try {
           await Promise.race([
             ensureCollectionInitialized(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Collection init timeout')), 2000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Collection init timeout')), PACK_GENERATION_CONFIG.COLLECTION_INIT_TIMEOUT_MS))
           ]);
         } catch (initError) {
           if (import.meta.env.DEV) console.warn('[Pack] Collection initialization failed or timed out, continuing without persistence:', initError);
@@ -299,7 +302,7 @@ export async function openNewPack(packType?: PackType, themeType?: DadType): Pro
         packOpenStartTime = Date.now();
       })(),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Pack generation timed out')), 8000)
+        setTimeout(() => reject(new Error('Pack generation timed out')), PACK_GENERATION_CONFIG.TIMEOUT_MS)
       )
     ]);
   } catch (error) {
@@ -379,7 +382,7 @@ export async function handleQuickReveal(): Promise<void> {
   if (!quickReveal) return;
 
   // Brief visual flash
-  await new Promise(resolve => setTimeout(resolve, QUICK_REVEAL_FLASH_MS));
+  await new Promise(resolve => setTimeout(resolve, ANIMATION_TIMINGS.QUICK_REVEAL_FLASH_MS));
 
   // Skip directly to results
   skipToResults();
@@ -557,7 +560,6 @@ export function startAutoReveal(): void {
   stopAutoReveal();
 
   autoRevealIndex = 0;
-  const delay = 300; // 0.3s between cards
 
   autoRevealTimer = setInterval(() => {
     const activePack = currentPack.get();
@@ -577,7 +579,7 @@ export function startAutoReveal(): void {
     // Move to next card
     autoRevealIndex++;
     currentCardIndex.set(autoRevealIndex);
-  }, delay);
+  }, ANIMATION_TIMINGS.AUTO_REVEAL_DELAY_MS);
 }
 
 /**

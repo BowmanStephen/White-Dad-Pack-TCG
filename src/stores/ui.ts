@@ -3,6 +3,7 @@ import { isLowEndDevice } from '../lib/utils/performance';
 import { trackEvent } from './analytics';
 import type { CinematicMode, CinematicConfig } from '../types';
 import { onBrowser } from '@/lib/utils/browser';
+import { ANIMATION_TIMINGS } from '../lib/config/pack-config';
 
 // Animation Quality Settings
 export type AnimationQuality = 'auto' | 'high' | 'medium' | 'low';
@@ -280,8 +281,8 @@ export function toggleFastForward(): void {
 // QUICK REVEAL MODE (Skip pack animation, show brief flash then results)
 // ============================================================================
 
-// Quick reveal duration constant (300ms visual flash before results)
-export const QUICK_REVEAL_FLASH_MS = 300;
+// Re-export quick reveal duration from centralized config
+export const QUICK_REVEAL_FLASH_MS = ANIMATION_TIMINGS.QUICK_REVEAL_FLASH_MS;
 
 // Quick reveal enabled state
 export const $quickReveal = atom<boolean>(getStoredBoolean(QUICK_REVEAL_KEY, false));

@@ -4,9 +4,15 @@
   import { RARITY_CONFIG, PACK_DESIGN_CONFIG, TEAR_ANIMATION_CONFIG, type TearAnimationConfig } from '../../types';
   import * as uiStore from '../../stores/ui';
   import * as packStore from '../../stores/pack';
-  import { quickReveal as quickRevealStore, QUICK_REVEAL_FLASH_MS } from '../../stores/ui';
+  import { quickReveal as quickRevealStore } from '../../stores/ui';
   import { playPackTear } from '../../stores/audio';
   import { isReducedMotion } from '../../stores/motion';
+  import {
+    ANIMATION_TIMINGS,
+    TEAR_GESTURE_CONFIG,
+    HAPTIC_PATTERNS,
+    RARITY_ANIMATION_MODIFIERS,
+  } from '../../lib/config/pack-config';
 
   interface Props {
     bestRarity?: Rarity;
@@ -40,8 +46,6 @@
   let touchStartX = $state(0);
   let isDragging = $state(false);
   let tearProgress = $state(0);
-  const TEAR_THRESHOLD = 200; // Pixels to drag for complete tear
-  const COMPLETE_TEAR_PERCENTAGE = 0.7; // 70% drag to complete tear
 
   // Hover and interaction state for shake animations
   let isHovered = $state(false);
@@ -68,18 +72,17 @@
   ));
 
   // Animation timing (PACK-027: Varies by tear animation type)
-  // Base phase durations that will be multiplied by tear animation config
-  // Optimized for snappy feel while maintaining excitement (1.4s total vs 2.8s before)
+  // Base phase durations from centralized config, multiplied by tear animation config
   const BASE_PHASE_DURATIONS = {
-    appear: 200,   // Pack appears with scale (was 400ms, -50%)
-    glow: 400,     // Glow intensifies - still shows swipe hint (was 900ms, -56%)
-    tear: 600,     // Tear animation (was 1200ms, -50%)
-    burst: 200,    // Final burst and fade (was 300ms, -33%)
+    appear: ANIMATION_TIMINGS.APPEAR_MS,
+    glow: ANIMATION_TIMINGS.GLOW_MS,
+    tear: ANIMATION_TIMINGS.TEAR_MS,
+    burst: ANIMATION_TIMINGS.BURST_MS,
   };
 
   // PACK-VFX-015: Cinematic mode pack tear set to 1.8s
-  // Calculate tear duration based on cinematic mode (1.8s) vs normal mode
-  const tearDuration = $derived(isCinematic ? 1800 : (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear));
+  // Calculate tear duration based on cinematic mode vs normal mode
+  const tearDuration = $derived(isCinematic ? ANIMATION_TIMINGS.CINEMATIC_TEAR_MS : (BASE_PHASE_DURATIONS.tear * tearConfig.phaseMultipliers.tear));
 
   const phaseDurations = $derived({
     appear: (BASE_PHASE_DURATIONS.appear * tearConfig.phaseMultipliers.appear) / cinematicConfig.speedMultiplier,
@@ -119,13 +122,13 @@
       showScreenFlash = true;
       // Extended haptic feedback for legendary
       if (navigator.vibrate) {
-        navigator.vibrate([50, 30, 100, 30, 50]); // Celebration pattern
+        navigator.vibrate(HAPTIC_PATTERNS.LEGENDARY_REVEAL);
       }
     } else if (isEpic) {
       // Epic: Lightning effect
       showLightning = true;
       if (navigator.vibrate) {
-        navigator.vibrate([30, 20, 30]); // Double-buzz
+        navigator.vibrate(HAPTIC_PATTERNS.EPIC_REVEAL);
       }
     } else if (isRare) {
       // Rare: Golden particle trail
@@ -142,7 +145,6 @@
 
   // Failsafe timer to prevent stuck animations
   let failsafeTimer: ReturnType<typeof setTimeout> | null = null;
-  const FAILSAFE_TIMEOUT_MS = 10000; // 10 seconds max animation time
 
   onMount(() => {
     // Subscribe to reduced motion preference (PACK-057)
@@ -154,7 +156,7 @@
     failsafeTimer = setTimeout(() => {
       console.warn('[PackAnimation] Failsafe triggered - forcing animation complete');
       dispatch('complete');
-    }, FAILSAFE_TIMEOUT_MS);
+    }, ANIMATION_TIMINGS.FAILSAFE_TIMEOUT_MS);
 
     // Start animation
     runAnimation();
@@ -178,7 +180,7 @@
     // Check for quick reveal mode - skip to results after brief flash
     if (quickRevealStore.get()) {
       phase = 'appear';
-      await delay(QUICK_REVEAL_FLASH_MS);
+      await delay(ANIMATION_TIMINGS.QUICK_REVEAL_FLASH_MS);
       // Clear failsafe timer since we're completing early
       if (failsafeTimer !== null) {
         clearTimeout(failsafeTimer);
@@ -189,7 +191,7 @@
     }
 
     // Check if tear already completed via swipe gesture
-    if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
+    if (tearProgress >= TEAR_GESTURE_CONFIG.COMPLETE_PERCENTAGE) {
       // Skip tear phase if already completed
       phase = 'burst';
     } else {
@@ -221,8 +223,8 @@
         animateParticles();
       }
 
-      // For legendary+ cards, add slow-mo effect (extend tear duration by 50%)
-      const tearTime = isLegendaryPlus ? phaseDurations.tear * 1.5 : phaseDurations.tear;
+      // For legendary+ cards, add slow-mo effect
+      const tearTime = isLegendaryPlus ? phaseDurations.tear * RARITY_ANIMATION_MODIFIERS.LEGENDARY_TEAR_MULTIPLIER : phaseDurations.tear;
       await delay(tearTime);
 
       // Clear effects before burst
@@ -293,7 +295,7 @@
     isHolding = false;
     isDragging = false;
     // Trigger tear if sufficient progress
-    if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
+    if (tearProgress >= TEAR_GESTURE_CONFIG.COMPLETE_PERCENTAGE) {
       handleCompleteTear();
     } else {
       tearProgress = 0;
@@ -315,10 +317,10 @@
     const deltaX = currentX - touchStartX;
 
     // Calculate tear progress (normalized to 0-1)
-    tearProgress = Math.min(1, Math.max(0, deltaX / TEAR_THRESHOLD));
+    tearProgress = Math.min(1, Math.max(0, deltaX / TEAR_GESTURE_CONFIG.THRESHOLD_PX));
 
     // Visual feedback: shake pack as tear progresses
-    if (tearProgress > 0.3) {
+    if (tearProgress > TEAR_GESTURE_CONFIG.VISUAL_FEEDBACK_THRESHOLD) {
       phase = 'tear';
     }
   }
@@ -327,7 +329,7 @@
     isDragging = false;
 
     // Trigger tear if sufficient progress
-    if (tearProgress >= COMPLETE_TEAR_PERCENTAGE) {
+    if (tearProgress >= TEAR_GESTURE_CONFIG.COMPLETE_PERCENTAGE) {
       handleCompleteTear();
     } else {
       tearProgress = 0;
@@ -339,10 +341,10 @@
     if (!isDragging) return;
 
     const deltaX = event.movementX;
-    tearProgress = Math.min(1, Math.max(0, tearProgress + deltaX / TEAR_THRESHOLD));
+    tearProgress = Math.min(1, Math.max(0, tearProgress + deltaX / TEAR_GESTURE_CONFIG.THRESHOLD_PX));
 
     // Visual feedback: shake pack as tear progresses
-    if (tearProgress > 0.3) {
+    if (tearProgress > TEAR_GESTURE_CONFIG.VISUAL_FEEDBACK_THRESHOLD) {
       phase = 'tear';
     }
   }
@@ -353,7 +355,7 @@
     tearProgress = 0;
     // Haptic feedback (vibrate on mobile)
     if (navigator.vibrate) {
-      navigator.vibrate(50);
+      navigator.vibrate(HAPTIC_PATTERNS.PACK_TEAR);
     }
     // Continue to next animation phase
     phase = 'burst';

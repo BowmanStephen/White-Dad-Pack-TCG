@@ -1,5 +1,6 @@
 import type { Rarity } from '../../types';
 import { RARITY_ORDER } from '../../types';
+import { PITY_THRESHOLDS as CONFIG_PITY_THRESHOLDS } from '../config/pack-config';
 
 /**
  * Pity system configuration (PACK-003)
@@ -11,12 +12,12 @@ import { RARITY_ORDER } from '../../types';
  * - Configurable pity thresholds per rarity
  */
 
-// Default pity thresholds (number of packs without rare+ before guaranteed)
+// Re-export pity thresholds from centralized config (lowercase keys for backward compatibility)
 export const PITY_THRESHOLDS = {
-  rare: 10,      // Guaranteed rare after 10 packs without rare+
-  epic: 30,      // Guaranteed epic after 30 packs without epic+
-  legendary: 60, // Guaranteed legendary after 60 packs without legendary+
-  mythic: 100,   // Guaranteed mythic after 100 packs without mythic+
+  rare: CONFIG_PITY_THRESHOLDS.RARE,
+  epic: CONFIG_PITY_THRESHOLDS.EPIC,
+  legendary: CONFIG_PITY_THRESHOLDS.LEGENDARY,
+  mythic: CONFIG_PITY_THRESHOLDS.MYTHIC,
 } as const;
 
 // Pity counter state (tracks consecutive packs without rare+ pulls)
