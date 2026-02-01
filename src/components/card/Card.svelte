@@ -1,12 +1,11 @@
 <script lang="ts">
-  import type { PackCard, SeasonId, WishlistPriority } from '@/types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES, STAT_ICONS, STAT_NAMES, SEASON_PACK_CONFIG } from '@/types';
-  import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor, getSpecialCardGlowClasses, hasCardStats } from '@lib/card-types';
+  import type { PackCard, SeasonId } from '@/types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES } from '@/types';
+  import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor } from '@lib/card-types';
   import CardStats from './CardStats.svelte';
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
-  import HoloEffect from './HoloEffect.svelte';
   import { downloadCardImage, shareCardImage, checkShareSupport } from '@lib/utils/image-generation';
   import { openLightbox } from '@/stores/lightbox';
   import { getRandomJoke } from '@lib/jokes';
@@ -18,14 +17,10 @@
     size?: 'sm' | 'md' | 'lg';
     interactive?: boolean;
     enableShare?: boolean;
-    showUpgradeButton?: boolean;
-    onUpgradeClick?: (() => void) | undefined;
     enableLightbox?: boolean;
     cardList?: PackCard[];
     cardIndex?: number;
     useRandomJoke?: boolean;
-    showWishlistButton?: boolean; // PACK-020: Show star button
-    onWishlistToggle?: ((isWishlisted: boolean) => void) | undefined;
   }
 
   let {
@@ -35,14 +30,10 @@
     size = 'md',
     interactive = true,
     enableShare = false,
-    showUpgradeButton = false,
-    onUpgradeClick = undefined,
     enableLightbox = true,
     cardList = [],
     cardIndex = 0,
     useRandomJoke = false,
-    showWishlistButton = false,
-    onWishlistToggle = undefined
   }: Props = $props();
 
   let rarityConfig = $derived(RARITY_CONFIG[card.rarity]);
@@ -52,246 +43,86 @@
   let canShare = $derived(enableShare && shareSupport.webShareAPI && shareSupport.webShareFiles);
   let displayFlavorText = $derived(useRandomJoke ? getRandomJoke(card.type) : card.flavorText);
 
-  // Upgrade level (stubbed - feature archived)
-  let upgradeLevel = 0;
-
-  // Wishlist state (stubbed - feature archived)
-  let isWishlisted = false;
-
-  // Handle wishlist toggle (stubbed)
-  async function handleWishlistToggle(event: Event) {
-    event.stopPropagation();
-    // Wishlist feature archived
-  }
-
   const sizeClasses = {
-    sm: 'w-48 h-[268px]',
-    md: 'w-72 h-[403px]',
-    lg: 'w-96 h-[537px]',
+    sm: 'w-40 sm:w-48 max-w-full h-auto aspect-[5/7]',
+    md: 'w-56 sm:w-72 max-w-full h-auto aspect-[5/7]',
+    lg: 'w-64 sm:w-80 md:w-96 max-w-full h-auto aspect-[5/7]',
   };
 
-  let mouseX = 0.5;
-  let mouseY = 0.5;
   let cardElement: HTMLDivElement;
-  let time = 0;
-  let animationFrameId: number | null = null;
-  let abilityElements: HTMLElement[] = [];
-
-  // Check if we're in browser environment
-  const isBrowser = typeof window !== 'undefined' && typeof requestAnimationFrame !== 'undefined';
-
-  // Performance detection - disable effects on low-end devices
-  let holoEffectsEnabled = true;
-  let particleElements: HTMLSpanElement[] = [];
-
-  // Touch device detection for tilt effect
-  let isTouchDevice = false;
-
-  // Hover state tracking - MUST be declared before derived values that use it
   let isHovered = $state(false);
 
-  if (isBrowser) {
-    // Check for low-end device indicators
-    const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-    const memory = (navigator as any).deviceMemory || 8; // Chrome-only API
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    // Disable holo effects on low-end devices
-    // Criteria: mobile with < 4 cores OR < 4GB RAM
-    holoEffectsEnabled = !(isMobile && (hardwareConcurrency < 4 || memory < 4));
-
-    // Detect touch devices - check for touch support or touch events
-    isTouchDevice = (
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      (navigator as any).msMaxTouchPoints > 0
-    );
-  }
-
-  function handleMouseMove(event: MouseEvent) {
-    if (!interactive || isTouchDevice) return;
-
-    const rect = cardElement.getBoundingClientRect();
-    mouseX = (event.clientX - rect.left) / rect.width;
-    mouseY = (event.clientY - rect.top) / rect.height;
-  }
-
   function handleMouseEnter() {
-    if (!interactive || isTouchDevice) return;
+    if (!interactive) return;
     isHovered = true;
   }
 
   function handleMouseLeave() {
-    if (isTouchDevice) {
-      isHovered = false;
-      return;
-    }
-    mouseX = 0.5;
-    mouseY = 0.5;
     isHovered = false;
   }
 
-  function animate(time: number) {
-    if (card.isHolo && card.holoType === 'prismatic') {
-      const t = time / 1000;
-      if (interactive) {
-        time = t;
-      }
-    }
-    if (isBrowser) {
-      animationFrameId = requestAnimationFrame(animate);
-    }
-  }
+  let rarityStars = $derived({
+    common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6
+  }[card.rarity] || 1);
 
-  if (isBrowser) {
-    animationFrameId = requestAnimationFrame(animate);
-  }
-
-  // Cleanup on destroy
-  import { onDestroy } from 'svelte';
-  onDestroy(() => {
-    if (animationFrameId !== null && isBrowser) {
-      cancelAnimationFrame(animationFrameId);
-    }
-  });
-
-  let rotateX = $derived((interactive && !isTouchDevice) ? (mouseY - 0.5) * (card.isHolo ? 30 : 20) : 0);
-  let rotateY = $derived((interactive && !isTouchDevice) ? (mouseX - 0.5) * (card.isHolo ? -30 : -20) : 0);
-  let translateY = $derived(isHovered ? -8 : 0);
-
-  function getRarityStars(rarity: string): number {
-    const starMap: Record<string, number> = {
-      common: 1,
-      uncommon: 2,
-      rare: 3,
-      epic: 4,
-      legendary: 5,
-      mythic: 6,
-    };
-    return starMap[rarity] || 1;
-  }
-
-  let rarityStars = $derived(getRarityStars(card.rarity));
-
-  // US086 - Season System: Get season color
   function getSeasonColor(seasonId: SeasonId): string {
-    const seasonColors: Record<SeasonId, string> = {
-      1: '#1e40af', // Base Set Blue
-      2: '#dc2626', // Summer BBQ Red
-      3: '#d97706', // Fall Foliage Orange
-      4: '#0284c7', // Winter Blue
-      5: '#16a34a', // Spring Green
-      6: '#9333ea', // Season 6 Purple
-      7: '#ec4899', // Season 7 Pink
-      8: '#f59e0b', // Season 8 Amber
-      9: '#10b981', // Season 9 Emerald
-      10: '#6366f1', // Season 10 Indigo
+    const colors: Record<SeasonId, string> = {
+      1: '#1e40af', 2: '#dc2626', 3: '#d97706', 4: '#0284c7', 5: '#16a34a',
+      6: '#9333ea', 7: '#ec4899', 8: '#f59e0b', 9: '#10b981', 10: '#6366f1',
     };
-    return seasonColors[seasonId] || '#9ca3af';
+    return colors[seasonId] || '#9ca3af';
   }
 
-  // Type guards for special card types
-  function isStatlessCard(type: string): boolean {
-    return isSpecialCardType(type) && type !== 'EVOLUTION' && type !== 'ITEM';
-  }
+  let isStatlessCard = $derived(isSpecialCardType(card.type) && card.type !== 'EVOLUTION' && card.type !== 'ITEM');
 
-  let cardBackground = $derived(() => {
-    switch(card.rarity) {
-      case 'common':
-      case 'uncommon':
-        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
-      case 'rare':
-        return 'linear-gradient(to bottom right, #1e3a8a, #1e293b, #172554)';
-      case 'epic':
-        return 'linear-gradient(to bottom right, #581c87, #312e81, #3b0764)';
-      case 'legendary':
-        return 'linear-gradient(to bottom right, #78350f, #7c2d12, #450a0a)';
-      case 'mythic':
-        return 'linear-gradient(to bottom right, #831843, #701a75, #500724)';
-      default:
-        return 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
-    }
-  });
+  // Rarity-based styling
+  let cardBackground = $derived({
+    common: 'linear-gradient(145deg, #1a1f2e 0%, #0f1419 50%, #1a1f2e 100%)',
+    uncommon: 'linear-gradient(145deg, #0c2d4a 0%, #0a1929 50%, #0c2d4a 100%)',
+    rare: 'linear-gradient(145deg, #3d2607 0%, #1a1005 50%, #3d2607 100%)',
+    epic: 'linear-gradient(145deg, #2d1b4e 0%, #150d26 50%, #2d1b4e 100%)',
+    legendary: 'linear-gradient(145deg, #4a1c0c 0%, #1f0c05 50%, #4a1c0c 100%)',
+    mythic: 'linear-gradient(145deg, #4a1034 0%, #1f0616 50%, #4a1034 100%)',
+  }[card.rarity] || 'linear-gradient(145deg, #1a1f2e 0%, #0f1419 50%, #1a1f2e 100%)');
 
-  // PACK-033: Border thickness scales with rarity (2px common → 8px mythic)
-  let borderThickness = $derived(() => {
-    const thicknessMap: Record<string, string> = {
-      common: '2px',
-      uncommon: '3px',
-      rare: '4px',
-      epic: '5px',
-      legendary: '6px',
-      mythic: '8px',
-    };
-    return thicknessMap[card.rarity] || '2px';
-  });
+  let borderThickness = $derived({ common: '3px', uncommon: '3px', rare: '4px', epic: '5px', legendary: '6px', mythic: '8px' }[card.rarity] || '3px');
 
-  let borderStyle = $derived(() => {
-    switch(card.rarity) {
-      case 'common':
-        return `${borderThickness} solid #9ca3af`;
-      case 'uncommon':
-        return `${borderThickness} solid #60a5fa`;
-      case 'rare':
-        return `${borderThickness} solid #fbbf24`;
-      case 'epic':
-        return `${borderThickness} solid #a855f7`;
-      case 'legendary':
-        return `${borderThickness} solid #f97316`;
-      case 'mythic':
-        return `${borderThickness} solid #ec4899`;
-      default:
-        return `${borderThickness} solid #9ca3af`;
-    }
-  });
+  let borderColors: Record<string, string> = { common: '#4a5568', uncommon: '#3b82f6', rare: '#fbbf24', epic: '#a855f7', legendary: '#f97316', mythic: '#ec4899' };
+  let borderStyle = $derived(`${borderThickness} solid ${borderColors[card.rarity] || '#4a5568'}`);
 
-  let glowStyle = $derived(() => {
-    const baseGlow = rarityConfig.glowColor;
-    switch(card.rarity) {
-      case 'legendary':
-        // PACK-VFX-018: Legendary glow intensity set to 1.5x (45px, 90px, 135px)
-        return `0 0 45px ${baseGlow}, 0 0 90px ${baseGlow}55, 0 0 135px ${baseGlow}33, inset 0 0 30px rgba(0,0,0,0.5)`;
-      case 'mythic':
-        return `0 0 30px ${baseGlow}, 0 0 60px ${baseGlow}55, 0 0 90px ${baseGlow}33, inset 0 0 30px rgba(0,0,0,0.5)`;
-      case 'epic':
-        // PACK-VFX-019: Epic glow intensity set to 1.3x (32.5px, 65px, 32.5px inset)
-        return `0 0 32.5px ${baseGlow}, 0 0 65px ${baseGlow}55, inset 0 0 32.5px rgba(0,0,0,0.5)`;
-      case 'rare':
-        return `0 0 20px ${baseGlow}, 0 0 40px ${baseGlow}55, inset 0 0 20px rgba(0,0,0,0.5)`;
-      default:
-        return `0 0 15px ${baseGlow}, 0 0 30px ${baseGlow}55, inset 0 0 15px rgba(0,0,0,0.5)`;
-    }
-  });
+  let glowStyle = $derived({
+    legendary: `0 0 30px ${rarityConfig.glowColor}`,
+    mythic: `0 0 30px ${rarityConfig.glowColor}`,
+    epic: `0 0 20px ${rarityConfig.glowColor}`,
+    rare: `0 0 15px ${rarityConfig.glowColor}`,
+  }[card.rarity] || 'none');
 
-  // Determine if card should have base glow (rare+ only)
-  let hasBaseGlow = $derived(['rare', 'epic', 'legendary', 'mythic'].includes(card.rarity));
+  let hasGlow = $derived(['rare', 'epic', 'legendary', 'mythic'].includes(card.rarity));
 
-  // Glow intensity levels for animation
-  let glowIntensity = $derived(rarityConfig.animationIntensity);
-  let glowColor = $derived(rarityConfig.glowColor);
-
-  // PACK-VFX-024: Track card reveal state for flash effect
+  // Holo flash on reveal
   let wasFlipped = $state(false);
   let showFlash = $state(false);
 
-  // Watch for flip transition to trigger flash
   $effect(() => {
     if (isFlipped && !wasFlipped && card.isHolo) {
-      // Card just flipped and is holo - trigger flash
       showFlash = true;
-      // Hide flash after animation completes (0.2s)
-      setTimeout(() => {
-        showFlash = false;
-      }, 200);
+      setTimeout(() => showFlash = false, 200);
       wasFlipped = true;
     } else if (!isFlipped) {
-      // Reset when card flips back
       wasFlipped = false;
       showFlash = false;
     }
   });
 
-  // Share functionality
+  // Holo gradient (inlined from HoloEffect)
+  let holoGradient = $derived(card.isHolo ? {
+    standard: 'linear-gradient(135deg, rgba(255,0,0,0.15), rgba(255,127,0,0.13), rgba(255,255,0,0.15), rgba(0,255,0,0.13), rgba(0,0,255,0.15), rgba(75,0,130,0.13), rgba(148,0,211,0.15))',
+    reverse: 'linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.08) 50%, transparent 55%)',
+    full_art: 'linear-gradient(135deg, rgba(255,0,0,0.2), rgba(255,127,0,0.18), rgba(255,255,0,0.2), rgba(0,255,0,0.18), rgba(0,0,255,0.2), rgba(75,0,130,0.18), rgba(148,0,211,0.2))',
+    prismatic: 'linear-gradient(135deg, rgba(255,0,128,0.25), rgba(128,0,255,0.23), rgba(0,128,255,0.25), rgba(0,255,255,0.23), rgba(0,255,128,0.25), rgba(128,255,0,0.23), rgba(255,255,0,0.25), rgba(255,128,0,0.23))',
+  }[card.holoType || 'standard'] : 'none');
+
+  // Share/Download
   let isGeneratingImage = $state(false);
   let shareError = $state<string | null>(null);
 
@@ -299,10 +130,9 @@
     if (isGeneratingImage || !cardElement) return;
     isGeneratingImage = true;
     shareError = null;
-
     try {
       await downloadCardImage(card, cardElement, { scale: 2 });
-    } catch (error) {
+    } catch {
       shareError = 'Failed to download image. Please try again.';
     } finally {
       isGeneratingImage = false;
@@ -313,20 +143,11 @@
     if (isGeneratingImage || !cardElement) return;
     isGeneratingImage = true;
     shareError = null;
-
     try {
-      const success = await shareCardImage(card, cardElement, {
-        shareTitle: 'DadDeck™ Card',
-        imageGeneration: { scale: 2 },
-      });
-
-      if (!success) {
-        // Fallback to download if share API failed or was cancelled
-        await handleDownload();
-      }
-    } catch (error) {
+      const success = await shareCardImage(card, cardElement, { shareTitle: 'DadDeck Card', imageGeneration: { scale: 2 } });
+      if (!success) await handleDownload();
+    } catch {
       shareError = 'Failed to share image. Please try again.';
-      isGeneratingImage = false;
     } finally {
       isGeneratingImage = false;
     }
@@ -334,11 +155,8 @@
 
   function handleCardClick() {
     if (!enableLightbox || !interactive) return;
-
-    // Use provided card list or default to single card
     const cards = cardList.length > 0 ? cardList : [card];
     const index = cardList.length > 0 ? cardIndex : 0;
-
     openLightbox(card, cards, index);
   }
 </script>
@@ -347,189 +165,128 @@
   class="card-perspective {sizeClasses[size]}"
   class:cursor-pointer={enableLightbox && interactive}
   bind:this={cardElement}
-  on:mousemove={handleMouseMove}
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
-  on:click={handleCardClick}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
+  onclick={handleCardClick}
   role="img"
   aria-label="{card.name} - {rarityConfig.name} {typeName}"
 >
   <div
     class="card-3d w-full h-full relative"
     class:card-flipped={isFlipped && showBack}
-    class:glow-pulse={hasBaseGlow || isHovered}
-    class:glow-hovered={isHovered}
     class:card-lift={isHovered}
-    style="
-      transform: perspective(1000px) rotateX({rotateX}deg) rotateY({rotateY}deg) translateY({translateY}px);
-      --rarity-color: {rarityConfig.color};
-      --rarity-glow: {rarityConfig.glowColor};
-      --glow-intensity: {glowIntensity};
-      --glow-color: {glowColor};
-    "
+    style="--rarity-color: {rarityConfig.color}; --rarity-glow: {rarityConfig.glowColor};"
   >
     <!-- Card Front -->
     <div
-      class="card-face absolute inset-0 overflow-hidden {hasBaseGlow || isHovered ? 'card-glow' : ''} {card.rarity === 'mythic' ? 'mythic-prismatic' : ''}"
-      style="border: {borderStyle}; box-shadow: {glowStyle};"
+      class="card-face absolute inset-0 overflow-hidden rounded-xl"
+      class:mythic-prismatic={card.rarity === 'mythic'}
+      style="border: {borderStyle}; box-shadow: {hasGlow || isHovered ? glowStyle : 'none'};"
     >
-      <!-- PACK-VFX-024: White flash effect on holo card reveal -->
       {#if showFlash}
         <div class="holo-flash-overlay"></div>
       {/if}
-      <!-- Upgrade Star Badge -->
-      {#if upgradeLevel > 0}
-        <div
-          class="upgrade-star-badge absolute top-2 right-2 bg-amber-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm shadow-lg z-20"
-          style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);"
-          aria-label="Upgrade level {upgradeLevel}"
-        >
-          <span class="mr-0.5">⭐</span>
-          {upgradeLevel}
-        </div>
-      {/if}
 
-      <!-- Card background -->
+      <!-- Background -->
       <div class="absolute inset-0" style="background: {cardBackground};"></div>
 
-      <!-- Corner accents -->
-      {#if ['rare', 'epic', 'legendary', 'mythic'].includes(card.rarity)}
-        <div class="absolute top-0 left-0 w-16 h-16" style="background: linear-gradient(135deg, {rarityConfig.color}44 0%, transparent 60%);"></div>
-        <div class="absolute top-0 right-0 w-16 h-16" style="background: linear-gradient(-135deg, {rarityConfig.color}44 0%, transparent 60%);"></div>
-        <div class="absolute bottom-0 left-0 w-16 h-16" style="background: linear-gradient(45deg, {rarityConfig.color}44 0%, transparent 60%);"></div>
-        <div class="absolute bottom-0 right-0 w-16 h-16" style="background: linear-gradient(-45deg, {rarityConfig.color}44 0%, transparent 60%);"></div>
-      {/if}
-
-      <!-- Decorative inner borders -->
-      <div class="absolute inset-1 border border-white/15 rounded-xl"></div>
-      <div class="absolute inset-2 border border-white/8 rounded-lg"></div>
-      <div class="absolute inset-3 border border-white/3 rounded-md"></div>
-
-      <!-- Holographic overlay -->
-      <HoloEffect
-        {card}
-        {mouseX}
-        {mouseY}
-        interactive={interactive && !isTouchDevice}
-      />
-
-      <!-- Sparkle particles based on rarity -->
-      {#if card.isHolo && holoEffectsEnabled && rarityConfig.particleCount > 0}
-        <div class="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-          {#each Array(rarityConfig.particleCount) as _, i}
-            <span
-              class="sparkle absolute text-white"
-              style="
-                left: {((i * 137.5) % 100)}%;
-                top: {((i * 73.7) % 100)}%;
-                font-size: {Math.random() * 8 + 4}px;
-                animation-delay: {i * 0.15}s;
-                opacity: {Math.random() * 0.6 + 0.2};
-                text-shadow: 0 0 4px {rarityConfig.glowColor};
-              "
-            >✦</span>
-          {/each}
-        </div>
+      <!-- Holo Effect (inlined) -->
+      {#if card.isHolo}
+        <div class="absolute inset-0 pointer-events-none z-10" style="background: {holoGradient}; mix-blend-mode: color-dodge; opacity: 0.7;"></div>
+        <div class="absolute inset-0 pointer-events-none z-10" style="background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.3) 0%, transparent 50%);"></div>
       {/if}
 
       <!-- Special Card Type Badge -->
       {#if isSpecialCardType(card.type)}
-        <div class="absolute top-2 right-2 z-30 flex items-center gap-1.5 px-2 py-1.5 rounded-lg" style="background: rgba(0,0,0,0.6); border: 1.5px solid {getSpecialCardBorderColor(card.type)}; box-shadow: 0 0 12px {getSpecialCardBorderColor(card.type)}44;">
-          <span class="text-sm" aria-hidden="true">{getSpecialCardIcon(card.type)}</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider" style="color: {getSpecialCardBorderColor(card.type)};">{card.type}</span>
+        <div class="absolute top-2 right-2 z-30 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/80" style="border: 1.5px solid {getSpecialCardBorderColor(card.type)};">
+          <span class="text-sm">{getSpecialCardIcon(card.type)}</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider" style="color: {getSpecialCardBorderColor(card.type)}; font-family: var(--font-condensed);">{card.type}</span>
         </div>
       {/if}
 
-      <!-- Top bar -->
-      <div class="relative z-20 flex items-center justify-between p-3 bg-gradient-to-b from-black/40 to-transparent">
-        <!-- Type badge with WCAG AA compliant contrast -->
-        <div class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-bold text-white" style="background: {rarityConfig.color}; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-          <span>{typeIcon}</span>
-          <span>{typeName}</span>
+      <!-- Header: Type & Rarity Stars -->
+      <div class="relative z-20 flex items-center justify-between p-2.5 header-bar">
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold text-white" style="background: {rarityConfig.color}; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
+          <span class="text-sm">{typeIcon}</span>
+          <span class="uppercase tracking-wide" style="font-family: var(--font-condensed);">{typeName}</span>
         </div>
-        <div class="flex gap-0.5 items-center">
-          <!-- Rarity Stars -->
-          <div class="flex gap-0.5">
-            {#each Array(rarityStars) as _, i}
-              <span class="text-xs" style="color: {rarityConfig.color}; text-shadow: 0 0 5px {rarityConfig.glowColor};">★</span>
-            {/each}
+        <div class="flex gap-0.5">
+          {#each Array(rarityStars) as _, i}
+            <span class="text-sm" style="color: {rarityConfig.color}; text-shadow: 0 0 8px {rarityConfig.glowColor};">★</span>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Card Name -->
+      <div class="relative z-20 text-center px-3 mt-0.5">
+        <h3 class="text-xl leading-none tracking-wide text-white uppercase" style="font-family: var(--font-scream); text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px {rarityConfig.glowColor}44;">
+          {card.name}
+        </h3>
+        <p class="text-[10px] text-slate-300 mt-0.5 tracking-wide uppercase" style="font-family: var(--font-condensed);">
+          {card.subtitle}
+        </p>
+      </div>
+
+      <!-- Artwork Frame -->
+      <div class="relative z-20 mx-3 mt-2">
+        <div class="p-[3px] rounded-lg" style="background: linear-gradient(145deg, {rarityConfig.color}88, {rarityConfig.color}22, {rarityConfig.color}88);">
+          <div class="rounded-md overflow-hidden aspect-square" style="box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5);">
+            <div class="w-full h-full relative bg-black">
+              <GenerativeCardArt {card} width={300} height={300} showName={false} alt={card.name} />
+            </div>
+            {#if card.isHolo}
+              <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[9px] font-extrabold text-white tracking-wider" style="background: linear-gradient(135deg, #ec4899, #8b5cf6, #06b6d4); font-family: var(--font-condensed);">HOLO</div>
+            {/if}
           </div>
         </div>
       </div>
 
-      <!-- Card name -->
-      <div class="relative z-20 text-center px-3 mt-1">
-        <h3 class="text-lg font-black text-white leading-tight" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">{card.name}</h3>
-        <p class="text-xs text-slate-300 italic" style="text-shadow: 0 1px 2px rgba(0,0,0,0.5);">{card.subtitle}</p>
-      </div>
-
-      <!-- Artwork area -->
-      <div class="relative z-20 mx-3 mt-3 aspect-square rounded-xl overflow-hidden shadow-2xl" style="box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px {rarityConfig.glowColor}33;">
-        <div class="w-full h-full relative">
-          <GenerativeCardArt
-            card={card}
-            width={300}
-            height={300}
-            showName={false}
-            alt={card.name}
-          />
-        </div>
-        {#if card.isHolo}
-          <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[9px] font-black bg-gradient-to-r from-pink-500 to-purple-600 text-white" style="box-shadow: 0 2px 4px rgba(0,0,0,0.3);">HOLO</div>
-        {/if}
-      </div>
-
-      <!-- Stats section -->
-      <div class="relative z-20 px-3 mt-3">
-        {#if !isStatlessCard(card.type)}
+      <!-- Stats -->
+      <div class="relative z-20 px-3 mt-2">
+        {#if !isStatlessCard}
           <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={size === 'sm'} cardType={card.type} />
         {:else}
-          <div class="text-xs text-slate-400 text-center py-2 font-semibold">
+          <div class="text-xs text-slate-400 text-center py-2 font-semibold" style="font-family: var(--font-condensed);">
             {getSpecialCardTypeLabel(card.type)} Card
             <div class="text-[10px] text-slate-500 mt-1">Effect-based abilities</div>
           </div>
         {/if}
       </div>
 
-      <!-- Flavor text with WCAG AA compliant contrast -->
-      <div class="relative z-20 mx-3 mt-2 p-2.5 bg-black/50 rounded-lg text-xs text-slate-200 italic leading-snug border border-white/10">
-        "{displayFlavorText}"
+      <!-- Flavor Text -->
+      <div class="relative z-20 mx-3 mt-2 bg-black/70 border border-white/10 rounded-lg px-2.5 py-2">
+        <p class="text-[10px] leading-snug text-slate-200 italic" style="font-family: var(--font-body);">
+          "{displayFlavorText}"
+        </p>
       </div>
 
-      <!-- Abilities section -->
+      <!-- Abilities -->
       {#if card.abilities && card.abilities.length > 0}
-        <div class="relative z-20 mx-3 mt-2">
-          <div class="flex flex-wrap gap-1.5">
-            {#each card.abilities as ability, index}
-              <div class="ability-indicator" bind:this={abilityElements[index]}>
-                <button
-                  class="ability-badge px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-200 border flex items-center gap-1 hover:scale-105 active:scale-95"
-                  style="background: {rarityConfig.color}22; border-color: {rarityConfig.color}55; color: {rarityConfig.color};"
-                  aria-label="View ability: {ability.name}"
-                  aria-describedby="ability-tooltip-{card.id}-{index}"
-                >
-                  <span class="ability-icon">⚡</span>
-                  <span class="ability-name truncate max-w-[80px]">{ability.name}</span>
-                </button>
-                <AbilityTooltip
-                  ability={ability}
-                  triggerElement={abilityElements[index]}
-                  cardRarity={card.rarity}
-                  delay={500}
-                />
-              </div>
-            {/each}
-          </div>
+        <div class="relative z-20 mx-3 mt-2 flex flex-wrap gap-1.5">
+          {#each card.abilities as ability}
+            {@const buttonId = `ability-${card.id}-${ability.name}`}
+            <div class="relative inline-block">
+              <button
+                id={buttonId}
+                class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide flex items-center gap-1 cursor-help"
+                style="background: {rarityConfig.color}22; border: 1px solid {rarityConfig.color}66; color: {rarityConfig.color}; font-family: var(--font-condensed);"
+                aria-label="View ability: {ability.name}"
+              >
+                <span>⚡</span>
+                <span class="truncate max-w-[80px]">{ability.name}</span>
+              </button>
+              <AbilityTooltip {ability} triggerElement={null} cardRarity={card.rarity} delay={500} />
+            </div>
+          {/each}
         </div>
       {/if}
 
       <!-- Footer -->
-      <div class="absolute bottom-0 left-0 right-0 z-20 px-3 py-2 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
-        <div class="flex justify-between items-center text-[10px] text-slate-400">
+      <div class="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/60 to-transparent">
+        <div class="flex justify-between items-center px-3 py-2 text-[9px] text-slate-400 uppercase tracking-wide" style="font-family: var(--font-condensed);">
           <span>#{card.cardNumber.toString().padStart(3, '0')}/{card.totalInSeries}</span>
-          <!-- Season Indicator (US086) -->
           {#if card.seasonId}
-            <span class="season-badge" style="color: {getSeasonColor(card.seasonId)};">S{card.seasonId}</span>
+            <span class="font-bold" style="color: {getSeasonColor(card.seasonId)}; text-shadow: 0 0 4px currentColor;">S{card.seasonId}</span>
           {/if}
           <span>SERIES {card.series}</span>
           <span>{card.artist}</span>
@@ -539,59 +296,41 @@
 
     <!-- Card Back -->
     {#if showBack}
-      <div class="card-face card-back absolute inset-0">
+      <div class="card-face card-back absolute inset-0 rounded-xl">
         <CardBack {size} isHolo={card.isHolo} rarity={card.rarity} />
       </div>
     {/if}
   </div>
 </div>
 
-<!-- Share/Download Button -->
+<!-- Share/Download Buttons -->
 {#if enableShare && !isFlipped}
   <div class="flex justify-center mt-4 gap-2">
     {#if canShare}
       <button
-        on:click={handleShare}
+        onclick={handleShare}
         disabled={isGeneratingImage}
-        class="px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
+        class="px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider text-white transition-all"
         class:opacity-50={isGeneratingImage}
-        class:cursor-not-allowed={isGeneratingImage}
-        style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); color: white; box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
-        aria-label="Share {card.name} card"
+        style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); font-family: var(--font-condensed);"
       >
-        {#if isGeneratingImage}
-          <span class="animate-spin" aria-hidden="true">⟳</span>
-          <span>Generating...</span>
-        {:else}
-          <span aria-hidden="true">📤</span>
-          <span>Share</span>
-        {/if}
+        {isGeneratingImage ? 'GENERATING...' : 'SHARE'}
       </button>
     {/if}
     <button
-      on:click={handleDownload}
+      onclick={handleDownload}
       disabled={isGeneratingImage}
-      class="px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2"
+      class="px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider text-white transition-all"
       class:opacity-50={isGeneratingImage}
-      class:cursor-not-allowed={isGeneratingImage}
-      style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); color: white; box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
-      aria-label="Download {card.name} card"
+      style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); font-family: var(--font-condensed);"
     >
-      {#if isGeneratingImage}
-        <span class="animate-spin" aria-hidden="true">⟳</span>
-        <span>Generating...</span>
-      {:else}
-        <span aria-hidden="true">💾</span>
-        <span>Download</span>
-      {/if}
+      {isGeneratingImage ? 'GENERATING...' : 'DOWNLOAD'}
     </button>
   </div>
   {#if shareError}
     <div class="mt-2 text-center text-xs text-red-400">{shareError}</div>
   {/if}
 {/if}
-
-
 
 <style>
   .card-perspective {
@@ -600,30 +339,15 @@
 
   .card-3d {
     transform-style: preserve-3d;
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-    will-change: transform, box-shadow;
-    animation: card-scale-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    transition: transform 0.15s ease-out;
   }
 
-  /* PACK-VFX-037: Card hover lift effect */
   .card-lift {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 15px 30px rgba(0, 0, 0, 0.3) !important;
   }
 
   .card-face {
     backface-visibility: hidden;
-  }
-
-  /* PACK-VFX-036: Card scale-in animation on reveal */
-  @keyframes card-scale-in {
-    0% {
-      transform: scale(0.2);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
   }
 
   .card-back {
@@ -634,75 +358,14 @@
     transform: rotateY(180deg);
   }
 
-  /* Rarity glow effect with pulse animation */
-  .card-glow {
-    animation: rarity-glow-pulse 3s ease-in-out infinite;
-    will-change: box-shadow;
-    transform: translateZ(0); /* Force GPU layer */
+  .header-bar {
+    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
   }
 
-  /* Enhanced glow on hover */
-  .glow-hovered .card-glow {
-    animation: rarity-glow-hover 1.5s ease-in-out infinite;
-  }
-
-  @keyframes rarity-glow-pulse {
-    0%, 100% {
-      box-shadow:
-        0 0 calc(15px * var(--glow-intensity)) var(--glow-color),
-        0 0 calc(30px * var(--glow-intensity)) var(--glow-color)88,
-        0 0 calc(45px * var(--glow-intensity)) var(--glow-color)66,
-        inset 0 0 calc(20px * var(--glow-intensity)) rgba(0,0,0,0.5);
-    }
-    50% {
-      box-shadow:
-        0 0 calc(20px * var(--glow-intensity)) var(--glow-color),
-        0 0 calc(40px * var(--glow-intensity)) var(--glow-color)aa,
-        0 0 calc(60px * var(--glow-intensity)) var(--glow-color)77,
-        inset 0 0 calc(25px * var(--glow-intensity)) rgba(0,0,0,0.5);
-    }
-  }
-
-  @keyframes rarity-glow-hover {
-    0%, 100% {
-      box-shadow:
-        0 0 calc(25px * var(--glow-intensity)) var(--glow-color),
-        0 0 calc(50px * var(--glow-intensity)) var(--glow-color)cc,
-        0 0 calc(75px * var(--glow-intensity)) var(--glow-color)99,
-        inset 0 0 calc(30px * var(--glow-intensity)) rgba(0,0,0,0.4);
-    }
-    50% {
-      box-shadow:
-        0 0 calc(35px * var(--glow-intensity)) var(--glow-color),
-        0 0 calc(70px * var(--glow-intensity)) var(--glow-color)ee,
-        0 0 calc(105px * var(--glow-intensity)) var(--glow-color)bb,
-        inset 0 0 calc(40px * var(--glow-intensity)) rgba(0,0,0,0.4);
-    }
-  }
-
-  .sparkle {
-    animation: sparkle 2s ease-in-out infinite;
-    will-change: transform, opacity;
-    pointer-events: none;
-  }
-
-  @keyframes sparkle {
-    0%, 100% {
-      opacity: 0;
-      transform: scale(0) translate(0, 0);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1) translate(0, -5px);
-    }
-  }
-
-  /* PACK-VFX-024: Holo card flash effect */
   .holo-flash-overlay {
     position: absolute;
     inset: 0;
     background: white;
-    opacity: 0;
     animation: holo-flash 0.2s ease-out forwards;
     pointer-events: none;
     z-index: 50;
@@ -710,160 +373,16 @@
   }
 
   @keyframes holo-flash {
-    0% {
-      opacity: 0.9;
-    }
-    100% {
-      opacity: 0;
-    }
+    0% { opacity: 0.8; }
+    100% { opacity: 0; }
   }
 
-  /* Reduce motion for users who prefer it */
-  @media (prefers-reduced-motion: reduce) {
-    .sparkle,
-    .card-glow {
-      animation: none !important;
-      transition: none !important;
-    }
-    .ability-badge {
-      transform: none !important;
-    }
-    .holo-flash-overlay {
-      animation: none !important;
-    }
-    .card-3d {
-      animation: none !important;
-    }
-  }
-
-  /* Ability badge styles */
-  .ability-badge {
-    position: relative;
-    cursor: help;
-    will-change: transform;
-  }
-
-  .ability-badge:hover {
-    box-shadow: 0 0 12px var(--rarity-glow);
-  }
-
-  .ability-icon {
-    font-size: 10px;
-    line-height: 1;
-  }
-
-  .ability-indicator {
-    position: relative;
-    display: inline-block;
-  }
-
-  /* Season Badge Styles (US086) */
-  .season-badge {
-    font-weight: 600;
-    text-shadow: 0 0 4px currentColor;
-  }
-
-  /* Wishlist Button Styles (PACK-020) */
-  .wishlist-btn {
-    transition: all 0.3s ease;
-  }
-
-  .wishlist-btn:hover {
-    transform: scale(1.05);
-  }
-
-  .wishlist-btn:active {
-    transform: scale(0.95);
-  }
-
-  .wishlist-star {
-    display: inline-block;
-    font-size: 1.2em;
-  }
-
-  .wishlist-btn.wishlisted .wishlist-star {
-    animation: starPop 0.4s ease-out;
-  }
-
-  @keyframes starPop {
-    0% {
-      transform: scale(0);
-    }
-    50% {
-      transform: scale(1.3);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  /* Mythic prismatic glow effect - PACK-VFX-017 */
-  .card-face:has(.upgrade-star-badge) ~ .card-back.mythic-prismatic,
-  .card-face.mythic-prismatic {
-    animation: mythic-prismatic-glow 3s linear infinite;
-  }
-
-  @keyframes mythic-prismatic-glow {
-    0% {
-      box-shadow:
-        0 0 30px #9ca3af,
-        0 0 60px #9ca3af55,
-        0 0 90px #9ca3af33,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
-    16.67% {
-      box-shadow:
-        0 0 30px #3b82f6,
-        0 0 60px #3b82f655,
-        0 0 90px #3b82f633,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
-    33.33% {
-      box-shadow:
-        0 0 30px #eab308,
-        0 0 60px #eab30855,
-        0 0 90px #eab30833,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
-    50% {
-      box-shadow:
-        0 0 30px #a855f7,
-        0 0 60px #a855f755,
-        0 0 90px #a855f733,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
-    66.67% {
-      box-shadow:
-        0 0 30px #f97316,
-        0 0 60px #f9731655,
-        0 0 90px #f9731633,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
-    83.33% {
-      box-shadow:
-        0 0 30px #ec4899,
-        0 0 60px #ec489955,
-        0 0 90px #ec489933,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
-    100% {
-      box-shadow:
-        0 0 30px #9ca3af,
-        0 0 60px #9ca3af55,
-        0 0 90px #9ca3af33,
-        inset 0 0 30px rgba(0,0,0,0.5);
-    }
+  .mythic-prismatic {
+    box-shadow: 0 0 30px #ec4899, 0 0 60px #ec489966 !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .wishlist-btn,
-    .wishlist-star {
-      animation: none !important;
-      transition: none !important;
-    }
-
-    .card-face.mythic-prismatic {
-      animation: none !important;
-    }
+    .card-3d { transition: none; }
+    .holo-flash-overlay { animation: none; }
   }
 </style>
