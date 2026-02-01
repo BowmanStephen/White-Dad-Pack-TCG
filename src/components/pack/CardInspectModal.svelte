@@ -51,7 +51,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
     in:fade={{ duration: 300 }}
     out:fade={{ duration: 200 }}
-    on:click={onClose}
+    onclick={onClose}
     role="dialog"
     aria-modal="true"
     aria-label="Card details for {card.name}"
@@ -59,7 +59,7 @@
   >
     <!-- Close button -->
     <button
-      on:click|stopPropagation={onClose}
+      onclick={(e) => { e.stopPropagation(); onClose(); }}
       class="fixed top-8 right-8 text-white/50 hover:text-white text-5xl font-light transition-colors z-50"
       aria-label="Close card details"
     >
@@ -70,7 +70,7 @@
     {#if onPrevious}
       <div class="fixed top-1/2 left-4 -translate-y-1/2 hidden md:block z-40">
         <button
-          on:click|stopPropagation={onPrevious}
+          onclick={(e) => { e.stopPropagation(); onPrevious?.(); }}
           disabled={!hasPrevious}
           class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
           aria-label="Previous card"
@@ -86,7 +86,7 @@
     {#if onNext}
       <div class="fixed top-1/2 right-4 -translate-y-1/2 hidden md:block z-40">
         <button
-          on:click|stopPropagation={onNext}
+          onclick={(e) => { e.stopPropagation(); onNext?.(); }}
           disabled={!hasNext}
           class="w-16 h-16 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-0 transition-all backdrop-blur"
           aria-label="Next card"
@@ -103,7 +103,7 @@
       class="relative max-w-5xl w-full max-h-[95vh] overflow-y-auto"
       in:scale={{ duration: 400, easing: backOut }}
       out:scale={{ duration: 200 }}
-      on:click|stopPropagation
+      onclick={(e) => e.stopPropagation()}
     >
       <div class="flex flex-col lg:flex-row gap-12 items-center lg:items-center px-4 md:px-20 pb-10">
         <!-- Card display -->
