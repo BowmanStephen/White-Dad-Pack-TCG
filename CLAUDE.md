@@ -33,7 +33,10 @@ bun run test:run              # Single run (all tests)
 bun run test:run path/to/test # Single test file
 bun run test:e2e              # Playwright (all browsers)
 bun run test:e2e:chromium     # Playwright (Chromium only)
+bun run lint                  # ESLint check
 bun run lint:fix              # ESLint auto-fix
+bun run format                # Prettier format all
+bun run format:check          # Check formatting
 ```
 
 ### MVP Scope
@@ -67,6 +70,8 @@ Collections use IndexedDB (not LocalStorage). Use `checkQuotaBeforeSave()` befor
 
 ## Architecture
 
-**4 Layers:** UI (Astro + Svelte islands) → State (Nanostores) → Logic (`src/lib/`) → Data (`cards.json`)
+**4 Layers:** UI (Astro + Svelte islands) → State (Nanostores + IndexedDB) → Logic (`src/lib/`) → Data (`cards.json`)
 
 Components subscribe to stores and trigger store actions — logic lives in stores, not components.
+
+**Test Organization:** `tests/unit/` (stores, lib), `tests/e2e/` (Playwright), `tests/visual/` (snapshots), `tests/pack|card|art/` (domain)
