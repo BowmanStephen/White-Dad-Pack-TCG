@@ -142,45 +142,8 @@ export const collectionStore = atom<Collection>(loadedCollection);
 // Re-export as collection for backward compatibility
 export const collection = collectionStore;
 
-let saveTimeout: number | null = null;
-let immediateSavePending = false;
-
-// Save to IndexedDB (debounced) - PACK-045: With quota warning handling
-function saveToStorage() {
-  // Skip debounced save if immediate save is pending
-  if (immediateSavePending) return;
-  
-  if (saveTimeout) clearTimeout(saveTimeout);
-
-  saveTimeout = window.setTimeout(async () => {
-    try {
-      const current = collectionStore.get();
-      const result = await saveToIndexedDB(current);
-
-      if (!result.success) {
-        console.error('[Collection] Failed to save:', result.error);
-        dispatchStorageEvent('error', result.error || 'Failed to save collection');
-      } else if (result.quotaWarning) {
-        console.warn('[Collection] Quota warning:', result.quotaWarning);
-        dispatchStorageEvent('warning', result.quotaWarning);
-      }
-    } catch (error) {
-      console.error('[Collection] Error saving:', error);
-      dispatchStorageEvent('error', 'An unexpected error occurred while saving');
-    }
-  }, 500);
-}
-
 // Save to IndexedDB immediately (for critical operations like pack saves)
 async function saveToStorageImmediate(): Promise<{ success: boolean; error?: string }> {
-  // Cancel any pending debounced save
-  if (saveTimeout) {
-    clearTimeout(saveTimeout);
-    saveTimeout = null;
-  }
-  
-  immediateSavePending = true;
-  
   try {
     const current = collectionStore.get();
     const result = await saveToIndexedDB(current);
@@ -199,8 +162,6 @@ async function saveToStorageImmediate(): Promise<{ success: boolean; error?: str
     console.error('[Collection] Error saving:', error);
     dispatchStorageEvent('error', 'An unexpected error occurred while saving');
     return { success: false, error: 'An unexpected error occurred while saving' };
-  } finally {
-    immediateSavePending = false;
   }
 }
 
