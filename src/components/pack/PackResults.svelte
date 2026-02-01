@@ -152,26 +152,26 @@
 <ScreenShake active={hasLegendaryOrBetter} intensity="moderate" />
 <ConfettiEffects rarity={stats.bestCard.rarity} active={hasLegendaryOrBetter} />
 
-<div class="w-full max-w-4xl mx-auto pb-20 px-4">
+<div class="w-full max-w-4xl mx-auto pb-24 px-3 sm:px-4">
   <!-- Header -->
-  <div class="text-center mb-12">
+  <div class="text-center mb-8 sm:mb-12">
     {#if hasLegendaryOrBetter}
-      <div class="text-7xl mb-6 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]" in:scale={{ duration: 800, delay: 200, easing: elasticOut, start: 0.5 }}>
+      <div class="text-5xl sm:text-7xl mb-4 sm:mb-6 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]" in:scale={{ duration: 800, delay: 200, easing: elasticOut, start: 0.5 }}>
         {stats.bestCard.rarity === 'mythic' ? '👑' : '🎉'}
       </div>
       <div class="relative inline-block">
-        <h2 class="text-5xl md:text-7xl font-black mb-4 tracking-tighter uppercase italic animate-pulse" style="color: {bestRarityConfig.color}; text-shadow: 0 0 30px {bestRarityConfig.glowColor}, 0 0 60px {bestRarityConfig.glowColor}44;" in:fly={{ y: 40, duration: 800, delay: 300 }}>
+        <h2 class="text-3xl sm:text-5xl md:text-7xl font-black mb-4 tracking-tighter uppercase italic animate-pulse" style="color: {bestRarityConfig.color}; text-shadow: 0 0 30px {bestRarityConfig.glowColor}, 0 0 60px {bestRarityConfig.glowColor}44;" in:fly={{ y: 40, duration: 800, delay: 300 }}>
           {stats.bestCard.rarity} PULL!
         </h2>
-        <div class="absolute -top-6 -right-6 rotate-12 bg-amber-400 text-black text-xs font-black px-2 py-1 rounded shadow-lg animate-bounce">
+        <div class="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 rotate-12 bg-amber-400 text-black text-[10px] sm:text-xs font-black px-2 py-1 rounded shadow-lg animate-bounce">
           DAD APPROVED
         </div>
       </div>
-      <p class="text-slate-300 text-xl font-medium italic max-w-lg mx-auto mb-2" in:fade={{ duration: 600, delay: 500 }}>
+      <p class="text-slate-300 text-base sm:text-xl font-medium italic max-w-lg mx-auto mb-2 px-4" in:fade={{ duration: 600, delay: 500 }}>
         "{dadMessage}"
       </p>
     {:else}
-      <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight" in:fly={{ y: 20, duration: 600 }}>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight" in:fly={{ y: 20, duration: 600 }}>
         Pack Complete!
       </h2>
     {/if}
@@ -223,7 +223,7 @@
   <!-- Best Card Highlight -->
   <div class="mb-16 relative group" in:fly={{ y: 40, duration: 800, delay: 600, easing: backOut }}>
     <div class="absolute inset-0 blur-[100px] opacity-30 -z-10 transition-all duration-1000 group-hover:opacity-50" style="background: {bestRarityConfig.color};"></div>
-    <div class="p-1 md:p-10 bg-slate-900/90 backdrop-blur-md rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+    <div class="p-4 sm:p-6 md:p-10 bg-slate-900/90 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
       {#if hasLegendaryOrBetter}
         <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_3s_infinite] pointer-events-none"></div>
       {/if}
@@ -231,11 +231,11 @@
         {DAD_TYPE_ICONS[stats.bestCard.type]}
       </div>
       <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 text-center opacity-70">Signature Best Pull</h3>
-      <div class="flex flex-col md:flex-row items-center justify-center gap-12">
-        <div class="relative card-container">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-6 sm:gap-12">
+        <div class="relative card-container flex-shrink-0">
           <ParticleEffects rarity={stats.bestCard.rarity} active={true} />
           <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
-            <Card card={stats.bestCard} size="lg" interactive={true} />
+            <Card card={stats.bestCard} size="md" interactive={true} />
           </div>
           {#if isCardNew(stats.bestCard.id)}
             <div class="absolute -top-4 -left-4 z-30 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black px-4 py-2 rounded-lg shadow-xl rotate-[-10deg] animate-pulse">
@@ -243,21 +243,21 @@
             </div>
           {/if}
         </div>
-        <div class="text-center md:text-left z-10 flex-1 max-w-md">
-          <div class="text-sm font-black px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-4 uppercase tracking-widest shadow-lg" style="background: {bestRarityConfig.color}; color: white;">
+        <div class="text-center md:text-left z-10 flex-1 max-w-md px-2 sm:px-0">
+          <div class="text-xs sm:text-sm font-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-full inline-flex items-center gap-2 mb-3 sm:mb-4 uppercase tracking-wider sm:tracking-widest shadow-lg" style="background: {bestRarityConfig.color}; color: white;">
             <span>★</span>
             {bestRarityConfig.name}
             {#if stats.bestCard.isHolo}
               <span class="ml-1 opacity-80">✨ HOLO</span>
             {/if}
           </div>
-          <h4 class="text-4xl md:text-5xl font-black text-white mb-3 tracking-tighter leading-none">{stats.bestCard.name}</h4>
-          <p class="text-slate-300 text-xl mb-8 leading-relaxed font-medium opacity-90">{stats.bestCard.subtitle}</p>
-          <div class="flex flex-col gap-3">
-            <button on:click={shareOnX} class="px-6 py-3 bg-sky-500 text-white font-black rounded-xl hover:bg-sky-600 transition-all active:scale-95">
+          <h4 class="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-2 sm:mb-3 tracking-tighter leading-none">{stats.bestCard.name}</h4>
+          <p class="text-slate-300 text-sm sm:text-xl mb-4 sm:mb-8 leading-relaxed font-medium opacity-90">{stats.bestCard.subtitle}</p>
+          <div class="flex flex-col gap-2 sm:gap-3">
+            <button on:click={shareOnX} class="px-4 sm:px-6 py-2.5 sm:py-3 bg-sky-500 text-white font-black rounded-lg sm:rounded-xl hover:bg-sky-600 transition-all active:scale-95 text-sm sm:text-base">
               Share on X →
             </button>
-            <button on:click={copyLink} class="px-6 py-3 bg-slate-800 text-slate-300 font-black rounded-xl hover:bg-slate-700 transition-all">
+            <button on:click={copyLink} class="px-4 sm:px-6 py-2.5 sm:py-3 bg-slate-800 text-slate-300 font-black rounded-lg sm:rounded-xl hover:bg-slate-700 transition-all text-sm sm:text-base">
               Copy Link
             </button>
           </div>
@@ -305,7 +305,7 @@
       <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 text-center whitespace-nowrap">Full Pack Contents</h3>
       <div class="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
     </div>
-    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-4 md:gap-6">
+    <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
       {#each sortedCards as card, i}
         {@const cardRarity = RARITY_CONFIG[card.rarity]}
         {@const slam = getSlamIntensity(card.rarity)}
@@ -344,19 +344,19 @@
   </div>
 
   <!-- Action Buttons -->
-  <div class="flex flex-col sm:flex-row gap-6 justify-center" in:fly={{ y: 30, duration: 600, delay: 1300 }}>
+  <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center" in:fly={{ y: 30, duration: 600, delay: 1300 }}>
     <button
-      class="group relative px-12 py-6 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all overflow-hidden"
+      class="group relative px-6 sm:px-12 py-4 sm:py-6 bg-white text-slate-950 font-black uppercase tracking-wider sm:tracking-[0.2em] rounded-xl sm:rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all overflow-hidden text-sm sm:text-base"
       on:click={handleOpenAnother}
     >
       <div class="absolute inset-0 bg-slate-100 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
       <div class="flex items-center justify-center relative z-10">
-        <span class="text-2xl mr-4 group-hover:rotate-12 transition-transform">📦</span>
+        <span class="text-xl sm:text-2xl mr-3 sm:mr-4 group-hover:rotate-12 transition-transform">📦</span>
         <span>Open Another Pack</span>
       </div>
     </button>
     <button
-      class="px-12 py-6 bg-slate-800 text-slate-400 font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-slate-700 hover:text-white active:scale-95 transition-all border border-white/5"
+      class="px-6 sm:px-12 py-4 sm:py-6 bg-slate-800 text-slate-400 font-black uppercase tracking-wider sm:tracking-[0.2em] rounded-xl sm:rounded-2xl hover:bg-slate-700 hover:text-white active:scale-95 transition-all border border-white/5 text-sm sm:text-base"
       on:click={handleGoHome}
     >
       Back to Street
