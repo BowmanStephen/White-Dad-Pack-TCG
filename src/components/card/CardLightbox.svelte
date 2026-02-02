@@ -20,7 +20,6 @@
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
   import type { PackCard } from '../../types';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
-  import CardStats from './CardStats.svelte';
   import Card from './Card.svelte';
   import Card3DFlip from './Card3DFlip.svelte';
   import CardSetInfo from './CardSetInfo.svelte';

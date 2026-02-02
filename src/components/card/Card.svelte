@@ -2,7 +2,7 @@
   import type { PackCard, SeasonId } from '@/types';
   import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES } from '@/types';
   import { isSpecialCardType, getSpecialCardTypeLabel, getSpecialCardIcon, getSpecialCardBorderColor } from '@lib/card-types';
-  import CardStats from './CardStats.svelte';
+  import RadarChart from './RadarChart.svelte';
   import CardBack from './CardBack.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
@@ -217,22 +217,12 @@
         </div>
       </div>
 
-      <!-- Card Name -->
-      <div class="relative z-20 text-center px-3 mt-0.5">
-        <h3 class="text-xl leading-none tracking-wide text-white uppercase" style="font-family: var(--font-scream); text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px {rarityConfig.glowColor}44;">
-          {card.name}
-        </h3>
-        <p class="text-[10px] text-slate-300 mt-0.5 tracking-wide uppercase" style="font-family: var(--font-condensed);">
-          {card.subtitle}
-        </p>
-      </div>
-
       <!-- Artwork Frame -->
       <div class="relative z-20 mx-3 mt-2">
         <div class="p-[3px] rounded-lg" style="background: linear-gradient(145deg, {rarityConfig.color}88, {rarityConfig.color}22, {rarityConfig.color}88);">
-          <div class="rounded-md overflow-hidden aspect-square" style="box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5);">
+          <div class="rounded-md overflow-hidden aspect-[4/3]" style="box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5);">
             <div class="w-full h-full relative bg-black">
-              <GenerativeCardArt {card} width={300} height={300} showName={false} alt={card.name} />
+              <GenerativeCardArt {card} width={300} height={225} showName={false} alt={card.name} />
             </div>
             {#if card.isHolo}
               <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[9px] font-extrabold text-white tracking-wider" style="background: linear-gradient(135deg, #ec4899, #8b5cf6, #06b6d4); font-family: var(--font-condensed);">HOLO</div>
@@ -241,10 +231,27 @@
         </div>
       </div>
 
+      <!-- Card Name -->
+      <div class="relative z-20 text-center px-3 mt-2">
+        <h3 class="text-2xl leading-none tracking-wide text-white uppercase" style="font-family: var(--font-scream); text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px {rarityConfig.glowColor}44;">
+          {card.name}
+        </h3>
+        <p class="text-xs text-slate-300 mt-0.5 tracking-wide uppercase" style="font-family: var(--font-condensed);">
+          {card.subtitle}
+        </p>
+      </div>
+
+      <!-- Flavor Text -->
+      <div class="relative z-20 mx-3 mt-2 bg-black/70 border-t border-b border-white/10 rounded-lg px-2.5 py-2">
+        <p class="text-xs leading-snug text-slate-200 italic text-center" style="font-family: var(--font-body);">
+          "{displayFlavorText}"
+        </p>
+      </div>
+
       <!-- Stats -->
       <div class="relative z-20 px-3 mt-2">
         {#if !isStatlessCard}
-          <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={size === 'sm'} cardType={card.type} />
+          <RadarChart stats={card.stats} rarity={card.rarity} size={180} />
         {:else}
           <div class="text-xs text-slate-400 text-center py-2 font-semibold" style="font-family: var(--font-condensed);">
             {getSpecialCardTypeLabel(card.type)} Card
@@ -253,16 +260,9 @@
         {/if}
       </div>
 
-      <!-- Flavor Text -->
-      <div class="relative z-20 mx-3 mt-2 bg-black/70 border border-white/10 rounded-lg px-2.5 py-2">
-        <p class="text-[10px] leading-snug text-slate-200 italic" style="font-family: var(--font-body);">
-          "{displayFlavorText}"
-        </p>
-      </div>
-
       <!-- Abilities -->
       {#if card.abilities && card.abilities.length > 0}
-        <div class="relative z-20 mx-3 mt-2 flex flex-wrap gap-1.5">
+        <div class="relative z-20 mx-3 mt-2 flex flex-wrap gap-1.5 justify-center">
           {#each card.abilities as ability}
             {@const buttonId = `ability-${card.id}-${ability.name}`}
             <div class="relative inline-block">

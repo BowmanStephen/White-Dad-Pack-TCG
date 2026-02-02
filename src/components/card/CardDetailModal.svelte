@@ -1,9 +1,4 @@
-<script lang="ts">
-  import type { PackCard } from '../../types';
-  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES } from '../../types';
-  import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
-  import { closeLightbox, nextCard, prevCard } from '../../stores/lightbox';
-  import CardStats from './CardStats.svelte';
+import RadarChart from './RadarChart.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import AbilityTooltip from './AbilityTooltip.svelte';
 
@@ -157,8 +152,8 @@
             <span>📊</span>
             <span>Stats</span>
           </h2>
-          <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-            <CardStats stats={card.stats} {rarityConfig} cardRarity={card.rarity} compact={false} cardType={card.type} />
+          <div class="bg-black/30 rounded-xl p-6 border border-white/10 flex justify-center">
+            <RadarChart stats={card.stats} rarity={card.rarity} size={220} />
           </div>
         </div>
       {:else}

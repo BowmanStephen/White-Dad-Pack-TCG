@@ -4,7 +4,7 @@
   import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
   import { collection } from '../../stores/collection';
   import { isDetailModalOpen, detailModalCard, closeDetailModal } from '../../stores/card-detail-modal';
-  import CardStats from '../card/CardStats.svelte';
+  import EnhancedCardStats from '../card/EnhancedCardStats.svelte';
   import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
   import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
 
@@ -202,8 +202,8 @@
               <div class="artwork">
                 <GenerativeCardArt
                   card={card}
-                  width={600}
-                  height={600}
+                  width={400}
+                  height={400}
                   showName={false}
                   alt={card.name}
                 />
@@ -322,7 +322,11 @@
           {#if hasCardStats(card.type)}
             <div class="stats-section">
               <h3 class="section-title">Stats</h3>
-              <CardStats stats={card.stats} rarityConfig={RARITY_CONFIG[card.rarity]} cardRarity={card.rarity} compact={false} cardType={card.type} />
+              <EnhancedCardStats
+                {card}
+                showComparison={false}
+                showRatings={true}
+              />
             </div>
           {:else}
             <div class="statless-section">
