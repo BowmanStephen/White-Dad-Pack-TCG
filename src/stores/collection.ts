@@ -1,5 +1,12 @@
 import { atom } from 'nanostores';
-import type { Collection, CollectionMetadata, CollectionState, CollectionStats, Pack, Rarity } from '../types';
+import type {
+  Collection,
+  CollectionMetadata,
+  CollectionState,
+  CollectionStats,
+  Pack,
+  Rarity,
+} from '../types';
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
 import { createStorageError, logError } from '@/lib/utils/errors';
@@ -10,7 +17,7 @@ import {
   needsLocalStorageMigration,
   migrateFromLocalStorage,
   getStorageUsage,
-  isStorageAvailable
+  isStorageAvailable,
 } from '@/lib/storage/indexeddb';
 import { updatePityCounter, DEFAULT_PITY_COUNTER } from '@/lib/pack/pity';
 import type { PityCounter, StreakCounter } from '@/types/collection';
@@ -24,7 +31,7 @@ import localforage from 'localforage';
 // PACK-030: Default streak counter
 const DEFAULT_STREAK_COUNTER: StreakCounter = {
   current: 0,
-  best: 0
+  best: 0,
 };
 
 // Initialize empty collection
@@ -43,11 +50,11 @@ const DEFAULT_COLLECTION: Collection = {
       rare: 0,
       epic: 0,
       legendary: 0,
-      mythic: 0
+      mythic: 0,
     },
     pityCounter: DEFAULT_PITY_COUNTER, // PACK-003: Initialize pity counter
-    streakCounter: DEFAULT_STREAK_COUNTER // PACK-030: Initialize streak counter
-  }
+    streakCounter: DEFAULT_STREAK_COUNTER, // PACK-030: Initialize streak counter
+  },
 };
 
 // Load collection from IndexedDB on init
@@ -75,7 +82,9 @@ async function initializeCollection() {
       if (await needsLocalStorageMigration()) {
         const migrationResult = await migrateFromLocalStorage();
         if (!migrationResult.success) {
-          console.error('[Collection] Migration failed:', migrationResult.error);
+          if (import.meta.env.DEV) {
+            console.error('[Collection] Migration failed:', migrationResult.error);
+          }
         }
       }
 
@@ -98,14 +107,18 @@ async function initializeCollection() {
     await Promise.race([initPromise, timeoutPromise]);
     collectionHydrated.set(true);
   } catch (error) {
-    console.error('[Collection] Failed to initialize:', error);
+    if (import.meta.env.DEV) {
+      console.error('[Collection] Failed to initialize:', error);
+    }
     // FIX: Even on timeout, try to ensure localforage is ready for writes
     // This allows pack saves to succeed even if initial load times out
     try {
       // Force localforage to be ready by doing a dummy operation
       await localforage.ready();
     } catch (forageError) {
-      console.error('[Collection] localforage not ready:', forageError);
+      if (import.meta.env.DEV) {
+        console.error('[Collection] localforage not ready:', forageError);
+      }
     }
     collectionHydrated.set(true); // Mark as hydrated even on error to prevent infinite retries
   }
@@ -149,17 +162,23 @@ async function saveToStorageImmediate(): Promise<{ success: boolean; error?: str
     const result = await saveToIndexedDB(current);
 
     if (!result.success) {
-      console.error('[Collection] Failed to save:', result.error);
+      if (import.meta.env.DEV) {
+        console.error('[Collection] Failed to save:', result.error);
+      }
       dispatchStorageEvent('error', result.error || 'Failed to save collection');
       return { success: false, error: result.error };
     } else if (result.quotaWarning) {
-      console.warn('[Collection] Quota warning:', result.quotaWarning);
+      if (import.meta.env.DEV) {
+        console.warn('[Collection] Quota warning:', result.quotaWarning);
+      }
       dispatchStorageEvent('warning', result.quotaWarning);
     }
-    
+
     return { success: true };
   } catch (error) {
-    console.error('[Collection] Error saving:', error);
+    if (import.meta.env.DEV) {
+      console.error('[Collection] Error saving:', error);
+    }
     dispatchStorageEvent('error', 'An unexpected error occurred while saving');
     return { success: false, error: 'An unexpected error occurred while saving' };
   }
@@ -179,9 +198,7 @@ async function saveToStorageImmediate(): Promise<{ success: boolean; error?: str
 // Dispatch storage warning/error events for UI components (PACK-045)
 export function dispatchStorageEvent(type: 'warning' | 'error', message: string): void {
   onBrowser(() => {
-    window.dispatchEvent(
-      new CustomEvent(`daddeck:storage-${type}`, { detail: { message, type } })
-    );
+    window.dispatchEvent(new CustomEvent(`daddeck:storage-${type}`, { detail: { message, type } }));
   });
 }
 
@@ -197,7 +214,7 @@ function initializeRarityCounts(): Record<Rarity, number> {
     rare: 0,
     epic: 0,
     legendary: 0,
-    mythic: 0
+    mythic: 0,
   };
 }
 
@@ -215,7 +232,7 @@ function getRarityCounts(packs: Pack[], metadata: CollectionMetadata): Record<Ra
     rare: 0,
     epic: 0,
     legendary: 0,
-    mythic: 0
+    mythic: 0,
   };
 
   for (const pack of packs) {
@@ -235,7 +252,7 @@ export function getCollectionState(): CollectionState {
     openedPacks: current.packs,
     uniqueCards: current.metadata.uniqueCards,
     totalCards: current.packs.reduce((sum, pack) => sum + pack.cards.length, 0),
-    rarityCounts: getRarityCounts(current.packs, current.metadata)
+    rarityCounts: getRarityCounts(current.packs, current.metadata),
   };
 }
 
@@ -253,7 +270,7 @@ export function getCollectionStats(): CollectionStats {
     legendaryPulls: rarityCounts.legendary,
     mythicPulls: rarityCounts.mythic,
     holoPulls: current.metadata.holoPulls,
-    lastOpenedAt: current.metadata.lastOpenedAt
+    lastOpenedAt: current.metadata.lastOpenedAt,
   };
 }
 
@@ -288,19 +305,23 @@ function addPackToCollectionSync(pack: Pack): { success: boolean; error?: string
   if (result.success) {
     // Trigger immediate save (fire and forget for sync API)
     saveToStorageImmediate().catch(err => {
-      console.error('[Collection] Background save failed:', err);
+      if (import.meta.env.DEV) {
+        console.error('[Collection] Background save failed:', err);
+      }
     });
   }
   return result;
 }
 
 // Add a pack to the collection (async version - waits for IndexedDB save)
-export async function addPackToCollection(pack: Pack): Promise<{ success: boolean; error?: string }> {
+export async function addPackToCollection(
+  pack: Pack
+): Promise<{ success: boolean; error?: string }> {
   const result = updateCollectionWithPack(pack);
   if (!result.success) {
     return result;
   }
-  
+
   // Wait for IndexedDB save to complete
   return saveToStorageImmediate();
 }
@@ -320,11 +341,11 @@ function updateCollectionWithPack(pack: Pack): { success: boolean; error?: strin
 
     // Count rare+ pulls (rare or better)
     const rarePullsInPack = pack.cards.filter(
-      (card) => RARITY_ORDER[card.rarity] >= RARITY_ORDER.rare
+      card => RARITY_ORDER[card.rarity] >= RARITY_ORDER.rare
     ).length;
 
     // Count holo pulls
-    const holoPullsInPack = pack.cards.filter((card) => card.isHolo).length;
+    const holoPullsInPack = pack.cards.filter(card => card.isHolo).length;
 
     // Incrementally update rarity counts (US107)
     const currentRarityCounts = current.metadata.rarityCounts || initializeRarityCounts();
@@ -346,13 +367,13 @@ function updateCollectionWithPack(pack: Pack): { success: boolean; error?: strin
       // Has rare+ card: increment current streak
       newStreak = {
         current: currentStreak.current + 1,
-        best: Math.max(currentStreak.best, currentStreak.current + 1)
+        best: Math.max(currentStreak.best, currentStreak.current + 1),
       };
     } else {
       // No rare+ card: reset streak
       newStreak = {
         current: 0,
-        best: currentStreak.best
+        best: currentStreak.best,
       };
     }
 
@@ -368,8 +389,8 @@ function updateCollectionWithPack(pack: Pack): { success: boolean; error?: strin
         created: current.metadata.created,
         rarityCounts: newRarityCounts,
         pityCounter: newPityCounter, // PACK-003: Include updated pity counter
-        streakCounter: newStreak // PACK-030: Include updated streak counter
-      }
+        streakCounter: newStreak, // PACK-030: Include updated streak counter
+      },
     };
 
     collection.set(newCollection);
@@ -383,7 +404,7 @@ function updateCollectionWithPack(pack: Pack): { success: boolean; error?: strin
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -402,8 +423,8 @@ export function clearUserCollection(): { success: boolean; error?: string } {
         created: new Date(),
         rarityCounts: initializeRarityCounts(),
         pityCounter: DEFAULT_PITY_COUNTER, // PACK-003: Reset pity counter
-        streakCounter: DEFAULT_STREAK_COUNTER // PACK-030: Reset streak counter
-      }
+        streakCounter: DEFAULT_STREAK_COUNTER, // PACK-030: Reset streak counter
+      },
     };
 
     collection.set(newCollection);
@@ -420,7 +441,7 @@ export function clearUserCollection(): { success: boolean; error?: string } {
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -431,13 +452,13 @@ export const clearCollection = clearUserCollection;
 // Get a pack by ID
 export function getPackById(id: string): Pack | undefined {
   const current = collection.get();
-  return current.packs.find((pack) => pack.id === id);
+  return current.packs.find(pack => pack.id === id);
 }
 
 // Get all packs of a specific rarity
 export function getPacksByRarity(rarity: Rarity): Pack[] {
   const current = collection.get();
-  return current.packs.filter((pack) => pack.bestRarity === rarity);
+  return current.packs.filter(pack => pack.bestRarity === rarity);
 }
 
 // Get recent packs (last N packs)
@@ -463,7 +484,7 @@ export async function importCollection(
     if (!parsedCollection || !Array.isArray(parsedCollection.packs) || !parsedCollection.metadata) {
       return {
         success: false,
-        error: 'Invalid collection data format'
+        error: 'Invalid collection data format',
       };
     }
 
@@ -473,7 +494,7 @@ export async function importCollection(
     if (!saveResult.success) {
       return {
         success: false,
-        error: saveResult.error || 'Failed to save imported collection'
+        error: saveResult.error || 'Failed to save imported collection',
       };
     }
 
@@ -482,7 +503,7 @@ export async function importCollection(
 
     return {
       success: true,
-      imported: parsedCollection.packs.length
+      imported: parsedCollection.packs.length,
     };
   } catch (error) {
     const storageError = createStorageError(
@@ -492,7 +513,7 @@ export async function importCollection(
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -509,8 +530,8 @@ export function trackCollectionView(): void {
     data: {
       totalPacks: stats.totalPacks,
       totalCards: stats.totalCards,
-      uniqueCards: stats.uniqueCards
-    }
+      uniqueCards: stats.uniqueCards,
+    },
   });
 }
 
@@ -520,8 +541,8 @@ export function trackCollectionFilter(filterType: string, filterValue: string): 
     type: 'collection_filter',
     data: {
       filterType,
-      filterValue
-    }
+      filterValue,
+    },
   });
 }
 
@@ -530,8 +551,8 @@ export function trackCollectionSort(sortOption: string): void {
   trackEvent({
     type: 'collection_sort',
     data: {
-      sortOption: sortOption as any // Type assertion for SortOption
-    }
+      sortOption: sortOption as any, // Type assertion for SortOption
+    },
   });
 }
 
@@ -595,15 +616,17 @@ export async function clearAllCollectionData(): Promise<{ success: boolean; erro
     // Track analytics event
     trackEvent({
       type: 'collection_cleared',
-      data: {}
+      data: {},
     });
 
     return { success: true };
   } catch (error) {
-    console.error('[Collection] Failed to clear collection:', error);
+    if (import.meta.env.DEV) {
+      console.error('[Collection] Failed to clear collection:', error);
+    }
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to clear collection'
+      error: error instanceof Error ? error.message : 'Failed to clear collection',
     };
   }
 }
