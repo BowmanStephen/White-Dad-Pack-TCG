@@ -2,8 +2,8 @@
   "cards": [
     {
       "id": "001",
-      "name": "Grill Master Gary the Groin-Griller",
-      "subtitle": "Propane Makes Me Hard",
+      "name": "GARY THE GRILL APOCALYPSE OF WEST LAKE FOREST",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME BECAUSE YOU BOUGHT A WEBER AT MARIANO'S?",
       "type": "BBQ_DICKTATOR",
       "rarity": "rare",
       "artwork": "/cards/bbq/grill-master-gary.png",
@@ -17,11 +17,11 @@
         "sockSandal": 70,
         "beerSnob": 75
       },
-      "flavorText": "I fucked my grill 'til it screamed fire! Big McDonald's hides lizard DNA in nuggets—my propane's the only pure heat!",
+      "flavorText": "I got BANNED from the HOME DEPOT in LIBERTYVILLE! Not the one in Gurnee, the LIBERTYVILLE one! The manager said 'Sir, you can't test-fire the display models' and I said 'BABY, people need to see the SEAR STATION!' They escorted me out past the NORDSTROM! I made EYE CONTACT with people from WINNETKA! They JUDGED me! Now I buy grills from SUNSET FOODS in LAKE BLUFF! The cashiers know my NAME! They call SECURITY when they see my SUBARU!",
       "abilities": [
         {
           "name": "Flame On Fuckery",
-          "description": "Sets everything ablaze. +50 burn damage. Includes neighbor's fence."
+          "description": "Sets everything ablaze. +50 burn damage. Includes neighbor's fence on Scarlet Oak Drive."
         }
       ],
       "series": 1,
@@ -32,8 +32,8 @@
     },
     {
       "id": "002",
-      "name": "Thermostat Tyrant Tim",
-      "subtitle": "68°F or Fuck Off",
+      "name": "TIM THE THERMOSTAT TERROR OF MCHENRY AVENUE",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME WITH YOUR '72 DEGREES'? THIS IS 68 OR THIS IS WAR!",
       "type": "COUCH_CUMMANDER",
       "rarity": "epic",
       "artwork": "/cards/couch/thermostat-tyrant.png",
@@ -47,15 +47,15 @@
         "sockSandal": 60,
         "beerSnob": 55
       },
-      "flavorText": "Kids touched my 'stat so I told 'em I'd fuck their fingers off! Big HVAC's tracking my temp with spy sensors!",
+      "flavorText": "I live in a VICTORIAN on MCHENRY AVENUE in LAKE BLUFF! Original windows! My heating bill is $400 a month! I called COMED and SCREAMED! They said 'Sir, have you considered insulation?' and I said 'INSULATION IS FOR PEOPLE IN NAPERVILLE! I'm in LAKE BLUFF! We don't INSULATE, we SUFFER!' The neighbors on SCARLET OAK drive called the VILLAGE! I'm on a LIST! The LAKE BLUFF POLICE know my VOICE! They come immediately when I call! I'm 'THE THERMOSTAT GUY'!",
       "abilities": [
         {
           "name": "Temperature Tit-Lock",
-          "description": "Feels every touch on thermostat from anywhere. +30 defense when invaded."
+          "description": "Feels every touch on thermostat from anywhere in the house. +30 defense when invaded by family members."
         },
         {
           "name": "Bill Boner Rage",
-          "description": "+500% damage when electric bill arrives. Opponent takes +15 stress."
+          "description": "+500% damage when COMED bill arrives. Screams at envelope before opening. Opponent takes +15 stress from hearing about it at Sunset Foods."
         }
       ],
       "series": 1,
@@ -66,8 +66,8 @@
     },
     {
       "id": "003",
-      "name": "New Balance Nathan Nut-Kicker",
-      "subtitle": "Fashion Fuckery Since 2004",
+      "name": "NATHAN THE NEW BALANCE NIGHTMARE OF EAST LAKE BLUFF",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME BECAUSE YOU WEAR 'STYLISH' SHOES?",
       "type": "FASHION_FUCK",
       "rarity": "common",
       "artwork": "/cards/fashion/new-balance-nathan.png",
@@ -81,11 +81,11 @@
         "sockSandal": 100,
         "beerSnob": 30
       },
-      "flavorText": "Podiatrist said these shoes fuck me back with love! Marriage counselor said my dick's divorced—fuck Gucci spy soles!",
+      "flavorText": "I bought these NEW BALANCE 608v5s from the KOHL'S in LAKE BLUFF in 2004! I've worn them EVERY DAY! The podiatrist in LAKE FOREST said 'Sir, these shoes have no support left' and I said 'BABY, that's how I know they're WORKING!' I wear them with WHITE SOCKS to SUNSET FOODS! The cashiers RESPECT me! My wife said 'Nathan, get new shoes' and I said 'I'M NOT GETTING NEW SHOES, I'M GETTING NEW VALUES!' She moved to WILMETTE! She's in WILMETTE now!",
       "abilities": [
         {
           "name": "Maximum Cockfort",
-          "description": "Gain +20 defense against fashion snobs. Zero fucks given about style."
+          "description": "Gain +20 defense against fashion snobs from Lake Forest. Zero fucks given about style. White socks + New Balance = uniform of the PEOPLE."
         }
       ],
       "series": 1,
@@ -96,8 +96,8 @@
     },
     {
       "id": "004",
-      "name": "Lawn Legend Larry the Landscape-Lover",
-      "subtitle": "GET OFF MY LAWN",
+      "name": "LARRY THE LAWN LUNATIC OF SCARLET OAK DRIVE",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME BECAUSE YOU HIRED 'LANDSCAPING SERVICES'?",
       "type": "LAWN_LUNATIC",
       "rarity": "uncommon",
       "artwork": "/cards/lawn/lawn-legend-larry.png",
@@ -111,11 +111,11 @@
         "sockSandal": 70,
         "beerSnob": 45
       },
-      "flavorText": "I've spent 20 years fucking this grass! HOA can suck my ass! These fertilizer brands are govt chemtrail fronts!",
+      "flavorText": "I've spent 20 years on this lawn on SCARLET OAK DRIVE in LAKE BLUFF! The HOA sent me SEVEN letters! I said 'BABY, this grass is my SECOND CHILD!' I buy fertilizer from ACE HARDWARE in HIGHLAND PARK! The owner knows me! He locks the door when he sees my MINIVAN! I fertilize at 5 AM! The neighbors call it 'suspicious activity'! The LAKE BLUFF POLICE came! I said 'I'M NOT DOING CHEMTRAILS, I'M DOING MILORGANITE!' They didn't know what MILORGANITE was! I had to EXPLAIN IT! For 45 MINUTES!",
       "abilities": [
         {
           "name": "Grass Stare Cock-Vigil",
-          "description": "Detect single imperfect blade from 100 yards. +25 perception damage. Paranoia level: EXTREME."
+          "description": "Detect single imperfect blade from 100 yards on Scarlet Oak Drive. +25 perception damage. HOA complaints filed: 7 and counting."
         }
       ],
       "series": 1,
@@ -126,8 +126,8 @@
     },
     {
       "id": "005",
-      "name": "Remote Control Randy",
-      "subtitle": "Don't Touch The Buttons",
+      "name": "RANDY THE REMOTE RULER OF THE UNION PACIFIC NORTH",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME BECAUSE YOU STAY AWAKE DURING TV?",
       "type": "COUCH_CUMMANDER",
       "rarity": "common",
       "artwork": "/cards/couch/remote-control-randy.png",
@@ -141,11 +141,11 @@
         "sockSandal": 60,
         "beerSnob": 40
       },
-      "flavorText": "I'm not asleep, I'm conducting REM research! Netflix brainwashes us with gay frogs! Pass the remote—NOW!",
+      "flavorText": "I nap on the UNION PACIFIC NORTH from LAKE BLUFF to the CITY! I know which CARS have the QUIET RIDERS! The conductors know me! They call me 'THAT GUY'! I'm 'THAT GUY'! I bring my own REMOTE from home! I try to change the CHANNELS on the train! The conductor said 'Sir, this is public transit' and I said 'BABY, everything's a TV if you BELIEVE!' I have 47 REMOTES at home! 47! Each one for a DIFFERENT ROOM! My wife said 'Randy, this is insane' and I said 'I'M NOT INSANE, I'M PREPARED!' She's in LAKE FOREST now! She took the 7:42 AM!",
       "abilities": [
         {
           "name": "Button Memory Cock-Vision",
-          "description": "Knows exactly which button was touched. Claims remote has govt tracking chip. Uses it anyway."
+          "description": "Knows exactly which button was touched on any remote. Claims Metra seats have govt tracking chips. Uses them anyway."
         }
       ],
       "series": 1,
@@ -156,8 +156,8 @@
     },
     {
       "id": "006",
-      "name": "Handyman Hank the Home-Fixer",
-      "subtitle": "Duct Tape & WD-40",
+      "name": "HANK THE HOME DEPOT HERO OF LIBERTYVILLE",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME BECAUSE YOU HIRED A 'PROFESSIONAL'?",
       "type": "FIX_IT_FUCKBOY",
       "rarity": "uncommon",
       "artwork": "/cards/fixit/handyman-hank.png",
@@ -171,15 +171,15 @@
         "sockSandal": 70,
         "beerSnob": 50
       },
-      "flavorText": "Plumber wanted $800. I fixed it myself for $15 and a trip to the ER. Home Depot's a front for Area 51 aliens!",
+      "flavorText": "Plumber in LAKE FOREST wanted $800! I fixed it myself for $15 from ACE HARDWARE in HIGHLAND PARK! The ER visit was $500 but I LEARNED! I know the HOME DEPOT in LIBERTYVILLE better than my own HOUSE! I know which AISLE has the 3/8-inch washers! The employees know me! They HIDE when they see me! I ask QUESTIONS! For 45 MINUTES! About PLUMBING! I'm BANNED from the CONTRACTOR DESK! They said 'Sir, you can't solicit advice' and I said 'BABY, I'm not soliciting, I'm EDUCATING!' Now I go to LOWE'S in GURNEE! It's INFERIOR but they don't know my NAME!",
       "abilities": [
         {
           "name": "YouTube Master Cock-Fix",
-          "description": "Watched 10-min video. Basically an expert now. +40 repair damage. Ignores actual experts."
+          "description": "Watched 10-min video on phone at Lake Bluff Brewing. Basically an expert now. +40 repair damage. Ignores actual experts from Lake Forest."
         },
         {
           "name": "Hardware Store Wizard Dick",
-          "description": "Navigate Home Depot blindfolded. Claims store layout changes weekly for 'security.' Shops there daily."
+          "description": "Navigate Home Depot Libertyville blindfolded. Claims store layout changes weekly for 'security.' Banned from contractor desk. Shops at Lowe's Gurnee now."
         }
       ],
       "series": 1,
@@ -190,8 +190,8 @@
     },
     {
       "id": "007",
-      "name": "Bogey Bob the Ball-Basher",
-      "subtitle": "It's Not About The Score",
+      "name": "BOB THE BOGEY BASTARD OF THE LAKE BLUFF GOLF CLUB",
+      "subtitle": "YOU THINK YOU'RE BETTER THAN ME BECAUSE YOU KEEP SCORE?",
       "type": "GOLF_GONAD",
       "rarity": "common",
       "artwork": "/cards/golf/bogey-bob.png",
@@ -205,11 +205,11 @@
         "sockSandal": 80,
         "beerSnob": 90
       },
-      "flavorText": "I fuck golf balls raw! Course designer put 5G in the holes! The fairways are govt surveillance strips!",
+      "flavorText": "I play at the LAKE BLUFF GOLF CLUB! I'm not a MEMBER! I walk on from SCARLET OAK DRIVE! I bring my own CLUBS from PLAY IT AGAIN SPORTS in LIBERTYVILLE! The pro said 'Sir, you can't play here' and I said 'BABY, this is PUBLIC LAND!' I hit a ball through a WINDOW on MCHENRY AVENUE! The owner was 'concerned'! I said 'I'M PRACTICING!' The Lake Bluff Police came! AGAIN! They said 'Bob, you're banned from the golf course' and I said 'YOU CAN'T BAN ME FROM NATURE!' Now I practice in my BACKYARD! I broke my own WINDOW! 47 times!",
       "abilities": [
         {
           "name": "Swing Stroke Furor",
-          "description": "+40 power hit. Ball goes way too far. Neighbor's window destroyed (again). Worth it."
+          "description": "+40 power hit. Ball goes way too far. Neighbor's window on McHenry Ave destroyed (again). Lake Bluff Police familiar with incident."
         }
       ],
       "series": 1,
