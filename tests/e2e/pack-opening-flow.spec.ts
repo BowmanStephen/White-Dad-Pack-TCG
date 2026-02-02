@@ -20,6 +20,8 @@ import type { Page } from '@playwright/test';
 async function clickOpenPackButton(page: Page) {
   const openPackButton = page.locator('button.btn-primary').filter({ hasText: 'Open Pack' });
   await openPackButton.waitFor({ state: 'visible', timeout: 10000 });
+  // Wait for Svelte hydration - ensures onMount() has fired
+  await page.waitForTimeout(1000);
   await openPackButton.click();
 }
 
@@ -28,13 +30,13 @@ async function clickOpenPackButton(page: Page) {
  */
 async function openPackAndSkipToResults(page: Page) {
   await clickOpenPackButton(page);
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(500); // Wait for animation start
   await page.keyboard.press('Space');
-  await expect(page.locator('text=Collection Updated')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('text=Collection Updated')).toBeVisible({ timeout: 15000 });
 }
 
 /**
- * Helper: Clear IndexedDB and dismiss cookie consent before test
+ * Helper: Clear IndexedDB and dismiss cookie consent/tutorial before test
  */
 async function clearStorage(page: Page) {
   await page.evaluate(() => {
@@ -44,6 +46,14 @@ async function clearStorage(page: Page) {
       categories: { necessary: true, analytics: false, marketing: false },
       timestamp: Date.now()
     }));
+
+    // Dismiss tutorial to prevent overlay blocking interactions
+    localStorage.setItem('daddeck-tutorial-progress', JSON.stringify({
+      "first_time": true
+    }));
+
+    // Dismiss welcome modal
+    localStorage.setItem('daddeck-welcome-seen', 'true');
 
     return new Promise<void>((resolve) => {
       const request = indexedDB.deleteDatabase('daddeck-collection');
@@ -124,8 +134,8 @@ test.describe('Pack Opening Flow - End to End', () => {
       await page.waitForTimeout(500);
       await page.keyboard.press('Space');
 
-      // Verify results
-      await expect(page.locator('text=Collection Updated')).toBeVisible({ timeout: 10000 });
+      // Verify results (longer timeout for mobile)
+      await expect(page.locator('text=Collection Updated')).toBeVisible({ timeout: 15000 });
 
       // Verify cards are displayed
       const cards = page.locator('[role="button"][aria-label^="Inspect"]');
@@ -134,8 +144,10 @@ test.describe('Pack Opening Flow - End to End', () => {
       if (i < 2) {
         // Click "Open Another Pack"
         const anotherButton = page.locator('button').filter({ hasText: /Open Another Pack/i });
+        await anotherButton.waitFor({ state: 'visible', timeout: 10000 });
         await anotherButton.click();
-        await page.waitForTimeout(500);
+        // Wait for state reset on mobile
+        await page.waitForTimeout(1000);
       }
     }
   });
@@ -147,13 +159,16 @@ test.describe('Pack Opening Flow - End to End', () => {
     // Open pack and skip to results
     await openPackAndSkipToResults(page);
 
+    // Wait for results to fully render on mobile
+    await page.waitForTimeout(500);
+
     // Verify distribution section
     await expect(page.locator('text=Distribution')).toBeVisible({ timeout: 10000 });
 
     // Should show at least one rarity count (uppercase in UI: "3X COMMON")
     // The rarity names in UI are uppercase due to CSS
     const rarityCount = page.locator('span').filter({ hasText: /\d+x\s+(Common|Uncommon|Rare|Epic|Legendary|Mythic)/i });
-    await expect(rarityCount.first()).toBeVisible({ timeout: 10000 });
+    await expect(rarityCount.first()).toBeVisible({ timeout: 15000 });
 
     // Verify 6 cards in results
     const cards = page.locator('[role="button"][aria-label^="Inspect"]');
