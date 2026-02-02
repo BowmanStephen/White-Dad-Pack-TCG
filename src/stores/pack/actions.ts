@@ -42,10 +42,6 @@ import { savePackWithRetry } from './persistence';
 // Track pack open start time for duration calculation
 let packOpenStartTime: number | null = null;
 
-// Auto-reveal sequence state
-let autoRevealTimer: ReturnType<typeof setInterval> | null = null;
-let autoRevealIndex = 0;
-
 // ============================================================================
 // PACK OPENING ACTIONS
 // ============================================================================
@@ -275,60 +271,6 @@ export function isQuickRevealEnabled(): boolean {
   return quickRevealStore.get();
 }
 
-/**
- * Reveal a specific card
- * NOTE: In the MVP vertical slice, we reveal the full pack at once.
- * This method remains for compatibility with existing components.
- */
-export function revealCard(
-  index: number,
-  options: { autoRevealed?: boolean } = {}
-): void {
-  const pack = currentPack.get();
-  if (!pack || index < 0 || index >= pack.cards.length) return;
-
-  const revealed = new Set(revealedCards.get());
-  const wasAlreadyRevealed = revealed.has(index);
-
-  revealed.add(index);
-  revealedCards.set(revealed);
-
-  // Update the card's revealed state
-  const updatedCards = [...pack.cards];
-  updatedCards[index] = { ...updatedCards[index], isRevealed: true };
-  currentPack.set({ ...pack, cards: updatedCards });
-
-  // Track card reveal event (only if not already revealed)
-  if (!wasAlreadyRevealed) {
-    const card = pack.cards[index];
-    trackEvent({
-      type: 'card_reveal',
-      data: {
-        packId: pack.id,
-        cardIndex: index,
-        cardId: card.id,
-        rarity: card.rarity,
-        isHolo: card.isHolo,
-        holoType: card.holoType,
-        autoRevealed: options.autoRevealed || false,
-      },
-    });
-
-    // Haptic feedback for rare+ cards
-    haptics.cardReveal(card.rarity);
-  }
-
-  packState.set('results');
-}
-
-/**
- * Reveal the current card
- */
-export function revealCurrentCard(): void {
-  const index = currentCardIndex.get();
-  revealCard(index);
-}
-
 // ============================================================================
 // NAVIGATION ACTIONS
 // ============================================================================
@@ -414,57 +356,6 @@ export function showResults(): void {
     trackPackComplete(pack, isSkipping.get());
   }
   packState.set('results');
-}
-
-// ============================================================================
-// AUTO-REVEAL ACTIONS
-// ============================================================================
-
-/**
- * Start auto-reveal sequence with staggered timing
- * Cards reveal one-by-one with delay between each
- * Can be cancelled by user interaction
- */
-export function startAutoReveal(): void {
-  const pack = currentPack.get();
-  if (!pack || pack.cards.length === 0) return;
-
-  // Cancel any existing auto-reveal
-  stopAutoReveal();
-
-  autoRevealIndex = 0;
-
-  autoRevealTimer = setInterval(() => {
-    const activePack = currentPack.get();
-    if (!activePack || autoRevealIndex >= activePack.cards.length) {
-      stopAutoReveal();
-      // Track pack completion after auto-reveal finishes
-      if (activePack) {
-        trackPackComplete(activePack, false);
-      }
-      packState.set('results');
-      return;
-    }
-
-    // Reveal current card (mark as auto-revealed)
-    revealCard(autoRevealIndex, { autoRevealed: true });
-
-    // Move to next card
-    autoRevealIndex++;
-    currentCardIndex.set(autoRevealIndex);
-  }, ANIMATION_TIMINGS.AUTO_REVEAL_DELAY_MS);
-}
-
-/**
- * Stop the auto-reveal sequence
- * Called when user interacts (clicks, taps, presses key)
- */
-export function stopAutoReveal(): void {
-  if (autoRevealTimer) {
-    clearInterval(autoRevealTimer);
-    autoRevealTimer = null;
-  }
-  autoRevealIndex = 0;
 }
 
 // ============================================================================

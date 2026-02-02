@@ -4,10 +4,8 @@ import {
   openNewPack,
   completePackAnimation,
   skipToResults,
-  revealCurrentCard,
   nextCard,
   prevCard,
-  revealCard,
   goToCard,
   resetPack,
   showResults,
@@ -38,9 +36,8 @@ import * as packTypes from '@/types/pack';
  * Pack Store Test Suite
  *
  * Tests the core pack opening state machine including:
- * - State transitions (idle → generating → pack_animate → cards_ready → revealing → results)
+ * - State transitions (idle → generating → pack_animate → results)
  * - Pack generation and validation
- * - Card reveal logic
  * - Navigation (next/prev/goTo)
  * - Error handling and recovery
  * - Rate limiting (SEC-002)
@@ -312,7 +309,7 @@ describe('Pack Store', () => {
 
     it('should reset state before opening new pack', async () => {
       // Set some state
-      revealCard(0);
+      skipToResults();
       nextCard();
 
       // Open new pack
@@ -466,118 +463,10 @@ describe('Pack Store', () => {
     });
   });
 
-  describe('revealCard', () => {
-    beforeEach(async () => {
-      await openNewPack();
-      // In MVP, cards are already revealed after opening
-      // This test is for compatibility with old revealing state machine
-    });
-
-    it('should reveal card at index', () => {
-      revealCard(0);
-
-      expect(revealedCards.get().has(0)).toBe(true);
-
-      const pack = currentPack.get();
-      expect(pack?.cards[0].isRevealed).toBe(true);
-    });
-
-    it('should mark card as revealed in revealedCards set', () => {
-      // Verify revealCard marks the card as revealed
-      const beforeReveal = revealedCards.get().size;
-      revealCard(0);
-      const afterReveal = revealedCards.get().size;
-      expect(afterReveal).toBeGreaterThanOrEqual(beforeReveal);
-      expect(revealedCards.get().has(0)).toBe(true);
-    });
-
-    it('should track analytics event', () => {
-      revealCard(0);
-
-      expect(trackEvent).toHaveBeenCalledWith({
-        type: 'card_reveal',
-        data: expect.objectContaining({
-          cardIndex: 0,
-          cardId: expect.any(String),
-          rarity: expect.any(String)
-        })
-      });
-    });
-
-    it('should trigger haptic feedback for rare+ cards', () => {
-      revealCard(1); // uncommon card
-
-      expect(haptics.cardReveal).toHaveBeenCalledWith('uncommon');
-    });
-
-    it('should call haptic with common rarity (haptic function handles no-op internally)', () => {
-      revealCard(0); // common card
-
-      // The haptics.cardReveal function is called, but it returns early for common cards
-      // The actual no-vibration logic is in the haptics utility, not the store
-      expect(haptics.cardReveal).toHaveBeenCalledWith('common');
-    });
-
-    it('should handle out of bounds index', () => {
-      expect(() => revealCard(999)).not.toThrow();
-    });
-
-    it('should handle negative index', () => {
-      expect(() => revealCard(-1)).not.toThrow();
-    });
-
-    it('should handle null pack gracefully', () => {
-      currentPack.set(null);
-
-      expect(() => revealCard(0)).not.toThrow();
-    });
-
-    it('should not track analytics for already revealed card', () => {
-      revealCard(0);
-      vi.clearAllMocks();
-
-      revealCard(0);
-
-      expect(trackEvent).not.toHaveBeenCalled();
-    });
-
-    it('should mark autoRevealed option in analytics', () => {
-      revealCard(0, { autoRevealed: true });
-
-      expect(trackEvent).toHaveBeenCalledWith({
-        type: 'card_reveal',
-        data: expect.objectContaining({
-          autoRevealed: true
-        })
-      });
-    });
-  });
-
-  describe('revealCurrentCard', () => {
-    beforeEach(async () => {
-      await openNewPack();
-      packState.set('cards_ready');
-    });
-
-    it('should reveal card at current index', () => {
-      currentCardIndex.set(1);
-
-      revealCurrentCard();
-
-      expect(revealedCards.get().has(1)).toBe(true);
-    });
-
-    it('should reveal first card by default', () => {
-      revealCurrentCard();
-
-      expect(revealedCards.get().has(0)).toBe(true);
-    });
-  });
-
   describe('nextCard', () => {
     beforeEach(async () => {
       await openNewPack();
-      revealCard(0);
+      skipToResults(); // Reveal all cards in MVP flow
     });
 
     it('should increment card index', () => {
@@ -672,7 +561,7 @@ describe('Pack Store', () => {
   describe('resetPack', () => {
     beforeEach(async () => {
       await openNewPack();
-      revealCard(0);
+      skipToResults();
       nextCard();
     });
 
@@ -733,9 +622,8 @@ describe('Pack Store', () => {
         expect(packProgress.get()).toBe(0);
       });
 
-      it('should be 0.5 when half cards revealed', () => {
-        revealCard(0);
-        revealCard(1);
+      it('should be 1 when cards revealed', () => {
+        skipToResults();
 
         expect(packProgress.get()).toBe(1); // 2/2 cards
       });
@@ -786,12 +674,6 @@ describe('Pack Store', () => {
         expect(allCardsRevealed.get()).toBe(false);
       });
 
-      it('should be false when some cards revealed', () => {
-        revealCard(0);
-
-        expect(allCardsRevealed.get()).toBe(false);
-      });
-
       it('should be true when all cards revealed', () => {
         skipToResults();
 
@@ -820,7 +702,7 @@ describe('Pack Store', () => {
         expect(isLoading.get()).toBe(true);
       });
 
-      it('should be false during cards_ready state', async () => {
+      it('should be false during results state', async () => {
         await openNewPack();
         completePackAnimation();
 
@@ -837,7 +719,7 @@ describe('Pack Store', () => {
   });
 
   describe('State Transitions', () => {
-    it('should follow idle → generating → pack_animate → cards_ready → revealing → results', async () => {
+    it('should follow idle → generating → pack_animate → results', async () => {
       // Idle
       expect(packState.get()).toBe('idle');
 

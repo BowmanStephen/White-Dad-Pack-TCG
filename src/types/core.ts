@@ -138,12 +138,11 @@ export interface Pack {
 }
 
 // Animation State
+// MVP flow: idle → generating → pack_animate → results
 export type PackState =
   | 'idle'
   | 'generating'
   | 'pack_animate'
-  | 'cards_ready'
-  | 'revealing'
   | 'results';
 
 // Pack Design Types (US068 - Pack Designs - Visual Variety)

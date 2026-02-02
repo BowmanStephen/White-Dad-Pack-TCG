@@ -68,8 +68,6 @@ export function createMockPackStore() {
     openNewPack: vi.fn(),
     completePackAnimation: vi.fn(),
     skipToResults: vi.fn(),
-    stopAutoReveal: vi.fn(),
-    revealCurrentCard: vi.fn(),
     nextCard: vi.fn(),
     prevCard: vi.fn(),
     resetPack: vi.fn(),

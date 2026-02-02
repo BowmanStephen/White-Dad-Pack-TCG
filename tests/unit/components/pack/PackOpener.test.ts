@@ -2,7 +2,7 @@
  * PackOpener Component Test Suite
  *
  * Tests the core pack opening flow including:
- * - State machine transitions (idle → generating → pack_animate → cards_ready → revealing → results)
+ * - State machine transitions (idle → generating → pack_animate → results)
  * - User interactions (keyboard navigation, skip animations, pack type selection)
  * - Error handling and recovery
  * - Accessibility (screen reader announcements, keyboard navigation)
@@ -52,8 +52,6 @@ vi.mock('@/stores/pack', () => {
     openNewPack: vi.fn(),
     completePackAnimation: vi.fn(),
     skipToResults: vi.fn(),
-    stopAutoReveal: vi.fn(),
-    revealCurrentCard: vi.fn(),
     nextCard: vi.fn(),
     prevCard: vi.fn(),
     resetPack: vi.fn(),
@@ -300,27 +298,6 @@ describe.skip('PackOpener Component', () => {
       });
     });
 
-    it('should display card revealer during cards_ready state', async () => {
-      packStore.packState.set('cards_ready');
-      packStore.currentPack.set(createLocalMockPack());
-      const { container } = render(PackOpener);
-
-      await waitFor(() => {
-        expect(container.querySelector('[data-testid="card-revealer"]')).toBeTruthy();
-      });
-    });
-
-    it('should display card revealer during revealing state', async () => {
-      packStore.packState.set('revealing');
-      packStore.currentPack.set(createLocalMockPack());
-      packStore.revealedCards.set(new Set([0]));
-      const { container } = render(PackOpener);
-
-      await waitFor(() => {
-        expect(container.querySelector('[data-testid="card-revealer"]')).toBeTruthy();
-      });
-    });
-
     it('should display results during results state', async () => {
       packStore.packState.set('results');
       packStore.currentPack.set(createLocalMockPack());
@@ -364,7 +341,7 @@ describe.skip('PackOpener Component', () => {
     });
 
     it('should call skipToResults when user skips animations', async () => {
-      packStore.packState.set('revealing');
+      packStore.packState.set('pack_animate');
       packStore.currentPack.set(createLocalMockPack());
       const { container } = render(PackOpener);
 
@@ -373,27 +350,12 @@ describe.skip('PackOpener Component', () => {
       if (skipButton) {
         fireEvent.click(skipButton);
         await tick();
-        expect(packStore.stopAutoReveal).toHaveBeenCalled();
         expect(packStore.skipToResults).toHaveBeenCalled();
       }
     });
 
-    it('should call revealCurrentCard when user clicks to reveal', async () => {
-      packStore.packState.set('cards_ready');
-      packStore.currentPack.set(createLocalMockPack());
-      const { container } = render(PackOpener);
-
-      // Find the reveal button
-      const revealButton = container.querySelector('[data-action="reveal-card"]');
-      if (revealButton) {
-        fireEvent.click(revealButton);
-        await tick();
-        expect(packStore.revealCurrentCard).toHaveBeenCalled();
-      }
-    });
-
     it('should call nextCard when user navigates to next card', async () => {
-      packStore.packState.set('revealing');
+      packStore.packState.set('results');
       packStore.currentPack.set(createLocalMockPack());
       packStore.revealedCards.set(new Set([0]));
       const { container } = render(PackOpener);
@@ -407,7 +369,7 @@ describe.skip('PackOpener Component', () => {
     });
 
     it('should call prevCard when user navigates to previous card', async () => {
-      packStore.packState.set('revealing');
+      packStore.packState.set('results');
       packStore.currentPack.set(createLocalMockPack());
       packStore.currentCardIndex.set(1);
       packStore.revealedCards.set(new Set([0, 1]));
@@ -423,86 +385,37 @@ describe.skip('PackOpener Component', () => {
   });
 
   describe('Keyboard Navigation', () => {
-    it('should stop auto-reveal on any keyboard interaction', async () => {
-      packStore.packState.set('revealing');
-      packStore.currentPack.set(createLocalMockPack());
-      render(PackOpener);
-
-      fireEvent.keyDown(window, { key: 'ArrowRight' });
-      await tick();
-
-      expect(packStore.stopAutoReveal).toHaveBeenCalled();
-    });
-
-    it('should reveal card or navigate next on ArrowRight', async () => {
-      packStore.packState.set('cards_ready');
-      packStore.currentPack.set(createLocalMockPack());
-      render(PackOpener);
-
-      fireEvent.keyDown(window, { key: 'ArrowRight' });
-      await tick();
-
-      expect(packStore.revealCurrentCard).toHaveBeenCalled();
-    });
-
-    it('should navigate to previous card on ArrowLeft', async () => {
-      packStore.packState.set('revealing');
-      packStore.currentPack.set(createLocalMockPack());
-      packStore.currentCardIndex.set(1);
-      render(PackOpener);
-
-      fireEvent.keyDown(window, { key: 'ArrowLeft' });
-      await tick();
-
-      expect(packStore.prevCard).toHaveBeenCalled();
-    });
-
-    it('should skip to results on Escape key', async () => {
-      packStore.packState.set('revealing');
+    it('should skip to results on Escape key during pack_animate', async () => {
+      packStore.packState.set('pack_animate');
       packStore.currentPack.set(createLocalMockPack());
       render(PackOpener);
 
       fireEvent.keyDown(window, { key: 'Escape' });
       await tick();
 
-      expect(packStore.stopAutoReveal).toHaveBeenCalled();
       expect(packStore.skipToResults).toHaveBeenCalled();
     });
 
-    it('should reveal card on Space key', async () => {
-      packStore.packState.set('cards_ready');
+    it('should skip to results on Space key during pack_animate', async () => {
+      packStore.packState.set('pack_animate');
       packStore.currentPack.set(createLocalMockPack());
       render(PackOpener);
 
       fireEvent.keyDown(window, { key: ' ' });
       await tick();
 
-      expect(packStore.revealCurrentCard).toHaveBeenCalled();
+      expect(packStore.skipToResults).toHaveBeenCalled();
     });
 
-    it('should reveal card on Enter key', async () => {
-      packStore.packState.set('cards_ready');
+    it('should skip to results on Enter key during pack_animate', async () => {
+      packStore.packState.set('pack_animate');
       packStore.currentPack.set(createLocalMockPack());
       render(PackOpener);
 
       fireEvent.keyDown(window, { key: 'Enter' });
       await tick();
 
-      expect(packStore.revealCurrentCard).toHaveBeenCalled();
-    });
-
-    it('should handle navigation keys during revealing state', async () => {
-      packStore.packState.set('revealing');
-      packStore.currentPack.set(createLocalMockPack());
-      packStore.currentCardIndex.set(0);
-      render(PackOpener);
-
-      // Fire ArrowRight key - since current card isn't revealed, should reveal it
-      fireEvent.keyDown(window, { key: 'ArrowRight' });
-      await tick();
-
-      // Verify revealCurrentCard was called (ArrowRight reveals unrevealed cards)
-      expect(packStore.revealCurrentCard).toHaveBeenCalled();
+      expect(packStore.skipToResults).toHaveBeenCalled();
     });
   });
 
@@ -513,7 +426,7 @@ describe.skip('PackOpener Component', () => {
         message: 'Unable to generate pack. Please try again.'
       });
       // Set packState to a value that allows error display (not 'idle' or 'generating')
-      packStore.packState.set('cards_ready');
+      packStore.packState.set('results');
       packStore.packError.set(mockError);
       const { container } = render(PackOpener);
 
@@ -572,26 +485,14 @@ describe.skip('PackOpener Component', () => {
       });
     });
 
-    it('should announce cards ready when pack opens', async () => {
-      packStore.packState.set('cards_ready');
+    it('should announce results when pack opens', async () => {
+      packStore.packState.set('results');
       packStore.currentPack.set(createLocalMockPack());
       render(PackOpener);
 
       await waitFor(() => {
         const announcer = document.querySelector('#pack-announcer');
-        expect(announcer?.textContent).toContain('3 cards ready to reveal');
-      });
-    });
-
-    it('should announce current card being revealed', async () => {
-      packStore.packState.set('revealing');
-      packStore.currentPack.set(createLocalMockPack());
-      packStore.currentCardIndex.set(1);
-      render(PackOpener);
-
-      await waitFor(() => {
-        const announcer = document.querySelector('#pack-announcer');
-        expect(announcer?.textContent).toContain('Revealing card 2 of 3');
+        expect(announcer?.textContent).toContain('Pack opened');
       });
     });
 
@@ -607,16 +508,16 @@ describe.skip('PackOpener Component', () => {
     });
 
     it('should support keyboard-only navigation', async () => {
-      packStore.packState.set('cards_ready');
+      packStore.packState.set('pack_animate');
       packStore.currentPack.set(createLocalMockPack());
       render(PackOpener);
 
-      // Simulate tabbing through and using keyboard
+      // Simulate tabbing through and using keyboard to skip
       fireEvent.keyDown(window, { key: 'Tab' });
       fireEvent.keyDown(window, { key: 'Enter' });
 
       await tick();
-      expect(packStore.revealCurrentCard).toHaveBeenCalled();
+      expect(packStore.skipToResults).toHaveBeenCalled();
     });
   });
 
@@ -669,19 +570,19 @@ describe.skip('PackOpener Component', () => {
     });
 
     it('should subscribe to current pack updates', async () => {
-      packStore.packState.set('cards_ready');
+      packStore.packState.set('results');
       const { container } = render(PackOpener);
 
       // Update the mock store (Nanostores notifies subscribers)
       packStore.currentPack.set(createLocalMockPack());
 
       await waitFor(() => {
-        expect(container.querySelector('[data-testid="card-revealer"]')).toBeTruthy();
+        expect(container.querySelector('[data-testid="pack-results"]')).toBeTruthy();
       });
     });
 
     it('should subscribe to revealed cards updates', async () => {
-      packStore.packState.set('revealing');
+      packStore.packState.set('results');
       packStore.currentPack.set(createLocalMockPack());
       const { container } = render(PackOpener);
 
@@ -712,7 +613,7 @@ describe.skip('PackOpener Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle null pack gracefully', async () => {
-      packStore.packState.set('cards_ready');
+      packStore.packState.set('results');
       packStore.currentPack.set(null);
       const { container } = render(PackOpener);
 
@@ -736,22 +637,11 @@ describe.skip('PackOpener Component', () => {
       packStore.packState.set('pack_animate');
       await tick();
 
-      packStore.packState.set('cards_ready');
+      packStore.packState.set('results');
       await tick();
 
       // Should handle without crashing
       expect(container).toBeTruthy();
-    });
-
-    it('should handle all cards revealed except last', async () => {
-      packStore.packState.set('revealing');
-      packStore.currentPack.set(createLocalMockPack());
-      packStore.revealedCards.set(new Set([0, 1]));
-      packStore.currentCardIndex.set(2);
-      render(PackOpener);
-
-      // Should show last card
-      expect(document.querySelector('#pack-announcer')?.textContent).toContain('Revealing card 3 of 3');
     });
   });
 });

@@ -30,14 +30,10 @@ export interface Pack {
 
 // Animation State
 // MVP flow: idle → generating → pack_animate → results
-// Note: 'cards_ready' and 'revealing' are defined for backward compatibility
-// but are NOT used in the current MVP implementation.
 export type PackState =
   | 'idle'
   | 'generating'
   | 'pack_animate'
-  | 'cards_ready'     // Unused in MVP
-  | 'revealing'       // Unused in MVP
   | 'results';
 
 // Pack Design Types (US068 - Pack Designs - Visual Variety)

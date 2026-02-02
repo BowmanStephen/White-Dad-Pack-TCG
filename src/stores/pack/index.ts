@@ -38,8 +38,6 @@ export {
   completePackAnimation,
   handleQuickReveal,
   isQuickRevealEnabled,
-  revealCard,
-  revealCurrentCard,
   // Navigation
   nextCard,
   prevCard,
@@ -47,9 +45,6 @@ export {
   skipToResults,
   resetPack,
   showResults,
-  // Auto-reveal
-  startAutoReveal,
-  stopAutoReveal,
 } from './actions';
 
 // Persistence (internal use, but exported for testing)
