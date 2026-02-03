@@ -110,6 +110,11 @@ const safeStorage: StorageLike = new Proxy<StorageLike>({} as StorageLike, {
   },
 });
 
-if (typeof window !== 'undefined') {
-  setPersistentEngine(safeStorage, windowPersistentEvents);
-}
+const noopEvents = {
+  addEventListener() {},
+  removeEventListener() {},
+};
+
+const eventsEngine = typeof window !== 'undefined' ? windowPersistentEvents : noopEvents;
+
+setPersistentEngine(safeStorage, eventsEngine);
