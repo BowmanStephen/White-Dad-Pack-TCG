@@ -145,7 +145,6 @@ const fullImageURL = new URL(image, Astro.site!).href;
 
     <!-- Sentry Error Tracking (production only) -->
     <script type="module">
-      import '@/lib/utils/persistent-engine';
       import { initSentry } from '@/lib/sentry';
       initSentry();
     </script>

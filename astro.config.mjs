@@ -71,6 +71,11 @@ export default defineConfig({
   // Vite configuration for optimal bundling
   vite: {
     plugins: [],
+    resolve: {
+      alias: {
+        '@nanostores/persistent': fileURLToPath(new URL('./src/lib/utils/persistent.ts', import.meta.url)),
+      },
+    },
     define: {
       // Inject app version for Sentry
       APP_VERSION: JSON.stringify(APP_VERSION),

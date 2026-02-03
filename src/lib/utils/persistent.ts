@@ -137,3 +137,11 @@ export function persistentBoolean(
     decode: (value) => value === 'yes',
   });
 }
+
+// Compatibility no-ops to satisfy any lingering imports.
+export const windowPersistentEvents = {
+  addEventListener() {},
+  removeEventListener() {},
+};
+
+export function setPersistentEngine(): void {}
