@@ -24,8 +24,8 @@ class PlausibleProvider implements AnalyticsProvider {
     }
 
     // Custom Plausible instance support
-    if (typeof window !== 'undefined' && (window as any).PLAUSIBLE_BASE_URL) {
-      this.apiEndpoint = `${(window as any).PLAUSIBLE_BASE_URL}/api/event`;
+    if (typeof window !== 'undefined' && window.PLAUSIBLE_BASE_URL) {
+      this.apiEndpoint = `${window.PLAUSIBLE_BASE_URL}/api/event`;
     }
 
     this.initialized = true;
@@ -55,8 +55,8 @@ class PlausibleProvider implements AnalyticsProvider {
     if (typeof window === 'undefined') return;
 
     // Check if Plausible script is loaded (uses window.plausible)
-    if ((window as any).plausible) {
-      (window as any).plausible(event.name, { props: event.props });
+    if (window.plausible) {
+      window.plausible(event.name, { props: event.props });
       return;
     }
 

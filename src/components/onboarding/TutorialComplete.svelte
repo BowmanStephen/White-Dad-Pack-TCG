@@ -5,19 +5,20 @@ Celebration modal shown when tutorial is completed.
 Includes confetti animation and achievement unlock.
 -->
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import {
-    tutorialState,
-    autoStartTutorial,
-    resetTutorial,
-  } from '@/stores/tutorial';
+  import { tutorialState } from '@/stores/tutorial';
 
-  export let onDismiss = () => {};
+  interface Props {
+    onDismiss?: () => void;
+  }
 
-  let show = false;
-  let container: HTMLElement;
+  let { onDismiss = () => {} }: Props = $props();
 
-  onMount(() => {
+  const currentTutorialState = $derived(tutorialState.get());
+
+  let show = $state(false);
+  let container = $state<HTMLElement | null>(null);
+
+  $effect(() => {
     // Show celebration after a short delay
     setTimeout(() => {
       show = true;
@@ -101,15 +102,15 @@ Includes confetti animation and achievement unlock.
         <div class="bg-white/20 rounded-xl p-4">
           <p class="text-white/80 text-sm">Steps Completed</p>
           <p class="text-white text-2xl font-bold">
-            {$tutorialState.steps.length}
+            {currentTutorialState.steps.length}
           </p>
         </div>
         <div class="bg-white/20 rounded-xl p-4">
           <p class="text-white/80 text-sm">Time Spent</p>
           <p class="text-white text-2xl font-bold">
             {Math.round(
-              (($tutorialState.completedAt || 0) -
-                ($tutorialState.startedAt || 0)) /
+              ((currentTutorialState.completedAt || 0) -
+                (currentTutorialState.startedAt || 0)) /
                 1000 / 60
             )}m
           </p>
@@ -129,7 +130,7 @@ Includes confetti animation and achievement unlock.
 
       <!-- Dismiss button -->
       <button
-        on:click={handleDismiss}
+        onclick={handleDismiss}
         class="w-full px-6 py-3 bg-white text-orange-600 rounded-xl font-bold hover:bg-white/90 transition-colors shadow-lg"
         type="button"
       >

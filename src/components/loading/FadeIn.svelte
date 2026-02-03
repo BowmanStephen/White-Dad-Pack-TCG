@@ -1,11 +1,22 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
+  import type { Snippet } from 'svelte';
 
-  export let delay: number = 0;
-  export let duration: number = 300;
-  export let visible: boolean = true;
+  interface Props {
+    delay?: number;
+    duration?: number;
+    visible?: boolean;
+    children?: Snippet;
+  }
 
-  let mounted = false;
+  let {
+    delay = 0,
+    duration = 300,
+    visible = true,
+    children,
+  }: Props = $props();
+
+  let mounted = $state(false);
 
   onMount(async () => {
     if (delay > 0) {
@@ -22,7 +33,7 @@
     class:mounted={mounted}
     style="--fade-duration: {duration}ms;"
   >
-    <slot />
+    {@render children?.()}
   </div>
 {/if}
 

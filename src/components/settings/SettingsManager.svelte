@@ -351,7 +351,7 @@
         id="mute-toggle"
         class="toggle-button"
         class:active={isMuted}
-        on:click={toggleMute}
+        onclick={toggleMute}
         aria-pressed={isMuted}
         type="button"
       >
@@ -373,7 +373,7 @@
         max="1"
         step="0.01"
         bind:value={currentMasterVolume}
-        on:input={(e) => setMasterVolume(parseFloat(e.target.value))}
+        oninput={(e) => setMasterVolume(parseFloat(e.target.value))}
         class="slider"
         disabled={isMuted}
         aria-label="Master volume"
@@ -393,7 +393,7 @@
         max="1"
         step="0.01"
         bind:value={currentMusicVolume}
-        on:input={(e) => setMusicVolume(parseFloat(e.target.value))}
+        oninput={(e) => setMusicVolume(parseFloat(e.target.value))}
         class="slider"
         disabled={isMuted}
         aria-label="Music volume"
@@ -413,7 +413,7 @@
         max="1"
         step="0.01"
         bind:value={currentSfxVolume}
-        on:input={(e) => setSfxVolume(parseFloat(e.target.value))}
+        oninput={(e) => setSfxVolume(parseFloat(e.target.value))}
         class="slider"
         disabled={isMuted}
         aria-label="Sound effects volume"
@@ -429,7 +429,7 @@
       <select
         id="sound-theme"
         bind:value={currentSoundTheme}
-        on:change={(e) => setSoundTheme(e.target.value as SoundTheme)}
+        onchange={(e) => setSoundTheme(e.target.value as SoundTheme)}
         class="select-input"
         aria-label="Sound theme"
       >
@@ -456,7 +456,7 @@
       <select
         id="motion-mode"
         bind:value={currentMotionMode}
-        on:change={(e) => setMotionMode(e.target.value as MotionMode)}
+        onchange={(e) => setMotionMode(e.target.value as MotionMode)}
         class="select-input"
         aria-label="Motion mode"
       >
@@ -484,7 +484,7 @@
       <select
         id="animation-quality"
         bind:value={currentAnimationQuality}
-        on:change={(e) => setAnimationQuality(e.target.value as AnimationQuality)}
+        onchange={(e) => setAnimationQuality(e.target.value as AnimationQuality)}
         class="select-input"
         aria-label="Animation quality"
       >
@@ -512,7 +512,7 @@
       <select
         id="particle-preset"
         bind:value={currentParticlePreset}
-        on:change={(e) => setParticlePreset(e.target.value as ParticlePreset)}
+        onchange={(e) => setParticlePreset(e.target.value as ParticlePreset)}
         class="select-input"
         aria-label="Particle quality preset"
       >
@@ -540,7 +540,7 @@
       <select
         id="cinematic-mode"
         bind:value={currentCinematicMode}
-        on:change={(e) => setCinematicMode(e.target.value as 'normal' | 'cinematic')}
+        onchange={(e) => setCinematicMode(e.target.value as 'normal' | 'cinematic')}
         class="select-input"
         aria-label="Cinematic mode"
       >
@@ -569,7 +569,7 @@
         id="skip-animations"
         class="toggle-button"
         class:active={currentSkipAnimations}
-        on:click={() => setSkipAnimations(!currentSkipAnimations)}
+        onclick={() => setSkipAnimations(!currentSkipAnimations)}
         aria-pressed={currentSkipAnimations}
         type="button"
       >
@@ -588,7 +588,7 @@
         id="fast-forward"
         class="toggle-button"
         class:active={currentFastForward}
-        on:click={() => setFastForward(!currentFastForward)}
+        onclick={() => setFastForward(!currentFastForward)}
         aria-pressed={currentFastForward}
         type="button"
       >
@@ -617,7 +617,7 @@
           max="5"
           step="1"
           bind:value={currentParticleIntensity}
-          on:input={(e) => setParticleIntensity(parseInt(e.target.value, 10))}
+          oninput={(e) => setParticleIntensity(parseInt(e.target.value, 10))}
           class="slider"
           aria-label="Particle intensity"
           aria-valuemin="1"
@@ -658,7 +658,7 @@
       <select
         id="theme-mode"
         bind:value={currentThemeMode}
-        on:change={(e) => setThemeMode(e.target.value as ThemeMode)}
+        onchange={(e) => setThemeMode(e.target.value as ThemeMode)}
         class="select-input"
         aria-label="Theme mode"
       >
@@ -733,7 +733,7 @@
             id="push-toggle"
             class="toggle-button"
             class:active={currentNotificationPrefs.pushEnabled}
-            on:click={togglePushEnabled}
+            onclick={togglePushEnabled}
             aria-pressed={currentNotificationPrefs.pushEnabled}
             type="button"
           >
@@ -744,7 +744,7 @@
           <button
             id="push-toggle"
             class="btn-primary"
-            on:click={handleRequestPushPermission}
+            onclick={handleRequestPushPermission}
             type="button"
           >
             Enable
@@ -762,7 +762,7 @@
           id="daily-reward-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.dailyRewardNotifications}
-          on:click={toggleDailyRewardNotifications}
+          onclick={toggleDailyRewardNotifications}
           aria-pressed={currentNotificationPrefs.dailyRewardNotifications}
           type="button"
         >
@@ -781,7 +781,7 @@
           id="trade-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.tradeNotifications}
-          on:click={toggleTradeNotifications}
+          onclick={toggleTradeNotifications}
           aria-pressed={currentNotificationPrefs.tradeNotifications}
           type="button"
         >
@@ -800,7 +800,7 @@
           id="achievement-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.achievementNotifications}
-          on:click={toggleAchievementNotifications}
+          onclick={toggleAchievementNotifications}
           aria-pressed={currentNotificationPrefs.achievementNotifications}
           type="button"
         >
@@ -819,7 +819,7 @@
           id="general-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.generalNotifications}
-          on:click={toggleGeneralNotifications}
+          onclick={toggleGeneralNotifications}
           aria-pressed={currentNotificationPrefs.generalNotifications}
           type="button"
         >
@@ -838,7 +838,7 @@
           id="notification-sound-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.soundEnabled}
-          on:click={toggleNotificationSound}
+          onclick={toggleNotificationSound}
           aria-pressed={currentNotificationPrefs.soundEnabled}
           type="button"
         >
@@ -857,7 +857,7 @@
           id="notification-vibration-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.vibrationEnabled}
-          on:click={toggleNotificationVibration}
+          onclick={toggleNotificationVibration}
           aria-pressed={currentNotificationPrefs.vibrationEnabled}
           type="button"
         >
@@ -876,7 +876,7 @@
           id="quiet-hours-toggle"
           class="toggle-button"
           class:active={currentNotificationPrefs.quietHoursEnabled}
-          on:click={toggleQuietHours}
+          onclick={toggleQuietHours}
           aria-pressed={currentNotificationPrefs.quietHoursEnabled}
           type="button"
         >
@@ -889,7 +889,7 @@
       {#if currentNotificationPrefs.quietHoursEnabled}
         <div class="setting-row">
           <div class="setting-info">
-            <label class="setting-label">Quiet Hours Range</label>
+            <span class="setting-label">Quiet Hours Range</span>
             <p class="setting-description">
               {formatTime(currentNotificationPrefs.quietHoursStart)} - {formatTime(currentNotificationPrefs.quietHoursEnd)}
             </p>
@@ -898,7 +898,7 @@
             <input
               type="time"
               bind:value={currentNotificationPrefs.quietHoursStart}
-              on:change={(e) => setQuietHoursStart(e.target.value)}
+              onchange={(e) => setQuietHoursStart(e.target.value)}
               class="time-input"
               aria-label="Quiet hours start time"
             />
@@ -906,7 +906,7 @@
             <input
               type="time"
               bind:value={currentNotificationPrefs.quietHoursEnd}
-              on:change={(e) => setQuietHoursEnd(e.target.value)}
+              onchange={(e) => setQuietHoursEnd(e.target.value)}
               class="time-input"
               aria-label="Quiet hours end time"
             />
@@ -922,12 +922,12 @@
       <!-- Reset Notifications Button -->
       <div class="setting-row">
         <div class="setting-info">
-          <label class="setting-label">Reset Notifications</label>
+          <span class="setting-label">Reset Notifications</span>
           <p class="setting-description">Reset all notification settings to defaults</p>
         </div>
         <button
           class="btn-secondary"
-          on:click={resetNotificationPreferences}
+          onclick={resetNotificationPreferences}
           type="button"
         >
           Reset
@@ -961,12 +961,12 @@
     <!-- Clear Collection Button -->
     <div class="setting-row">
       <div class="setting-info">
-        <label class="setting-label">Clear Collection</label>
+        <span class="setting-label">Clear Collection</span>
         <p class="setting-description">Delete all packs, cards, decks, and achievements</p>
       </div>
       <button
         class="btn-danger"
-        on:click={handleClearCollection}
+        onclick={handleClearCollection}
         type="button"
       >
         Clear Collection
@@ -976,12 +976,12 @@
     <!-- Clear Settings Button -->
     <div class="setting-row">
       <div class="setting-info">
-        <label class="setting-label">Clear Settings</label>
+        <span class="setting-label">Clear Settings</span>
         <p class="setting-description">Reset all settings to default values</p>
       </div>
       <button
         class="btn-danger"
-        on:click={handleClearSettings}
+        onclick={handleClearSettings}
         type="button"
       >
         Clear Settings
@@ -991,12 +991,12 @@
     <!-- Clear All Data Button -->
     <div class="setting-row">
       <div class="setting-info">
-        <label class="setting-label">Clear All Data</label>
+        <span class="setting-label">Clear All Data</span>
         <p class="setting-description">Complete factory reset - delete everything</p>
       </div>
       <button
         class="btn-danger"
-        on:click={handleClearAll}
+        onclick={handleClearAll}
         type="button"
       >
         Clear All Data

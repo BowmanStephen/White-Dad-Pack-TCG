@@ -17,7 +17,9 @@ export default defineConfig({
   // Site configuration for SEO (canonical URLs, Open Graph, sitemap)
   site: 'https://dadddeck.com',
   integrations: [
-    svelte(),
+    svelte({
+      exclude: ['**/src/_archived/**'],
+    }),
     tailwind(),
     sentry({
       sourceMapsUploadOptions: {

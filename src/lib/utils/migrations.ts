@@ -5,7 +5,7 @@
  * No versioning - just encode/decode with Date handling.
  */
 
-import type { Collection, Rarity } from '@/types';
+import type { Collection } from '@/types';
 import { safeJsonParse } from './safe-parse';
 
 /**
@@ -38,7 +38,7 @@ export function createDefaultCollection(): Collection {
  */
 export function validateCollection(data: unknown): data is Collection {
   if (!data || typeof data !== 'object') return false;
-  
+
   const obj = data as Record<string, unknown>;
   if (!Array.isArray(obj.packs)) return false;
   if (!obj.metadata || typeof obj.metadata !== 'object') return false;
@@ -116,7 +116,7 @@ export function createMigrationEncoder() {
     decode(str: string): Collection {
       try {
         const parsed = safeJsonParse<unknown>(str);
-        
+
         if (!parsed) {
           console.warn('[Storage] Invalid data, returning default collection');
           return createDefaultCollection();
@@ -124,7 +124,12 @@ export function createMigrationEncoder() {
 
         // Handle legacy versioned format
         let data: unknown = parsed;
-        if (typeof parsed === 'object' && parsed !== null && 'version' in parsed && 'data' in parsed) {
+        if (
+          typeof parsed === 'object' &&
+          parsed !== null &&
+          'version' in parsed &&
+          'data' in parsed
+        ) {
           data = (parsed as { data: unknown }).data;
         }
 
@@ -156,9 +161,11 @@ export function exportCollection(collection: Collection): string {
 /**
  * Import collection data from backup
  */
-export function importCollection(
-  jsonData: string
-): { success: boolean; error?: string; collection?: Collection } {
+export function importCollection(jsonData: string): {
+  success: boolean;
+  error?: string;
+  collection?: Collection;
+} {
   try {
     const parsed = safeJsonParse<unknown>(jsonData);
 

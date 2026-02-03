@@ -31,7 +31,7 @@ function checkLocalStorage(): boolean {
     localStorage.setItem(test, test);
     localStorage.removeItem(test);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -54,16 +54,11 @@ function checkES6Features(): boolean {
     const spread = [...[1, 2]];
 
     // Test classes
-    class Test {}
+    class _Test {}
 
     // Test async/await (basic check)
-    return (
-      arrow() &&
-      template === 'test' &&
-      a === 1 &&
-      spread.length === 2
-    );
-  } catch (e) {
+    return arrow() && template === 'test' && a === 1 && spread.length === 2;
+  } catch {
     return false;
   }
 }
@@ -87,7 +82,7 @@ function checkDOMSupport(): boolean {
 function checkCSSGrid(): boolean {
   try {
     return CSS.supports('display', 'grid');
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -98,7 +93,7 @@ function checkCSSGrid(): boolean {
 function checkFlexbox(): boolean {
   try {
     return CSS.supports('display', 'flex');
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -109,7 +104,7 @@ function checkFlexbox(): boolean {
 function checkCSSVariables(): boolean {
   try {
     return CSS.supports('--test', 'red');
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -194,10 +189,7 @@ function runSupportChecks(): SupportCheck[] {
 /**
  * Generates upgrade recommendations based on unsupported features
  */
-function generateRecommendations(
-  unsupportedFeatures: string[],
-  browserName: string
-): string[] {
+function generateRecommendations(unsupportedFeatures: string[]): string[] {
   const recommendations: string[] = [];
 
   // Critical features missing
@@ -220,8 +212,8 @@ function generateRecommendations(
   }
 
   // Optional features missing (graceful degradation)
-  const optionalUnsupported = unsupportedFeatures.filter(
-    f => ['CSS Grid', 'CSS Flexbox', 'CSS Variables'].includes(f)
+  const optionalUnsupported = unsupportedFeatures.filter(f =>
+    ['CSS Grid', 'CSS Flexbox', 'CSS Variables'].includes(f)
   );
 
   if (optionalUnsupported.length > 0) {
@@ -240,13 +232,9 @@ export function checkBrowserSupport(): BrowserSupport {
   const checks = runSupportChecks();
   const { name: browserName, version: browserVersion } = detectBrowser();
 
-  const unsupportedRequired = checks.filter(
-    c => !c.supported && c.required
-  );
+  const unsupportedRequired = checks.filter(c => !c.supported && c.required);
 
-  const unsupportedOptional = checks.filter(
-    c => !c.supported && !c.required
-  );
+  const unsupportedOptional = checks.filter(c => !c.supported && !c.required);
 
   const unsupportedFeatures = [
     ...unsupportedRequired.map(c => c.feature),
@@ -254,10 +242,7 @@ export function checkBrowserSupport(): BrowserSupport {
   ];
 
   const isSupported = unsupportedRequired.length === 0;
-  const recommendations = generateRecommendations(
-    unsupportedFeatures,
-    browserName
-  );
+  const recommendations = generateRecommendations(unsupportedFeatures);
 
   return {
     isSupported,

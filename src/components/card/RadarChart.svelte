@@ -1,9 +1,17 @@
 <script lang="ts">
-  import type { CardStats, Rarity } from '../../types';
+  import type { CardStats, Rarity } from '@/types';
 
-  export let stats: CardStats;
-  export let rarity: Rarity;
-  export let size: number = 220;
+  interface Props {
+    stats: CardStats;
+    rarity: Rarity;
+    size?: number;
+  }
+
+  let {
+    stats,
+    rarity,
+    size = 220,
+  }: Props = $props();
 
   const statKeys: (keyof CardStats)[] = [
     'dadJoke',
@@ -36,12 +44,12 @@
     mythic: '#ed64a6',
   };
 
-  $: angleSlice = (Math.PI * 2) / statKeys.length;
-  $: radius = size / 2;
-  $: center = size / 2;
+  const angleSlice = $derived((Math.PI * 2) / statKeys.length);
+  const radius = $derived(size / 2);
+  const center = $derived(size / 2);
 
-  $: gridLevels = 5;
-  $: gridLines = Array.from({ length: gridLevels }, (_, i) => {
+  const gridLevels = 5;
+  const gridLines = $derived(Array.from({ length: gridLevels }, (_, i) => {
     const r = radius * ((i + 1) / gridLevels);
     return statKeys.map((key, j) => {
       const angle = angleSlice * j - Math.PI / 2;
@@ -49,31 +57,31 @@
       const y = center + r * Math.sin(angle);
       return { x, y };
     });
-  });
+  }));
 
-  $: axisLines = statKeys.map((_, i) => {
+  const axisLines = $derived(statKeys.map((_, i) => {
     const angle = angleSlice * i - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
     const y = center + radius * Math.sin(angle);
     return { x1: center, y1: center, x2: x, y2: y };
-  });
+  }));
 
-  $: axisLabels = statKeys.map((key, i) => {
+  const axisLabels = $derived(statKeys.map((key, i) => {
     const angle = angleSlice * i - Math.PI / 2;
     const r = radius * 1.1;
     const x = center + r * Math.cos(angle);
     const y = center + r * Math.sin(angle);
     return { x, y, text: statNames[key], dominantBaseline: y < center ? 'alphabetic' : 'hanging' };
-  });
+  }));
 
-  $: dataPoints = statKeys.map((key, i) => {
+  const dataPoints = $derived(statKeys.map((key, i) => {
     const value = stats[key] / 100;
     const r = radius * value;
     const angle = angleSlice * i - Math.PI / 2;
     const x = center + r * Math.cos(angle);
     const y = center + r * Math.sin(angle);
     return `${x},${y}`;
-  }).join(' ');
+  }).join(' '));
 </script>
 
 <svg width={size} height={size} viewBox="0 0 {size} {size}" aria-label="Card stats radar chart">

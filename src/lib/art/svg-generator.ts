@@ -35,10 +35,7 @@ const DEFAULT_OPTIONS: SVGArtOptions = {
  * @param options - Artwork generation options
  * @returns SVG string
  */
-export function generateCardSVG(
-  card: Card,
-  options: Partial<SVGArtOptions> = {}
-): string {
+export function generateCardSVG(card: Card, options: Partial<SVGArtOptions> = {}): string {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const rng = createSeededRandom(card.id);
   let colors = getDadTypeColors(card.type);
@@ -165,23 +162,27 @@ function createShapes(
       case 1: // Square
         shape = `<rect x="${(x - size / 2).toFixed(1)}" y="${(y - size / 2).toFixed(1)}" width="${size.toFixed(1)}" height="${size.toFixed(1)}" fill="${color}" opacity="${opacity}" />`;
         break;
-      case 2: // Triangle
+      case 2: {
+        // Triangle
         const points = [
           `${x.toFixed(1)},${(y - size / 2).toFixed(1)}`,
           `${(x + size / 2).toFixed(1)},${(y + size / 2).toFixed(1)}`,
-          `${(x - size / 2).toFixed(1)},${(y + size / 2).toFixed(1)}`
+          `${(x - size / 2).toFixed(1)},${(y + size / 2).toFixed(1)}`,
         ].join(' ');
         shape = `<polygon points="${points}" fill="${color}" opacity="${opacity}" />`;
         break;
-      case 3: // Diamond
+      }
+      case 3: {
+        // Diamond
         const diamondPoints = [
           `${x.toFixed(1)},${(y - size / 2).toFixed(1)}`,
           `${(x + size / 2).toFixed(1)},${y.toFixed(1)}`,
           `${x.toFixed(1)},${(y + size / 2).toFixed(1)}`,
-          `${(x - size / 2).toFixed(1)},${y.toFixed(1)}`
+          `${(x - size / 2).toFixed(1)},${y.toFixed(1)}`,
         ].join(' ');
         shape = `<polygon points="${diamondPoints}" fill="${color}" opacity="${opacity}" />`;
         break;
+      }
     }
     shapes.push(shape);
   }
@@ -268,7 +269,9 @@ function createDotPattern(
         const color = rng.pick([colors.primary, colors.secondary, colors.accent]);
         const offsetX = (rng.next() * 10).toFixed(1);
         const offsetY = (rng.next() * 10).toFixed(1);
-        dots.push(`<circle cx="${(x + parseFloat(offsetX)).toFixed(1)}" cy="${(y + parseFloat(offsetY)).toFixed(1)}" r="${dotSize}" fill="${color}" />`);
+        dots.push(
+          `<circle cx="${(x + parseFloat(offsetX)).toFixed(1)}" cy="${(y + parseFloat(offsetY)).toFixed(1)}" r="${dotSize}" fill="${color}" />`
+        );
       }
     }
   }
@@ -297,11 +300,15 @@ function createLinePattern(
     if (rng.next() > 0.5) {
       // Horizontal
       const y = (rng.next() * height).toFixed(1);
-      lines.push(`<line x1="0" y1="${y}" x2="${width}" y2="${y}" stroke="${color}" stroke-width="${lineWidth}" opacity="${opacity}" />`);
+      lines.push(
+        `<line x1="0" y1="${y}" x2="${width}" y2="${y}" stroke="${color}" stroke-width="${lineWidth}" opacity="${opacity}" />`
+      );
     } else {
       // Vertical
       const x = (rng.next() * width).toFixed(1);
-      lines.push(`<line x1="${x}" y1="0" x2="${x}" y2="${height}" stroke="${color}" stroke-width="${lineWidth}" opacity="${opacity}" />`);
+      lines.push(
+        `<line x1="${x}" y1="0" x2="${x}" y2="${height}" stroke="${color}" stroke-width="${lineWidth}" opacity="${opacity}" />`
+      );
     }
   }
 
@@ -434,10 +441,7 @@ function getRarityBorderColor(rarity: Rarity): string {
  * @param outputDir - Directory to save SVG files
  * @returns Array of generated file paths
  */
-export async function generateAllCardSVGs(
-  cards: Card[],
-  outputDir: string
-): Promise<string[]> {
+export async function generateAllCardSVGs(cards: Card[], outputDir: string): Promise<string[]> {
   const generatedPaths: string[] = [];
 
   // Ensure output directory exists

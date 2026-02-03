@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { themeMode, setThemeMode, isDarkMode, toggleTheme, getEffectiveTheme, type ThemeMode } from '@/stores/theme';
-  import { onMount } from 'svelte';
+  import { themeMode, setThemeMode, isDarkMode, getEffectiveTheme, type ThemeMode } from '@/stores/theme';
 
   // Local state
   let isOpen = $state(false);
-  let dropdownElement: HTMLElement;
-  let buttonElement: HTMLElement;
+  let dropdownElement = $state<HTMLElement | null>(null);
+  let buttonElement = $state<HTMLElement | null>(null);
 
   /**
    * Svelte action to detect clicks outside an element
@@ -27,7 +26,7 @@
   }
 
   // Track theme mode changes
-  let currentMode: ThemeMode = 'auto';
+  let currentMode = $state<ThemeMode>('auto');
   let isDark = $state(false);
 
   $effect(() => {
@@ -43,10 +42,6 @@
       unsub2();
     };
   });
-
-  function handleToggle() {
-    toggleTheme();
-  }
 
   function handleModeSelect(mode: ThemeMode) {
     setThemeMode(mode);
@@ -74,48 +69,20 @@
         return 'Always use light mode';
       case 'dark':
         return 'Always use dark mode';
-      case 'auto':
+      case 'auto': {
         const effective = getEffectiveTheme();
         return `System preference (currently: ${effective.charAt(0).toUpperCase() + effective.slice(1)})`;
+      }
     }
   }
-
-  // Sun icon
-  const sunIcon = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-    </svg>
-  `;
-
-  // Moon icon
-  const moonIcon = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-    </svg>
-  `;
-
-  // Auto icon (sun + moon)
-  const autoIcon = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-    </svg>
-  `;
 
   const themeOptions: ThemeMode[] = ['auto', 'light', 'dark'];
-
-  function getCurrentIcon() {
-    if (currentMode === 'auto') {
-      return isDark ? moonIcon : sunIcon;
-    }
-    return currentMode === 'dark' ? moonIcon : sunIcon;
-  }
 </script>
 
 <div class="theme-toggle-wrapper">
   <button
     bind:this={buttonElement}
-    on:click={toggleDropdown}
+    onclick={toggleDropdown}
     class="theme-toggle-button"
     aria-label="Toggle theme"
     aria-haspopup="true"
@@ -123,7 +90,25 @@
     type="button"
   >
     <span class="theme-icon" class:dark-mode={isDark}>
-      {@html getCurrentIcon()}
+      {#if currentMode === 'auto'}
+        {#if isDark}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        {:else}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        {/if}
+      {:else if currentMode === 'dark'}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      {:else}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      {/if}
     </span>
     <svg xmlns="http://www.w3.org/2000/svg" class="dropdown-arrow" class:rotate-180={isOpen} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -140,7 +125,7 @@
     >
       {#each themeOptions as option}
         <button
-          on:click={() => handleModeSelect(option)}
+          onclick={() => handleModeSelect(option)}
           class="theme-option"
           class:active={option === currentMode}
           role="menuitem"
@@ -150,11 +135,18 @@
         >
           <span class="theme-option-icon">
             {#if option === 'light'}
-              {@html sunIcon}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
             {:else if option === 'dark'}
-              {@html moonIcon}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
             {:else}
-              {@html autoIcon}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" />
+              </svg>
             {/if}
           </span>
           <span class="theme-option-content">

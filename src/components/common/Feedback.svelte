@@ -1,56 +1,53 @@
 <script lang="ts">
-  import { isReducedMotion } from '@/stores/motion';
-  import { onMount } from 'svelte';
+import { isReducedMotion } from '@/stores/motion';
+import { onMount } from 'svelte';
 
-  // Props
-  interface Props {
-    type: 'success' | 'error';
-    show?: boolean;
-    message?: string;
-    position?: 'center' | 'top' | 'bottom';
-    size?: 'sm' | 'md' | 'lg';
+// Props
+interface Props {
+  type: 'success' | 'error';
+  show?: boolean;
+  message?: string;
+  position?: 'center' | 'top' | 'bottom';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+let { type, show = true, message = '', position = 'center', size = 'md' }: Props = $props();
+
+// State
+const visible = $derived.by(() => show);
+let animated = $state(false);
+let reducedMotion = $state(false);
+
+// Check for reduced motion preference
+$effect(() => {
+  const unsubscribe = isReducedMotion.subscribe((value: boolean) => {
+    reducedMotion = value;
+  });
+  return unsubscribe;
+});
+
+// Trigger animation on mount
+$effect(() => {
+  if (visible && !reducedMotion) {
+    animated = true;
   }
+});
 
-  let {
-    type,
-    show = true,
-    message = '',
-    position = 'center',
-    size = 'md'
-  }: Props = $props();
+// Size classes
+const sizeClasses = {
+  sm: 'w-12 h-12',
+  md: 'w-16 h-16',
+  lg: 'w-20 h-20',
+};
 
-  // State
-  let visible = $state(show);
-  let animated = $state(false);
-  let reducedMotion = $state(false);
+const iconSizeClasses = {
+  sm: 'text-2xl',
+  md: 'text-3xl',
+  lg: 'text-4xl',
+};
 
-  // Check for reduced motion preference
-  $effect(() => {
-    reducedMotion = isReducedMotion();
-  });
-
-  // Trigger animation on mount
-  $effect(() => {
-    if (show && !reducedMotion) {
-      animated = true;
-    }
-  });
-
-  // Size classes
-  const sizeClasses = {
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-20 h-20',
-  };
-
-  const iconSizeClasses = {
-    sm: 'text-2xl',
-    md: 'text-3xl',
-    lg: 'text-4xl',
-  };
-
-  // Animation styles
-  const animations = `
+// Animation styles
+const animations = `
     @keyframes checkmark-draw {
       0% {
         stroke-dashoffset: 100;
@@ -135,12 +132,18 @@
 </script>
 
 <svelte:head>
-  <style>{animations}</style>
+  <style>
+{animations}
+  </style>
 </svelte:head>
 
 {#if visible}
   <div
-    class="feedback-container {position === 'center' ? 'items-center justify-center' : position === 'top' ? 'items-start justify-center pt-8' : 'items-end justify-center pb-8'}"
+    class="feedback-container {position === 'center'
+      ? 'items-center justify-center'
+      : position === 'top'
+        ? 'items-start justify-center pt-8'
+        : 'items-end justify-center pb-8'}"
     role="alert"
     aria-live="polite"
   >
@@ -157,7 +160,9 @@
 
       <!-- Icon container -->
       <div
-        class="feedback-icon relative {sizeClasses[size]} rounded-full flex items-center justify-center {type === 'success'
+        class="feedback-icon relative {sizeClasses[
+          size
+        ]} rounded-full flex items-center justify-center {type === 'success'
           ? 'bg-green-500'
           : 'bg-red-500'} shadow-lg"
       >
@@ -174,10 +179,7 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path
-              class="checkmark-path"
-              d="M20 6L9 17l-5-5"
-            />
+            <path class="checkmark-path" d="M20 6L9 17l-5-5" />
           </svg>
         {:else}
           <!-- Error X icon with shake animation -->
@@ -213,25 +215,25 @@
 {/if}
 
 <style>
-  .feedback-container {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    pointer-events: none;
-    z-index: 9999;
-  }
+.feedback-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+  z-index: 9999;
+}
 
-  .feedback-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.feedback-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .feedback-icon {
-    pointer-events: auto;
-  }
+.feedback-icon {
+  pointer-events: auto;
+}
 
-  .feedback-message {
-    animation: scale-in 0.3s ease-out 0.1s both;
-  }
+.feedback-message {
+  animation: scale-in 0.3s ease-out 0.1s both;
+}
 </style>

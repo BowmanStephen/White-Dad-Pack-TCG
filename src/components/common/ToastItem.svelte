@@ -102,14 +102,14 @@
   style="--toast-bg: {colors[type].bg}; --toast-border: {colors[type].border}; --toast-text: {colors[type].text};"
   role="alert"
   aria-live="polite"
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
 >
   <span class="toast-icon" aria-hidden="true">{icons[type]}</span>
   <span class="toast-message">{message}</span>
   <button
     class="toast-close"
-    on:click={dismiss}
+    onclick={dismiss}
     aria-label="Dismiss notification"
     type="button"
   >

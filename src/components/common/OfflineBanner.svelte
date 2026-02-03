@@ -9,19 +9,26 @@
     processQueue,
     clearQueue
   } from '@/stores/offline';
+  import { subscribeToStores } from '@/lib/utils/store-helpers';
 
   // Local state
   let showBackOnlineBanner = $state(false);
+  let online = $state(isOnline.get());
+  let queuedCount = $state(queueCount.get());
+  let processing = $state(isProcessing.get());
+  let results = $state(processResults.get());
 
   // Initialize offline detection on mount
   let cleanup: (() => void) | null = null;
+  let unsubscribeStores: (() => void) | null = null;
 
   onMount(() => {
     cleanup = initOfflineDetection();
 
     // Show back online banner when transitioning from offline to online
-    const unsubscribe = isOnline.subscribe((online) => {
-      if (online && $queueCount > 0) {
+    const unsubscribe = isOnline.subscribe((value) => {
+      online = value;
+      if (value && queueCount.get() > 0) {
         showBackOnlineBanner = true;
         setTimeout(() => {
           showBackOnlineBanner = false;
@@ -29,15 +36,22 @@
       }
     });
 
+    unsubscribeStores = subscribeToStores([
+      { store: queueCount, onUpdate: (value) => { queuedCount = value; } },
+      { store: isProcessing, onUpdate: (value) => { processing = value; } },
+      { store: processResults, onUpdate: (value) => { results = value; } },
+    ]);
+
     return () => {
       cleanup?.();
       unsubscribe();
+      unsubscribeStores?.();
     };
   });
 
   // Manual retry button
   function handleRetry() {
-    if ($isOnline) {
+    if (online) {
       processQueue();
     }
   }
@@ -49,7 +63,7 @@
   }
 </script>
 
-{#if !$isOnline}
+{#if !online}
   <!-- Offline Banner -->
   <div
     class="offline-banner"
@@ -82,9 +96,9 @@
       <!-- Message -->
       <div class="banner-text">
         <p class="banner-title">You're offline</p>
-        {#if $queueCount > 0}
+        {#if queuedCount > 0}
           <p class="banner-subtitle">
-            {$queueCount} {$queueCount === 1 ? 'action' : 'actions'} queued for retry
+            {queuedCount} {queuedCount === 1 ? 'action' : 'actions'} queued for retry
           </p>
         {:else}
           <p class="banner-subtitle">Some features may be limited</p>
@@ -92,7 +106,7 @@
       </div>
 
       <!-- Queue Status -->
-      {#if $queueCount > 0}
+      {#if queuedCount > 0}
         <div class="queue-status">
           <svg
             class="queue-icon"
@@ -108,12 +122,12 @@
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span class="queue-count">{$queueCount}</span>
+          <span class="queue-count">{queuedCount}</span>
         </div>
       {/if}
     </div>
   </div>
-{:else if showBackOnlineBanner && $queueCount > 0}
+{:else if showBackOnlineBanner && queuedCount > 0}
   <!-- Back Online - Processing Queue Banner -->
   <div
     class="online-banner processing"
@@ -122,7 +136,7 @@
   >
     <div class="banner-content">
       <!-- Processing Icon -->
-      {#if $isProcessing}
+      {#if processing}
         <svg
           class="processing-icon spin"
           fill="none"
@@ -162,20 +176,20 @@
       <!-- Message -->
       <div class="banner-text">
         <p class="banner-title">
-          {$isProcessing ? 'Syncing your collection...' : 'You\'re back online!'}
+          {processing ? 'Syncing your collection...' : 'You\'re back online!'}
         </p>
         <p class="banner-subtitle">
-          {$isProcessing
-            ? `Processing ${$queueCount} queued action${$queueCount === 1 ? '' : 's'}`
-            : `${$queueCount} queued action${$queueCount === 1 ? '' : 's'} to sync`}
+          {processing
+            ? `Processing ${queuedCount} queued action${queuedCount === 1 ? '' : 's'}`
+            : `${queuedCount} queued action${queuedCount === 1 ? '' : 's'} to sync`}
         </p>
       </div>
 
       <!-- Actions -->
       <div class="banner-actions">
-        {#if !$isProcessing}
+        {#if !processing}
           <button
-            on:click={handleRetry}
+            onclick={handleRetry}
             class="btn-retry"
             type="button"
           >
@@ -231,8 +245,8 @@
 {/if}
 
 <!-- Process Results Display (shows failures) -->
-{#if $processResults.length > 0}
-  {@const failed = $processResults.filter(r => !r.success)}
+{#if results.length > 0}
+  {@const failed = results.filter(r => !r.success)}
   {#if failed.length > 0}
     <div class="process-results">
       <div class="results-banner warning">
@@ -250,11 +264,11 @@
             />
           </svg>
           <div class="banner-text">
-            <p class="banner-title">{$queueCount} action{$queueCount === 1 ? '' : 's'} failed</p>
+            <p class="banner-title">{queuedCount} action{queuedCount === 1 ? '' : 's'} failed</p>
             <p class="banner-subtitle">Some queued actions couldn't be completed</p>
           </div>
           <button
-            on:click={handleClearFailed}
+            onclick={handleClearFailed}
             class="btn-clear"
             type="button"
           >

@@ -6,6 +6,7 @@ import type {
   CollectionStats,
   Pack,
   Rarity,
+  SortOption,
 } from '../types';
 import { RARITY_ORDER } from '../types';
 import { trackEvent } from './analytics';
@@ -23,6 +24,13 @@ import { updatePityCounter, DEFAULT_PITY_COUNTER } from '@/lib/pack/pity';
 import type { PityCounter, StreakCounter } from '@/types/collection';
 import { onBrowser } from '@/lib/utils/browser';
 import localforage from 'localforage';
+
+declare global {
+  interface Window {
+    __daddeck_collection_count?: number;
+    __daddeck_collection_hydrated?: boolean;
+  }
+}
 
 // ============================================================================
 // STORAGE LAYER (INDEXEDDB)
@@ -154,6 +162,18 @@ export const collectionStore = atom<Collection>(loadedCollection);
 
 // Re-export as collection for backward compatibility
 export const collection = collectionStore;
+
+// Expose minimal collection status for automated tests
+onBrowser(() => {
+  collectionStore.subscribe((value) => {
+    window.__daddeck_collection_count = value.packs.length;
+    window.__daddeck_collection_hydrated = collectionHydrated.get();
+  });
+
+  collectionHydrated.subscribe((value) => {
+    window.__daddeck_collection_hydrated = value;
+  });
+});
 
 // Save to IndexedDB immediately (for critical operations like pack saves)
 async function saveToStorageImmediate(): Promise<{ success: boolean; error?: string }> {
@@ -547,11 +567,11 @@ export function trackCollectionFilter(filterType: string, filterValue: string): 
 }
 
 // Track collection sort event
-export function trackCollectionSort(sortOption: string): void {
+export function trackCollectionSort(sortOption: SortOption): void {
   trackEvent({
     type: 'collection_sort',
     data: {
-      sortOption: sortOption as any, // Type assertion for SortOption
+      sortOption,
     },
   });
 }

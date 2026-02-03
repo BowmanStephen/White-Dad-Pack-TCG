@@ -1,13 +1,21 @@
 <script lang="ts">
-  import type { Pack, Rarity } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
-  import Card from '../card/Card.svelte';
   import { createEventDispatcher } from 'svelte';
-  import { formatTimestamp } from '../../lib/utils/formatters';
+  import type { Pack, Rarity } from '@/types';
+  import { RARITY_CONFIG } from '@/types';
+  import Card from '@components/card/Card.svelte';
+  import { formatTimestamp } from '@/lib/utils/formatters';
 
-  export let pack: Pack;
-  export let expanded = false;
-  export let ontoggle: (() => void) | undefined = undefined;
+  interface Props {
+    pack: Pack;
+    expanded?: boolean;
+    ontoggle?: (() => void) | undefined;
+  }
+
+  let {
+    pack,
+    expanded = false,
+    ontoggle,
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -38,17 +46,17 @@
     }
   }
 
-  $: bestCard = getBestCard();
-  $: bestRarityConfig = RARITY_CONFIG[pack.bestRarity];
-  $: timeAgo = formatTimestamp(pack.openedAt);
-  $: cardCount = pack.cards.length;
-  $: holoCount = pack.cards.filter(c => c.isHolo).length;
+  const bestCard = $derived(getBestCard());
+  const bestRarityConfig = $derived(RARITY_CONFIG[pack.bestRarity]);
+  const timeAgo = $derived(formatTimestamp(pack.openedAt));
+  const cardCount = $derived(pack.cards.length);
+  const holoCount = $derived(pack.cards.filter(c => c.isHolo).length);
 </script>
 
 <div class="pack-entry" class:expanded={expanded}>
   <button
     class="pack-summary"
-    on:click={toggleExpand}
+    onclick={toggleExpand}
     aria-expanded={expanded}
     aria-label="Pack opened {timeAgo}, containing {cardCount} cards"
   >

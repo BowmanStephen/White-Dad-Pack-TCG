@@ -1,15 +1,26 @@
 <script lang="ts">
-  import type { PackCard, CardStats } from '../../types';
-  import { RARITY_CONFIG, STAT_NAMES, STAT_ICONS, RARITY_ORDER } from '../../types';
-  import Card from './Card.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import type { PackCard, CardStats } from '@/types';
+  import { RARITY_CONFIG, STAT_NAMES, STAT_ICONS } from '@/types';
+  import Card from '@components/card/Card.svelte';
 
-  export let card1: PackCard | null = null;
-  export let card2: PackCard | null = null;
-  export let isOpen = false;
+  interface Props {
+    card1?: PackCard | null;
+    card2?: PackCard | null;
+    isOpen?: boolean;
+  }
+
+  let {
+    card1 = null,
+    card2 = null,
+    isOpen = false,
+  }: Props = $props();
+
+  const dispatch = createEventDispatcher();
 
   // Close the comparison modal
   export function close() {
-    isOpen = false;
+    dispatch('close');
   }
 
   // Calculate total score for a card (sum of all stats)
@@ -42,25 +53,26 @@
   const statKeys: (keyof CardStats)[] = Object.keys(STAT_NAMES) as (keyof CardStats)[];
 
   // Calculate winner counts
-  $: card1Wins = card1 && card2 ? statKeys.filter(k => getStatWinner(k) === 1).length : 0;
-  $: card2Wins = card1 && card2 ? statKeys.filter(k => getStatWinner(k) === 2).length : 0;
-  $: ties = card1 && card2 ? statKeys.filter(k => getStatWinner(k) === 0).length : 0;
+  const card1Wins = $derived(card1 && card2 ? statKeys.filter(k => getStatWinner(k) === 1).length : 0);
+  const card2Wins = $derived(card1 && card2 ? statKeys.filter(k => getStatWinner(k) === 2).length : 0);
+  const ties = $derived(card1 && card2 ? statKeys.filter(k => getStatWinner(k) === 0).length : 0);
 
   // Overall winner
-  $: overallWinner = getOverallWinner();
+  const overallWinner = $derived(getOverallWinner());
 
   // Total scores
-  $: totalScore1 = card1 ? calculateTotalScore(card1) : 0;
-  $: totalScore2 = card2 ? calculateTotalScore(card2) : 0;
+  const totalScore1 = $derived(card1 ? calculateTotalScore(card1) : 0);
+  const totalScore2 = $derived(card2 ? calculateTotalScore(card2) : 0);
 </script>
 
 {#if isOpen && card1 && card2}
-  <div class="comparison-overlay" on:click={close} role="dialog" aria-modal="true" aria-labelledby="comparison-title">
-    <div class="comparison-content" on:click={(e) => e.stopPropagation()}>
+  <div class="comparison-overlay" role="dialog" aria-modal="true" aria-labelledby="comparison-title" tabindex="-1">
+    <button class="comparison-overlay-button" onclick={close} aria-label="Close comparison" type="button"></button>
+    <div class="comparison-content">
       <!-- Header -->
       <div class="comparison-header">
         <h2 id="comparison-title" class="comparison-title">⚔️ Card Comparison</h2>
-        <button class="close-button" on:click={close} aria-label="Close comparison">✕</button>
+        <button class="close-button" onclick={close} aria-label="Close comparison" type="button">✕</button>
       </div>
 
       <!-- Overall Winner Banner -->
@@ -214,7 +226,7 @@
 
       <!-- Footer Actions -->
       <div class="comparison-footer">
-        <button class="btn btn-secondary" on:click={close} aria-label="Close card comparison dialog">Close Comparison</button>
+        <button class="btn btn-secondary" onclick={close} aria-label="Close card comparison dialog" type="button">Close Comparison</button>
       </div>
     </div>
   </div>
@@ -235,6 +247,15 @@
     animation: fadeIn 0.2s ease;
   }
 
+  .comparison-overlay-button {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -242,6 +263,8 @@
 
   /* Content */
   .comparison-content {
+    position: relative;
+    z-index: 1;
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border: 1px solid rgba(71, 85, 105, 0.5);
     border-radius: 1rem;

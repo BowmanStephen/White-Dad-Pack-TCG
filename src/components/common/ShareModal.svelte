@@ -8,8 +8,15 @@
   import { closeModal, modalOpen, showToast } from '@/stores/ui';
   import { RARITY_ORDER, type Card } from '@/types';
 
-  export let cards: Card[] = [];
-  export let packImageElement: HTMLElement | null = null;
+  interface Props {
+    cards?: Card[];
+    packImageElement?: HTMLElement | null;
+  }
+
+  let {
+    cards = [],
+    packImageElement = null,
+  }: Props = $props();
 
   type ShareAction = 'twitter' | 'discord' | 'download' | 'native';
 
@@ -21,8 +28,8 @@
   };
 
   // Local reactive state
-  let isOpen = false;
-  let modalElement: HTMLElement;
+  let isOpen = $state(false);
+  let modalElement = $state<HTMLElement | null>(null);
   let cleanupFocusTrap: (() => void) | null = null;
   let previouslyFocusedElement: HTMLElement | null = null;
 
@@ -320,8 +327,8 @@
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
     in:fade={{ duration: 200 }}
     out:fade={{ duration: 150 }}
-    on:click={handleBackdropClick}
-    on:keydown={handleKeydown}
+    onclick={handleBackdropClick}
+    onkeydown={handleKeydown}
     tabindex="0"
     role="dialog"
     aria-modal="true"
@@ -334,7 +341,7 @@
     >
       <!-- Close button -->
       <button
-        on:click={closeModal}
+        onclick={closeModal}
         class="absolute top-4 right-4 p-3 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800 min-w-[44px] min-h-[44px]"
         aria-label="Close share modal"
         type="button"
@@ -371,7 +378,7 @@
         {#each platforms as platform}
           <button
             data-action={platform.action}
-            on:click={handlePlatformClick}
+            onclick={handlePlatformClick}
             class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r {platform.color} hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
             aria-label="Share to {platform.name}"
             type="button"
@@ -387,7 +394,7 @@
         <!-- Native share option (if available) -->
         {#if typeof navigator !== 'undefined' && 'share' in navigator}
           <button
-            on:click={handleNativeShare}
+            onclick={handleNativeShare}
             class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
             aria-label="Share with native share dialog"
             type="button"

@@ -73,7 +73,7 @@
 
   // Calculate total power
   let totalPower = $derived(statKeys.reduce((sum, key) => sum + (card.stats[key] || 0), 0));
-  let maxPower = statKeys.length * 100;
+  const maxPower = statKeys.length * 100;
   let powerRating = $derived(Math.round((totalPower / maxPower) * 100));
 
   // Sorted stats by value
@@ -122,7 +122,7 @@
     <button
       class="toggle-btn"
       class:active={view === 'radar'}
-      on:click={() => (view = 'radar')}
+      onclick={() => (view = 'radar')}
       aria-pressed={view === 'radar'}
     >
       <span class="toggle-icon">📊</span>
@@ -131,7 +131,7 @@
     <button
       class="toggle-btn"
       class:active={view === 'bars'}
-      on:click={() => (view = 'bars')}
+      onclick={() => (view = 'bars')}
       aria-pressed={view === 'bars'}
     >
       <span class="toggle-icon">📈</span>
@@ -140,7 +140,7 @@
     <button
       class="toggle-btn"
       class:active={view === 'detailed'}
-      on:click={() => (view = 'detailed')}
+      onclick={() => (view = 'detailed')}
       aria-pressed={view === 'detailed'}
     >
       <span class="toggle-icon">📋</span>
@@ -198,7 +198,7 @@
         <button
           class="stat-bar-row"
           class:selected={selectedStatKey === stat.key}
-          on:click={() => selectStat(stat.key === selectedStatKey ? null : stat.key)}
+          onclick={() => selectStat(stat.key === selectedStatKey ? null : stat.key)}
           style="animation-delay: {i * 50}ms;"
         >
           <div class="stat-info">

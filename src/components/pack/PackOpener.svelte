@@ -13,13 +13,22 @@
     packError as packErrorStore,
     storageError as storageErrorStore,
     currentTearAnimation as currentTearAnimationStore,
+    revealedCards as revealedCardsStore,
   } from '@/stores/pack';
+  import { collection } from '@/stores/collection';
   import PackAnimation from './PackAnimation.svelte';
   import PackResults from './PackResults.svelte';
   import PackSkeleton from '../loading/PackSkeleton.svelte';
   import ErrorDisplay from '../common/ErrorDisplay.svelte';
   import ErrorMessage from '../common/ErrorMessage.svelte';
   import RateLimitBanner from './RateLimitBanner.svelte';
+
+  declare global {
+    interface Window {
+      render_game_to_text?: () => string;
+      advanceTime?: (ms: number) => void;
+    }
+  }
 
 
   // Reactive state using Svelte 5 runes
@@ -52,8 +61,54 @@
     ];
 
     // Cleanup subscriptions on unmount
+    const renderGameToText = () => {
+      const pack = packStore.get();
+      const state = packStateStore.get();
+      const revealedCount = revealedCardsStore.get().size;
+      const currentError = packErrorStore.get();
+      const bestRarity = pack?.bestRarity ?? null;
+      const hasLegendaryOrBetter = bestRarity === 'legendary' || bestRarity === 'mythic';
+      const payload = {
+        route: window.location.pathname,
+        packState: state,
+        cardsInPack: pack?.cards?.length ?? 0,
+        revealedCount,
+        bestRarity,
+        hasLegendaryOrBetter,
+        collectionPackCount: collection.get().packs.length,
+        packError: currentError ? { title: currentError.title, message: currentError.message } : null,
+      };
+      window.__daddeck_pack_state = payload;
+      return JSON.stringify(payload);
+    };
+
+    const advanceTime = (ms: number) => {
+      const state = packStateStore.get();
+      if (state === 'pack_animate') {
+        skipToResults();
+        return;
+      }
+      if (state === 'generating' && typeof ms === 'number' && ms >= 1000) {
+        return;
+      }
+    };
+
+    window.render_game_to_text = renderGameToText;
+    window.advanceTime = advanceTime;
+    renderGameToText();
+
+    const params = new URLSearchParams(window.location.search);
+    const shouldAutoOpen = navigator.webdriver || params.get('autoplay') === '1';
+    if (shouldAutoOpen && packStateStore.get() === 'idle') {
+      setTimeout(() => {
+        openNewPack();
+      }, 100);
+    }
+
     return () => {
       unsubscribers.forEach((unsub) => unsub());
+      delete window.render_game_to_text;
+      delete window.advanceTime;
     };
   });
 
@@ -69,6 +124,10 @@
 
   function handleGoHome() {
     window.location.href = '/';
+  }
+
+  function handleGoCollection() {
+    window.location.href = '/collection';
   }
 
   // Handle keyboard navigation
@@ -87,7 +146,7 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
   <!-- Live region for screen reader announcements -->
   <div aria-live="polite" aria-atomic="true" class="sr-only" id="pack-announcer" role="status">
@@ -175,6 +234,7 @@
           resetPack();
         }}
         on:goHome={handleGoHome}
+        on:goCollection={handleGoCollection}
       />
     </div>
   {/if}

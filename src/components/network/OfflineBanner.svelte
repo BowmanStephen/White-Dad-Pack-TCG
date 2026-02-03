@@ -215,7 +215,7 @@
       <div class="banner-actions">
         {#if !reconnecting}
           <button
-            on:click={handleRetry}
+            onclick={handleRetry}
             class="retry-btn"
             disabled={networkInfo?.status === 'offline'}
           >
@@ -231,7 +231,7 @@
           </button>
         {/if}
 
-        <button on:click={handleDismiss} class="dismiss-btn" aria-label="Dismiss">
+        <button onclick={handleDismiss} class="dismiss-btn" aria-label="Dismiss">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"

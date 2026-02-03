@@ -1,24 +1,34 @@
 <script lang="ts">
-  import type { CardStats, Rarity } from '../../types';
-  import { RARITY_CONFIG, STAT_NAMES, STAT_DESCRIPTIONS, STAT_ICONS } from '../../types';
   import { onMount, onDestroy, tick } from 'svelte';
+  import type { CardStats, Rarity } from '@/types';
+  import { RARITY_CONFIG, STAT_NAMES, STAT_DESCRIPTIONS, STAT_ICONS } from '@/types';
 
-  export let statKey: keyof CardStats;
-  export let statValue: number;
-  export let triggerElement: HTMLElement;
-  export let cardRarity: Rarity;
-  export let delay: number = 400; // 400ms delay before showing
+  interface Props {
+    statKey: keyof CardStats;
+    statValue: number;
+    triggerElement: HTMLElement;
+    cardRarity: Rarity;
+    delay?: number;
+  }
 
-  let visible = false;
-  let tooltipElement: HTMLDivElement;
-  let position = { top: '0px', left: '0px' };
+  let {
+    statKey,
+    statValue,
+    triggerElement,
+    cardRarity,
+    delay = 400,
+  }: Props = $props();
+
+  let visible = $state(false);
+  let tooltipElement = $state<HTMLDivElement | null>(null);
+  let position = $state({ top: '0px', left: '0px' });
   let showTimeout: ReturnType<typeof setTimeout> | null = null;
   let hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  $: rarityConfig = RARITY_CONFIG[cardRarity];
-  $: statName = STAT_NAMES[statKey];
-  $: statDescription = STAT_DESCRIPTIONS[statKey];
-  $: statIcon = STAT_ICONS[statKey];
+  const rarityConfig = $derived(RARITY_CONFIG[cardRarity]);
+  const statName = $derived(STAT_NAMES[statKey]);
+  const statDescription = $derived(STAT_DESCRIPTIONS[statKey]);
+  const statIcon = $derived(STAT_ICONS[statKey]);
 
   // Mobile touch handling
   let isMobile = false;

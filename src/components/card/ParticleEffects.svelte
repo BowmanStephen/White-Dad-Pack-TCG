@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { Rarity } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
-  import { getParticleMultiplier, getCinematicConfig, getParticleIntensityMultiplier, getParticlePresetMultiplier } from '../../stores/ui';
-  import { isReducedMotion } from '../../stores/motion';
+  import type { Rarity } from '@/types';
+  import { RARITY_CONFIG } from '@/types';
+  import { getParticleMultiplier, getCinematicConfig, getParticleIntensityMultiplier, getParticlePresetMultiplier } from '@/stores/ui';
+  import { isReducedMotion } from '@/stores/motion';
   import { onDestroy } from 'svelte';
-  import { createThrottledRAF, rafSchedule } from '../../lib/utils/performance';
+  import { createThrottledRAF, rafSchedule } from '@/lib/utils/performance';
 
   interface Props {
     rarity: Rarity;
@@ -14,8 +14,8 @@
 
   let { rarity, active = false, duration = 1500 }: Props = $props();
 
-  const config = RARITY_CONFIG[rarity];
-  const baseParticleCount = config.particleCount;
+  const config = $derived(RARITY_CONFIG[rarity]);
+  const baseParticleCount = $derived(config.particleCount);
 
   // Get quality, cinematic, intensity, and preset multipliers for enhanced effects
   const qualityMultiplier = $derived(getParticleMultiplier());
@@ -35,12 +35,7 @@
   const MAX_PARTICLES_MOBILE = 120;
 
   // Reactive particle count based on quality AND cinematic settings
-  let particleCount = $state(
-    Math.min(
-      Math.floor(baseParticleCount * combinedMultiplier),
-      MAX_PARTICLES_MOBILE
-    )
-  );
+  let particleCount = $state(0);
 
   // PACK-VFX-027: Object pooling for particle reuse
   // Pre-allocate particle objects to reduce garbage collection pressure
@@ -80,7 +75,7 @@
     return colors[colorIndex];
   }
 
-  let particles: Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string; rotationSpeed: number; trailOpacity: number }> = [];
+  let particles = $state<Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; delay: number; color: string; rotationSpeed: number; trailOpacity: number }>>([]);
 
   // PACK-VFX-027: Track RAF loop for smooth 60fps updates
   let rafLoop: ReturnType<typeof createThrottledRAF> | null = null;
@@ -88,9 +83,8 @@
 
   // Regenerate particles when settings change
   $effect(() => {
-    const multiplier = getParticleMultiplier() * getParticlePresetMultiplier() * getCinematicConfig().particleMultiplier * getParticleIntensityMultiplier();
     particleCount = Math.min(
-      Math.floor(baseParticleCount * multiplier),
+      Math.floor(baseParticleCount * combinedMultiplier),
       MAX_PARTICLES_MOBILE
     );
 

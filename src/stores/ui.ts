@@ -80,6 +80,22 @@ export const $animationQuality = atom<AnimationQuality>(getInitialQuality());
 // Export without $ prefix for imports
 export const animationQuality = $animationQuality;
 
+type DeviceOrientationPermissionRequest = () => Promise<PermissionState>;
+
+function getDeviceOrientationPermissionRequest(): DeviceOrientationPermissionRequest | null {
+  if (typeof window === 'undefined' || !window.DeviceOrientationEvent) {
+    return null;
+  }
+
+  const deviceOrientationEvent = window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+    requestPermission?: DeviceOrientationPermissionRequest;
+  };
+
+  return typeof deviceOrientationEvent.requestPermission === 'function'
+    ? deviceOrientationEvent.requestPermission.bind(deviceOrientationEvent)
+    : null;
+}
+
 /**
  * Get the particle multiplier based on current quality setting
  * @returns Multiplier (1.0 = full, 0.5 = half, 0.2 = minimal)
@@ -549,7 +565,8 @@ export function initializeUI(): void {
   // Check for gyroscope
   if (window.DeviceOrientationEvent) {
     // Request permission on iOS 13+
-    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+    const requestPermission = getDeviceOrientationPermissionRequest();
+    if (requestPermission) {
       // Will need to request permission on user interaction
       $hasGyroscope.set(false);
     } else {
@@ -563,12 +580,11 @@ export function initializeUI(): void {
  * Request gyroscope permission (iOS 13+)
  */
 export async function requestGyroscopePermission(): Promise<boolean> {
-  if (typeof (DeviceOrientationEvent as any).requestPermission !== 'function') {
-    return true;
-  }
-  
+  const requestPermission = getDeviceOrientationPermissionRequest();
+  if (!requestPermission) return true;
+
   try {
-    const permission = await (DeviceOrientationEvent as any).requestPermission();
+    const permission = await requestPermission();
     if (permission === 'granted') {
       $hasGyroscope.set(true);
       window.addEventListener('deviceorientation', handleDeviceOrientation);

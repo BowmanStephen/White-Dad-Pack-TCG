@@ -6,12 +6,26 @@ This component marks elements that should be highlighted during tutorial steps.
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { Snippet } from 'svelte';
 
-  export let id: string; // Tutorial target ID (e.g., "pack-button", "collection-link")
-  export let highlight: boolean = false; // Whether to add visual highlight
-  export let pulse: boolean = true; // Whether to pulse the highlight
+  interface Props {
+    id: string;
+    highlight?: boolean;
+    pulse?: boolean;
+    onclick?: (event: MouseEvent) => void;
+    children?: Snippet;
+  }
 
-  let element: HTMLElement;
+  // Tutorial target ID (e.g., "pack-button", "collection-link")
+  let {
+    id,
+    highlight = false,
+    pulse = true,
+    onclick,
+    children,
+  }: Props = $props();
+
+  let element = $state<HTMLElement | null>(null);
 
   onMount(() => {
     if (element) {
@@ -22,21 +36,54 @@ This component marks elements that should be highlighted during tutorial steps.
       element.setAttribute('aria-label', `Tutorial step: ${id}`);
     }
   });
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (!element || !onclick) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      element.click();
+    }
+  }
 </script>
 
 {#if highlight}
-  <span
-    bind:this={element}
-    class="tutorial-target"
-    class:pulse={pulse}
-    on:click
-  >
-    <slot />
-  </span>
+  {#if onclick}
+    <span
+      bind:this={element}
+      class="tutorial-target"
+      class:pulse={pulse}
+      onclick={onclick}
+      onkeydown={handleKeydown}
+      role="button"
+      tabindex="0"
+    >
+      {@render children?.()}
+    </span>
+  {:else}
+    <span
+      bind:this={element}
+      class="tutorial-target"
+      class:pulse={pulse}
+    >
+      {@render children?.()}
+    </span>
+  {/if}
 {:else}
-  <span bind:this={element} on:click>
-    <slot />
-  </span>
+  {#if onclick}
+    <span
+      bind:this={element}
+      onclick={onclick}
+      onkeydown={handleKeydown}
+      role="button"
+      tabindex="0"
+    >
+      {@render children?.()}
+    </span>
+  {:else}
+    <span bind:this={element}>
+      {@render children?.()}
+    </span>
+  {/if}
 {/if}
 
 <style>

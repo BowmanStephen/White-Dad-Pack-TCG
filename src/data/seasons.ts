@@ -1,10 +1,4 @@
-import type {
-  Season,
-  SeasonId,
-  SeasonStatus,
-  SeasonPackDesign,
-  SeasonLaunchEvent,
-} from '../types';
+import type { Season, SeasonId, SeasonLaunchEvent } from '../types';
 
 /**
  * Season 1: Base Set
@@ -14,7 +8,8 @@ export const SEASON_1: Season = {
   id: 1,
   name: 'Base Set',
   subtitle: 'The Original Collection',
-  description: 'Where it all began. 50 cards featuring every dad archetype from BBQ Dads to Fix-It Dads. The foundation of DadDeck™.',
+  description:
+    'Where it all began. 50 cards featuring every dad archetype from BBQ Dads to Fix-It Dads. The foundation of DadDeck™.',
   status: 'active',
   startDate: new Date('2025-01-01'),
   endDate: new Date('2099-12-31'),
@@ -44,7 +39,8 @@ export const SEASON_2: Season = {
   id: 2,
   name: 'Summer BBQ Dads',
   subtitle: 'Grill Season is Here',
-  description: 'The temperature is rising and so is the grill mastery. 38 cards dedicated to the art of outdoor cooking, summer parties, dad fashion in 90-degree heat, and family variants.',
+  description:
+    'The temperature is rising and so is the grill mastery. 38 cards dedicated to the art of outdoor cooking, summer parties, dad fashion in 90-degree heat, and family variants.',
   status: 'active',
   startDate: new Date('2025-01-01'),
   endDate: new Date('2099-12-31'),
@@ -53,7 +49,14 @@ export const SEASON_2: Season = {
     // Core Summer BBQ cards (053-082)
     ...Array.from({ length: 30 }, (_, i) => String(i + 53).padStart(3, '0')),
     // Additional cards
-    '091', '099', '100', '101', '102', '103', '104', '105',
+    '091',
+    '099',
+    '100',
+    '101',
+    '102',
+    '103',
+    '104',
+    '105',
   ],
   packDesign: 'summer_bbq',
   theme: {
@@ -75,14 +78,28 @@ export const SEASON_3: Season = {
   id: 3,
   name: 'Crossover Chaos',
   subtitle: 'When Worlds Collide',
-  description: 'Dad energy meets pop culture! 15 crossover cards featuring Marvel heroes, Star Wars legends, Dune warriors, and more - all with maximum dad energy.',
+  description:
+    'Dad energy meets pop culture! 15 crossover cards featuring Marvel heroes, Star Wars legends, Dune warriors, and more - all with maximum dad energy.',
   status: 'active',
   startDate: new Date('2025-01-01'),
   endDate: new Date('2099-12-31'),
   totalCards: 15,
   cardIds: [
-    '083', '084', '085', '086', '087', '088', '089', '090',
-    '092', '093', '094', '095', '096', '097', '098',
+    '083',
+    '084',
+    '085',
+    '086',
+    '087',
+    '088',
+    '089',
+    '090',
+    '092',
+    '093',
+    '094',
+    '095',
+    '096',
+    '097',
+    '098',
   ],
   packDesign: 'fall_foliage',
   theme: {
@@ -99,17 +116,13 @@ export const SEASON_3: Season = {
 /**
  * All seasons data
  */
-export const SEASONS: Season[] = [
-  SEASON_1,
-  SEASON_2,
-  SEASON_3,
-];
+export const SEASONS: Season[] = [SEASON_1, SEASON_2, SEASON_3];
 
 /**
  * Get season by ID
  */
 export function getSeasonById(id: SeasonId): Season | undefined {
-  return SEASONS.find((season) => season.id === id);
+  return SEASONS.find(season => season.id === id);
 }
 
 /**
@@ -117,7 +130,7 @@ export function getSeasonById(id: SeasonId): Season | undefined {
  */
 export function getActiveSeasons(): Season[] {
   const now = new Date();
-  return SEASONS.filter((season) => {
+  return SEASONS.filter(season => {
     if (season.status !== 'active') return false;
     if (season.endDate && now > season.endDate) return false;
     if (now < season.startDate) return false;
@@ -129,8 +142,7 @@ export function getActiveSeasons(): Season[] {
  * Get archived seasons
  */
 export function getArchivedSeasons(): Season[] {
-  const now = new Date();
-  return SEASONS.filter((season) => {
+  return SEASONS.filter(season => {
     if (season.status !== 'archived') return false;
     return true;
   });
@@ -141,7 +153,7 @@ export function getArchivedSeasons(): Season[] {
  */
 export function getUpcomingSeasons(): Season[] {
   const now = new Date();
-  return SEASONS.filter((season) => now < season.startDate);
+  return SEASONS.filter(season => now < season.startDate);
 }
 
 /**
@@ -198,14 +210,12 @@ export const SEASON_LAUNCH_EVENTS: SeasonLaunchEvent[] = [
  */
 export function getActiveLaunchEvents(): SeasonLaunchEvent[] {
   const now = new Date();
-  return SEASON_LAUNCH_EVENTS.filter(
-    (event) => now >= event.startDate && now <= event.endDate
-  );
+  return SEASON_LAUNCH_EVENTS.filter(event => now >= event.startDate && now <= event.endDate);
 }
 
 /**
  * Get launch events for a specific season
  */
 export function getLaunchEventsForSeason(seasonId: SeasonId): SeasonLaunchEvent[] {
-  return SEASON_LAUNCH_EVENTS.filter((event) => event.seasonId === seasonId);
+  return SEASON_LAUNCH_EVENTS.filter(event => event.seasonId === seasonId);
 }

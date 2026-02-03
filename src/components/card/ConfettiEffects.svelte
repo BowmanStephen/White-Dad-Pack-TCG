@@ -12,8 +12,8 @@
 
   let { rarity, active = false }: Props = $props();
 
-  const config = RARITY_CONFIG[rarity];
-  const isLegendaryPlus = rarity === 'legendary' || rarity === 'mythic';
+  const config = $derived(RARITY_CONFIG[rarity]);
+  const isLegendaryPlus = $derived(rarity === 'legendary' || rarity === 'mythic');
 
   // Object pool for confetti particles (performance optimization)
   const MAX_POOL_SIZE = 300;
@@ -21,10 +21,10 @@
   const activeParticles: Set<ConfettiParticle> = new Set();
 
   // Confetti count based on rarity (legendary+ only)
-  const baseConfettiCount = isLegendaryPlus ? (rarity === 'mythic' ? 150 : 100) : 0;
+  const baseConfettiCount = $derived(isLegendaryPlus ? (rarity === 'mythic' ? 150 : 100) : 0);
 
-  let canvas: HTMLCanvasElement;
-  let ctx: CanvasRenderingContext2D;
+  let canvas = $state<HTMLCanvasElement | null>(null);
+  let ctx: CanvasRenderingContext2D | null = null;
   let isRunning = false;
   let autoClearTimer: number | null = null;
 
@@ -33,7 +33,7 @@
 
   // Particle multiplier for performance scaling
   const particleMultiplier = getParticleMultiplier();
-  const adjustedConfettiCount = Math.floor(baseConfettiCount * particleMultiplier);
+  const adjustedConfettiCount = $derived(Math.floor(baseConfettiCount * particleMultiplier));
 
   /**
    * Confetti particle with physics properties

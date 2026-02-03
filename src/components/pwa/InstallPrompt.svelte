@@ -15,6 +15,7 @@ Features:
 <script lang="ts">
   import { onMount } from 'svelte';
   import { persistentAtom } from '@nanostores/persistent';
+  import { subscribeToStores } from '@/lib/utils/store-helpers';
 
   // Track visit count
   export const visitCount = persistentAtom<number>(
@@ -68,17 +69,32 @@ Features:
   let isVisible = $state(false);
   let deferredPrompt: BeforeInstallPromptEvent | null = null;
   let isInstallable = $state(false);
+  let visits = $state(visitCount.get());
+  let installed = $state(isInstalled.get());
+  let dismissed = $state(installDismissed.get());
+  let unsubscribeStores: (() => void) | null = null;
 
   // Increment visit count on mount
   onMount(() => {
     // Only run on client-side
     if (typeof window === 'undefined') return;
 
+    unsubscribeStores = subscribeToStores([
+      { store: visitCount, onUpdate: (value) => { visits = value; } },
+      { store: isInstalled, onUpdate: (value) => { installed = value; } },
+      { store: installDismissed, onUpdate: (value) => { dismissed = value; } },
+    ]);
+
     // Don't show if already installed
-    if ($isInstalled) return;
+    if (installed) {
+      return () => {
+        unsubscribeStores?.();
+      };
+    }
 
     // Increment visit count
-    visitCount.set($visitCount + 1);
+    const nextVisits = visitCount.get() + 1;
+    visitCount.set(nextVisits);
 
     // Listen for beforeinstallprompt event
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -88,6 +104,12 @@ Features:
 
     // Check if we should show the prompt (after 3 visits and not dismissed)
     checkShouldShowPrompt();
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      unsubscribeStores?.();
+    };
   });
 
   // Handle beforeinstallprompt event
@@ -119,10 +141,10 @@ Features:
   // Check if we should show the prompt
   function checkShouldShowPrompt() {
     // Don't show if already installed or dismissed
-    if ($isInstalled || $installDismissed) return;
+    if (installed || dismissed) return;
 
     // Show after 3 visits if installable
-    if ($visitCount >= 3 && isInstallable && deferredPrompt) {
+    if (visits >= 3 && isInstallable && deferredPrompt) {
       // Show after a short delay for smooth experience
       setTimeout(() => {
         isVisible = true;
@@ -184,7 +206,7 @@ Features:
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if isVisible && isInstallable}
   <div
@@ -235,14 +257,14 @@ Features:
             <button
               type="button"
               class="flex-1 px-4 py-2 bg-white text-amber-600 rounded-lg font-semibold text-sm hover:bg-white/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-amber-600"
-              on:click={handleInstall}
+              onclick={handleInstall}
             >
               Install
             </button>
             <button
               type="button"
               class="px-4 py-2 bg-white/20 text-white rounded-lg font-semibold text-sm hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-amber-600"
-              on:click={handleDismiss}
+              onclick={handleDismiss}
             >
               Not now
             </button>
@@ -253,7 +275,7 @@ Features:
         <button
           type="button"
           class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-amber-600"
-          on:click={handleDismiss}
+          onclick={handleDismiss}
           aria-label="Close"
         >
           <svg

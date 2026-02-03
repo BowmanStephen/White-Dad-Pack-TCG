@@ -9,8 +9,8 @@
 
   // Local state
   let isOpen = $state(false);
-  let dropdownElement: HTMLElement;
-  let buttonElement: HTMLElement;
+  let dropdownElement = $state<HTMLElement | null>(null);
+  let buttonElement = $state<HTMLElement | null>(null);
 
   /**
    * Svelte action to detect clicks outside an element
@@ -32,7 +32,7 @@
   }
 
   // Track motion mode changes
-  let currentMode: MotionMode = 'auto';
+  let currentMode = $state<MotionMode>('auto');
   let isReduced = $state(false);
   let systemPrefers = $state(false);
 
@@ -87,41 +87,13 @@
     }
   }
 
-  // Motion icon (animated sparks)
-  const motionIcon = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-    </svg>
-  `;
-
-  // Reduced motion icon (static dots)
-  const reducedIcon = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
-    </svg>
-  `;
-
-  // Auto icon (gauge/settings)
-  const autoIcon = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-    </svg>
-  `;
-
   const motionOptions: MotionMode[] = ['auto', 'reduced', 'full'];
-
-  function getCurrentIcon() {
-    if (currentMode === 'auto') {
-      return systemPrefers ? reducedIcon : motionIcon;
-    }
-    return currentMode === 'reduced' ? reducedIcon : motionIcon;
-  }
 </script>
 
 <div class="motion-toggle-wrapper">
   <button
     bind:this={buttonElement}
-    on:click={toggleDropdown}
+    onclick={toggleDropdown}
     class="motion-toggle-button"
     aria-label="Motion settings"
     aria-haspopup="true"
@@ -129,7 +101,25 @@
     type="button"
   >
     <span class="motion-icon">
-      {@html getCurrentIcon()}
+      {#if currentMode === 'auto'}
+        {#if systemPrefers}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
+          </svg>
+        {:else}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        {/if}
+      {:else if currentMode === 'reduced'}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
+        </svg>
+      {:else}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      {/if}
     </span>
     <svg xmlns="http://www.w3.org/2000/svg" class="dropdown-arrow" class:rotate-180={isOpen} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -146,7 +136,7 @@
     >
       {#each motionOptions as option}
         <button
-          on:click={() => handleModeSelect(option)}
+          onclick={() => handleModeSelect(option)}
           class="motion-option"
           class:active={option === currentMode}
           role="menuitem"
@@ -156,11 +146,17 @@
         >
           <span class="motion-option-icon">
             {#if option === 'auto'}
-              {@html autoIcon}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+              </svg>
             {:else if option === 'reduced'}
-              {@html reducedIcon}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm6 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
+              </svg>
             {:else}
-              {@html motionIcon}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
             {/if}
           </span>
           <span class="motion-option-content">

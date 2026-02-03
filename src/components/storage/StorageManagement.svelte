@@ -8,7 +8,7 @@ Provides UI for:
 - Clearing all data
 -->
 <script lang="ts">
-  import { clearUserCollection } from '@/stores/collection';
+  import { clearUserCollection, collection } from '@/stores/collection';
   import { getStorageQuotaInfo, getQuotaSummary, autoManageQuota } from '@/lib/storage/quota-manager';
 
   // State
@@ -22,14 +22,14 @@ Provides UI for:
   let quotaStatus = $state('Loading...');
   let isLoading = $state(false);
   let actionMessage = $state('');
-  let actionType: 'success' | 'error' | 'info' = 'info';
+  let actionType = $state<'success' | 'error' | 'info'>('info');
 
   // Format bytes to human-readable
   function formatBytes(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.pow(k, i));
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   }
 
@@ -53,10 +53,13 @@ Provides UI for:
     actionType = 'info';
 
     try {
-      const result = await autoManageQuota(getQuotaStatus);
+      const result = await autoManageQuota(collection.get());
       if (result.success) {
         actionMessage = `✓ ${result.actions.join(', ')}`;
         actionType = 'success';
+        if (result.updatedCollection) {
+          collection.set(result.updatedCollection);
+        }
         await loadQuotaInfo();
       } else {
         actionMessage = `✗ No optimization needed: ${result.actions.join(', ')}`;
@@ -156,7 +159,7 @@ Provides UI for:
             class="quota-bar"
             class:warning={quotaInfo.percentage >= 75}
             class:critical={quotaInfo.percentage >= 90}
-          />
+          ></progress>
         </div>
 
         <div class="quota-details">
@@ -187,7 +190,7 @@ Provides UI for:
     <div class="actions-grid">
       <button
         class="action-btn optimize"
-        on:click={handleAutoManage}
+        onclick={handleAutoManage}
         disabled={isLoading}
         class:loading={isLoading}
       >
@@ -199,7 +202,7 @@ Provides UI for:
 
       <button
         class="action-btn export"
-        on:click={handleExport}
+        onclick={handleExport}
         disabled={isLoading}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -212,7 +215,7 @@ Provides UI for:
 
       <button
         class="action-btn clear"
-        on:click={handleClearAll}
+        onclick={handleClearAll}
         disabled={isLoading}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -224,7 +227,7 @@ Provides UI for:
     </div>
 
     {#if actionMessage}
-      <div class="action-message" class:{actionType}>
+      <div class={`action-message ${actionType}`}>
         {actionMessage}
       </div>
     {/if}

@@ -185,7 +185,21 @@ export class NetworkDetector {
    * Get current network information
    */
   getNetworkInfo(): NetworkInfo {
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    type NetworkConnection = {
+      effectiveType?: string;
+      downlink?: number;
+      rtt?: number;
+      saveData?: boolean;
+      type?: string;
+    };
+    type NavigatorWithConnection = Navigator & {
+      connection?: NetworkConnection;
+      mozConnection?: NetworkConnection;
+      webkitConnection?: NetworkConnection;
+    };
+    const connection = (navigator as NavigatorWithConnection).connection
+      || (navigator as NavigatorWithConnection).mozConnection
+      || (navigator as NavigatorWithConnection).webkitConnection;
 
     return {
       status: this.currentStatus,
@@ -202,7 +216,21 @@ export class NetworkDetector {
    * Determine connection type from Network Information API
    */
   private getConnectionType(): ConnectionType {
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    type NetworkConnection = {
+      effectiveType?: string;
+      downlink?: number;
+      rtt?: number;
+      saveData?: boolean;
+      type?: string;
+    };
+    type NavigatorWithConnection = Navigator & {
+      connection?: NetworkConnection;
+      mozConnection?: NetworkConnection;
+      webkitConnection?: NetworkConnection;
+    };
+    const connection = (navigator as NavigatorWithConnection).connection
+      || (navigator as NavigatorWithConnection).mozConnection
+      || (navigator as NavigatorWithConnection).webkitConnection;
 
     if (!connection) {
       return 'unknown';

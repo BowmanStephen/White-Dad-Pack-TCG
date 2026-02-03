@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { collection } from '../../stores/collection';
-  import { getAllCards, getCardById } from '../../lib/cards/database';
-  import type { Card, Rarity, DadType } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
+  import { collection } from '@/stores/collection';
+  import { getAllCards, getCardById } from '@/lib/cards/database';
+  import type { Card, Rarity, DadType } from '@/types';
+  import { RARITY_CONFIG } from '@/types';
 
   // UI state
   let showDetails = $state(false);
@@ -24,16 +24,16 @@
   });
 
   // Computed data for template
-  let missingCardsList: Card[] = [];
-  let missingByRarity: Record<Rarity, Card[]> = {
+  let missingCardsList = $state<Card[]>([]);
+  let missingByRarity = $state<Record<Rarity, Card[]>>({
     common: [],
     uncommon: [],
     rare: [],
     epic: [],
     legendary: [],
     mythic: [],
-  };
-  let missingByType: Record<string, Card[]> = {};
+  });
+  let missingByType = $state<Record<string, Card[]>>({});
 
   // Load collection data
   function loadCollection() {
@@ -54,10 +54,10 @@
     missingMessage = `${missingCount} cards missing`;
 
     // Compute missing cards
-    missingCardsList = allCards.filter((card) => !ownedCardIds.includes(card.id));
+    const nextMissingCards = allCards.filter((card) => !ownedCardIds.includes(card.id));
 
     // Group by rarity
-    missingByRarity = {
+    const nextMissingByRarity: Record<Rarity, Card[]> = {
       common: [],
       uncommon: [],
       rare: [],
@@ -65,18 +65,22 @@
       legendary: [],
       mythic: [],
     };
-    for (const card of missingCardsList) {
-      missingByRarity[card.rarity].push(card);
+    for (const card of nextMissingCards) {
+      nextMissingByRarity[card.rarity].push(card);
     }
 
     // Group by type
-    missingByType = {};
-    for (const card of missingCardsList) {
-      if (!missingByType[card.type]) {
-        missingByType[card.type] = [];
+    const nextMissingByType: Record<string, Card[]> = {};
+    for (const card of nextMissingCards) {
+      if (!nextMissingByType[card.type]) {
+        nextMissingByType[card.type] = [];
       }
-      missingByType[card.type].push(card);
+      nextMissingByType[card.type].push(card);
     }
+
+    missingCardsList = nextMissingCards;
+    missingByRarity = nextMissingByRarity;
+    missingByType = nextMissingByType;
   }
 
   // Get rarity order for sorting
@@ -328,13 +332,10 @@
 
 <!-- Card Details Modal -->
 {#if showDetails && selectedCard}
-  <div class="details-modal" onclick={closeDetails} role="dialog" aria-modal="true">
-    <div
-      class="details-content"
-      onclick={(e) => e.stopPropagation()}
-      role="document"
-    >
-      <button class="close-btn" onclick={closeDetails} aria-label="Close details">
+  <div class="details-modal" role="dialog" aria-modal="true" tabindex="-1">
+    <button class="details-overlay" onclick={closeDetails} aria-label="Close details" type="button"></button>
+    <div class="details-content" role="document">
+      <button class="close-btn" onclick={closeDetails} aria-label="Close details" type="button">
         ✕
       </button>
 
@@ -800,6 +801,15 @@
     animation: fadeIn 0.2s ease;
   }
 
+  .details-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -810,6 +820,7 @@
   }
 
   .details-content {
+    z-index: 1;
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border: 1px solid rgba(71, 85, 105, 0.5);
     border-radius: 1rem;

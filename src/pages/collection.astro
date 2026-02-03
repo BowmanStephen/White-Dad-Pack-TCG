@@ -6,6 +6,7 @@ import PackStats from '../components/pack/PackStats.svelte';
 import Gallery from '../components/collection/Gallery.svelte';
 import PackHistoryPanel from '../components/collection/PackHistoryPanel.svelte';
 import MissingCardsPanel from '../components/collection/MissingCardsPanel.svelte';
+import CollectionTestHooks from '../components/collection/CollectionTestHooks.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 
 import ErrorBoundary from '../components/common/ErrorBoundary.svelte';
@@ -114,6 +115,9 @@ const collectionPageSchema = {
 
   <!-- Structured data for collection page -->
   <script type="application/ld+json" set:html={JSON.stringify(collectionPageSchema)} />
+
+  <!-- Test hooks for automated Playwright runs -->
+  <CollectionTestHooks client:load />
 </BaseLayout>
 
 <style>

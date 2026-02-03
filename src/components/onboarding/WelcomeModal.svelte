@@ -53,7 +53,7 @@ Features:
     if (typeof window === 'undefined') return;
 
     // Check if user has already seen the welcome modal
-    if (!$welcomeSeen) {
+    if (!welcomeSeen.get()) {
       // Show after a short delay for smooth experience
       setTimeout(() => {
         isVisible = true;
@@ -98,7 +98,7 @@ Features:
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if isVisible}
   <div
@@ -106,17 +106,17 @@ Features:
     aria-modal="true"
     aria-labelledby="welcome-title"
     aria-describedby="welcome-description"
+    tabindex="-1"
     class="fixed inset-0 z-50 flex items-center justify-center p-4"
-    on:click={(e) => {
-      // Close if clicking outside modal
-      if (e.target === e.currentTarget) handleSkip();
-    }}
   >
     <!-- Backdrop -->
-    <div
+    <button
       class="absolute inset-0 bg-black/70 backdrop-blur-sm"
       transition:fade={{ duration: 300 }}
-    ></div>
+      onclick={handleSkip}
+      aria-label="Close welcome modal"
+      type="button"
+    ></button>
 
     <!-- Modal content -->
     <div
@@ -125,7 +125,7 @@ Features:
     >
       <!-- Close button (top right) -->
       <button
-        on:click={handleSkip}
+        onclick={handleSkip}
         class="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
         aria-label="Close welcome"
         type="button"
@@ -273,7 +273,7 @@ Features:
         <div class="flex flex-col sm:flex-row gap-4">
           <!-- Primary CTA: Start Tutorial -->
           <button
-            on:click={handleStart}
+            onclick={handleStart}
             class="flex-1 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-xl font-bold text-lg hover:from-yellow-500 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             type="button"
           >
@@ -303,7 +303,7 @@ Features:
 
           <!-- Secondary: Skip to Action -->
           <button
-            on:click={handleSkip}
+            onclick={handleSkip}
             class="px-8 py-4 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-bold text-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             type="button"
           >
@@ -328,20 +328,6 @@ Features:
 {/if}
 
 <style>
-  /* Smooth fade transition */
-  @keyframes fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .fade {
-    animation: fade 0.3s ease-in-out;
-  }
-
   /* Ensure proper z-index stacking */
   [role='dialog'] {
     isolation: isolate;

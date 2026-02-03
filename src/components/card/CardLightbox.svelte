@@ -10,33 +10,33 @@
     closeLightbox,
     hasNextCard,
     hasPrevCard,
-    getProgress,
     isCardFlipped,
     toggleCardFlip,
     cardViewMode,
     setCardViewMode,
     resetCardView,
-  } from '../../stores/lightbox';
-  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '../../types';
-  import type { PackCard } from '../../types';
-  import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
-  import Card from './Card.svelte';
-  import Card3DFlip from './Card3DFlip.svelte';
-  import CardSetInfo from './CardSetInfo.svelte';
-  import EnhancedCardStats from './EnhancedCardStats.svelte';
-  import CardCollectionContext from './CardCollectionContext.svelte';
-  import ZoomableCardModal from './ZoomableCardModal.svelte';
-  import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
-  import { downloadCardImage, shareCardImage, checkShareSupport } from '../../lib/utils/image-generation';
+  } from '@/stores/lightbox';
+  import { subscribeToStores } from '@/lib/utils/store-helpers';
+  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS, STAT_NAMES, STAT_ICONS } from '@/types';
+  import type { PackCard } from '@/types';
+  import GenerativeCardArt from '@components/art/GenerativeCardArt.svelte';
+  import Card from '@components/card/Card.svelte';
+  import Card3DFlip from '@components/card/Card3DFlip.svelte';
+  import CardSetInfo from '@components/card/CardSetInfo.svelte';
+  import EnhancedCardStats from '@components/card/EnhancedCardStats.svelte';
+  import CardCollectionContext from '@components/card/CardCollectionContext.svelte';
+  import ZoomableCardModal from '@components/card/ZoomableCardModal.svelte';
+  import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '@/lib/card-types';
+  import { downloadCardImage, shareCardImage, checkShareSupport } from '@/lib/utils/image-generation';
 
   // Subscribe to store changes using Svelte 5 runes
-  let isOpen = $derived($isLightboxOpen);
-  let card = $derived($currentCard);
-  let cards = $derived($cardList);
-  let index = $derived($currentIndex);
-  let progress = $derived(getProgress());
-  let isFlipped = $derived($isCardFlipped);
-  let viewMode = $derived($cardViewMode);
+  let isOpen = $state(isLightboxOpen.get());
+  let card = $state<PackCard | null>(currentCard.get());
+  let cards = $state(cardList.get());
+  let index = $state(currentIndex.get());
+  let isFlipped = $state(isCardFlipped.get());
+  let viewMode = $state(cardViewMode.get());
+  const progress = $derived(cards.length === 0 ? '0 of 0' : `${index + 1} of ${cards.length}`);
 
   // Share support check
   let shareSupport = $derived(checkShareSupport());
@@ -45,8 +45,8 @@
   // Share/download state
   let isGeneratingImage = $state(false);
   let shareError = $state<string | null>(null);
-  let lightboxElement = $state<HTMLDivElement | undefined>(undefined);
-  let cardImageElement = $state<HTMLDivElement | undefined>(undefined);
+  let lightboxElement = $state<HTMLDivElement | null>(null);
+  let cardImageElement = $state<HTMLDivElement | null>(null);
   let hasKeyListener = $state(false);
 
   // View tab state
@@ -94,13 +94,6 @@
     }
   }
 
-  // Click outside to close
-  function handleBackdropClick(event: MouseEvent) {
-    if (event.target === lightboxElement) {
-      closeLightbox();
-    }
-  }
-
   // Handle card click to flip (PACK-036)
   function handleCardClick() {
     toggleCardFlip();
@@ -144,8 +137,19 @@
     }
   }
 
-  // Setup keyboard listener
+  let unsubscribeStores: (() => void) | null = null;
+
+  // Setup keyboard listener + store subscriptions
   onMount(() => {
+    unsubscribeStores = subscribeToStores([
+      { store: isLightboxOpen, onUpdate: (v) => { isOpen = v; } },
+      { store: currentCard, onUpdate: (v) => { card = v; } },
+      { store: cardList, onUpdate: (v) => { cards = v; } },
+      { store: currentIndex, onUpdate: (v) => { index = v; } },
+      { store: isCardFlipped, onUpdate: (v) => { isFlipped = v; } },
+      { store: cardViewMode, onUpdate: (v) => { viewMode = v; } },
+    ]);
+
     if (typeof document !== 'undefined') {
       document.addEventListener('keydown', handleKeyDown);
       hasKeyListener = true;
@@ -153,6 +157,9 @@
   });
 
   onDestroy(() => {
+    if (unsubscribeStores) {
+      unsubscribeStores();
+    }
     if (hasKeyListener && typeof document !== 'undefined') {
       document.removeEventListener('keydown', handleKeyDown);
     }
@@ -184,16 +191,22 @@
   <div
     class="lightbox-backdrop"
     bind:this={lightboxElement}
-    on:click={handleBackdropClick}
     role="dialog"
     aria-modal="true"
     aria-labelledby="lightbox-card-name"
+    tabindex="-1"
   >
+    <button
+      class="lightbox-overlay"
+      onclick={closeLightbox}
+      aria-label="Close lightbox"
+      type="button"
+    ></button>
     <div class="lightbox-container">
       <!-- Close Button -->
       <button
         class="lightbox-close"
-        on:click={closeLightbox}
+        onclick={closeLightbox}
         aria-label="Close lightbox"
       >
         ✕
@@ -205,7 +218,7 @@
         {#if hasPrevCard()}
           <button
             class="lightbox-nav lightbox-nav-prev"
-            on:click={prevCard}
+            onclick={prevCard}
             aria-label="Previous card"
           >
             ‹
@@ -215,7 +228,7 @@
         {#if hasNextCard()}
           <button
             class="lightbox-nav lightbox-nav-next"
-            on:click={nextCard}
+            onclick={nextCard}
             aria-label="Next card"
           >
             ›
@@ -226,11 +239,11 @@
         <div class="lightbox-card-display">
           <div
             class="lightbox-card-wrapper"
-            on:click={handleCardClick}
+            onclick={handleCardClick}
             role="button"
             tabindex="0"
             aria-label="Click to flip card"
-            on:keydown={(e) => e.key === 'Enter' && handleCardClick()}
+            onkeydown={(e) => e.key === 'Enter' && handleCardClick()}
           >
             <div
               class="lightbox-card-inner"
@@ -287,7 +300,7 @@
             <button
               class="tab-btn"
               class:active={activeTab === 'details'}
-              on:click={() => switchTab('details')}
+              onclick={() => switchTab('details')}
               aria-pressed={activeTab === 'details'}
             >
               <span class="tab-icon">📋</span>
@@ -296,7 +309,7 @@
             <button
               class="tab-btn"
               class:active={activeTab === 'stats'}
-              on:click={() => switchTab('stats')}
+              onclick={() => switchTab('stats')}
               aria-pressed={activeTab === 'stats'}
             >
               <span class="tab-icon">📊</span>
@@ -305,7 +318,7 @@
             <button
               class="tab-btn"
               class:active={activeTab === 'set'}
-              on:click={() => switchTab('set')}
+              onclick={() => switchTab('set')}
               aria-pressed={activeTab === 'set'}
             >
               <span class="tab-icon">🃏</span>
@@ -396,7 +409,7 @@
           <div class="quick-actions">
             <button
               class="quick-action-btn"
-              on:click={openZoomModal}
+              onclick={openZoomModal}
               aria-label="Zoom view"
             >
               <span class="action-icon">🔍</span>
@@ -404,7 +417,7 @@
             </button>
             <button
               class="quick-action-btn"
-              on:click={() => setCardViewMode(viewMode === '3d' ? 'default' : '3d')}
+              onclick={() => setCardViewMode(viewMode === '3d' ? 'default' : '3d')}
               class:active={viewMode === '3d'}
               aria-label="3D view"
               aria-pressed={viewMode === '3d'}
@@ -414,7 +427,7 @@
             </button>
             <button
               class="quick-action-btn"
-              on:click={toggleCardFlip}
+              onclick={toggleCardFlip}
               aria-label="Flip card"
             >
               <span class="action-icon">🔄</span>
@@ -427,7 +440,7 @@
             {#if canShare}
               <button
                 class="action-button action-button-primary"
-                on:click={handleShare}
+                onclick={handleShare}
                 disabled={isGeneratingImage}
                 class:opacity-50={isGeneratingImage}
                 class:cursor-not-allowed={isGeneratingImage}
@@ -446,7 +459,7 @@
 
             <button
               class="action-button action-button-secondary"
-              on:click={handleDownload}
+              onclick={handleDownload}
               disabled={isGeneratingImage}
               class:opacity-50={isGeneratingImage}
               class:cursor-not-allowed={isGeneratingImage}
@@ -481,7 +494,7 @@
     {#if viewMode === '3d'}
       <div class="view-3d-overlay">
         <div class="view-3d-container">
-          <button class="view-3d-close" on:click={() => setCardViewMode('default')} aria-label="Close 3D view">
+          <button class="view-3d-close" onclick={() => setCardViewMode('default')} aria-label="Close 3D view">
             ✕
           </button>
           <Card3DFlip
@@ -531,11 +544,21 @@
 
   .lightbox-container {
     position: relative;
+    z-index: 1;
     width: 100%;
     max-width: 1400px;
     max-height: 100vh;
     display: flex;
     flex-direction: column;
+  }
+
+  .lightbox-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
 
   .lightbox-close {

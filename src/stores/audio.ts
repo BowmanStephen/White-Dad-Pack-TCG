@@ -152,7 +152,7 @@ export function initAudioContext(): void {
 
   if (!audioContext) {
     // Use standard AudioContext with fallback
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (AudioContextClass) {
       audioContext = new AudioContextClass();
     }

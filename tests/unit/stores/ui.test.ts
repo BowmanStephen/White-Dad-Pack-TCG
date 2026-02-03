@@ -432,7 +432,6 @@ describe('UI Store - US044: UI State Tests', () => {
   describe('Edge Cases', () => {
     it('should handle initializeUI when window is undefined', () => {
       const originalWindow = global.window;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - intentionally removing window for test
       delete global.window;
 

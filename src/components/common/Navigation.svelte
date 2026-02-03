@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { muted, toggleMute } from '../../stores/audio';
-  import ThemeToggle from './ThemeToggle.svelte';
-  import MotionToggle from './MotionToggle.svelte';
+  import { muted, toggleMute } from '@/stores/audio';
+  import ThemeToggle from '@components/common/ThemeToggle.svelte';
+  import MotionToggle from '@components/common/MotionToggle.svelte';
 
   interface NavLink {
     href: string;
@@ -27,8 +27,8 @@
     { href: '/collection', label: 'My Collection', isTutorialTarget: true },
   ];
 
-  let isMenuOpen = false;
-  let currentPath = '/';
+  let isMenuOpen = $state(false);
+  let currentPath = $state('/');
 
   onMount(() => {
     currentPath = window.location.pathname;
@@ -72,23 +72,24 @@
   }
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
+
 <header
   class="nav-header"
   class:scrolled={false}
-  on:keydown={handleKeydown}
-  role="banner"
 >
   <div class="nav-container">
     <!-- Logo -->
-    <a href="/" class="nav-logo" on:click={closeMenu}>
+    <a href="/" class="nav-logo" onclick={closeMenu}>
       <span class="logo-dad">Dad</span><span class="logo-deck">Deck</span
       ><span class="logo-tm">TM</span>
     </a>
 
     <!-- Desktop Navigation -->
-    <nav class="desktop-nav" role="navigation" aria-label="Main navigation">
+    <nav class="desktop-nav" aria-label="Main navigation">
       {#each links as link}
         <a
+          data-testid={`nav-${link.href.replace('/', '') || 'home'}`}
           href={link.href}
           class="nav-link"
           class:active={isActive(link.href)}
@@ -102,7 +103,7 @@
       <!-- Mute button -->
       <button
         class="mute-button"
-        on:click={toggleMute}
+        onclick={toggleMute}
         aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
         aria-pressed={isMuted}
         type="button"
@@ -141,9 +142,10 @@
     <button
       class="hamburger"
       class:open={isMenuOpen}
-      on:click={toggleMenu}
+      onclick={toggleMenu}
       aria-label="Toggle menu"
       aria-expanded={isMenuOpen}
+      type="button"
     >
       <span class="hamburger-line"></span>
       <span class="hamburger-line"></span>
@@ -155,7 +157,6 @@
   <nav
     class="mobile-nav"
     class:open={isMenuOpen}
-    role="navigation"
     aria-label="Mobile navigation"
   >
     <div class="mobile-nav-inner">
@@ -166,7 +167,7 @@
           class:active={isActive(link.href)}
           class:cta={link.isCta}
           data-tutorial={link.isTutorialTarget ? 'collection-link' : undefined}
-          on:click={closeMenu}
+          onclick={closeMenu}
         >
           <span class="mobile-link-text">{link.label}</span>
           {#if isActive(link.href)}
@@ -178,7 +179,7 @@
       <!-- Mute button in mobile menu -->
       <button
         class="mobile-link"
-        on:click={() => {
+        onclick={() => {
           toggleMute();
           closeMenu();
         }}
@@ -210,7 +211,7 @@
       <a
         href="/settings"
         class="mobile-link"
-        on:click={closeMenu}
+        onclick={closeMenu}
       >
         <span class="mobile-link-text flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +227,7 @@
 
   <!-- Mobile Menu Overlay -->
   {#if isMenuOpen}
-    <div class="mobile-overlay" on:click={closeMenu}></div>
+    <button class="mobile-overlay" onclick={closeMenu} aria-label="Close menu" type="button"></button>
   {/if}
 </header>
 
@@ -411,82 +412,6 @@
 
   .mute-button:active {
     transform: scale(0.95);
-  }
-
-  /* Daily Rewards Button */
-  .daily-rewards-button {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    min-width: 2.5rem;
-    height: 2.5rem;
-    padding: 0.5rem;
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .daily-rewards-button:hover {
-    color: #fbbf24;
-    background: rgba(251, 191, 36, 0.1);
-  }
-
-  .daily-rewards-button:active {
-    transform: scale(0.95);
-  }
-
-  .daily-icon {
-    font-size: 1.25rem;
-    line-height: 1;
-  }
-
-  .daily-streak {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 1rem;
-    height: 1rem;
-    padding: 0 0.25rem;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #0f172a;
-    font-size: 0.65rem;
-    font-weight: 700;
-    line-height: 1;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .daily-pulse {
-    position: absolute;
-    inset: 0;
-    border-radius: 0.5rem;
-    border: 2px solid #fbbf24;
-    animation: daily-pulse 2s ease-in-out infinite;
-  }
-
-  .daily-rewards-button.claim-available {
-    color: #fbbf24;
-    background: rgba(251, 191, 36, 0.15);
-    box-shadow: 0 0 16px rgba(251, 191, 36, 0.4);
-  }
-
-  @keyframes daily-pulse {
-    0%, 100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0;
-      transform: scale(1.1);
-    }
   }
 
   /* Settings Button */
@@ -674,6 +599,9 @@
     z-index: 1000;
     animation: fadeIn 0.3s ease;
     will-change: opacity;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
 
   @keyframes fadeIn {

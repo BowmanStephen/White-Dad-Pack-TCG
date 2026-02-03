@@ -35,7 +35,7 @@
     offsetY: 0,
     visibleItems: [] as number[],
   });
-  let scrollContainer: HTMLDivElement;
+  let scrollContainer = $state<HTMLDivElement | null>(null);
 
   // Update virtual scroll state based on container dimensions
   function updateVirtualScroll() {

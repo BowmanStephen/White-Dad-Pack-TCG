@@ -12,7 +12,9 @@ export default [
 
   {
     ignores: [
+      '.tmp/**',
       '.astro/',
+      'discord-bot/**',
       'dist/',
       'node_modules/',
       'coverage/',
@@ -26,6 +28,7 @@ export default [
       'public/api/**/*.js',
       '.prettierrc.*',
       'analyze-lighthouse.cjs',
+      'src/_archived/**',
       'scripts/**/*',
       'fix-card-images.ts',
       'test-*.js',
@@ -36,6 +39,9 @@ export default [
       '**/*.stories.ts',
       '**/*.stories.tsx',
       '.storybook/**/*',
+      '.tmp/**',
+      'src/_archived/**',
+      'discord-bot/**',
     ],
   },
 
@@ -140,6 +146,17 @@ export default [
     files: ['src/stores/**/*.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+
+  // Allow sanitized HTML usage in specific components
+  {
+    files: [
+      'src/components/onboarding/TutorialOverlay.svelte',
+      'src/components/card/AbilityTooltip.svelte',
+    ],
+    rules: {
+      'svelte/no-at-html-tags': 'off',
     },
   },
 ];

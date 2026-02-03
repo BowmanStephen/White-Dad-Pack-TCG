@@ -5,12 +5,24 @@
  * Logs warnings for missing required fields
  */
 
-import type { Card, CraftingRecipe, Rarity, DadType } from '@/types';
+import type { Rarity, DadType } from '@/types';
 import { RARITY_ORDER, DAD_TYPE_NAMES } from '@/types';
 
 // Extract valid values from existing constants
 const ALL_RARITIES = Object.keys(RARITY_ORDER) as Rarity[];
 const ALL_DAD_TYPES = Object.keys(DAD_TYPE_NAMES) as DadType[];
+
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null;
+}
+
+function getRecordId(value: unknown): string | undefined {
+  if (!isRecord(value)) return undefined;
+  const id = value.id;
+  return typeof id === 'string' ? id : undefined;
+}
 
 // ============================================================================
 // VALIDATION RESULTS
@@ -76,9 +88,21 @@ const REQUIRED_STAT_FIELDS = [
 /**
  * Validate a single card object
  */
-function validateCard(card: any, index: number): ValidationIssue[] {
+function validateCard(card: unknown, index: number): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
-  const cardId = card?.id || `unknown (index ${index})`;
+
+  if (!isRecord(card)) {
+    issues.push({
+      type: 'card',
+      id: `unknown (index ${index})`,
+      field: 'card',
+      severity: 'error',
+      message: `Card at index ${index} is not a valid object`,
+    });
+    return issues;
+  }
+
+  const cardId = typeof card.id === 'string' ? card.id : `unknown (index ${index})`;
 
   // Check for missing required fields
   for (const field of REQUIRED_CARD_FIELDS) {
@@ -94,9 +118,11 @@ function validateCard(card: any, index: number): ValidationIssue[] {
   }
 
   // Validate stats object exists and has all required fields
-  if (card.stats) {
+  const statsValue = card.stats;
+  if (statsValue && typeof statsValue === 'object') {
+    const stats = statsValue as UnknownRecord;
     for (const stat of REQUIRED_STAT_FIELDS) {
-      if (card.stats[stat] === undefined || card.stats[stat] === null) {
+      if (stats[stat] === undefined || stats[stat] === null) {
         issues.push({
           type: 'card',
           id: cardId,
@@ -104,21 +130,21 @@ function validateCard(card: any, index: number): ValidationIssue[] {
           severity: 'error',
           message: `Card "${cardId}" is missing required stat: ${stat}`,
         });
-      } else if (typeof card.stats[stat] !== 'number') {
+      } else if (typeof stats[stat] !== 'number') {
         issues.push({
           type: 'card',
           id: cardId,
           field: `stats.${stat}`,
           severity: 'error',
-          message: `Card "${cardId}" has invalid type for stat ${stat}: expected number, got ${typeof card.stats[stat]}`,
+          message: `Card "${cardId}" has invalid type for stat ${stat}: expected number, got ${typeof stats[stat]}`,
         });
-      } else if (card.stats[stat] < 0 || card.stats[stat] > 100) {
+      } else if ((stats[stat] as number) < 0 || (stats[stat] as number) > 100) {
         issues.push({
           type: 'card',
           id: cardId,
           field: `stats.${stat}`,
           severity: 'warning',
-          message: `Card "${cardId}" has stat ${stat} out of range (0-100): ${card.stats[stat]}`,
+          message: `Card "${cardId}" has stat ${stat} out of range (0-100): ${stats[stat]}`,
         });
       }
     }
@@ -133,7 +159,7 @@ function validateCard(card: any, index: number): ValidationIssue[] {
   }
 
   // Validate rarity enum
-  if (card.rarity && !ALL_RARITIES.includes(card.rarity as Rarity)) {
+  if (typeof card.rarity === 'string' && !ALL_RARITIES.includes(card.rarity as Rarity)) {
     issues.push({
       type: 'card',
       id: cardId,
@@ -144,7 +170,7 @@ function validateCard(card: any, index: number): ValidationIssue[] {
   }
 
   // Validate type enum
-  if (card.type && !ALL_DAD_TYPES.includes(card.type as DadType)) {
+  if (typeof card.type === 'string' && !ALL_DAD_TYPES.includes(card.type as DadType)) {
     issues.push({
       type: 'card',
       id: cardId,
@@ -202,19 +228,21 @@ function validateCard(card: any, index: number): ValidationIssue[] {
 /**
  * Validate all cards in the database
  */
-export function validateCards(cards: any[]): ValidationResult {
+export function validateCards(cards: unknown): ValidationResult {
   const issues: ValidationIssue[] = [];
 
   if (!Array.isArray(cards)) {
     return {
       isValid: false,
       warnings: [],
-      errors: [{
-        type: 'card',
-        field: 'cards',
-        severity: 'error',
-        message: 'Cards data is not an array',
-      }],
+      errors: [
+        {
+          type: 'card',
+          field: 'cards',
+          severity: 'error',
+          message: 'Cards data is not an array',
+        },
+      ],
     };
   }
 
@@ -222,12 +250,14 @@ export function validateCards(cards: any[]): ValidationResult {
     return {
       isValid: false,
       warnings: [],
-      errors: [{
-        type: 'card',
-        field: 'cards',
-        severity: 'error',
-        message: 'Cards database is empty',
-      }],
+      errors: [
+        {
+          type: 'card',
+          field: 'cards',
+          severity: 'error',
+          message: 'Cards database is empty',
+        },
+      ],
     };
   }
 
@@ -238,7 +268,7 @@ export function validateCards(cards: any[]): ValidationResult {
   });
 
   // Check for duplicate IDs
-  const ids = cards.map((c) => c.id).filter(Boolean);
+  const ids = cards.map(getRecordId).filter((id): id is string => Boolean(id));
   const uniqueIds = new Set(ids);
   if (ids.length !== uniqueIds.size) {
     const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
@@ -251,8 +281,8 @@ export function validateCards(cards: any[]): ValidationResult {
   }
 
   // Separate warnings and errors
-  const warnings = issues.filter((i) => i.severity === 'warning');
-  const errors = issues.filter((i) => i.severity === 'error');
+  const warnings = issues.filter(i => i.severity === 'warning');
+  const errors = issues.filter(i => i.severity === 'error');
 
   return {
     isValid: errors.length === 0,
@@ -282,9 +312,21 @@ const REQUIRED_RECIPE_FIELDS = [
 /**
  * Validate a single recipe object
  */
-function validateRecipe(recipe: any, index: number): ValidationIssue[] {
+function validateRecipe(recipe: unknown, index: number): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
-  const recipeId = recipe?.id || `unknown (index ${index})`;
+
+  if (!isRecord(recipe)) {
+    issues.push({
+      type: 'recipe',
+      id: `unknown (index ${index})`,
+      field: 'recipe',
+      severity: 'error',
+      message: `Recipe at index ${index} is not a valid object`,
+    });
+    return issues;
+  }
+
+  const recipeId = typeof recipe.id === 'string' ? recipe.id : `unknown (index ${index})`;
 
   // Check for missing required fields
   for (const field of REQUIRED_RECIPE_FIELDS) {
@@ -300,7 +342,7 @@ function validateRecipe(recipe: any, index: number): ValidationIssue[] {
   }
 
   // Validate rarity enums
-  if (recipe.inputRarity && !ALL_RARITIES.includes(recipe.inputRarity as Rarity)) {
+  if (typeof recipe.inputRarity === 'string' && !ALL_RARITIES.includes(recipe.inputRarity as Rarity)) {
     issues.push({
       type: 'recipe',
       id: recipeId,
@@ -310,7 +352,7 @@ function validateRecipe(recipe: any, index: number): ValidationIssue[] {
     });
   }
 
-  if (recipe.outputRarity && !ALL_RARITIES.includes(recipe.outputRarity as Rarity)) {
+  if (typeof recipe.outputRarity === 'string' && !ALL_RARITIES.includes(recipe.outputRarity as Rarity)) {
     issues.push({
       type: 'recipe',
       id: recipeId,
@@ -407,19 +449,21 @@ function validateRecipe(recipe: any, index: number): ValidationIssue[] {
 /**
  * Validate all crafting recipes
  */
-export function validateRecipes(recipes: any[]): ValidationResult {
+export function validateRecipes(recipes: unknown): ValidationResult {
   const issues: ValidationIssue[] = [];
 
   if (!Array.isArray(recipes)) {
     return {
       isValid: false,
       warnings: [],
-      errors: [{
-        type: 'recipe',
-        field: 'recipes',
-        severity: 'error',
-        message: 'Recipes data is not an array',
-      }],
+      errors: [
+        {
+          type: 'recipe',
+          field: 'recipes',
+          severity: 'error',
+          message: 'Recipes data is not an array',
+        },
+      ],
     };
   }
 
@@ -427,12 +471,14 @@ export function validateRecipes(recipes: any[]): ValidationResult {
     return {
       isValid: false,
       warnings: [],
-      errors: [{
-        type: 'recipe',
-        field: 'recipes',
-        severity: 'error',
-        message: 'Recipes database is empty',
-      }],
+      errors: [
+        {
+          type: 'recipe',
+          field: 'recipes',
+          severity: 'error',
+          message: 'Recipes database is empty',
+        },
+      ],
     };
   }
 
@@ -443,7 +489,7 @@ export function validateRecipes(recipes: any[]): ValidationResult {
   });
 
   // Check for duplicate IDs
-  const ids = recipes.map((r) => r.id).filter(Boolean);
+  const ids = recipes.map(getRecordId).filter((id): id is string => Boolean(id));
   const uniqueIds = new Set(ids);
   if (ids.length !== uniqueIds.size) {
     const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
@@ -456,8 +502,8 @@ export function validateRecipes(recipes: any[]): ValidationResult {
   }
 
   // Separate warnings and errors
-  const warnings = issues.filter((i) => i.severity === 'warning');
-  const errors = issues.filter((i) => i.severity === 'error');
+  const warnings = issues.filter(i => i.severity === 'warning');
+  const errors = issues.filter(i => i.severity === 'error');
 
   return {
     isValid: errors.length === 0,
@@ -473,7 +519,10 @@ export function validateRecipes(recipes: any[]): ValidationResult {
 /**
  * Log validation results to console (DEV only)
  */
-export function logValidationResults(result: ValidationResult, dataType: 'cards' | 'recipes'): void {
+export function logValidationResults(
+  result: ValidationResult,
+  dataType: 'cards' | 'recipes'
+): void {
   if (!import.meta.env.DEV) return;
 
   if (result.isValid && result.warnings.length === 0) {

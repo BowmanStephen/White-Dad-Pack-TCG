@@ -21,7 +21,7 @@ export interface Notification {
   read?: boolean;
   actions?: NotificationAction[];
   icon?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 // Notification action (button/link in notification)
@@ -61,7 +61,7 @@ export interface PushNotificationPayload {
   icon?: string;
   badge?: string;
   image?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   actions?: Array<{
     action: string;
     title: string;

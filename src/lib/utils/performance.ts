@@ -14,7 +14,7 @@
  * @param delay Wait time in ms (default: 100ms)
  * @returns Debounced function
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delay: number = 100
 ): (...args: Parameters<T>) => void {
@@ -45,7 +45,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * @param limit Minimum time between executions in ms (default: 16ms for ~60fps)
  * @returns Throttled function
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   fn: T,
   limit: number = 16 // ~60fps
 ): (...args: Parameters<T>) => void {

@@ -1,4 +1,5 @@
 import type { Pack, Rarity, CollectionDisplayCard, DadType, SortOption, StatRanges, HoloVariant, AdvancedSearchFilters } from '../../types';
+import type { WishlistEntry } from '../../types/wishlist';
 import { RARITY_ORDER, DAD_TYPE_NAMES } from '../../types';
 import { sanitizeSearchQuery } from '../security/sanitizer';
 
@@ -408,7 +409,7 @@ export function areStatRangesDefault(statRanges: StatRanges): boolean {
  */
 export function findPulledWishlistedCards(
   pulledCards: string[],
-  wishlistEntries: any[]
+  wishlistEntries: WishlistEntry[]
 ): string[] {
   const wishlistCardIds = new Set(wishlistEntries.map((entry) => entry.cardId));
   return pulledCards.filter((cardId) => wishlistCardIds.has(cardId));

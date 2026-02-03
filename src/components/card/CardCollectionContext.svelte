@@ -137,7 +137,7 @@
       <button
         class="action-btn"
         class:active={isFavorite}
-        on:click={onToggleFavorite}
+        onclick={onToggleFavorite}
         aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         aria-pressed={isFavorite}
       >
@@ -151,7 +151,7 @@
       <button
         class="action-btn"
         class:active={isWishlisted}
-        on:click={onToggleWishlist}
+        onclick={onToggleWishlist}
         aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         aria-pressed={isWishlisted}
       >
@@ -164,7 +164,7 @@
     {#if onAddToDeck && ownedCount > 0}
       <button
         class="action-btn primary"
-        on:click={onAddToDeck}
+        onclick={onAddToDeck}
         aria-label="Add to deck"
       >
         <span class="action-icon">🃏</span>
@@ -176,7 +176,7 @@
     {#if onStartTrade && canTrade}
       <button
         class="action-btn trade"
-        on:click={onStartTrade}
+        onclick={onStartTrade}
         aria-label="Start trade"
       >
         <span class="action-icon">🔄</span>

@@ -34,7 +34,7 @@
     }
   ];
 
-  let currentPath = '/';
+  let currentPath = $state('/');
 
   onMount(() => {
     currentPath = window.location.pathname;
@@ -60,7 +60,6 @@
 
 <nav
   class="bottom-nav"
-  role="navigation"
   aria-label="Bottom navigation"
 >
   {#each navItems as item}

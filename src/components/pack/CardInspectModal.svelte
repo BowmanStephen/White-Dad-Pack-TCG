@@ -17,7 +17,7 @@
 
   let { card, onClose, onPrevious, onNext, hasPrevious = false, hasNext = false }: Props = $props();
 
-  let modalElement = $state<HTMLElement>();
+  let modalElement = $state<HTMLElement | null>(null);
 
   // FIX: Focus the modal when it opens so keyboard events work
   onMount(() => {
@@ -42,7 +42,7 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if card}
   {@const rarity = RARITY_CONFIG[card.rarity]}
@@ -51,17 +51,23 @@
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
     in:fade={{ duration: 300 }}
     out:fade={{ duration: 200 }}
-    onclick={onClose}
     role="dialog"
     aria-modal="true"
     aria-label="Card details for {card.name}"
     tabindex="-1"
   >
+    <button
+      class="absolute inset-0"
+      onclick={onClose}
+      aria-label="Close card details"
+      type="button"
+    ></button>
     <!-- Close button -->
     <button
       onclick={(e) => { e.stopPropagation(); onClose(); }}
       class="fixed top-8 right-8 text-white/50 hover:text-white text-5xl font-light transition-colors z-50"
       aria-label="Close card details"
+      type="button"
     >
       ×
     </button>
@@ -100,10 +106,9 @@
 
     <!-- Content -->
     <div
-      class="relative max-w-5xl w-full max-h-[95vh] overflow-y-auto"
+      class="relative max-w-5xl w-full max-h-[95vh] overflow-y-auto z-10"
       in:scale={{ duration: 400, easing: backOut }}
       out:scale={{ duration: 200 }}
-      onclick={(e) => e.stopPropagation()}
     >
       <div class="flex flex-col lg:flex-row gap-12 items-center lg:items-center px-4 md:px-20 pb-10">
         <!-- Card display -->

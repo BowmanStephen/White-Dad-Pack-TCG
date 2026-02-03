@@ -1,8 +1,8 @@
 <script lang="ts">
-  import * as uiStore from '../../stores/ui';
+  import * as uiStore from '@/stores/ui';
 
   // Subscribe to cinematic mode
-  $: isCinematic = uiStore.$cinematicMode === 'cinematic';
+  const isCinematic = $derived(uiStore.cinematicMode.get() === 'cinematic');
 
   function handleToggle() {
     uiStore.toggleCinematicMode();
@@ -13,7 +13,7 @@
   class="cinematic-toggle"
   class:active={isCinematic}
   data-testid="cinematic-toggle"
-  on:click={handleToggle}
+  onclick={handleToggle}
   aria-label="Toggle cinematic mode"
   aria-pressed={isCinematic}
   title={isCinematic ? 'Cinematic mode ON - Slower, more dramatic animations' : 'Cinematic mode OFF - Standard animations'}

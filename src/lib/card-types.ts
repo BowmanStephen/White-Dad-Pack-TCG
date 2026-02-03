@@ -6,6 +6,7 @@
 import type { DadType } from '../types';
 
 export const SPECIAL_CARD_TYPES = ['EVENT', 'TERRAIN', 'EVOLUTION', 'CURSE', 'TRAP', 'ITEM'] as const;
+type SpecialCardType = typeof SPECIAL_CARD_TYPES[number];
 
 export const STAT_CARD_TYPES = [
   'BBQ_DAD', 'FIX_IT_DAD', 'GOLF_DAD', 'COUCH_DAD', 'LAWN_DAD',
@@ -19,8 +20,8 @@ export const STAT_CARD_TYPES = [
 /**
  * Check if a card type is a special card type
  */
-export function isSpecialCardType(type: string | DadType): type is 'EVENT' | 'TERRAIN' | 'EVOLUTION' | 'CURSE' | 'TRAP' | 'ITEM' {
-  return SPECIAL_CARD_TYPES.includes(type as any);
+export function isSpecialCardType(type: string | DadType): type is SpecialCardType {
+  return SPECIAL_CARD_TYPES.includes(type as SpecialCardType);
 }
 
 /**

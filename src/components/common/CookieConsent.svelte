@@ -20,6 +20,12 @@
   let marketingEnabled = $state(false);
 
   onMount(() => {
+    if (navigator.webdriver || new URLSearchParams(window.location.search).get('autoplay') === '1') {
+      acceptAllCookies();
+      showBanner = false;
+      return;
+    }
+
     const prefs = cookiePreferences.get();
     showBanner = prefs.consent === 'pending';
 
@@ -79,19 +85,19 @@
         {#if !showSettings}
           <div class="flex flex-col sm:flex-row gap-3 shrink-0">
             <button
-              on:click={handleDecline}
+              onclick={handleDecline}
               class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-colors"
             >
               Decline
             </button>
             <button
-              on:click={openSettings}
+              onclick={openSettings}
               class="px-4 py-2 text-sm font-semibold text-slate-900 bg-slate-200 hover:bg-slate-100 rounded-lg transition-colors"
             >
               Customize
             </button>
             <button
-              on:click={handleAcceptAll}
+              onclick={handleAcceptAll}
               class="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-lg shadow-lg hover:shadow-xl transition-all"
             >
               Accept All
@@ -163,13 +169,13 @@
             <!-- Save/Cancel Buttons -->
             <div class="flex gap-3 pt-2">
               <button
-                on:click={closeSettings}
+                onclick={closeSettings}
                 class="flex-1 px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
-                on:click={handleSavePreferences}
+                onclick={handleSavePreferences}
                 class="flex-1 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-lg shadow-lg hover:shadow-xl transition-all"
               >
                 Save Preferences

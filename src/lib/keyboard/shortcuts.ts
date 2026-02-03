@@ -21,9 +21,9 @@ export interface Shortcut {
  * Route shortcuts for navigation
  */
 const ROUTE_SHORTCUTS: Record<string, string> = {
-  'o': '/',        // Open pack (home)
-  'c': '/collection',  // Collection
-  'd': '/deck-builder', // Deck builder
+  o: '/', // Open pack (home)
+  c: '/collection', // Collection
+  d: '/deck-builder', // Deck builder
 };
 
 /**
@@ -40,7 +40,7 @@ const SPECIAL_SHORTCUTS: Record<string, Shortcut> = {
     },
     preventDefault: true,
   },
-  'Escape': {
+  Escape: {
     key: 'Escape',
     description: 'keyboard.closeModal',
     action: () => {
@@ -72,11 +72,11 @@ export function initializeShortcuts(): void {
   registerRouteShortcuts();
   registerSpecialShortcuts();
 
-  // Add global event listener
-  window.addEventListener('keydown', handleKeyDown);
-
   // Track shortcuts usage for analytics
   trackShortcutUsage();
+
+  // Add global event listener
+  window.addEventListener('keydown', keydownHandler);
 }
 
 /**
@@ -166,6 +166,8 @@ function handleKeyDown(event: KeyboardEvent): void {
   }
 }
 
+let keydownHandler: (event: KeyboardEvent) => void = handleKeyDown;
+
 /**
  * Check if user is typing in an input field
  */
@@ -173,10 +175,11 @@ function isTypingInInput(event: KeyboardEvent): boolean {
   const target = event.target as HTMLElement;
 
   // Check if target is an input-like element
-  const isInput = target instanceof HTMLInputElement ||
-                  target instanceof HTMLTextAreaElement ||
-                  target instanceof HTMLSelectElement ||
-                  target.contentEditable === 'true';
+  const isInput =
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement ||
+    target.contentEditable === 'true';
 
   // Allow Escape key to work even in inputs
   if (isInput && event.key !== 'Escape') {
@@ -204,9 +207,7 @@ export function disableShortcuts(): void {
  * Get all registered shortcuts
  */
 export function getAllShortcuts(): Shortcut[] {
-  return Array.from(registeredShortcuts.values()).sort((a, b) =>
-    a.key.localeCompare(b.key)
-  );
+  return Array.from(registeredShortcuts.values()).sort((a, b) => a.key.localeCompare(b.key));
 }
 
 /**
@@ -216,12 +217,8 @@ export function getShortcutsByCategory(): Record<string, Shortcut[]> {
   const shortcuts = getAllShortcuts();
 
   return {
-    navigation: shortcuts.filter(s =>
-      s.key === 'o' || s.key === 'c' || s.key === 'd'
-    ),
-    actions: shortcuts.filter(s =>
-      s.key === '?' || s.key === 'Escape'
-    ),
+    navigation: shortcuts.filter(s => s.key === 'o' || s.key === 'c' || s.key === 'd'),
+    actions: shortcuts.filter(s => s.key === '?' || s.key === 'Escape'),
   };
 }
 
@@ -231,12 +228,12 @@ export function getShortcutsByCategory(): Record<string, Shortcut[]> {
 export function formatShortcutKey(key: string): string {
   // Format special keys
   const keyMap: Record<string, string> = {
-    'escape': 'Esc',
+    escape: 'Esc',
     ' ': 'Space',
-    'arrowup': '↑',
-    'arrowdown': '↓',
-    'arrowleft': '←',
-    'arrowright': '→',
+    arrowup: '↑',
+    arrowdown: '↓',
+    arrowleft: '←',
+    arrowright: '→',
   };
 
   const formatted = keyMap[key.toLowerCase()] || key;
@@ -255,16 +252,19 @@ export function formatShortcutKey(key: string): string {
 function trackShortcutUsage(): void {
   if (typeof window === 'undefined') return;
 
+  type GtagFunction = (command: 'event', eventName: string, params: Record<string, unknown>) => void;
+
   // Track each shortcut execution
-  const originalHandleKeyDown = handleKeyDown;
-  const trackedHandleKeyDown = (event: KeyboardEvent) => {
+  const originalHandleKeyDown = keydownHandler;
+  keydownHandler = (event: KeyboardEvent) => {
     const key = event.key.toLowerCase();
     const shortcut = registeredShortcuts.get(key);
 
     if (shortcut && !isTypingInInput(event)) {
       // Track analytics event
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        (window as any).gtag('event', 'shortcut_used', {
+      if (typeof window !== 'undefined') {
+        const gtag = (window as Window & { gtag?: GtagFunction }).gtag;
+        gtag?.('event', 'shortcut_used', {
           shortcut_key: key,
           route: window.location.pathname,
         });
@@ -273,8 +273,6 @@ function trackShortcutUsage(): void {
 
     return originalHandleKeyDown(event);
   };
-
-  // Replace event listener (would need to remove and re-add in real implementation)
 }
 
 /**
@@ -283,7 +281,7 @@ function trackShortcutUsage(): void {
 export function cleanupShortcuts(): void {
   if (typeof window === 'undefined') return;
 
-  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keydown', keydownHandler);
   registeredShortcuts.clear();
 }
 

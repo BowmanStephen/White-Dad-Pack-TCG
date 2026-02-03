@@ -1,5 +1,6 @@
 <script lang="ts">
   import { isReducedMotion } from '@/stores/motion';
+  import type { Snippet } from 'svelte';
 
   // Props
   interface Props {
@@ -9,6 +10,7 @@
     disabled?: boolean;
     type?: 'button' | 'submit' | 'reset';
     class?: string;
+    children?: Snippet;
   }
 
   let {
@@ -17,19 +19,23 @@
     href,
     disabled = false,
     type = 'button',
-    class: className = ''
+    class: className = '',
+    children,
   }: Props = $props();
 
   // Ripple effect state
   let ripples: Array<{ id: number; x: number; y: number; size: number }> = $state([]);
-  let buttonElement: HTMLButtonElement | HTMLAnchorElement;
+  let buttonElement = $state<HTMLButtonElement | HTMLAnchorElement | null>(null);
   let rippleId = 0;
 
   // Check for reduced motion preference
   let reducedMotion = $state(false);
 
   $effect(() => {
-    reducedMotion = isReducedMotion();
+    const unsubscribe = isReducedMotion.subscribe((value: boolean) => {
+      reducedMotion = value;
+    });
+    return unsubscribe;
   });
 
   // Ripple effect handler
@@ -77,7 +83,7 @@
   };
 
   // Combine all classes
-  const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+  const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`);
 
   // Ripple animation styles
   const rippleAnimation = `
@@ -105,12 +111,12 @@
     onmousedown={createRipple}
     bind:this={buttonElement}
   >
-    <slot />
+    {@render children?.()}
     {#each ripples as ripple (ripple.id)}
       <span
         class="absolute pointer-events-none rounded-full bg-white/30"
         style="left: {ripple.x}px; top: {ripple.y}px; width: {ripple.size}px; height: {ripple.size}px; animation: ripple 0.6s ease-out forwards;"
-      />
+      ></span>
     {/each}
   </a>
 {:else}
@@ -121,12 +127,12 @@
     bind:this={buttonElement}
     disabled={disabled}
   >
-    <slot />
+    {@render children?.()}
     {#each ripples as ripple (ripple.id)}
       <span
         class="absolute pointer-events-none rounded-full bg-white/30"
         style="left: {ripple.x}px; top: {ripple.y}px; width: {ripple.size}px; height: {ripple.size}px; animation: ripple 0.6s ease-out forwards;"
-      />
+      ></span>
     {/each}
   </button>
 {/if}

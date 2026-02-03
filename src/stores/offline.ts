@@ -69,10 +69,10 @@ function initializeStoredActions(): void {
   try {
     const stored = localStorage.getItem('offline-queue');
     if (stored) {
-      const parsed = JSON.parse(stored);
-      const actions = parsed.map((a: any) => ({
-        ...a,
-        timestamp: new Date(a.timestamp)
+      const parsed = JSON.parse(stored) as Array<Omit<QueuedAction, 'timestamp'> & { timestamp: string }>;
+      const actions: QueuedAction[] = parsed.map((action) => ({
+        ...action,
+        timestamp: new Date(action.timestamp)
       }));
       queuedActions.set(actions);
     }
@@ -157,9 +157,8 @@ async function processAction(action: QueuedAction): Promise<ProcessResult> {
 
       case 'custom':
         // Custom actions with retry function
-        if (action.data && typeof action.data === 'object' && 'retry' in action.data) {
-          const retryFn = (action.data as any).retry as () => Promise<void>;
-          await retryFn();
+        if (hasRetryAction(action.data)) {
+          await action.data.retry();
           return { success: true, actionId: action.id };
         }
         return { success: false, actionId: action.id, error: 'No retry function provided' };
@@ -172,6 +171,14 @@ async function processAction(action: QueuedAction): Promise<ProcessResult> {
     console.error('[Offline Queue] Action failed:', action.id, errorMessage);
     return { success: false, actionId: action.id, error: errorMessage };
   }
+}
+
+type RetryActionData = { retry: () => Promise<void> };
+
+function hasRetryAction(data: unknown): data is RetryActionData {
+  if (!data || typeof data !== 'object') return false;
+  const record = data as Record<string, unknown>;
+  return typeof record.retry === 'function';
 }
 
 /**

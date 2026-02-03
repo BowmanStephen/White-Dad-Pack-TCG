@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { initializeMusic } from '@/lib/audio/music';
 
   /**
@@ -10,7 +9,7 @@
    * to comply with browser autoplay policies.
    */
 
-  onMount(() => {
+  $effect(() => {
     // Initialize the music system singleton
     initializeMusic();
 

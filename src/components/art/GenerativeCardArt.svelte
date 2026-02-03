@@ -1,20 +1,32 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import type { Card } from '../../types';
-  import { generateCardArtwork } from '../../lib/art/generative-art';
+  import { onDestroy } from 'svelte';
+  import type { Card } from '@/types';
+  import { generateCardArtwork } from '@/lib/art/generative-art';
 
-  export let card: Card;
-  export let width: number = 400;
-  export let height: number = 400;
-  export let showName: boolean = true;
-  export let alt: string = card.name;
+  interface Props {
+    card: Card;
+    width?: number;
+    height?: number;
+    showName?: boolean;
+    alt?: string;
+  }
 
-  let canvas: HTMLCanvasElement;
-  let imageUrl: string = '';
-  let isGenerating = true;
-  let useFallback = false;
-  let imageLoaded = false;
-  let imageLoadingError = false;
+  let {
+    card,
+    width = 400,
+    height = 400,
+    showName = true,
+    alt,
+  }: Props = $props();
+
+  const altText = $derived(alt ?? card.name);
+
+  let canvas: HTMLCanvasElement | null = null;
+  let imageUrl = $state('');
+  let isGenerating = $state(true);
+  let useFallback = $state(false);
+  let imageLoaded = $state(false);
+  let imageLoadingError = $state(false);
 
   function generateArt() {
     // If card has artwork, we'll let the img tag handle it with lazy loading
@@ -57,11 +69,6 @@
     generateArt();
   }
 
-  // Generate artwork on mount
-  onMount(() => {
-    generateArt();
-  });
-
   // Cleanup
   onDestroy(() => {
     if (imageUrl) {
@@ -70,10 +77,12 @@
   });
 
   // Regenerate if card props change
-  $: if (card.id && (canvas || card.artwork)) {
-    if (card.artwork) useFallback = false;
-    generateArt();
-  }
+  $effect(() => {
+    if (card.id && (canvas || card.artwork)) {
+      if (card.artwork) useFallback = false;
+      generateArt();
+    }
+  });
 </script>
 
 <div class="generative-art-container relative overflow-hidden" style="width: {width}px; height: {height}px;">
@@ -84,14 +93,14 @@
     class="generative-card-art absolute inset-0 w-full h-full"
     class:loading={isGenerating && !card.artwork}
     class:hidden={card.artwork && !useFallback && imageLoaded}
-    aria-label={alt}
+    aria-label={altText}
     aria-hidden={card.artwork && !useFallback && imageLoaded}
   ></canvas>
 
   {#if card.artwork && !useFallback}
     <img
       src={card.artwork}
-      alt={alt}
+      alt={altText}
       loading="lazy"
       decoding="async"
       width={width}
@@ -121,36 +130,7 @@
     opacity: 0.5;
   }
 
-  .loading-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: inherit;
-  }
-
-  .spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #ffffff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .spinner {
-      animation: none;
-    }
-
     .transition-opacity {
       transition: none;
     }

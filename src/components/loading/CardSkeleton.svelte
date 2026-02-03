@@ -1,8 +1,12 @@
 <script lang="ts">
-  import type { Rarity } from '../../types';
+  import type { Rarity } from '@/types';
 
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  export let rarity: Rarity = 'common';
+  interface Props {
+    size?: 'sm' | 'md' | 'lg';
+    rarity?: Rarity;
+  }
+
+  let { size = 'md', rarity = 'common' }: Props = $props();
 
   const sizeClasses = {
     sm: 'w-48 h-[268px]',
@@ -11,7 +15,7 @@
   };
 
   // Approximate border colors based on rarity
-  $: borderColors = {
+  const borderColors = {
     common: '#475569',
     uncommon: '#60a5fa',
     rare: '#fbbf24',
@@ -20,7 +24,7 @@
     mythic: '#ec4899',
   };
 
-  $: borderColor = borderColors[rarity];
+  const borderColor = $derived(borderColors[rarity]);
 </script>
 
 <div class="card-skeleton {sizeClasses[size]}" aria-hidden="true" role="presentation">

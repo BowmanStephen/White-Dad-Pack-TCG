@@ -101,7 +101,7 @@
       <!-- Dismiss Button (if dismissible) -->
       {#if dismissible}
         <button
-          on:click={dismiss}
+          onclick={dismiss}
           type="button"
           class="flex-shrink-0 p-1 rounded-md hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-600"
           aria-label="Dismiss message"

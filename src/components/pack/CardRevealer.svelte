@@ -1,55 +1,56 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
-  import type { Pack } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
-  import Card from '../card/Card.svelte';
-  import CardSkeleton from '../loading/CardSkeleton.svelte';
-  import ParticleEffects from '../card/ParticleEffects.svelte';
-  import FadeIn from '../loading/FadeIn.svelte';
-  import { playCardReveal, playCinematicCardReveal, playNewDiscoverySound } from '../../stores/audio';
-  import ConfettiEffects from '../card/ConfettiEffects.svelte';
-  import ScreenShake from '../card/ScreenShake.svelte';
-  import NewBadge from '../card/NewBadge.svelte';
-  import * as uiStore from '../../stores/ui';
-  import { markCardAsDiscovered, discoveryProgressText } from '../../stores/discovered';
-  import { fastForward } from '../../stores/ui';
+  import type { Pack } from '@/types';
+  import { RARITY_CONFIG } from '@/types';
+  import Card from '@components/card/Card.svelte';
+  import CardSkeleton from '@components/loading/CardSkeleton.svelte';
+  import ParticleEffects from '@components/card/ParticleEffects.svelte';
+  import FadeIn from '@components/loading/FadeIn.svelte';
+  import { playCardReveal, playCinematicCardReveal, playNewDiscoverySound } from '@/stores/audio';
+  import ConfettiEffects from '@components/card/ConfettiEffects.svelte';
+  import ScreenShake from '@components/card/ScreenShake.svelte';
+  import NewBadge from '@components/card/NewBadge.svelte';
+  import * as uiStore from '@/stores/ui';
+  import { markCardAsDiscovered, discoveryProgressText } from '@/stores/discovered';
+  import { fastForward, toggleFastForward } from '@/stores/ui';
 
-  export let pack: Pack;
-  export let currentIndex: number;
-  export let revealedIndices: Set<number>;
+  interface Props {
+    pack: Pack;
+    currentIndex: number;
+    revealedIndices: Set<number>;
+  }
+
+  let { pack, currentIndex, revealedIndices }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  $: currentCard = pack.cards[currentIndex];
-  $: isCurrentRevealed = revealedIndices.has(currentIndex);
-  $: progress = `${currentIndex + 1}/${pack.cards.length}`;
-  $: allRevealed = revealedIndices.size >= pack.cards.length;
-  $: rarityConfig = currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common;
+  const currentCard = $derived(pack.cards[currentIndex]);
+  const isCurrentRevealed = $derived(revealedIndices.has(currentIndex));
+  const progress = $derived(`${currentIndex + 1}/${pack.cards.length}`);
+  const allRevealed = $derived(revealedIndices.size >= pack.cards.length);
+  const rarityConfig = $derived(currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common);
 
   // PACK-025: Track new discoveries for first-time pull effects
-  let isNewDiscovery = false;
-  let showNewBadge = false;
+  let isNewDiscovery = $state(false);
+  let showNewBadge = $state(false);
 
   // Screen reader announcement for card reveals
-  let announcement = '';
-  $: if (isCurrentRevealed && currentCard) {
-    const holoText = currentCard.isHolo ? ` holographic${currentCard.holoType !== 'standard' ? ' ' + currentCard.holoType : ''}` : '';
-    announcement = `Card ${currentIndex + 1} of ${pack.cards.length}: ${currentCard.name}, ${RARITY_CONFIG[currentCard.rarity].name}${holoText}. ${currentCard.subtitle || ''}`;
-  }
+  let announcement = $state('');
 
   // Cinematic mode configuration
-  $: cinematicConfig = uiStore.getCinematicConfig();
-  $: isCinematic = uiStore.$cinematicMode.get() === 'cinematic';
+  const cinematicConfig = $derived(uiStore.getCinematicConfig());
+  const isCinematic = $derived(uiStore.cinematicMode.get() === 'cinematic');
+  const discoveryProgress = $derived(discoveryProgressText.get());
 
   // Camera zoom state for cinematic reveals
-  let cameraZoomActive = false;
-  let cardScale = 1;
+  let cameraZoomActive = $state(false);
+  let cardScale = $state(1);
 
   let autoRevealActive = false;
-  let particlesActive = false;
-  let confettiActive = false;
-  let screenShakeActive = false;
-  let discoveryConfettiActive = false; // PACK-025: Separate confetti for new discoveries
+  let particlesActive = $state(false);
+  let confettiActive = $state(false);
+  let screenShakeActive = $state(false);
+  let discoveryConfettiActive = $state(false); // PACK-025: Separate confetti for new discoveries
   let autoRevealTimers: number[] = [];
 
   // Debounced reveal using requestAnimationFrame for smoother 60fps
@@ -60,29 +61,41 @@
   // PACK-VFX-014: Extra 700ms delay for mythic cards (1000ms total, replaces rare+ bonus)
   // PACK-VFX-016: Cinematic mode card reveal set to 600ms
   // PACK-028: Apply fast-forward multiplier (2x speed when enabled)
-  $: baseDelay = 300;
-  $: fastForwardMultiplier = $fastForward ? 2 : 1;
+  const baseDelay = 300;
+  const isFastForward = $derived(fastForward.get());
+  const fastForwardMultiplier = $derived(isFastForward ? 2 : 1);
   // PACK-VFX-013/VFX-014: Calculate delay based on rarity
   // Mythic: 1000ms total (300ms base + 700ms bonus)
   // Rare/Epic/Legendary: 500ms total (300ms base + 200ms bonus)
   // Common/Uncommon: 300ms total (base only)
-  $: currentCardRarity = currentCard?.rarity;
-  $: rarityDelay = currentCardRarity === 'mythic' ? 700 : (['rare', 'epic', 'legendary'].includes(currentCardRarity || '') ? 200 : 0);
+  const currentCardRarity = $derived(currentCard?.rarity);
+  const rarityDelay = $derived(currentCardRarity === 'mythic'
+    ? 700
+    : (['rare', 'epic', 'legendary'].includes(currentCardRarity || '') ? 200 : 0));
   // PACK-VFX-016: In cinematic mode, override to 600ms for all cards (slower, more dramatic)
   // Normal mode: Use standard (baseDelay + rarityDelay) calculation
-  $: revealDelay = isCinematic
+  const revealDelay = $derived(isCinematic
     ? 600 / fastForwardMultiplier  // PACK-VFX-016: Fixed 600ms in cinematic mode
-    : (baseDelay + rarityDelay) / fastForwardMultiplier;  // Normal mode: standard timing
+    : (baseDelay + rarityDelay) / fastForwardMultiplier);  // Normal mode: standard timing
 
   // PACK-026: Animation class based on rarity
-  $: revealAnimationClass = currentCard ? {
+  const revealAnimationClass = $derived(currentCard ? ({
     common: 'animate-reveal-common',
     uncommon: 'animate-reveal-uncommon',
     rare: 'animate-reveal-rare',
     epic: 'animate-reveal-epic',
     legendary: 'animate-reveal-legendary',
     mythic: 'animate-reveal-mythic',
-  }[currentCard.rarity] || 'animate-reveal-common' : 'animate-reveal-common';
+  }[currentCard.rarity] || 'animate-reveal-common') : 'animate-reveal-common');
+
+  $effect(() => {
+    if (isCurrentRevealed && currentCard) {
+      const holoText = currentCard.isHolo ? ` holographic${currentCard.holoType !== 'standard' ? ' ' + currentCard.holoType : ''}` : '';
+      announcement = `Card ${currentIndex + 1} of ${pack.cards.length}: ${currentCard.name}, ${RARITY_CONFIG[currentCard.rarity].name}${holoText}. ${currentCard.subtitle || ''}`;
+      return;
+    }
+    announcement = '';
+  });
 
   // PACK-025: Check and track new discovery
   function checkNewDiscovery(card: typeof currentCard): boolean {
@@ -405,9 +418,9 @@
 <div
   class="flex flex-col items-center gap-6 w-full max-w-lg"
   data-testid="card-revealer"
-  on:touchstart={handleTouchStart}
-  on:touchmove={handleTouchMove}
-  on:touchend={handleTouchEnd}
+  ontouchstart={handleTouchStart}
+  ontouchmove={handleTouchMove}
+  ontouchend={handleTouchEnd}
 >
   <!-- Progress indicator -->
   <div class="flex items-center gap-4 w-full">
@@ -419,14 +432,14 @@
     </div>
     <span class="text-slate-400 text-sm font-mono">{progress}</span>
     <!-- PACK-025: Discovery progress -->
-    <span class="text-slate-400 text-sm font-mono">{$discoveryProgressText}</span>
+    <span class="text-slate-400 text-sm font-mono">{discoveryProgress}</span>
   </div>
   
   <!-- Card display -->
   <div
     class="relative cursor-pointer"
-    on:click={handleCardClick}
-    on:keydown={(e) => e.key === ' ' && handleCardClick()}
+    onclick={handleCardClick}
+    onkeydown={(e) => e.key === ' ' && handleCardClick()}
     role="button"
     tabindex="0"
   >
@@ -505,7 +518,7 @@
   <div class="flex items-center gap-4">
     <button
       class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-w-[48px] min-h-[48px]"
-      on:click={handlePrev}
+      onclick={handlePrev}
       disabled={currentIndex === 0}
       aria-label="Previous card"
     >
@@ -522,7 +535,7 @@
       class:hover:bg-slate-600={isCurrentRevealed && currentIndex < pack.cards.length - 1}
       class:bg-green-500={isCurrentRevealed && currentIndex === pack.cards.length - 1}
       class:hover:bg-green-400={isCurrentRevealed && currentIndex === pack.cards.length - 1}
-      on:click={handleCardClick}
+      onclick={handleCardClick}
     >
       {#if !isCurrentRevealed}
         Reveal Card
@@ -535,7 +548,7 @@
 
     <button
       class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-w-[48px] min-h-[48px]"
-      on:click={handleNext}
+      onclick={handleNext}
       disabled={currentIndex === pack.cards.length - 1 && !isCurrentRevealed}
       aria-label="Next card"
     >
@@ -549,18 +562,16 @@
   <div class="flex flex-col items-center gap-3">
     <!-- Fast-forward toggle button -->
     <button
-      class="flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg transition-colors {$fastForward ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-400'} hover:bg-amber-500/30"
-      on:click={() => {
-        $fastForward = !$fastForward;
-      }}
-      aria-label={$fastForward ? 'Disable fast forward' : 'Enable fast forward'}
-      aria-pressed={$fastForward}
+      class="flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg transition-colors {isFastForward ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-400'} hover:bg-amber-500/30"
+      onclick={toggleFastForward}
+      aria-label={isFastForward ? 'Disable fast forward' : 'Enable fast forward'}
+      aria-pressed={isFastForward}
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
       <span class="text-sm font-semibold">2x Speed</span>
-      {#if $fastForward}
+      {#if isFastForward}
         <span class="text-xs bg-amber-500 text-black px-2 py-0.5 rounded font-bold">ON</span>
       {/if}
     </button>
@@ -568,7 +579,7 @@
     <!-- Skip to results button -->
     <button
       class="min-h-[44px] px-4 py-2 text-slate-500 hover:text-slate-300 text-sm transition-colors"
-      on:click={handleSkip}
+      onclick={handleSkip}
     >
       Skip to results
     </button>
@@ -595,7 +606,7 @@
           background: {isRevealed ? cardRarity.color : '#475569'};
           box-shadow: {isCurrent ? `0 0 10px ${isRevealed ? cardRarity.color : '#475569'}` : 'none'};
         "
-        on:click={() => handleCardNavigatorClick(i)}
+        onclick={() => handleCardNavigatorClick(i)}
         aria-label="Card {i + 1}"
       >
         <span class="w-3 h-3 rounded-full block" style="

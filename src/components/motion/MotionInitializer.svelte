@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { initializeMotionSettings } from '../../stores/motion';
+  import { initializeMotionSettings } from '@/stores/motion';
 
   /**
    * Motion Settings Initializer
@@ -13,7 +12,7 @@
    * PACK-057: Accessibility - Reduced Motion
    */
 
-  onMount(() => {
+  $effect(() => {
     // Initialize motion settings on app load
     initializeMotionSettings();
   });

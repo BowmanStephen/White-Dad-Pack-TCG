@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { toasts, type NotificationType } from '../../stores/ui';
-  import ToastItem from './ToastItem.svelte';
+  import { toasts, type NotificationType } from '@/stores/ui';
+  import ToastItem from '@components/common/ToastItem.svelte';
 
   // Maximum number of toasts to show at once
   const MAX_TOASTS = 3;
@@ -17,7 +17,7 @@
   }
 
   // Get current toasts from store, limited to MAX_TOASTS
-  $: displayToasts = $toasts.slice(-MAX_TOASTS);
+  const displayToasts = $derived(toasts.get().slice(-MAX_TOASTS));
 </script>
 
 <div class="toast-container" role="region" aria-label="Notifications" aria-live="polite">
@@ -94,7 +94,7 @@
 
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
-    .toast-item {
+    :global(.toast-item) {
       transform: none !important;
     }
   }

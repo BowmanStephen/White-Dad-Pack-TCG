@@ -31,8 +31,8 @@
   let initialZoom = $state(1);
 
   // Container refs
-  let containerRef: HTMLDivElement;
-  let imageRef: HTMLDivElement;
+  let containerRef = $state<HTMLDivElement | null>(null);
+  let imageRef = $state<HTMLDivElement | null>(null);
 
   // Get rarity config
   let rarityConfig = $derived(RARITY_CONFIG[card.rarity]);
@@ -235,13 +235,12 @@
 
 {#if isOpen}
   <!-- Backdrop -->
-  <div
+  <button
     class="zoom-modal-backdrop"
-    on:click={onClose}
-    role="button"
-    tabindex="-1"
+    onclick={onClose}
     aria-label="Close zoom modal"
-  ></div>
+    type="button"
+  ></button>
 
   <!-- Modal -->
   <div
@@ -254,25 +253,25 @@
     <!-- Header -->
     <div class="zoom-header">
       <h2 class="zoom-title">{card.name}</h2>
-      <button class="close-btn" on:click={onClose} aria-label="Close">
+      <button class="close-btn" onclick={onClose} aria-label="Close">
         <span>✕</span>
       </button>
     </div>
 
     <!-- Card Container -->
-    <div
+    <button
       class="zoom-container"
       bind:this={containerRef}
-      on:wheel={handleWheel}
-      on:mousedown={handleMouseDown}
-      on:mousemove={handleMouseMove}
-      on:touchstart={handleTouchStart}
-      on:touchmove={handleTouchMove}
-      on:touchend={handleTouchEnd}
+      onwheel={handleWheel}
+      onmousedown={handleMouseDown}
+      onmousemove={handleMouseMove}
+      ontouchstart={handleTouchStart}
+      ontouchmove={handleTouchMove}
+      ontouchend={handleTouchEnd}
       class:panning={isPanning}
       class:can-pan={canPan}
-      role="img"
       aria-label="Zoomable card artwork. Use mouse wheel to zoom, drag to pan."
+      type="button"
     >
       <div
         class="zoom-content"
@@ -295,11 +294,11 @@
           {/if}
         </div>
       </div>
-    </div>
+    </button>
 
     <!-- Controls -->
     <div class="zoom-controls">
-      <button class="zoom-btn" on:click={zoomOut} disabled={zoom <= minZoom} aria-label="Zoom out">
+      <button class="zoom-btn" onclick={zoomOut} disabled={zoom <= minZoom} aria-label="Zoom out">
         <span>−</span>
       </button>
 
@@ -310,11 +309,11 @@
         <span class="zoom-percent">{zoomPercent}%</span>
       </div>
 
-      <button class="zoom-btn" on:click={zoomIn} disabled={zoom >= maxZoom} aria-label="Zoom in">
+      <button class="zoom-btn" onclick={zoomIn} disabled={zoom >= maxZoom} aria-label="Zoom in">
         <span>+</span>
       </button>
 
-      <button class="reset-btn" on:click={resetZoom} disabled={zoom === 1 && panX === 0 && panY === 0} aria-label="Reset zoom">
+      <button class="reset-btn" onclick={resetZoom} disabled={zoom === 1 && panX === 0 && panY === 0} aria-label="Reset zoom">
         <span>⟲</span>
       </button>
     </div>
@@ -339,6 +338,9 @@
     backdrop-filter: blur(12px);
     z-index: 1000;
     animation: fadeIn 0.2s ease;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
 
   @keyframes fadeIn {
@@ -424,6 +426,8 @@
     max-height: 60vh;
     background: rgba(15, 23, 42, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0;
+    appearance: none;
     overflow: hidden;
     cursor: grab;
     touch-action: none;

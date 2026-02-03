@@ -212,13 +212,13 @@
     <h3 class="text-lg font-bold">Performance Monitor</h3>
     <div class="flex gap-2">
       <button
-        on:click={toggleMonitoring}
+        onclick={toggleMonitoring}
         class="px-3 py-1 rounded {isMonitoring ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}"
       >
         {isMonitoring ? 'Stop' : 'Start'}
       </button>
       <button
-        on:click={resetMetrics}
+        onclick={resetMetrics}
         class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded"
       >
         Reset
@@ -300,7 +300,7 @@
   <!-- Actions -->
   <div class="flex gap-2">
     <button
-      on:click={logDetailedMetrics}
+      onclick={logDetailedMetrics}
       class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-xs"
     >
       Log to Console

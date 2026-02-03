@@ -135,6 +135,7 @@ export interface Pack {
   openedAt: Date;
   bestRarity: Rarity;
   design: PackDesign;
+  tearAnimation?: TearAnimation;
 }
 
 // Animation State

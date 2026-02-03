@@ -12,6 +12,14 @@ let { card, revealed = true, size = 'md', onClick }: Props = $props();
 
 const isPackCard = (c: Card | PackCard): c is PackCard => 'isHolo' in c;
 
+function handleKeydown(event: KeyboardEvent) {
+  if (!onClick) return;
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    onClick();
+  }
+}
+
 const sizeClasses = {
   sm: 'w-36 h-52',
   md: 'w-56 h-80',
@@ -53,6 +61,7 @@ const typePixels: Record<string, string> = {
     ]} cursor-pointer transform transition-all duration-100 hover:scale-105"
     style="image-rendering: pixelated;"
     onclick={onClick}
+    onkeydown={handleKeydown}
     role="button"
     tabindex="0"
   >

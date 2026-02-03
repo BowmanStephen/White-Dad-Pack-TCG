@@ -28,7 +28,7 @@
 
 <button
   class="sound-toggle"
-  on:click={handleClick}
+  onclick={handleClick}
   aria-label={isMuted ? 'Enable sounds' : 'Mute sounds'}
   aria-pressed={isMuted}
   type="button"

@@ -16,12 +16,12 @@ import { createStorageError, logError } from '@/lib/utils/errors';
 // ============================================================================
 
 export interface StorageQuotaInfo {
-  used: number;           // Bytes used
-  total: number;          // Total bytes available
-  percentage: number;     // Percentage used (0-100)
-  driver: string;         // Storage driver (indexeddb, localstorage, etc.)
-  needsWarning: boolean;  // True if usage >= 90%
-  isFull: boolean;        // True if usage >= 95%
+  used: number; // Bytes used
+  total: number; // Total bytes available
+  percentage: number; // Percentage used (0-100)
+  driver: string; // Storage driver (indexeddb, localstorage, etc.)
+  needsWarning: boolean; // True if usage >= 90%
+  isFull: boolean; // True if usage >= 95%
 }
 
 export interface CompressionResult {
@@ -36,20 +36,28 @@ export interface CompressionResult {
 export interface ArchiveResult {
   success: boolean;
   archivedPacks: number;
-  archivedData?: string;  // JSON string of archived packs
+  archivedData?: string; // JSON string of archived packs
   error?: string;
 }
+
+type CompressedPackCard = Pick<Pack['cards'][number], 'id' | 'rarity' | 'isHolo'>;
+type CompressedPack = Pick<Pack, 'id' | 'openedAt' | 'bestRarity' | 'design'> & {
+  cards: CompressedPackCard[];
+};
+type CompressedCollection = Omit<Collection, 'packs'> & {
+  packs: Array<Pack | CompressedPack>;
+};
 
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
 
-const WARNING_THRESHOLD = 0.90;  // 90% - Show warning
-const FULL_THRESHOLD = 0.95;     // 95% - Considered "full"
-const ARCHIVE_DAYS = 30;         // Archive packs older than 30 days
+const WARNING_THRESHOLD = 0.9; // 90% - Show warning
+const FULL_THRESHOLD = 0.95; // 95% - Considered "full"
+const ARCHIVE_DAYS = 30; // Archive packs older than 30 days
 
 // Compression strategy: Remove unnecessary data from old packs
-function compressPackData(pack: Pack): any {
+function compressPackData(pack: Pack): CompressedPack {
   return {
     id: pack.id,
     cards: pack.cards.map(card => ({
@@ -60,7 +68,7 @@ function compressPackData(pack: Pack): any {
     })),
     openedAt: pack.openedAt,
     bestRarity: pack.bestRarity,
-    design: pack.design
+    design: pack.design,
   };
 }
 
@@ -77,18 +85,18 @@ export async function getStorageQuotaInfo(): Promise<StorageQuotaInfo> {
     if (typeof window === 'undefined' || typeof indexedDB === 'undefined') {
       return {
         used: 0,
-        total: 50 * 1024 * 1024,  // 50MB default
+        total: 50 * 1024 * 1024, // 50MB default
         percentage: 0,
         driver: 'none',
         needsWarning: false,
-        isFull: false
+        isFull: false,
       };
     }
 
     // Estimate IndexedDB quota (varies by browser)
     // Chrome/Firefox: 50MB to several GB
     // Safari: 1GB or more
-    const total = 50 * 1024 * 1024;  // Conservative 50MB estimate
+    const total = 50 * 1024 * 1024; // Conservative 50MB estimate
 
     // Calculate used space by iterating through all stores
     let used = 0;
@@ -100,7 +108,8 @@ export async function getStorageQuotaInfo(): Promise<StorageQuotaInfo> {
         db.close();
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.warn('[QuotaManager] Could not estimate database size:', error);
+      if (import.meta.env.DEV)
+        console.warn('[QuotaManager] Could not estimate database size:', error);
     }
 
     const percentage = (used / total) * 100;
@@ -111,7 +120,7 @@ export async function getStorageQuotaInfo(): Promise<StorageQuotaInfo> {
       percentage,
       driver: 'indexeddb',
       needsWarning: percentage >= WARNING_THRESHOLD * 100,
-      isFull: percentage >= FULL_THRESHOLD * 100
+      isFull: percentage >= FULL_THRESHOLD * 100,
     };
   } catch (error) {
     if (import.meta.env.DEV) console.error('[QuotaManager] Failed to get quota info:', error);
@@ -121,7 +130,7 @@ export async function getStorageQuotaInfo(): Promise<StorageQuotaInfo> {
       percentage: 0,
       driver: 'unknown',
       needsWarning: false,
-      isFull: false
+      isFull: false,
     };
   }
 }
@@ -142,7 +151,7 @@ export async function checkQuotaBeforeSave(
     return {
       canSave: false,
       quotaInfo,
-      warning: 'Storage is almost full. Archive old packs or clear data to continue.'
+      warning: 'Storage is almost full. Archive old packs or clear data to continue.',
     };
   }
 
@@ -151,13 +160,13 @@ export async function checkQuotaBeforeSave(
     return {
       canSave: true,
       quotaInfo,
-      warning: 'Storage is getting full. Consider archiving old packs soon.'
+      warning: 'Storage is getting full. Consider archiving old packs soon.',
     };
   }
 
   return {
     canSave: true,
-    quotaInfo
+    quotaInfo,
   };
 }
 
@@ -198,7 +207,7 @@ export async function compressOldData(
         originalSize,
         compressedSize: originalSize,
         savedBytes: 0,
-        archivedPacks: 0
+        archivedPacks: 0,
       };
     }
 
@@ -206,9 +215,9 @@ export async function compressOldData(
     const compressedOldPacks = oldPacks.map(compressPackData);
 
     // Rebuild collection with compressed old packs
-    const compressedCollection: Collection = {
+    const compressedCollection: CompressedCollection = {
       ...collection,
-      packs: [...recentPacks, ...compressedOldPacks]
+      packs: [...recentPacks, ...compressedOldPacks],
     };
 
     const compressedSize = JSON.stringify(compressedCollection).length;
@@ -219,7 +228,7 @@ export async function compressOldData(
       originalSize,
       compressedSize,
       savedBytes,
-      archivedPacks: oldPacks.length
+      archivedPacks: oldPacks.length,
     };
   } catch (error) {
     const storageError = createStorageError(
@@ -233,7 +242,7 @@ export async function compressOldData(
       compressedSize: 0,
       savedBytes: 0,
       archivedPacks: 0,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -268,7 +277,7 @@ export async function archiveOldPacks(
     if (oldPacks.length === 0) {
       return {
         success: true,
-        archivedPacks: 0
+        archivedPacks: 0,
       };
     }
 
@@ -277,25 +286,25 @@ export async function archiveOldPacks(
       archivedAt: new Date().toISOString(),
       daysOld,
       packCount: oldPacks.length,
-      packs: oldPacks
+      packs: oldPacks,
     };
 
     // Update collection to remove archived packs
     const updatedCollection: Collection = {
       ...collection,
-      packs: recentPacks
+      packs: recentPacks,
     };
 
     // Update metadata
     updatedCollection.metadata = {
       ...collection.metadata,
-      totalPacksOpened: collection.metadata.totalPacksOpened - oldPacks.length
+      totalPacksOpened: collection.metadata.totalPacksOpened - oldPacks.length,
     };
 
     return {
       success: true,
       archivedPacks: oldPacks.length,
-      archivedData: JSON.stringify(archiveData, null, 2)
+      archivedData: JSON.stringify(archiveData, null, 2),
     };
   } catch (error) {
     const storageError = createStorageError(
@@ -306,7 +315,7 @@ export async function archiveOldPacks(
     return {
       success: false,
       archivedPacks: 0,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -336,7 +345,7 @@ export async function autoManageQuota(
       if (compressionResult.success && compressionResult.savedBytes > 0) {
         actions.push(
           `Compressed ${compressionResult.archivedPacks} old packs, ` +
-          `saved ${formatBytes(compressionResult.savedBytes)}`
+            `saved ${formatBytes(compressionResult.savedBytes)}`
         );
         // Note: In a real implementation, you'd save the compressed collection here
       }
@@ -351,7 +360,7 @@ export async function autoManageQuota(
         );
         updatedCollection = {
           ...updatedCollection,
-          packs: updatedCollection.packs.slice(archiveResult.archivedPacks)
+          packs: updatedCollection.packs.slice(archiveResult.archivedPacks),
         };
       }
     }
@@ -360,12 +369,10 @@ export async function autoManageQuota(
     if (quotaInfo.percentage >= 90) {
       const archiveResult = await archiveOldPacks(updatedCollection, 15);
       if (archiveResult.success && archiveResult.archivedPacks > 0) {
-        actions.push(
-          `Emergency archived ${archiveResult.archivedPacks} packs older than 15 days`
-        );
+        actions.push(`Emergency archived ${archiveResult.archivedPacks} packs older than 15 days`);
         updatedCollection = {
           ...updatedCollection,
-          packs: updatedCollection.packs.slice(archiveResult.archivedPacks)
+          packs: updatedCollection.packs.slice(archiveResult.archivedPacks),
         };
       }
     }
@@ -373,7 +380,7 @@ export async function autoManageQuota(
     return {
       success: true,
       updatedCollection: actions.length > 0 ? updatedCollection : undefined,
-      actions
+      actions,
     };
   } catch (error) {
     const storageError = createStorageError(
@@ -383,7 +390,7 @@ export async function autoManageQuota(
     logError(storageError, error);
     return {
       success: false,
-      actions: ['Error: ' + storageError.message]
+      actions: ['Error: ' + storageError.message],
     };
   }
 }
@@ -396,13 +403,13 @@ export async function autoManageQuota(
  * Open IndexedDB database for size estimation
  */
 async function openDatabase(): Promise<IDBDatabase | null> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // Timeout after 2 seconds to prevent hanging in test environments
     const timeout = setTimeout(() => {
       if (import.meta.env.DEV) console.warn('[QuotaManager] IndexedDB open timed out');
       resolve(null);
     }, 2000);
-    
+
     try {
       const request = indexedDB.open('DadDeck', 1);
 
@@ -412,7 +419,8 @@ async function openDatabase(): Promise<IDBDatabase | null> {
       };
       request.onerror = () => {
         clearTimeout(timeout);
-        if (import.meta.env.DEV) console.warn('[QuotaManager] IndexedDB open failed:', request.error);
+        if (import.meta.env.DEV)
+          console.warn('[QuotaManager] IndexedDB open failed:', request.error);
         resolve(null);
       };
     } catch (error) {
@@ -434,7 +442,8 @@ async function estimateDatabaseSize(db: IDBDatabase): Promise<number> {
       const size = await estimateObjectStoreSize(db, storeName);
       totalSize += size;
     } catch (error) {
-      if (import.meta.env.DEV) console.warn(`[QuotaManager] Could not estimate size for store ${storeName}:`, error);
+      if (import.meta.env.DEV)
+        console.warn(`[QuotaManager] Could not estimate size for store ${storeName}:`, error);
     }
   }
 
@@ -451,13 +460,13 @@ async function estimateObjectStoreSize(db: IDBDatabase, storeName: string): Prom
     const request = store.openCursor();
     let size = 0;
 
-    request.onsuccess = (event) => {
+    request.onsuccess = event => {
       const cursor = (event.target as IDBRequest).result;
       if (cursor) {
         try {
           size += JSON.stringify(cursor.value).length;
           cursor.continue();
-        } catch (error) {
+        } catch {
           // Can't stringify, skip this record
           cursor.continue();
         }
@@ -489,6 +498,8 @@ function formatBytes(bytes: number): string {
 export async function getQuotaSummary(): Promise<string> {
   const quotaInfo = await getStorageQuotaInfo();
 
-  return `Storage: ${formatBytes(quotaInfo.used)} / ${formatBytes(quotaInfo.total)} ` +
-    `(${quotaInfo.percentage.toFixed(1)}%) - Driver: ${quotaInfo.driver}`;
+  return (
+    `Storage: ${formatBytes(quotaInfo.used)} / ${formatBytes(quotaInfo.total)} ` +
+    `(${quotaInfo.percentage.toFixed(1)}%) - Driver: ${quotaInfo.driver}`
+  );
 }

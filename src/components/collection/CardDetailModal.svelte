@@ -1,16 +1,17 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import type { PackCard } from '../../types';
-  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '../../types';
-  import { collection } from '../../stores/collection';
-  import { isDetailModalOpen, detailModalCard, closeDetailModal } from '../../stores/card-detail-modal';
-  import EnhancedCardStats from '../card/EnhancedCardStats.svelte';
-  import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
-  import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '../../lib/card-types';
+  import type { PackCard } from '@/types';
+  import { RARITY_CONFIG, DAD_TYPE_NAMES, DAD_TYPE_ICONS } from '@/types';
+  import { collection } from '@/stores/collection';
+  import { isDetailModalOpen, detailModalCard, closeDetailModal } from '@/stores/card-detail-modal';
+  import { subscribeToStores } from '@/lib/utils/store-helpers';
+  import EnhancedCardStats from '@components/card/EnhancedCardStats.svelte';
+  import GenerativeCardArt from '@components/art/GenerativeCardArt.svelte';
+  import { isSpecialCardType, getSpecialCardTypeLabel, hasCardStats } from '@/lib/card-types';
 
   // Subscribe to store
-  let isOpen = $derived($isDetailModalOpen);
-  let card = $derived($detailModalCard);
+  let isOpen = $state(isDetailModalOpen.get());
+  let card = $state<PackCard | null>(detailModalCard.get());
 
   // Deck state (stubbed - feature archived)
   let showDeckSelector = $state(false);
@@ -18,9 +19,9 @@
 
   // Derived state
   let ownedCount = $state(0);
-  let packHistory: Array<{ packId: string; packNumber: number; openedAt: Date }> = [];
-  let upgradeLevel = 0; // TODO: Integrate with upgrade system
-  let modalElement: HTMLDivElement;
+  let packHistory = $state<Array<{ packId: string; packNumber: number; openedAt: Date }>>([]);
+  let upgradeLevel = $state(0); // TODO: Integrate with upgrade system
+  let modalElement = $state<HTMLDivElement | null>(null);
   let hasKeyListener = false;
 
   // Get card ownership info from collection
@@ -29,21 +30,23 @@
 
     // Count how many copies of this card are owned
     ownedCount = 0;
-    packHistory = [];
+    const nextHistory: Array<{ packId: string; packNumber: number; openedAt: Date }> = [];
 
     currentCollection.packs.forEach((pack, packIndex) => {
       const packNumber = packIndex + 1;
-      const cardsInPack = pack.cards.filter(c => c.id === card.id);
+      const cardsInPack = pack.cards.filter(c => c.id === card?.id);
 
       if (cardsInPack.length > 0) {
         ownedCount += cardsInPack.length;
-        packHistory.push({
+        nextHistory.push({
           packId: pack.id,
           packNumber,
           openedAt: pack.openedAt,
         });
       }
     });
+
+    packHistory = nextHistory;
   }
 
   // Load card info when component mounts or card changes
@@ -58,13 +61,6 @@
     if (!isOpen) return;
 
     if (event.key === 'Escape') {
-      closeDetailModal();
-    }
-  }
-
-  // Click outside to close
-  function handleBackdropClick(event: MouseEvent) {
-    if (event.target === modalElement) {
       closeDetailModal();
     }
   }
@@ -98,8 +94,15 @@
     showDeckSelector = false;
   }
 
+  let unsubscribeStores: (() => void) | null = null;
+
   // Setup listeners
   onMount(() => {
+    unsubscribeStores = subscribeToStores([
+      { store: isDetailModalOpen, onUpdate: (v) => { isOpen = v; } },
+      { store: detailModalCard, onUpdate: (v) => { card = v; } },
+    ]);
+
     if (typeof document !== 'undefined') {
       document.addEventListener('keydown', handleKeyDown);
       hasKeyListener = true;
@@ -107,6 +110,9 @@
   });
 
   onDestroy(() => {
+    if (unsubscribeStores) {
+      unsubscribeStores();
+    }
     if (hasKeyListener && typeof document !== 'undefined') {
       document.removeEventListener('keydown', handleKeyDown);
     }
@@ -174,17 +180,24 @@
   <div
     class="modal-backdrop"
     bind:this={modalElement}
-    on:click={handleBackdropClick}
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-card-name"
+    tabindex="-1"
   >
+    <button
+      class="modal-overlay"
+      onclick={closeDetailModal}
+      aria-label="Close card details"
+      type="button"
+    ></button>
     <div class="modal-container">
       <!-- Close Button -->
       <button
         class="modal-close"
-        on:click={closeDetailModal}
+        onclick={closeDetailModal}
         aria-label="Close card details"
+        type="button"
       >
         ✕
       </button>
@@ -341,7 +354,7 @@
               <div class="deck-action-container">
                 <button
                   class="action-button action-button-primary"
-                  on:click={handleAddToDeck}
+                  onclick={handleAddToDeck}
                   style="--button-color: {RARITY_CONFIG[card.rarity].color};"
                 >
                   <span aria-hidden="true">🃏</span>
@@ -353,13 +366,13 @@
                   <div class="deck-selector-dropdown">
                     <div class="deck-selector-header">
                       <span>Select a deck</span>
-                      <button class="deck-selector-close" on:click={closeDeckSelector}>✕</button>
+                      <button class="deck-selector-close" onclick={closeDeckSelector}>✕</button>
                     </div>
                     <div class="deck-selector-list">
                       {#each allDecks as deck}
                         <button
                           class="deck-selector-item"
-                          on:click={() => selectDeckAndAdd(deck.id)}
+                          onclick={() => selectDeckAndAdd(deck.id)}
                         >
                           <span class="deck-name">{deck.name}</span>
                           <span class="deck-card-count">{deck.cards.length} cards</span>
@@ -368,7 +381,7 @@
                       {#if !deckLimitReached}
                         <button
                           class="deck-selector-item deck-selector-new"
-                          on:click={createDeckAndAdd}
+                          onclick={createDeckAndAdd}
                         >
                           <span>+ Create New Deck</span>
                         </button>
@@ -426,6 +439,15 @@
     animation: fadeIn 0.2s ease-out;
   }
 
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -437,6 +459,7 @@
 
   .modal-container {
     position: relative;
+    z-index: 1;
     width: 100%;
     max-width: 1200px;
     max-height: 100vh;

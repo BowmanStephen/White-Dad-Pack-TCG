@@ -1,12 +1,7 @@
 import localforage from 'localforage';
-import type { Collection, Pack } from '@/types';
+import type { Collection } from '@/types';
 import { createStorageError, logError } from '@/lib/utils/errors';
-import {
-  getStorageQuotaInfo,
-  checkQuotaBeforeSave,
-  autoManageQuota,
-  getQuotaSummary
-} from './quota-manager';
+import { checkQuotaBeforeSave, autoManageQuota } from './quota-manager';
 
 // ============================================================================
 // INDEXEDDB CONFIGURATION
@@ -18,11 +13,7 @@ if (typeof window !== 'undefined') {
   localforage.config({
     name: 'DadDeck',
     storeName: 'collection',
-    driver: [
-      localforage.INDEXEDDB,
-      localforage.WEBSQL,
-      localforage.LOCALSTORAGE
-    ]
+    driver: [localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE],
   });
 }
 
@@ -33,7 +24,7 @@ if (typeof window !== 'undefined') {
 // Check if storage is available with timeout
 export async function isStorageAvailable(): Promise<boolean> {
   try {
-    const timeout = new Promise<boolean>((_, reject) => 
+    const timeout = new Promise<boolean>((_, reject) =>
       setTimeout(() => reject(new Error('Storage check timeout')), 2000)
     );
     const check = (async () => {
@@ -58,7 +49,7 @@ export async function getStorageUsage(): Promise<{ used: number; total: number; 
     const total = 50 * 1024 * 1024; // 50MB conservative estimate
 
     // Count items and estimate size
-    await localforage.iterate((value) => {
+    await localforage.iterate(value => {
       if (typeof value === 'string') {
         used += value.length;
       } else if (value && typeof value === 'object') {
@@ -95,14 +86,16 @@ export async function loadCollection(): Promise<Collection | null> {
 }
 
 // Save collection to IndexedDB (PACK-045: With quota management)
-export async function saveCollection(collection: Collection): Promise<{ success: boolean; error?: string; quotaWarning?: string }> {
+export async function saveCollection(
+  collection: Collection
+): Promise<{ success: boolean; error?: string; quotaWarning?: string }> {
   try {
     // Check storage availability
     const available = await isStorageAvailable();
     if (!available) {
       return {
         success: false,
-        error: 'IndexedDB is not available. Please check browser settings.'
+        error: 'IndexedDB is not available. Please check browser settings.',
       };
     }
 
@@ -112,23 +105,25 @@ export async function saveCollection(collection: Collection): Promise<{ success:
 
     if (!quotaCheck.canSave) {
       // Try automatic cleanup
-      if (import.meta.env.DEV) console.warn('[IndexedDB] Storage nearly full, attempting auto-cleanup...');
+      if (import.meta.env.DEV)
+        console.warn('[IndexedDB] Storage nearly full, attempting auto-cleanup...');
       const cleanupResult = await autoManageQuota(collection);
 
       if (cleanupResult.success && cleanupResult.updatedCollection) {
-        if (import.meta.env.DEV) console.log('[IndexedDB] Auto-cleanup successful:', cleanupResult.actions.join(', '));
+        if (import.meta.env.DEV)
+          console.log('[IndexedDB] Auto-cleanup successful:', cleanupResult.actions.join(', '));
         // Save the cleaned-up collection instead
         await localforage.setItem(COLLECTION_KEY, cleanupResult.updatedCollection);
 
         return {
           success: true,
-          quotaWarning: `Storage was nearly full. Automatically ${cleanupResult.actions[0].toLowerCase()}`
+          quotaWarning: `Storage was nearly full. Automatically ${cleanupResult.actions[0].toLowerCase()}`,
         };
       }
 
       return {
         success: false,
-        error: quotaCheck.warning || 'Storage is full. Please archive old packs or clear data.'
+        error: quotaCheck.warning || 'Storage is full. Please archive old packs or clear data.',
       };
     }
 
@@ -137,7 +132,7 @@ export async function saveCollection(collection: Collection): Promise<{ success:
 
     return {
       success: true,
-      quotaWarning: quotaCheck.warning
+      quotaWarning: quotaCheck.warning,
     };
   } catch (error) {
     const storageError = createStorageError(
@@ -147,7 +142,7 @@ export async function saveCollection(collection: Collection): Promise<{ success:
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -165,7 +160,7 @@ export async function clearCollection(): Promise<{ success: boolean; error?: str
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -183,12 +178,16 @@ export async function needsLocalStorageMigration(): Promise<boolean> {
 }
 
 // Migrate collection from LocalStorage to IndexedDB
-export async function migrateFromLocalStorage(): Promise<{ success: boolean; error?: string; migrated?: number }> {
+export async function migrateFromLocalStorage(): Promise<{
+  success: boolean;
+  error?: string;
+  migrated?: number;
+}> {
   try {
     if (typeof localStorage === 'undefined') {
       return {
         success: false,
-        error: 'LocalStorage is not available'
+        error: 'LocalStorage is not available',
       };
     }
 
@@ -202,31 +201,31 @@ export async function migrateFromLocalStorage(): Promise<{ success: boolean; err
 
     try {
       const collection = JSON.parse(localStorageData) as Collection;
-      
+
       // Save to IndexedDB
       const saveResult = await saveCollection(collection);
-      
+
       if (!saveResult.success) {
         return {
           success: false,
-          error: saveResult.error || 'Failed to save migrated collection'
+          error: saveResult.error || 'Failed to save migrated collection',
         };
       }
 
       // Mark migration as complete
       await localforage.setItem(MIGRATION_KEY, 'true');
-      
+
       // Optional: Clear LocalStorage to free space
       // localStorage.removeItem('daddeck-collection');
-      
+
       return {
         success: true,
-        migrated: collection.packs.length
+        migrated: collection.packs.length,
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
-        error: 'Failed to parse LocalStorage data. Collection may be corrupted.'
+        error: 'Failed to parse LocalStorage data. Collection may be corrupted.',
       };
     }
   } catch (error) {
@@ -237,7 +236,7 @@ export async function migrateFromLocalStorage(): Promise<{ success: boolean; err
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
@@ -247,13 +246,17 @@ export async function migrateFromLocalStorage(): Promise<{ success: boolean; err
 // ============================================================================
 
 // Export collection for backup
-export async function exportCollection(): Promise<{ success: boolean; data?: string; error?: string }> {
+export async function exportCollection(): Promise<{
+  success: boolean;
+  data?: string;
+  error?: string;
+}> {
   try {
     const collection = await loadCollection();
     if (!collection) {
       return {
         success: false,
-        error: 'No collection found to export'
+        error: 'No collection found to export',
       };
     }
 
@@ -267,36 +270,38 @@ export async function exportCollection(): Promise<{ success: boolean; data?: str
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }
 
 // Import collection from backup
-export async function importCollection(data: string): Promise<{ success: boolean; imported?: number; error?: string }> {
+export async function importCollection(
+  data: string
+): Promise<{ success: boolean; imported?: number; error?: string }> {
   try {
     const collection = JSON.parse(data) as Collection;
-    
+
     // Validate collection structure
     if (!collection || !Array.isArray(collection.packs) || !collection.metadata) {
       return {
         success: false,
-        error: 'Invalid collection data format'
+        error: 'Invalid collection data format',
       };
     }
 
     const saveResult = await saveCollection(collection);
-    
+
     if (!saveResult.success) {
       return {
         success: false,
-        error: saveResult.error || 'Failed to save imported collection'
+        error: saveResult.error || 'Failed to save imported collection',
       };
     }
 
     return {
       success: true,
-      imported: collection.packs.length
+      imported: collection.packs.length,
     };
   } catch (error) {
     const storageError = createStorageError(
@@ -306,7 +311,7 @@ export async function importCollection(data: string): Promise<{ success: boolean
     logError(storageError, error);
     return {
       success: false,
-      error: storageError.message
+      error: storageError.message,
     };
   }
 }

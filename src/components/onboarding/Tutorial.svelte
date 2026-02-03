@@ -19,14 +19,13 @@ The tutorial will automatically:
 4. Track completion status in localStorage
 -->
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import TutorialOverlay from './TutorialOverlay.svelte';
+  import TutorialOverlay from '@components/onboarding/TutorialOverlay.svelte';
 
   // TutorialOverlay handles all the logic
   // This component is just an entry point as specified in ONBOARD-001
   // We use onMount to ensure we only run on client-side
 
-  onMount(() => {
+  $effect(() => {
     console.log('[Tutorial] Tutorial component mounted');
   });
 </script>

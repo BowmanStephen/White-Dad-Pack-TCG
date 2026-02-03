@@ -1,28 +1,38 @@
 <script lang="ts">
-  import type { Rarity, HoloVariant } from '../../types';
+  import { onMount, onDestroy, tick } from 'svelte';
+  import type { Rarity, HoloVariant } from '@/types';
   import {
     RARITY_CONFIG,
     RARITY_DROP_RATES,
     HOLO_VARIANT_DESCRIPTIONS,
     HOLO_DROP_RATE
-  } from '../../types';
-  import { onMount, onDestroy, tick } from 'svelte';
+  } from '@/types';
 
-  export let rarity: Rarity;
-  export let triggerElement: HTMLElement;
-  export let showHoloInfo: boolean = false; // Whether to show holo variant info
-  export let holoVariant: HoloVariant = 'none';
-  export let delay: number = 400; // 400ms delay before showing
+  interface Props {
+    rarity: Rarity;
+    triggerElement: HTMLElement;
+    showHoloInfo?: boolean;
+    holoVariant?: HoloVariant;
+    delay?: number;
+  }
 
-  let visible = false;
-  let tooltipElement: HTMLDivElement;
-  let position = { top: '0px', left: '0px' };
+  let {
+    rarity,
+    triggerElement,
+    showHoloInfo = false,
+    holoVariant = 'none',
+    delay = 400,
+  }: Props = $props();
+
+  let visible = $state(false);
+  let tooltipElement = $state<HTMLDivElement | null>(null);
+  let position = $state({ top: '0px', left: '0px' });
   let showTimeout: ReturnType<typeof setTimeout> | null = null;
   let hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  $: rarityConfig = RARITY_CONFIG[rarity];
-  $: dropRateInfo = RARITY_DROP_RATES[rarity];
-  $: holoInfo = showHoloInfo ? HOLO_VARIANT_DESCRIPTIONS[holoVariant] : null;
+  const rarityConfig = $derived(RARITY_CONFIG[rarity]);
+  const dropRateInfo = $derived(RARITY_DROP_RATES[rarity]);
+  const holoInfo = $derived(showHoloInfo ? HOLO_VARIANT_DESCRIPTIONS[holoVariant] : null);
 
   // Mobile touch handling
   let isMobile = false;

@@ -11,14 +11,6 @@ import type {
   CardStats,
   RarityConfig,
   PackDesign,
-  SeasonPackDesign,
-  AvatarId,
-  Avatar,
-  BadgeRarity,
-  BadgeCategory,
-  RankedTier,
-  BattleConfig,
-  RankedTierConfig,
   PackDesignConfig,
 } from '../types/core';
 

@@ -1,9 +1,18 @@
 <script lang="ts">
-  import type { Rarity } from '../../types';
+  import { onMount, onDestroy } from 'svelte';
+  import type { Rarity } from '@/types';
 
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  export let isHolo: boolean = false;
-  export let rarity: Rarity = 'common';
+  interface Props {
+    size?: 'sm' | 'md' | 'lg';
+    isHolo?: boolean;
+    rarity?: Rarity;
+  }
+
+  let {
+    size = 'md',
+    isHolo = false,
+    rarity = 'common',
+  }: Props = $props();
 
   const sizeClasses = {
     sm: 'w-48 h-[268px]',
@@ -11,9 +20,8 @@
     lg: 'w-96 h-[537px]',
   };
 
-  // Border color based on rarity
-  $: borderColor = (() => {
-    switch (rarity) {
+  function getBorderColor(value: Rarity): string {
+    switch (value) {
       case 'common':
       case 'uncommon':
         return '#9ca3af';
@@ -28,11 +36,10 @@
       default:
         return '#9ca3af';
     }
-  })();
+  }
 
-  // Glow color based on rarity
-  $: glowColor = (() => {
-    switch (rarity) {
+  function getGlowColor(value: Rarity): string {
+    switch (value) {
       case 'common':
       case 'uncommon':
         return 'rgba(156, 163, 175, 0.3)';
@@ -47,15 +54,20 @@
       default:
         return 'rgba(156, 163, 175, 0.3)';
     }
-  })();
+  }
+
+  // Border color based on rarity
+  const borderColor = $derived(getBorderColor(rarity));
+
+  // Glow color based on rarity
+  const glowColor = $derived(getGlowColor(rarity));
 
   // Holo overlay opacity
-  $: holoOpacity = isHolo ? 0.4 : 0;
+  const holoOpacity = $derived(isHolo ? 0.4 : 0);
 
   // Pattern animation offset (subtle movement)
   let patternOffset = 0;
 
-  import { onMount, onDestroy } from 'svelte';
   let animationFrame: number | null = null;
 
   function animatePattern() {

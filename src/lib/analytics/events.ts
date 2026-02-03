@@ -7,14 +7,7 @@
  * @module analytics/events
  */
 
-import type {
-  AnyAnalyticsEvent,
-  Rarity,
-  PackCard,
-  Pack,
-  DadType,
-  PackType,
-} from '@/types';
+import type { AnyAnalyticsEvent, Rarity, Pack, DadType, PackType } from '@/types';
 import { getStoredEvents } from '@/stores/analytics';
 
 // ============================================================================
@@ -54,11 +47,14 @@ export interface RarityStatistics {
   totalPacks: number;
   totalCards: number;
   averageCardsPerPack: number;
-  rarityDistribution: Record<Rarity, {
-    count: number;
-    percentage: number;
-    perPackAverage: number;
-  }>;
+  rarityDistribution: Record<
+    Rarity,
+    {
+      count: number;
+      percentage: number;
+      perPackAverage: number;
+    }
+  >;
   holoRate: number; // percentage of cards that are holo
   bestRarityDistribution: Record<Rarity, number>; // count of packs with each as best rarity
   packTypeDistribution?: Record<PackType, number>; // breakdown by pack type
@@ -174,15 +170,11 @@ export function aggregateRarityStats(options?: {
 
   // Apply date range filter
   if (options?.startDate) {
-    filteredEvents = filteredEvents.filter(
-      (event) => event.timestamp >= options.startDate!
-    );
+    filteredEvents = filteredEvents.filter(event => event.timestamp >= options.startDate!);
   }
 
   if (options?.endDate) {
-    filteredEvents = filteredEvents.filter(
-      (event) => event.timestamp <= options.endDate!
-    );
+    filteredEvents = filteredEvents.filter(event => event.timestamp <= options.endDate!);
   }
 
   // Apply pack type filter (would need to check event data)
@@ -228,14 +220,16 @@ export function aggregateRarityStats(options?: {
   }
 
   // Calculate percentages
-  const percentage = (count: number) =>
-    totalCards > 0 ? (count / totalCards) * 100 : 0;
+  const percentage = (count: number) => (totalCards > 0 ? (count / totalCards) * 100 : 0);
 
-  const rarityDistribution: Record<Rarity, {
-    count: number;
-    percentage: number;
-    perPackAverage: number;
-  }> = {
+  const rarityDistribution: Record<
+    Rarity,
+    {
+      count: number;
+      percentage: number;
+      perPackAverage: number;
+    }
+  > = {
     common: {
       count: rarityCounts.common,
       percentage: percentage(rarityCounts.common),
@@ -329,15 +323,11 @@ export function aggregateTimingStats(options?: {
 
   // Apply date range filter
   if (options?.startDate) {
-    packEvents = packEvents.filter(
-      (event) => event.timestamp >= options.startDate!
-    );
+    packEvents = packEvents.filter(event => event.timestamp >= options.startDate!);
   }
 
   if (options?.endDate) {
-    packEvents = packEvents.filter(
-      (event) => event.timestamp <= options.endDate!
-    );
+    packEvents = packEvents.filter(event => event.timestamp <= options.endDate!);
   }
 
   if (packEvents.length === 0) {
@@ -353,31 +343,35 @@ export function aggregateTimingStats(options?: {
 
   // Extract durations (type guard: pack_complete events have duration and skipped)
   const durations = packEvents
-    .filter((event) => event.type === 'pack_complete' && 'duration' in event.data)
-    .map((event) => (event.data as { duration: number }).duration);
-  
-  const skippedCount = packEvents
-    .filter((event) => event.type === 'pack_complete' && 'skipped' in event.data && (event.data as { skipped: boolean }).skipped)
-    .length;
+    .filter(event => event.type === 'pack_complete' && 'duration' in event.data)
+    .map(event => (event.data as { duration: number }).duration);
+
+  const skippedCount = packEvents.filter(
+    event =>
+      event.type === 'pack_complete' &&
+      'skipped' in event.data &&
+      (event.data as { skipped: boolean }).skipped
+  ).length;
 
   // Calculate time between opens
   const timeBetweenOpens: number[] = [];
   for (let i = 1; i < packEvents.length; i++) {
     const timeDiff = packEvents[i].timestamp - packEvents[i - 1].timestamp;
-    if (timeDiff > 0 && timeDiff < 3600000) { // Only count if < 1 hour (ignore long breaks)
+    if (timeDiff > 0 && timeDiff < 3600000) {
+      // Only count if < 1 hour (ignore long breaks)
       timeBetweenOpens.push(timeDiff);
     }
   }
 
   // Calculate statistics
-  const averageOpenTime =
-    durations.reduce((sum, d) => sum + d, 0) / durations.length;
+  const averageOpenTime = durations.reduce((sum, d) => sum + d, 0) / durations.length;
 
   const sortedDurations = [...durations].sort((a, b) => a - b);
   const medianOpenTime =
     sortedDurations.length % 2 === 0
       ? (sortedDurations[sortedDurations.length / 2 - 1] +
-          sortedDurations[sortedDurations.length / 2]) / 2
+          sortedDurations[sortedDurations.length / 2]) /
+        2
       : sortedDurations[Math.floor(sortedDurations.length / 2)];
 
   const minOpenTime = Math.min(...durations);
@@ -440,7 +434,7 @@ export function generateAnalyticsSummary(options?: {
   }
 
   // Determine time period
-  const timestamps = events.map((e) => e.timestamp);
+  const timestamps = events.map(e => e.timestamp);
   const start = options?.startDate ?? Math.min(...timestamps);
   const end = options?.endDate ?? Math.max(...timestamps);
 
@@ -553,25 +547,27 @@ export function exportAnalyticsData(options?: {
   let filteredEvents = events;
 
   if (options?.startDate !== undefined) {
-    filteredEvents = filteredEvents.filter(
-      (event) => event.timestamp >= options.startDate!
-    );
+    filteredEvents = filteredEvents.filter(event => event.timestamp >= options.startDate!);
   }
 
   if (options?.endDate !== undefined) {
-    filteredEvents = filteredEvents.filter(
-      (event) => event.timestamp <= options.endDate!
-    );
+    filteredEvents = filteredEvents.filter(event => event.timestamp <= options.endDate!);
   }
 
   if (options?.format === 'csv') {
     // Convert to CSV (simplified - just pack events for now)
-    const packEvents = filteredEvents.filter(
-      (e) => e.type === 'pack_complete'
-    );
+    const packEvents = filteredEvents.filter(e => e.type === 'pack_complete');
 
-    const headers = ['timestamp', 'packId', 'cardCount', 'bestRarity', 'holoCount', 'duration', 'skipped'];
-    const rows = packEvents.map((e) => [
+    const headers = [
+      'timestamp',
+      'packId',
+      'cardCount',
+      'bestRarity',
+      'holoCount',
+      'duration',
+      'skipped',
+    ];
+    const rows = packEvents.map(e => [
       e.timestamp,
       e.data.packId,
       e.data.cardCount,
@@ -581,7 +577,7 @@ export function exportAnalyticsData(options?: {
       e.data.skipped,
     ]);
 
-    return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
   }
 
   return JSON.stringify(filteredEvents, null, 2);

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { browser } from '@/lib/utils/browser';
   import { initializeShortcuts } from '@/lib/keyboard/shortcuts';
 
-  onMount(() => {
+  $effect(() => {
     // Only initialize in browser environment
     if (browser) {
       initializeShortcuts();

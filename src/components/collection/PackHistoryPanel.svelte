@@ -1,17 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { collection, getRecentPacks } from '../../stores/collection';
-  import PackHistoryEntry from './PackHistoryEntry.svelte';
+  import { collection } from '@/stores/collection';
+  import PackHistoryEntry from '@components/collection/PackHistoryEntry.svelte';
 
   // State
-  let displayedPacks: Array<{ id: string; expanded: boolean }> = [];
+  let displayedPacks = $state<Array<{ id: string; expanded: boolean }>>([]);
   let page = 0;
   const pageSize = 10; // Show 10 packs initially, load more on scroll
-  let hasMore = false;
-  let isLoading = false;
+  let hasMore = $state(false);
+  let isLoading = $state(false);
 
   // Intersection observer for infinite scroll
-  let loadMoreTrigger: HTMLDivElement;
+  let loadMoreTrigger = $state<HTMLDivElement | null>(null);
   let observer: IntersectionObserver | null = null;
 
   // Load pack history

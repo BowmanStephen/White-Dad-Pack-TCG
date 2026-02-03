@@ -1,32 +1,29 @@
 <script lang="ts">
-  import type { PackCard } from '../../types';
-  import { RARITY_CONFIG } from '../../types';
-  import Card from './Card.svelte';
-  import CardBack from './CardBack.svelte';
+  import { onMount } from 'svelte';
+  import type { PackCard } from '@/types';
+  import Card from '@components/card/Card.svelte';
+  import CardBack from '@components/card/CardBack.svelte';
 
-  export let card: PackCard;
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  export let interactive: boolean = true;
-  export let flipDuration: number = 600; // milliseconds
-  export let autoFlip: boolean = false;
-  export let autoFlipDelay: number = 300; // milliseconds before auto-flip
-
-  // Flip state
-  let isFlipped = false;
-
-  // Touch device detection
-  let isTouchDevice = false;
-
-  if (typeof window !== 'undefined') {
-    isTouchDevice = (
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      (navigator as any).msMaxTouchPoints > 0
-    );
+  interface Props {
+    card: PackCard;
+    size?: 'sm' | 'md' | 'lg';
+    interactive?: boolean;
+    flipDuration?: number;
+    autoFlip?: boolean;
+    autoFlipDelay?: number;
   }
 
-  // Auto-flip logic
-  import { onMount } from 'svelte';
+  let {
+    card,
+    size = 'md',
+    interactive = true,
+    flipDuration = 600,
+    autoFlip = false,
+    autoFlipDelay = 300,
+  }: Props = $props();
+
+  // Flip state
+  let isFlipped = $state(false);
 
   onMount(() => {
     if (autoFlip && !isFlipped) {
@@ -61,8 +58,8 @@
   class="card-flip-container {sizeClasses[size]}"
   class:cursor-pointer={interactive}
   class:cursor-default={!interactive}
-  on:click={interactive ? flip : undefined}
-  on:keydown={(e) => interactive && (e.key === ' ' || e.key === 'Enter') && flip()}
+  onclick={interactive ? flip : undefined}
+  onkeydown={(e) => interactive && (e.key === ' ' || e.key === 'Enter') && flip()}
   role="button"
   aria-label="Click to flip card"
   tabindex="0"

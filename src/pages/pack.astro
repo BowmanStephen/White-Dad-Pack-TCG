@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SimplePackOpener from '../components/pack/SimplePackOpener.svelte';
+import PackOpener from '../components/pack/PackOpener.svelte';
 import Navigation from '../components/common/Navigation.svelte';
 
 const title = "Open Pack - DadDeck";
@@ -11,6 +11,6 @@ const description = "Open a pack of ridiculous suburban dad trading cards!";
   <Navigation client:load />
   
   <main class="pt-20 pb-8 min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-    <SimplePackOpener client:load />
+    <PackOpener client:load />
   </main>
 </BaseLayout>

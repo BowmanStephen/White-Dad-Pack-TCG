@@ -1,13 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Card } from '../../types';
+  import type { Card } from '@/types';
 
-  export let card: Card;
-  export let show: boolean = true;
-  export let delay: number = 0; // Delay before showing (ms)
+  interface Props {
+    card: Card;
+    show?: boolean;
+    delay?: number;
+  }
 
-  let visible = false;
-  let animate = false;
+  let {
+    card,
+    show = true,
+    delay = 0,
+  }: Props = $props();
+
+  let visible = $state(false);
+  let animate = $state(false);
 
   onMount(() => {
     // Start animation after delay
@@ -24,7 +32,7 @@
     return () => clearTimeout(timer);
   });
 
-  $: isVisible = show && visible;
+  const isVisible = $derived(show && visible);
 </script>
 
 {#if isVisible}

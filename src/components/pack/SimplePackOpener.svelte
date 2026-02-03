@@ -141,7 +141,7 @@ function handleOpenAnother() {
       </h2>
 
       <p class="text-xl text-purple-200 font-bold uppercase tracking-widest">
-        You Unlocked {packData.cards.length} Epic Dad Cards!
+        You Unlocked {packData.cards.length} Dad Cards!
       </p>
     </div>
 

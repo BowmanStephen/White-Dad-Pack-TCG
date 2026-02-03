@@ -26,9 +26,9 @@ class GoogleAnalyticsProvider implements AnalyticsProvider {
     await this.loadScript();
 
     // Initialize gtag
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('js', new Date());
-      (window as any).gtag('config', this.measurementId, {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('js', new Date());
+      window.gtag('config', this.measurementId, {
         send_page_view: false, // We'll handle page views manually
         anonymize_ip: true, // Privacy-compliant: anonymize IP addresses
         allow_google_signals: false, // Disable advertising features
@@ -62,7 +62,7 @@ class GoogleAnalyticsProvider implements AnalyticsProvider {
   }
 
   async trackEvent(event: AnyAnalyticsEvent): Promise<void> {
-    if (!this.initialized || typeof window === 'undefined' || !(window as any).gtag) {
+    if (!this.initialized || typeof window === 'undefined' || !window.gtag) {
       return;
     }
 
@@ -70,7 +70,7 @@ class GoogleAnalyticsProvider implements AnalyticsProvider {
       // Convert analytics event to GA4 event format
       const gaEvent = this.convertToGAEvent(event);
 
-      (window as any).gtag('event', gaEvent.name, gaEvent.params);
+      window.gtag('event', gaEvent.name, gaEvent.params);
     } catch (error) {
       console.error('[GA] Failed to track event:', error);
     }

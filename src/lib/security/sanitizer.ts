@@ -125,7 +125,7 @@ export function sanitizeFilename(filename: string): string {
   }
 
   // Remove path traversal attempts
-  let sanitized = filename.replace(/[\/\\]/g, '');
+  let sanitized = filename.replace(/[\\/]/g, '');
 
   // Remove null bytes
   sanitized = sanitized.replace(/\0/g, '');
@@ -275,7 +275,13 @@ export function sanitizeSearchQuery(query: string): string {
   }
 
   // Remove control characters (except tab, newline, carriage return)
-  let sanitized = query.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  /* eslint-disable no-control-regex */
+  const controlCharsRegex = new RegExp(
+    '[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]',
+    'g'
+  );
+  /* eslint-enable no-control-regex */
+  let sanitized = query.replace(controlCharsRegex, '');
 
   // Limit length (prevent DoS via massive queries)
   if (sanitized.length > 200) {

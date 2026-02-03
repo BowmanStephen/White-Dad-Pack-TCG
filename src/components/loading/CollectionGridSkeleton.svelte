@@ -1,11 +1,15 @@
 <script lang="ts">
-  import CardSkeleton from './CardSkeleton.svelte';
+  import CardSkeleton from '@components/loading/CardSkeleton.svelte';
 
-  export let count: number = 6;
-  export let columns: number = 2;
+  interface Props {
+    count?: number;
+    columns?: number;
+  }
+
+  let { count = 6, columns = 2 }: Props = $props();
 
   // Calculate grid columns based on screen size
-  $: gridColumns = {
+  const gridColumns = {
     mobile: 'grid-cols-2',
     tablet: 'md:grid-cols-4',
     desktop: 'lg:grid-cols-6',

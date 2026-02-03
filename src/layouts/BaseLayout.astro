@@ -200,10 +200,10 @@ const fullImageURL = new URL(image, Astro.site!).href;
     <BottomNav client:load />
 
     <!-- Service Worker Registration (deferred for performance) -->
-    <script is:inline define:vars={{}}>
+    <script is:inline define:vars={{ isProd: import.meta.env.PROD }}>
       // Defer service worker registration to avoid blocking initial render
       // Only register in production and when supported
-      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+      if ('serviceWorker' in navigator && isProd) {
         // Use requestIdleCallback for non-blocking registration
         if ('requestIdleCallback' in window) {
           requestIdleCallback(async () => {

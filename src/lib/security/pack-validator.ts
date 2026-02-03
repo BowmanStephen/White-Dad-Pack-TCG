@@ -615,8 +615,8 @@ function logSuspiciousActivity(
   }
 
   // In production, send to monitoring service
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'suspicious_pack', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'suspicious_pack', {
       confidence,
       violation_count: violations.length,
       warning_count: warnings.length,

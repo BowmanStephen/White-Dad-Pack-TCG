@@ -1,23 +1,30 @@
-import RadarChart from './RadarChart.svelte';
-  import GenerativeCardArt from '../art/GenerativeCardArt.svelte';
-  import AbilityTooltip from './AbilityTooltip.svelte';
+<script lang="ts">
+  import type { PackCard } from '@/types';
+  import { RARITY_CONFIG, DAD_TYPE_ICONS, DAD_TYPE_NAMES } from '@/types';
+  import { closeLightbox, nextCard, prevCard } from '@/stores/lightbox';
+  import { isSpecialCardType, getSpecialCardTypeLabel } from '@/lib/card-types';
+  import RadarChart from '@components/card/RadarChart.svelte';
+  import GenerativeCardArt from '@components/art/GenerativeCardArt.svelte';
+  import AbilityTooltip from '@components/card/AbilityTooltip.svelte';
 
-  export let card: PackCard;
-  export let currentIndex: number;
-  export let totalCards: number;
+  interface Props {
+    card: PackCard;
+    currentIndex: number;
+    totalCards: number;
+  }
 
-  $: rarityConfig = RARITY_CONFIG[card.rarity];
-  $: typeIcon = DAD_TYPE_ICONS[card.type];
-  $: typeName = DAD_TYPE_NAMES[card.type];
+  let { card, currentIndex, totalCards }: Props = $props();
 
-  let modalElement: HTMLDivElement;
+  const rarityConfig = $derived(RARITY_CONFIG[card.rarity]);
+  const typeIcon = $derived(DAD_TYPE_ICONS[card.type]);
+  const typeName = $derived(DAD_TYPE_NAMES[card.type]);
+
+  let modalElement: HTMLDivElement | null = null;
   let abilityElements: HTMLElement[] = [];
 
   // Close modal on backdrop click
-  function handleBackdropClick(event: MouseEvent) {
-    if (event.target === event.currentTarget) {
-      closeLightbox();
-    }
+  function handleBackdropClick() {
+    closeLightbox();
   }
 
   // Close modal on Escape key
@@ -53,28 +60,34 @@ import RadarChart from './RadarChart.svelte';
     };
     return seasonColors[seasonId] || '#9ca3af';
   }
+
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <!-- Modal Backdrop -->
 <div
   class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-  on:click={handleBackdropClick}
   role="dialog"
   aria-modal="true"
   aria-labelledby="modal-title"
   bind:this={modalElement}
+  tabindex="-1"
 >
+  <button
+    class="absolute inset-0 bg-transparent border-0 p-0"
+    onclick={handleBackdropClick}
+    aria-label="Close card details"
+    type="button"
+  ></button>
   <!-- Modal Content -->
   <div
-    class="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border-2"
+    class="relative z-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border-2"
     style="border-color: {rarityConfig.color}; box-shadow: 0 0 60px {rarityConfig.glowColor}44;"
-    on:click|stoppropagation
   >
     <!-- Close Button -->
     <button
-      on:click={closeLightbox}
+      onclick={closeLightbox}
       class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white transition-all duration-200 hover:scale-110 active:scale-95"
       aria-label="Close card details"
     >
@@ -86,7 +99,7 @@ import RadarChart from './RadarChart.svelte';
       <div class="sticky top-0 z-10 px-6 py-3 bg-black/30 backdrop-blur-md border-b border-white/10">
         <div class="flex items-center justify-between text-sm">
           <button
-            on:click={prevCard}
+            onclick={prevCard}
             class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentIndex === 0}
             aria-label="Previous card"
@@ -99,7 +112,7 @@ import RadarChart from './RadarChart.svelte';
           </span>
 
           <button
-            on:click={nextCard}
+            onclick={nextCard}
             class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentIndex === totalCards - 1}
             aria-label="Next card"
@@ -241,7 +254,7 @@ import RadarChart from './RadarChart.svelte';
     <!-- Action Buttons -->
     <div class="sticky bottom-0 px-8 py-4 bg-black/40 backdrop-blur-md border-t border-white/10">
       <button
-        on:click={closeLightbox}
+        onclick={closeLightbox}
         class="w-full px-6 py-3 rounded-xl font-bold text-white transition-all duration-200 hover:scale-105 active:scale-95"
         style="background: linear-gradient(135deg, {rarityConfig.color}, {rarityConfig.color}dd); box-shadow: 0 4px 12px {rarityConfig.glowColor}44;"
       >

@@ -201,23 +201,36 @@ async function handleShare() {
   }
 }
 
-function handleCardClick() {
-  if (!enableLightbox || !interactive) return;
-  const cards = cardList.length > 0 ? cardList : [card];
-  const index = cardList.length > 0 ? cardIndex : 0;
-  openLightbox(card, cards, index);
-}
+  const isClickable = $derived(enableLightbox && interactive);
+
+  function handleCardClick() {
+    if (!isClickable) return;
+    const cards = cardList.length > 0 ? cardList : [card];
+    const index = cardList.length > 0 ? cardIndex : 0;
+    openLightbox(card, cards, index);
+  }
+
+  function handleCardKeydown(event: KeyboardEvent) {
+    if (!isClickable) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleCardClick();
+    }
+  }
 </script>
 
 <div
   class="card-perspective {sizeClasses[size]}"
-  class:cursor-pointer={enableLightbox && interactive}
+  class:cursor-pointer={isClickable}
   bind:this={cardElement}
   onmouseenter={handleMouseEnter}
   onmouseleave={handleMouseLeave}
-  onclick={handleCardClick}
-  role="img"
+  onclick={isClickable ? handleCardClick : undefined}
+  onkeydown={handleCardKeydown}
+  role="button"
   aria-label="{card.name} - {rarityConfig.name} {typeName}"
+  aria-disabled={!isClickable}
+  tabindex={isClickable ? 0 : -1}
 >
   <div
     class="card-3d w-full h-full relative"

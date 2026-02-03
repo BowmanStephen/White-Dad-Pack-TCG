@@ -163,6 +163,10 @@ function handleOpenAnother() {
 function handleGoHome() {
   dispatch('goHome');
 }
+
+function handleGoCollection() {
+  dispatch('goCollection');
+}
 </script>
 
 <!-- Celebration Effects -->
@@ -234,7 +238,7 @@ function handleGoHome() {
     <div class="mb-12" in:fly={{ y: 30, duration: 600, delay: 500 }}>
       <button
         class="w-full flex items-center justify-between p-4 bg-slate-900/50 rounded-2xl border border-white/5 backdrop-blur-sm hover:bg-slate-800/50 transition-colors"
-        on:click={() => (showDetails = !showDetails)}
+        onclick={() => (showDetails = !showDetails)}
         aria-expanded={showDetails}
       >
         <div class="flex items-center gap-4">
@@ -354,13 +358,13 @@ function handleGoHome() {
             </p>
             <div class="flex flex-col gap-2 sm:gap-3">
               <button
-                on:click={shareOnX}
+                onclick={shareOnX}
                 class="px-4 sm:px-6 py-2.5 sm:py-3 bg-sky-500 text-white font-black rounded-lg sm:rounded-xl hover:bg-sky-600 transition-all active:scale-95 text-sm sm:text-base"
               >
                 Share on X →
               </button>
               <button
-                on:click={copyLink}
+                onclick={copyLink}
                 class="px-4 sm:px-6 py-2.5 sm:py-3 bg-slate-800 text-slate-300 font-black rounded-lg sm:rounded-xl hover:bg-slate-700 transition-all text-sm sm:text-base"
               >
                 Copy Link
@@ -454,8 +458,8 @@ function handleGoHome() {
               delay: getCardDelay(i, card.rarity),
               easing: backOut,
             }}
-            on:click={() => handleCardInspect(card)}
-            on:keydown={e => {
+            onclick={() => handleCardInspect(card)}
+            onkeydown={e => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 handleCardInspect(card);
@@ -507,7 +511,7 @@ function handleGoHome() {
     >
       <button
         class="group relative px-6 sm:px-12 py-4 sm:py-6 bg-white text-slate-950 font-black uppercase tracking-wider sm:tracking-[0.2em] rounded-xl sm:rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all overflow-hidden text-sm sm:text-base"
-        on:click={handleOpenAnother}
+        onclick={handleOpenAnother}
       >
         <div
           class="absolute inset-0 bg-slate-100 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
@@ -521,9 +525,16 @@ function handleGoHome() {
       </button>
       <button
         class="px-6 sm:px-12 py-4 sm:py-6 bg-slate-800 text-slate-400 font-black uppercase tracking-wider sm:tracking-[0.2em] rounded-xl sm:rounded-2xl hover:bg-slate-700 hover:text-white active:scale-95 transition-all border border-white/5 text-sm sm:text-base"
-        on:click={handleGoHome}
+        onclick={handleGoHome}
       >
         Back to Street
+      </button>
+      <button
+        class="px-6 sm:px-12 py-4 sm:py-6 bg-transparent text-slate-200 font-black uppercase tracking-wider sm:tracking-[0.2em] rounded-xl sm:rounded-2xl hover:text-white active:scale-95 transition-all border border-amber-500/40 hover:border-amber-400 text-sm sm:text-base"
+        onclick={handleGoCollection}
+        data-testid="results-collection"
+      >
+        View Collection
       </button>
     </div>
   </div>

@@ -5,7 +5,7 @@
  * Svelte 5 runes ($state, $derived) don't automatically work with Nanostores,
  * so we need to manually subscribe in onMount and sync values.
  */
-import type { ReadableAtom, WritableAtom } from 'nanostores';
+import type { ReadableAtom } from 'nanostores';
 
 /**
  * Subscription cleanup function type
@@ -50,15 +50,13 @@ export interface StoreSubscription<T> {
  * </script>
  * ```
  */
-export function subscribeToStores<T extends unknown[]>(
-  subscriptions: { [K in keyof T]: StoreSubscription<T[K]> }
-): Unsubscriber {
-  const unsubscribers = subscriptions.map(({ store, onUpdate }) =>
-    store.subscribe(onUpdate)
-  );
+export function subscribeToStores<T extends unknown[]>(subscriptions: {
+  [K in keyof T]: StoreSubscription<T[K]>;
+}): Unsubscriber {
+  const unsubscribers = subscriptions.map(({ store, onUpdate }) => store.subscribe(onUpdate));
 
   return () => {
-    unsubscribers.forEach((unsub) => unsub());
+    unsubscribers.forEach(unsub => unsub());
   };
 }
 

@@ -21,7 +21,7 @@
  * />
  * ```
  */
-export function getOptimizedImageSrc(src: string, width = 800, quality = 80): string {
+export function getOptimizedImageSrc(src: string, _width = 800, _quality = 80): string {
   // For static builds, Astro's Image component handles optimization
   // This function provides a consistent API for future CDN integration
   return src;
@@ -50,7 +50,7 @@ export function lazyLoadImages(
   // Check if browser supports Intersection Observer
   if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
     // Fallback: load all images immediately
-    document.querySelectorAll(selector).forEach((img) => {
+    document.querySelectorAll(selector).forEach(img => {
       const element = img as HTMLImageElement;
       if (element.dataset.src) {
         element.src = element.dataset.src;
@@ -62,7 +62,7 @@ export function lazyLoadImages(
 
   const imageObserver = new IntersectionObserver(
     (entries, observer) => {
-      entries.forEach((entry) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
           const img = entry.target as HTMLImageElement;
           const src = img.dataset.src;
@@ -93,7 +93,7 @@ export function lazyLoadImages(
   );
 
   // Start observing images
-  document.querySelectorAll(selector).forEach((img) => {
+  document.querySelectorAll(selector).forEach(img => {
     imageObserver.observe(img);
   });
 }
@@ -144,7 +144,7 @@ export function blurPlaceholder(color: string = '#1e293b'): string {
 export function preloadCriticalImages(urls: string[]): void {
   if (typeof window === 'undefined') return;
 
-  urls.forEach((url) => {
+  urls.forEach(url => {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'image';
@@ -205,7 +205,7 @@ export function getOptimalFormat(): 'webp' | 'avif' | 'png' {
  * }, 200);
  * ```
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number = 100
 ): (...args: Parameters<T>) => void {
@@ -238,7 +238,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * }, 100);
  * ```
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number = 100
 ): (...args: Parameters<T>) => void {

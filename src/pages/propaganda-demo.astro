@@ -1,0 +1,406 @@
+---
+/**
+ * SUBURBAN PROPAGANDA - Card Design Demo
+ * 
+ * Showcase page for the new propaganda-style card aesthetic.
+ * Soviet constructivism meets HOA newsletters.
+ * 
+ * "RISE, SUBURBAN COMRADE"
+ */
+import Layout from '../layouts/BaseLayout.astro';
+import PropagandaShowcase from '../components/demo/PropagandaShowcase.svelte';
+---
+
+<Layout title="SUBURBAN PROPAGANDA | DadDeck">
+  <main class="propaganda-demo-page">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-bg">
+        <!-- Radiating lines SVG background -->
+        <svg class="rays" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="ray-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#bf0603" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#bf0603" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          {Array.from({length: 24}).map((_, i) => (
+            <line 
+              x1="50" y1="50" 
+              x2={50 + Math.cos(i * Math.PI / 12) * 70} 
+              y2={50 + Math.sin(i * Math.PI / 12) * 70}
+              stroke="url(#ray-grad)" 
+              stroke-width="3"
+            />
+          ))}
+        </svg>
+      </div>
+      
+      <div class="hero-content">
+        <div class="hero-badge">NEW AESTHETIC</div>
+        <h1 class="hero-title">
+          <span class="title-line">SUBURBAN</span>
+          <span class="title-line accent">PROPAGANDA</span>
+        </h1>
+        <p class="hero-subtitle">
+          SOVIET CONSTRUCTIVISM MEETS HOA NEWSLETTERS
+        </p>
+        <div class="hero-slogan">
+          "THE BACKYARD IS THE PEOPLE'S DOMAIN"
+        </div>
+      </div>
+    </section>
+
+    <!-- Card Showcase -->
+    <section class="showcase-section">
+      <PropagandaShowcase client:load />
+    </section>
+
+    <!-- Design Philosophy -->
+    <section class="philosophy">
+      <div class="philosophy-grid">
+        <div class="philosophy-card">
+          <div class="philosophy-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h3>ANGULAR GEOMETRY</h3>
+          <p>Bold diagonal cuts and stark color blocks create dramatic visual tension</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <h3>HEROIC SILHOUETTES</h3>
+          <p>Dad figures rendered as revolutionary icons, tools raised in triumph</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/>
+              <path d="M7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/>
+            </svg>
+          </div>
+          <h3>PROPAGANDA TYPOGRAPHY</h3>
+          <p>Condensed, bold, uppercase lettering that demands attention</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3l9 4.5v9L12 21l-9-4.5v-9L12 3z"/>
+            </svg>
+          </div>
+          <h3>RARITY EVOLUTION</h3>
+          <p>From muted newsprint to blazing revolutionary gold</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Manifesto -->
+    <section class="manifesto">
+      <div class="manifesto-content">
+        <h2>THE SUBURBAN MANIFESTO</h2>
+        <div class="manifesto-text">
+          <p>In every backyard, a revolution brews.</p>
+          <p>The grill smoke rises like industry.</p>
+          <p>The lawn, perfectly edged, declares order.</p>
+          <p>The thermostat, set to 68, proclaims justice.</p>
+          <p class="highlight">RISE, SUBURBAN COMRADE.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+/* ===== FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Staatliches&display=swap');
+
+/* ===== PAGE CONTAINER ===== */
+.propaganda-demo-page {
+  min-height: 100vh;
+  background: #0a0a0f;
+  color: #faf0ca;
+  overflow-x: hidden;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0d0d12 50%, #1a1a2e 100%);
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rays {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotate-slow 60s linear infinite;
+}
+
+@keyframes rotate-slow {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 800px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: #bf0603;
+  color: #faf0ca;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 4px;
+  margin-bottom: 2rem;
+  clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%);
+}
+
+.hero-title {
+  font-family: 'Staatliches', sans-serif;
+  font-size: clamp(3rem, 12vw, 8rem);
+  line-height: 0.9;
+  margin: 0;
+  text-shadow: 
+    4px 4px 0 #bf0603,
+    8px 8px 0 rgba(191, 6, 3, 0.3);
+}
+
+.title-line {
+  display: block;
+}
+
+.title-line.accent {
+  color: #f4d58d;
+  text-shadow: 
+    4px 4px 0 #bf0603,
+    8px 8px 0 rgba(191, 6, 3, 0.5);
+}
+
+.hero-subtitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  letter-spacing: 6px;
+  color: #c9b896;
+  margin: 2rem 0 1rem;
+}
+
+.hero-slogan {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  color: #bf0603;
+  letter-spacing: 2px;
+  padding: 1rem 2rem;
+  border: 2px solid #bf0603;
+  display: inline-block;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.hero-slogan::before,
+.hero-slogan::after {
+  content: '★';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #f4d58d;
+}
+
+.hero-slogan::before {
+  left: -1.5rem;
+}
+
+.hero-slogan::after {
+  right: -1.5rem;
+}
+
+/* ===== SHOWCASE SECTION ===== */
+.showcase-section {
+  padding: 4rem 2rem;
+  background: 
+    linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 10%, #1a1a2e 90%, #0a0a0f 100%),
+    repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 20px,
+      rgba(191, 6, 3, 0.02) 20px,
+      rgba(191, 6, 3, 0.02) 40px
+    );
+}
+
+/* ===== PHILOSOPHY SECTION ===== */
+.philosophy {
+  padding: 6rem 2rem;
+  background: #0d0d12;
+}
+
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.philosophy-card {
+  background: linear-gradient(145deg, #1a1a2e 0%, #0f0f18 100%);
+  border: 2px solid #bf060333;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  clip-path: polygon(0 8px, 8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+}
+
+.philosophy-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #bf0603, transparent);
+}
+
+.philosophy-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  padding: 1rem;
+  background: #bf060322;
+  border: 2px solid #bf0603;
+  border-radius: 50%;
+  color: #f4d58d;
+}
+
+.philosophy-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.philosophy-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: #faf0ca;
+  margin-bottom: 1rem;
+}
+
+.philosophy-card p {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: #c9b896;
+  line-height: 1.6;
+}
+
+/* ===== MANIFESTO SECTION ===== */
+.manifesto {
+  padding: 6rem 2rem;
+  background: 
+    linear-gradient(180deg, #0a0a0f 0%, #1a0a00 50%, #0a0a0f 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.manifesto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(191, 6, 3, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(244, 213, 141, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.manifesto-content {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.manifesto h2 {
+  font-family: 'Staatliches', sans-serif;
+  font-size: clamp(2rem, 6vw, 4rem);
+  color: #bf0603;
+  margin-bottom: 3rem;
+  text-shadow: 2px 2px 0 #f4d58d22;
+}
+
+.manifesto-text {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 300;
+  line-height: 2;
+  color: #c9b896;
+}
+
+.manifesto-text p {
+  margin: 0.5rem 0;
+}
+
+.manifesto-text .highlight {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  color: #f4d58d;
+  margin-top: 2rem;
+  letter-spacing: 4px;
+  text-shadow: 0 0 30px rgba(244, 213, 141, 0.3);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 50vh;
+    padding: 3rem 1rem;
+  }
+  
+  .hero-slogan::before,
+  .hero-slogan::after {
+    display: none;
+  }
+  
+  .philosophy {
+    padding: 4rem 1rem;
+  }
+  
+  .manifesto {
+    padding: 4rem 1rem;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .rays {
+    animation: none;
+  }
+}
+</style>

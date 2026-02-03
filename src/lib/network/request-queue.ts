@@ -7,11 +7,15 @@
  * @module request-queue
  */
 
+import type { NetworkDetector } from './network-detector';
+
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
 export interface QueuedRequest {
   id: string;
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  body?: any;
+  body?: JsonValue;
   headers?: Record<string, string>;
   timestamp: number;
   retryCount: number;
@@ -33,9 +37,9 @@ const DEFAULT_MAX_RETRIES = 3;
 export class RequestQueue {
   private queue: QueuedRequest[] = [];
   private processing = false;
-  private networkDetector: any;
+  private networkDetector?: NetworkDetector;
 
-  constructor(networkDetector?: any) {
+  constructor(networkDetector?: NetworkDetector) {
     this.networkDetector = networkDetector;
 
     // Load persisted queue on init
@@ -88,7 +92,7 @@ export class RequestQueue {
   add(config: {
     url: string;
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-    body?: any;
+    body?: JsonValue;
     headers?: Record<string, string>;
     priority?: 'high' | 'normal' | 'low';
     maxRetries?: number;
@@ -314,7 +318,7 @@ let queueInstance: RequestQueue | null = null;
 /**
  * Get or create the global request queue instance
  */
-export function getRequestQueue(networkDetector?: any): RequestQueue {
+export function getRequestQueue(networkDetector?: NetworkDetector): RequestQueue {
   if (!queueInstance) {
     queueInstance = new RequestQueue(networkDetector);
   }
@@ -328,7 +332,7 @@ export function getRequestQueue(networkDetector?: any): RequestQueue {
 export function queueRequest(config: {
   url: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  body?: any;
+  body?: JsonValue;
   headers?: Record<string, string>;
   priority?: 'high' | 'normal' | 'low';
 }): string {

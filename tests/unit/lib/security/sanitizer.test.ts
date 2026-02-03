@@ -64,7 +64,7 @@ describe('Security - Input Sanitization', () => {
       // In strict mode, DOMPurify removes dangerous tags
       expect(result).not.toContain('<script>');
       expect(result).not.toContain('alert');
-      // Content should be preserved  
+      // Content should be preserved
       expect(result).toContain('Bold');
       expect(result).toContain('italic');
     });
@@ -242,7 +242,7 @@ describe('Security - Input Sanitization', () => {
       expect(result).toBeTruthy();
       expect(Object.keys(result || {})).toHaveLength(0);
       // Should not have __proto__ as own property (it's on the prototype)
-      expect(result?.hasOwnProperty('__proto__')).toBe(false);
+      expect(Object.prototype.hasOwnProperty.call(result, '__proto__')).toBe(false);
     });
 
     it('should handle arrays', () => {

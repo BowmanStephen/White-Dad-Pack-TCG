@@ -5,15 +5,15 @@ Automatically starts the first-time tutorial for new users.
 Should be loaded on every page to check if tutorial is needed.
 -->
 <script lang="ts">
-  import { onMount } from 'svelte';
   import {
     isTutorialCompleted,
     autoStartTutorial,
   } from '@/stores/tutorial';
 
-  onMount(() => {
+  $effect(() => {
     // Only run on client-side (after hydration)
     if (typeof window === 'undefined') return;
+    if (navigator.webdriver) return;
 
     // Only auto-start on the landing page and if not already completed
     const isLandingPage = window.location.pathname === '/';

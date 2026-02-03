@@ -5,143 +5,148 @@ Full-screen tutorial overlay with backdrop and step content.
 Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
 -->
 <script lang="ts">
-  import { onMount, onDestroy, tick } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import {
-    tutorialState,
-    currentStep,
-    tutorialProgressPercent,
-    nextStep,
-    prevStep,
-    skipTutorial,
-    completeTutorial,
-  } from '@/stores/tutorial';
+import { onMount, onDestroy, tick } from 'svelte';
+import { fade } from 'svelte/transition';
+import { sanitizeHTML } from '@/lib/security/sanitizer';
+import {
+  tutorialState,
+  currentStep,
+  tutorialProgressPercent,
+  nextStep,
+  prevStep,
+  skipTutorial,
+  completeTutorial,
+} from '@/stores/tutorial';
 
-  let highlightedElement: HTMLElement | null = null;
-  let overlay: HTMLElement;
-  let spotlight: HTMLElement;
-  let dontShowAgain = false;
+const tutorial = $derived(tutorialState.get());
+const step = $derived(currentStep.get());
+const progressPercent = $derived(tutorialProgressPercent.get());
 
-  // SSR guard
-  const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+let highlightedElement: HTMLElement | null = null;
+let overlay = $state<HTMLElement | null>(null);
+let spotlight = $state<HTMLElement | null>(null);
+let dontShowAgain = $state(false);
 
-  async function scrollToElement(): Promise<void> {
-    await tick();
-    if (!highlightedElement) return;
+// SSR guard
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-    highlightedElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'center',
-    });
-  }
+async function scrollToElement(): Promise<void> {
+  await tick();
+  if (!highlightedElement) return;
 
-  async function updateSpotlight(): Promise<void> {
-    if (!isBrowser) return;
-
-    await tick();
-
-    const step = currentStep.get();
-    if (!step?.target) {
-      if (spotlight) spotlight.style.display = 'none';
-      return;
-    }
-
-    const target = document.querySelector(step.target) as HTMLElement | null;
-    if (!target) {
-      console.warn(`Tutorial target not found: ${step.target}`);
-      if (spotlight) spotlight.style.display = 'none';
-      return;
-    }
-
-    highlightedElement = target;
-
-    const rect = target.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-
-    if (spotlight) {
-      spotlight.style.display = 'block';
-      spotlight.style.top = `${rect.top + scrollTop}px`;
-      spotlight.style.left = `${rect.left + scrollLeft}px`;
-      spotlight.style.width = `${rect.width}px`;
-      spotlight.style.height = `${rect.height}px`;
-    }
-
-    await scrollToElement();
-  }
-
-  function handleKeydown(event: KeyboardEvent): void {
-    if (!tutorialState.get().isActive) return;
-
-    switch (event.key) {
-      case 'Escape':
-        skipTutorial();
-        break;
-      case 'ArrowRight':
-        nextStep();
-        break;
-      case 'ArrowLeft':
-        prevStep();
-        break;
-    }
-  }
-
-  let unsubscribe: (() => void) | null = null;
-
-  onMount(() => {
-    if (!isBrowser) return;
-
-    window.addEventListener('keydown', handleKeydown);
-    unsubscribe = currentStep.subscribe(updateSpotlight);
-
-    updateSpotlight();
+  highlightedElement.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+    inline: 'center',
   });
+}
 
-  onDestroy(() => {
-    if (!isBrowser) return;
+async function updateSpotlight(): Promise<void> {
+  if (!isBrowser) return;
 
-    window.removeEventListener('keydown', handleKeydown);
-    if (unsubscribe) unsubscribe();
-  });
+  await tick();
 
-  function handleSkip(): void {
-    if (dontShowAgain) {
-      completeTutorial();
-    } else {
+  const step = currentStep.get();
+  if (!step?.target) {
+    if (spotlight) spotlight.style.display = 'none';
+    return;
+  }
+
+  const target = document.querySelector(step.target) as HTMLElement | null;
+  if (!target) {
+    console.warn(`Tutorial target not found: ${step.target}`);
+    if (spotlight) spotlight.style.display = 'none';
+    return;
+  }
+
+  highlightedElement = target;
+
+  const rect = target.getBoundingClientRect();
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+  if (spotlight) {
+    spotlight.style.display = 'block';
+    spotlight.style.top = `${rect.top + scrollTop}px`;
+    spotlight.style.left = `${rect.left + scrollLeft}px`;
+    spotlight.style.width = `${rect.width}px`;
+    spotlight.style.height = `${rect.height}px`;
+  }
+
+  await scrollToElement();
+}
+
+function handleKeydown(event: KeyboardEvent): void {
+  if (!tutorialState.get().isActive) return;
+
+  switch (event.key) {
+    case 'Escape':
       skipTutorial();
-    }
-  }
-
-  function handleFinish(): void {
-    if ($tutorialState.currentStepIndex === $tutorialState.steps.length - 1) {
-      completeTutorial();
-    } else {
+      break;
+    case 'ArrowRight':
       nextStep();
-    }
+      break;
+    case 'ArrowLeft':
+      prevStep();
+      break;
   }
+}
+
+let unsubscribe: (() => void) | null = null;
+
+onMount(() => {
+  if (!isBrowser) return;
+
+  window.addEventListener('keydown', handleKeydown);
+  unsubscribe = currentStep.subscribe(updateSpotlight);
+
+  updateSpotlight();
+});
+
+onDestroy(() => {
+  if (!isBrowser) return;
+
+  window.removeEventListener('keydown', handleKeydown);
+  if (unsubscribe) unsubscribe();
+});
+
+function handleSkip(): void {
+  if (dontShowAgain) {
+    completeTutorial();
+  } else {
+    skipTutorial();
+  }
+}
+
+function handleFinish(): void {
+  if (tutorial.currentStepIndex === tutorial.steps.length - 1) {
+    completeTutorial();
+  } else {
+    nextStep();
+  }
+}
 </script>
 
-{#if $tutorialState.isActive}
+{#if tutorial.isActive}
   <div
     bind:this={overlay}
     role="dialog"
     aria-modal="true"
     aria-labelledby="tutorial-title"
+    tabindex="-1"
     class="fixed inset-0 z-50 flex items-center justify-center"
-    on:click={(e) => {
-      // Close if clicking outside spotlight
-      if (e.target === overlay) skipTutorial();
-    }}
   >
     <!-- Dark backdrop -->
-    <div
+    <button
       class="absolute inset-0 bg-black/70 backdrop-blur-sm"
-      transition:fade="{{ duration: 300 }}"
-    ></div>
+      transition:fade={{ duration: 300 }}
+      onclick={skipTutorial}
+      aria-label="Close tutorial"
+      type="button"
+    ></button>
 
     <!-- Spotlight cutout for highlighted element -->
-    {#if $currentStep?.target}
+    {#if step?.target}
       <div
         bind:this={spotlight}
         class="absolute z-10 pointer-events-none transition-all duration-300"
@@ -154,17 +159,17 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
     <!-- Tutorial content box -->
     <div
       class="relative z-20 w-full max-w-lg mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl transition-all duration-300"
-      class:fixed={!$currentStep?.target}
-      class:inset-4={!$currentStep?.target}
-      class:m-auto={!$currentStep?.target}
+      class:fixed={!step?.target}
+      class:inset-4={!step?.target}
+      class:m-auto={!step?.target}
     >
       <!-- Progress bar -->
       <div class="h-1 bg-gray-200 dark:bg-gray-700 rounded-t-2xl overflow-hidden">
         <div
           class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
-          style="width: {$tutorialProgressPercent}%"
+          style="width: {progressPercent}%"
           role="progressbar"
-          aria-valuenow={$tutorialProgressPercent}
+          aria-valuenow={progressPercent}
           aria-valuemin="0"
           aria-valuemax="100"
         ></div>
@@ -173,39 +178,33 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
       <!-- Content -->
       <div class="p-6">
         <!-- Title -->
-        <h2
-          id="tutorial-title"
-          class="text-2xl font-bold text-gray-900 dark:text-white mb-3"
-        >
-          {$currentStep?.title || 'Tutorial'}
+        <h2 id="tutorial-title" class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          {step?.title || 'Tutorial'}
         </h2>
 
         <!-- Step counter -->
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Step {$tutorialState.currentStepIndex + 1} of {$tutorialState.steps.length}
+          Step {tutorial.currentStepIndex + 1} of {tutorial.steps.length}
         </p>
 
         <!-- Content -->
         <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-6">
-          {@html $currentStep?.content || ''}
+          <!-- eslint-disable svelte/no-at-html-tags -->
+          {@html sanitizeHTML(step?.content || '')}
+          <!-- eslint-enable svelte/no-at-html-tags -->
         </p>
 
         <!-- Optional image -->
-        {#if $currentStep?.imageUrl}
+        {#if step?.imageUrl}
           <div class="mb-6 rounded-lg overflow-hidden">
-            <img
-              src={$currentStep.imageUrl}
-              alt={$currentStep.title}
-              class="w-full h-auto"
-              loading="lazy"
-            />
+            <img src={step.imageUrl} alt={step.title} class="w-full h-auto" loading="lazy" />
           </div>
         {/if}
 
         <!-- Navigation buttons -->
         <div class="flex items-center justify-between gap-4">
           <button
-            on:click={handleSkip}
+            onclick={handleSkip}
             class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium"
             type="button"
           >
@@ -213,9 +212,9 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
           </button>
 
           <div class="flex gap-3">
-            {#if $tutorialState.currentStepIndex > 0}
+            {#if tutorial.currentStepIndex > 0}
               <button
-                on:click={prevStep}
+                onclick={prevStep}
                 class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
                 type="button"
               >
@@ -224,13 +223,11 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
             {/if}
 
             <button
-              on:click={handleFinish}
+              onclick={handleFinish}
               class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all font-medium shadow-lg hover:shadow-xl"
               type="button"
             >
-              {$tutorialState.currentStepIndex === $tutorialState.steps.length - 1
-                ? 'Finish'
-                : 'Next →'}
+              {tutorial.currentStepIndex === tutorial.steps.length - 1 ? 'Finish' : 'Next →'}
             </button>
           </div>
         </div>
@@ -259,8 +256,8 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
 {/if}
 
 <style>
-  /* Ensure backdrop sits above everything except modal */
-  [role='dialog'] {
-    isolation: isolate;
-  }
+/* Ensure backdrop sits above everything except modal */
+[role='dialog'] {
+  isolation: isolate;
+}
 </style>

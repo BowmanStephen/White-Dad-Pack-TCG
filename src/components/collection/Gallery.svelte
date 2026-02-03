@@ -1,44 +1,50 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { collection } from '../../stores/collection';
+  import { collection } from '@/stores/collection';
   import {
     getUniqueCardsWithCounts,
     sortCardsByOption,
     getCardObtainedDates,
-  } from '../../lib/collection/utils';
-  import { FilterManager } from '../../lib/collection/filter-manager';
-  import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard, HoloVariant, StatRanges, SavedSearchPreset } from '../../types';
-  import CardComparison from '../card/CardComparison.svelte';
-  import CardLightbox from '../card/CardLightbox.svelte';
-  import CardDetailModal from './CardDetailModal.svelte';
-  import { openDetailModal, isDetailModalOpen, detailModalCard } from '../../stores/card-detail-modal';
+  } from '@/lib/collection/utils';
+  import { FilterManager } from '@/lib/collection/filter-manager';
+  import type { CollectionDisplayCard, Rarity, DadType, SortOption, PackCard, HoloVariant, StatRanges, SavedSearchPreset } from '@/types';
+  import CardComparison from '@components/card/CardComparison.svelte';
+  import CardLightbox from '@components/card/CardLightbox.svelte';
+  import CardDetailModal from '@components/collection/CardDetailModal.svelte';
+  import { openDetailModal, isDetailModalOpen, detailModalCard } from '@/stores/card-detail-modal';
+  import { subscribeToStores } from '@/lib/utils/store-helpers';
   import {
     initializeGalleryFiltersFromURL,
     syncFiltersToURL,
-  } from '../../lib/utils/url-params';
+  } from '@/lib/utils/url-params';
 
   // Extracted components
-  import FilterPanel from './FilterPanel.svelte';
-  import CardGrid from './CardGrid.svelte';
+  import FilterPanel from '@components/collection/FilterPanel.svelte';
+  import CardGrid from '@components/collection/CardGrid.svelte';
 
   // State
-  let allCards: CollectionDisplayCard[] = [];
-  let displayedCards: CollectionDisplayCard[] = [];
-  let isInitialLoading = true;
+  let allCards = $state<CollectionDisplayCard[]>([]);
+  let displayedCards = $state<CollectionDisplayCard[]>([]);
+  let isInitialLoading = $state(true);
 
   // Filter manager (consolidated filter state and logic)
   let filterManager = new FilterManager();
   let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
   // Result count tracking
-  let totalFilteredCount = 0;
+  let totalFilteredCount = $state(0);
 
   // Obtained dates mapping
   let cardObtainedDates = new Map<string, Date>();
 
   // Card comparison state
-  let selectedForCompare: PackCard[] = [];
-  let showComparison = false;
+  let selectedForCompare = $state<PackCard[]>([]);
+  let showComparison = $state(false);
+
+  // Detail modal store state
+  let isDetailOpen = $state(isDetailModalOpen.get());
+  let detailCard = $state<PackCard | null>(detailModalCard.get());
+  let unsubscribeStores: (() => void) | null = null;
 
   // Reactive getter for filter state (re-runs when filterManager changes)
   function getFilterState() {
@@ -257,10 +263,17 @@
   onMount(() => {
     initializeFromURL();
     loadCards();
+    unsubscribeStores = subscribeToStores([
+      { store: isDetailModalOpen, onUpdate: (v) => { isDetailOpen = v; } },
+      { store: detailModalCard, onUpdate: (v) => { detailCard = v; } },
+    ]);
 
     return () => {
       if (debounceTimeout) {
         clearTimeout(debounceTimeout);
+      }
+      if (unsubscribeStores) {
+        unsubscribeStores();
       }
     };
   });
@@ -345,7 +358,7 @@
 <CardLightbox />
 
 <!-- Card Detail Modal (PACK-022) -->
-{#if $isDetailModalOpen && $detailModalCard}
+{#if isDetailOpen && detailCard}
   <CardDetailModal />
 {/if}
 
