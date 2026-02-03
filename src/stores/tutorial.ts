@@ -7,7 +7,7 @@
  */
 
 import { atom, computed } from 'nanostores';
-import { persistentAtom } from '@nanostores/persistent';
+import { persistentAtom } from '@/lib/utils/persistent';
 
 /**
  * Tutorial step definitions

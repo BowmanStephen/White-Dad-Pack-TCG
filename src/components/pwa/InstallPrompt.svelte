@@ -14,7 +14,7 @@ Features:
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { persistentAtom } from '@nanostores/persistent';
+  import { persistentAtom } from '@/lib/utils/persistent';
   import { subscribeToStores } from '@/lib/utils/store-helpers';
 
   // Track visit count

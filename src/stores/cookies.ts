@@ -5,7 +5,7 @@
  * GDPR-compliant consent tracking.
  */
 
-import { persistentAtom } from '@nanostores/persistent';
+import { persistentAtom } from '@/lib/utils/persistent';
 
 export type CookieConsent = 'pending' | 'accepted' | 'declined';
 export type CookieCategory = 'necessary' | 'analytics' | 'marketing';

@@ -21,7 +21,7 @@
  */
 
 import { atom } from 'nanostores';
-import { persistentAtom } from '@nanostores/persistent';
+import { persistentAtom } from '@/lib/utils/persistent';
 import { getNetworkDetector, NETWORK_EVENTS, type NetworkInfo } from '@/lib/network/network-detector';
 import { onBrowser } from '@/lib/utils/browser';
 
