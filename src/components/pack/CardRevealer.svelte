@@ -1,236 +1,181 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
-  import type { Pack } from '@/types';
-  import { RARITY_CONFIG } from '@/types';
-  import Card from '@components/card/Card.svelte';
-  import CardSkeleton from '@components/loading/CardSkeleton.svelte';
-  import ParticleEffects from '@components/card/ParticleEffects.svelte';
-  import FadeIn from '@components/loading/FadeIn.svelte';
-  import { playCardReveal, playCinematicCardReveal, playNewDiscoverySound } from '@/stores/audio';
-  import ConfettiEffects from '@components/card/ConfettiEffects.svelte';
-  import ScreenShake from '@components/card/ScreenShake.svelte';
-  import NewBadge from '@components/card/NewBadge.svelte';
-  import * as uiStore from '@/stores/ui';
-  import { markCardAsDiscovered, discoveryProgressText } from '@/stores/discovered';
-  import { fastForward, toggleFastForward } from '@/stores/ui';
+import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+import type { Pack } from '@/types';
+import { RARITY_CONFIG } from '@/types';
+import Card from '@components/card/Card.svelte';
+import CardSkeleton from '@components/loading/CardSkeleton.svelte';
+import ParticleEffects from '@components/card/ParticleEffects.svelte';
+import FadeIn from '@components/loading/FadeIn.svelte';
+import { playCardReveal, playCinematicCardReveal, playNewDiscoverySound } from '@/stores/audio';
+import ConfettiEffects from '@components/card/ConfettiEffects.svelte';
+import ScreenShake from '@components/card/ScreenShake.svelte';
+import NewBadge from '@components/card/NewBadge.svelte';
+import * as uiStore from '@/stores/ui';
+import { markCardAsDiscovered, discoveryProgressText } from '@/stores/discovered';
+import { fastForward, toggleFastForward } from '@/stores/ui';
+import { isReducedMotion } from '@/stores/motion';
 
-  interface Props {
-    pack: Pack;
-    currentIndex: number;
-    revealedIndices: Set<number>;
-  }
+interface Props {
+  pack: Pack;
+  currentIndex: number;
+  revealedIndices: Set<number>;
+}
 
-  let { pack, currentIndex, revealedIndices }: Props = $props();
+let { pack, currentIndex, revealedIndices }: Props = $props();
 
-  const dispatch = createEventDispatcher();
+const dispatch = createEventDispatcher();
 
-  const currentCard = $derived(pack.cards[currentIndex]);
-  const isCurrentRevealed = $derived(revealedIndices.has(currentIndex));
-  const progress = $derived(`${currentIndex + 1}/${pack.cards.length}`);
-  const allRevealed = $derived(revealedIndices.size >= pack.cards.length);
-  const rarityConfig = $derived(currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common);
+const currentCard = $derived(pack.cards[currentIndex]);
+const isCurrentRevealed = $derived(revealedIndices.has(currentIndex));
+const progress = $derived(`${currentIndex + 1}/${pack.cards.length}`);
+const allRevealed = $derived(revealedIndices.size >= pack.cards.length);
+const rarityConfig = $derived(
+  currentCard ? RARITY_CONFIG[currentCard.rarity] : RARITY_CONFIG.common
+);
 
-  // PACK-025: Track new discoveries for first-time pull effects
-  let isNewDiscovery = $state(false);
-  let showNewBadge = $state(false);
+// PACK-025: Track new discoveries for first-time pull effects
+let isNewDiscovery = $state(false);
+let showNewBadge = $state(false);
 
-  // Screen reader announcement for card reveals
-  let announcement = $state('');
+// Screen reader announcement for card reveals
+let announcement = $state('');
 
-  // Cinematic mode configuration
-  const cinematicConfig = $derived(uiStore.getCinematicConfig());
-  const isCinematic = $derived(uiStore.cinematicMode.get() === 'cinematic');
-  const discoveryProgress = $derived(discoveryProgressText.get());
+// Cinematic mode configuration
+const cinematicConfig = $derived(uiStore.getCinematicConfig());
+const isCinematic = $derived(uiStore.cinematicMode.get() === 'cinematic');
+const discoveryProgress = $derived(discoveryProgressText.get());
 
-  // Camera zoom state for cinematic reveals
-  let cameraZoomActive = $state(false);
-  let cardScale = $state(1);
+// Camera zoom state for cinematic reveals
+let cameraZoomActive = $state(false);
+let cardScale = $state(1);
 
-  let autoRevealActive = false;
-  let particlesActive = $state(false);
-  let confettiActive = $state(false);
-  let screenShakeActive = $state(false);
-  let discoveryConfettiActive = $state(false); // PACK-025: Separate confetti for new discoveries
-  let autoRevealTimers: number[] = [];
+let autoRevealActive = false;
+let particlesActive = $state(false);
+let confettiActive = $state(false);
+let screenShakeActive = $state(false);
+let discoveryConfettiActive = $state(false); // PACK-025: Separate confetti for new discoveries
+let autoRevealTimers: number[] = [];
+let effectTimers: number[] = []; // Track effect timeouts for cleanup on unmount
+let reducedMotion = $state(false); // Track reduced motion preference
 
-  // Debounced reveal using requestAnimationFrame for smoother 60fps
-  let rafId: number | null = null;
+// Debounced reveal using requestAnimationFrame for smoother 60fps
+let rafId: number | null = null;
 
-  // PACK-VFX-012: Base 300ms delay between card reveals
-  // PACK-VFX-013: Extra 200ms delay for rare+ cards (500ms total)
-  // PACK-VFX-014: Extra 700ms delay for mythic cards (1000ms total, replaces rare+ bonus)
-  // PACK-VFX-016: Cinematic mode card reveal set to 600ms
-  // PACK-028: Apply fast-forward multiplier (2x speed when enabled)
-  const baseDelay = 300;
-  const isFastForward = $derived(fastForward.get());
-  const fastForwardMultiplier = $derived(isFastForward ? 2 : 1);
-  // PACK-VFX-013/VFX-014: Calculate delay based on rarity
-  // Mythic: 1000ms total (300ms base + 700ms bonus)
-  // Rare/Epic/Legendary: 500ms total (300ms base + 200ms bonus)
-  // Common/Uncommon: 300ms total (base only)
-  const currentCardRarity = $derived(currentCard?.rarity);
-  const rarityDelay = $derived(currentCardRarity === 'mythic'
+// PACK-VFX-012: Base 300ms delay between card reveals
+// PACK-VFX-013: Extra 200ms delay for rare+ cards (500ms total)
+// PACK-VFX-014: Extra 700ms delay for mythic cards (1000ms total, replaces rare+ bonus)
+// PACK-VFX-016: Cinematic mode card reveal set to 600ms
+// PACK-028: Apply fast-forward multiplier (2x speed when enabled)
+const baseDelay = 300;
+const isFastForward = $derived(fastForward.get());
+const fastForwardMultiplier = $derived(isFastForward ? 2 : 1);
+// PACK-VFX-013/VFX-014: Calculate delay based on rarity
+// Mythic: 1000ms total (300ms base + 700ms bonus)
+// Rare/Epic/Legendary: 500ms total (300ms base + 200ms bonus)
+// Common/Uncommon: 300ms total (base only)
+const currentCardRarity = $derived(currentCard?.rarity);
+const rarityDelay = $derived(
+  currentCardRarity === 'mythic'
     ? 700
-    : (['rare', 'epic', 'legendary'].includes(currentCardRarity || '') ? 200 : 0));
-  // PACK-VFX-016: In cinematic mode, override to 600ms for all cards (slower, more dramatic)
-  // Normal mode: Use standard (baseDelay + rarityDelay) calculation
-  const revealDelay = $derived(isCinematic
-    ? 600 / fastForwardMultiplier  // PACK-VFX-016: Fixed 600ms in cinematic mode
-    : (baseDelay + rarityDelay) / fastForwardMultiplier);  // Normal mode: standard timing
+    : ['rare', 'epic', 'legendary'].includes(currentCardRarity || '')
+      ? 200
+      : 0
+);
+// PACK-VFX-016: In cinematic mode, override to 600ms for all cards (slower, more dramatic)
+// Normal mode: Use standard (baseDelay + rarityDelay) calculation
+const revealDelay = $derived(
+  isCinematic
+    ? 600 / fastForwardMultiplier // PACK-VFX-016: Fixed 600ms in cinematic mode
+    : (baseDelay + rarityDelay) / fastForwardMultiplier
+); // Normal mode: standard timing
 
-  // PACK-026: Animation class based on rarity
-  const revealAnimationClass = $derived(currentCard ? ({
-    common: 'animate-reveal-common',
-    uncommon: 'animate-reveal-uncommon',
-    rare: 'animate-reveal-rare',
-    epic: 'animate-reveal-epic',
-    legendary: 'animate-reveal-legendary',
-    mythic: 'animate-reveal-mythic',
-  }[currentCard.rarity] || 'animate-reveal-common') : 'animate-reveal-common');
+// PACK-026: Animation class based on rarity
+const revealAnimationClass = $derived(
+  currentCard
+    ? {
+        common: 'animate-reveal-common',
+        uncommon: 'animate-reveal-uncommon',
+        rare: 'animate-reveal-rare',
+        epic: 'animate-reveal-epic',
+        legendary: 'animate-reveal-legendary',
+        mythic: 'animate-reveal-mythic',
+      }[currentCard.rarity] || 'animate-reveal-common'
+    : 'animate-reveal-common'
+);
 
-  $effect(() => {
-    if (isCurrentRevealed && currentCard) {
-      const holoText = currentCard.isHolo ? ` holographic${currentCard.holoType !== 'standard' ? ' ' + currentCard.holoType : ''}` : '';
-      announcement = `Card ${currentIndex + 1} of ${pack.cards.length}: ${currentCard.name}, ${RARITY_CONFIG[currentCard.rarity].name}${holoText}. ${currentCard.subtitle || ''}`;
+$effect(() => {
+  if (isCurrentRevealed && currentCard) {
+    const holoText = currentCard.isHolo
+      ? ` holographic${currentCard.holoType !== 'standard' ? ' ' + currentCard.holoType : ''}`
+      : '';
+    announcement = `Card ${currentIndex + 1} of ${pack.cards.length}: ${currentCard.name}, ${RARITY_CONFIG[currentCard.rarity].name}${holoText}. ${currentCard.subtitle || ''}`;
+    return;
+  }
+  announcement = '';
+});
+
+// PACK-025: Check and track new discovery
+function checkNewDiscovery(card: typeof currentCard): boolean {
+  if (!card) return false;
+  const newlyDiscovered = markCardAsDiscovered(card);
+  if (newlyDiscovered) {
+    isNewDiscovery = true;
+    showNewBadge = true;
+    // Trigger discovery confetti burst (separate from rarity confetti)
+    discoveryConfettiActive = true;
+    const timerId = window.setTimeout(() => {
+      discoveryConfettiActive = false;
+    }, 3000);
+    effectTimers.push(timerId);
+    // PACK-025: Play celebratory "ding!" sound for new discovery
+    playNewDiscoverySound();
+  } else {
+    isNewDiscovery = false;
+    showNewBadge = false;
+  }
+  return newlyDiscovered;
+}
+
+// Start auto-reveal when component mounts and cards are ready
+onMount(() => {
+  // Subscribe to reduced motion preference
+  const unsubscribeMotion = isReducedMotion.subscribe((value: boolean) => {
+    reducedMotion = value;
+  });
+
+  if (!isCurrentRevealed) {
+    startAutoRevealSequence();
+  }
+
+  return () => {
+    unsubscribeMotion();
+  };
+});
+
+onDestroy(() => {
+  stopAutoRevealSequence();
+  // Cleanup any pending RAF
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId);
+  }
+  // Cleanup all effect timers to prevent memory leaks
+  effectTimers.forEach(timerId => clearTimeout(timerId));
+  effectTimers = [];
+});
+
+function startAutoRevealSequence() {
+  autoRevealActive = true;
+  let index = currentIndex;
+
+  const revealNext = () => {
+    if (!autoRevealActive || index >= pack.cards.length) {
+      autoRevealActive = false;
       return;
     }
-    announcement = '';
-  });
 
-  // PACK-025: Check and track new discovery
-  function checkNewDiscovery(card: typeof currentCard): boolean {
-    if (!card) return false;
-    const newlyDiscovered = markCardAsDiscovered(card);
-    if (newlyDiscovered) {
-      isNewDiscovery = true;
-      showNewBadge = true;
-      // Trigger discovery confetti burst (separate from rarity confetti)
-      discoveryConfettiActive = true;
-      setTimeout(() => { discoveryConfettiActive = false; }, 3000);
-      // PACK-025: Play celebratory "ding!" sound for new discovery
-      playNewDiscoverySound();
-    } else {
-      isNewDiscovery = false;
-      showNewBadge = false;
-    }
-    return newlyDiscovered;
-  }
-
-  // Start auto-reveal when component mounts and cards are ready
-  onMount(() => {
-    if (!isCurrentRevealed) {
-      startAutoRevealSequence();
-    }
-  });
-
-  onDestroy(() => {
-    stopAutoRevealSequence();
-    // Cleanup any pending RAF
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId);
-    }
-  });
-
-  function startAutoRevealSequence() {
-    autoRevealActive = true;
-    let index = currentIndex;
-
-    const revealNext = () => {
-      if (!autoRevealActive || index >= pack.cards.length) {
-        autoRevealActive = false;
-        return;
-      }
-
-      if (!revealedIndices.has(index)) {
-        particlesActive = true;
-        const card = pack.cards[index];
-        const cardRarity = card?.rarity;
-
-        // PACK-025: Check for new discovery and trigger effects
-        if (card) {
-          checkNewDiscovery(card);
-        }
-
-        // Activate camera zoom for cinematic mode (except common/uncommon)
-        if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
-          cameraZoomActive = true;
-          // Zoom in dramatically
-          cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
-          // Reset zoom after animation
-          setTimeout(() => {
-            cameraZoomActive = false;
-            cardScale = 1;
-          }, 800 / cinematicConfig.speedMultiplier);
-        }
-
-        // Activate confetti for legendary+ cards (enhanced in cinematic)
-        if (cardRarity === 'legendary' || cardRarity === 'mythic') {
-          confettiActive = true;
-          const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
-          setTimeout(() => { confettiActive = false; }, confettiDuration / cinematicConfig.speedMultiplier);
-        }
-
-        // Activate screen shake for mythic cards only (epic moment!)
-        if (cardRarity === 'mythic') {
-          screenShakeActive = true;
-          const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
-          setTimeout(() => { screenShakeActive = false; }, shakeDuration);
-        }
-
-        // Play reveal sound based on card rarity (enhanced in cinematic)
-        if (cardRarity) {
-          if (cinematicConfig.audioEnhanced) {
-            playCinematicCardReveal(cardRarity);
-          } else {
-            playCardReveal(cardRarity);
-          }
-        }
-
-        dispatch('reveal');
-        index++;
-
-        // Use requestAnimationFrame for smoother timing (60fps aligned)
-        rafId = requestAnimationFrame(() => {
-          // Schedule next reveal after delay (slower in cinematic mode)
-          if (index < pack.cards.length) {
-            const timerId = window.setTimeout(revealNext, revealDelay);
-            autoRevealTimers.push(timerId);
-          } else {
-            autoRevealActive = false;
-          }
-        });
-      }
-    };
-
-    // Start the sequence with RAF for smooth initial timing
-    rafId = requestAnimationFrame(() => {
-      const timerId = window.setTimeout(revealNext, revealDelay);
-      autoRevealTimers.push(timerId);
-    });
-  }
-
-  function stopAutoRevealSequence() {
-    autoRevealActive = false;
-    // Clear all pending timers
-    autoRevealTimers.forEach(timerId => clearTimeout(timerId));
-    autoRevealTimers = [];
-    // Cancel pending RAF
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-    // Reset camera zoom
-    cameraZoomActive = false;
-    cardScale = 1;
-  }
-
-  function handleCardClick() {
-    // Cancel auto-reveal on user interaction
-    stopAutoRevealSequence();
-
-    if (!isCurrentRevealed) {
+    if (!revealedIndices.has(index)) {
       particlesActive = true;
-      const card = currentCard;
+      const card = pack.cards[index];
       const cardRarity = card?.rarity;
 
       // PACK-025: Check for new discovery and trigger effects
@@ -238,88 +183,62 @@
         checkNewDiscovery(card);
       }
 
-      // Activate camera zoom for cinematic mode
-      if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
+      // Activate camera zoom for cinematic mode (except common/uncommon)
+      if (
+        cinematicConfig.zoomEnabled &&
+        ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)
+      ) {
         cameraZoomActive = true;
+        // Zoom in dramatically
         cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
-        setTimeout(() => {
+        // Reset zoom after animation
+        const zoomTimerId = window.setTimeout(() => {
           cameraZoomActive = false;
           cardScale = 1;
         }, 800 / cinematicConfig.speedMultiplier);
+        effectTimers.push(zoomTimerId);
       }
 
       // Activate confetti for legendary+ cards (enhanced in cinematic)
       if (cardRarity === 'legendary' || cardRarity === 'mythic') {
         confettiActive = true;
         const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
-        setTimeout(() => { confettiActive = false; }, confettiDuration / cinematicConfig.speedMultiplier);
+        const confettiTimerId = window.setTimeout(() => {
+          confettiActive = false;
+        }, confettiDuration / cinematicConfig.speedMultiplier);
+        effectTimers.push(confettiTimerId);
       }
 
       // Activate screen shake for mythic cards only (epic moment!)
-      if (cardRarity === 'mythic') {
+      // Respect reduced motion preference - skip shake if user prefers reduced motion
+      if (cardRarity === 'mythic' && !reducedMotion) {
         screenShakeActive = true;
         const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
-        setTimeout(() => { screenShakeActive = false; }, shakeDuration);
-      }
-
-      // Play reveal sound based on card rarity (cinematic enhanced)
-      if (cardRarity) {
-        if (cinematicConfig.audioEnhanced) {
-          playCinematicCardReveal(cardRarity);
-        } else {
-          playCardReveal(cardRarity);
-        }
-      }
-      dispatch('reveal');
-    } else if (currentIndex < pack.cards.length - 1) {
-      dispatch('next');
-    } else {
-      dispatch('results');
-    }
-  }
-
-  function handlePrev() {
-    stopAutoRevealSequence();
-    dispatch('prev');
-  }
-
-  function handleNext() {
-    stopAutoRevealSequence();
-    if (!isCurrentRevealed) {
-      particlesActive = true;
-      const card = currentCard;
-      const cardRarity = card?.rarity;
-
-      // PACK-025: Check for new discovery and trigger effects
-      if (card) {
-        checkNewDiscovery(card);
-      }
-
-      // Activate camera zoom for cinematic mode
-      if (cinematicConfig.zoomEnabled && ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)) {
-        cameraZoomActive = true;
-        cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
-        setTimeout(() => {
-          cameraZoomActive = false;
-          cardScale = 1;
-        }, 800 / cinematicConfig.speedMultiplier);
+        const shakeTimerId = window.setTimeout(() => {
+          screenShakeActive = false;
+        }, shakeDuration);
+        effectTimers.push(shakeTimerId);
       }
 
       // Activate confetti for legendary+ cards (enhanced in cinematic)
       if (cardRarity === 'legendary' || cardRarity === 'mythic') {
         confettiActive = true;
         const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
-        setTimeout(() => { confettiActive = false; }, confettiDuration / cinematicConfig.speedMultiplier);
+        setTimeout(() => {
+          confettiActive = false;
+        }, confettiDuration / cinematicConfig.speedMultiplier);
       }
 
       // Activate screen shake for mythic cards only (epic moment!)
       if (cardRarity === 'mythic') {
         screenShakeActive = true;
         const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
-        setTimeout(() => { screenShakeActive = false; }, shakeDuration);
+        setTimeout(() => {
+          screenShakeActive = false;
+        }, shakeDuration);
       }
 
-      // Play reveal sound based on card rarity (cinematic enhanced)
+      // Play reveal sound based on card rarity (enhanced in cinematic)
       if (cardRarity) {
         if (cinematicConfig.audioEnhanced) {
           playCinematicCardReveal(cardRarity);
@@ -329,85 +248,249 @@
       }
 
       dispatch('reveal');
-    } else {
-      dispatch('next');
-    }
-  }
+      index++;
 
-  function handleSkip() {
-    stopAutoRevealSequence();
-    dispatch('skip');
-  }
-
-  // Touch handling for swipe
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let touchStartTime = 0;
-  let isSwipe = false;
-  let isTap = false;
-
-  function handleTouchStart(event: TouchEvent) {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-    touchStartTime = Date.now();
-    isSwipe = false;
-    isTap = false;
-  }
-
-  function handleTouchMove(event: TouchEvent) {
-    // Detect if user is swiping (moved more than 10px in any direction)
-    const deltaX = Math.abs(event.touches[0].clientX - touchStartX);
-    const deltaY = Math.abs(event.touches[0].clientY - touchStartY);
-
-    if (deltaX > 10 || deltaY > 10) {
-      isSwipe = true;
-    }
-  }
-
-  function handleTouchEnd(event: TouchEvent) {
-    // Cancel auto-reveal on touch interaction
-    stopAutoRevealSequence();
-
-    const touchEndX = event.changedTouches[0].clientX;
-    const touchEndY = event.changedTouches[0].clientY;
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    const deltaTime = Date.now() - touchStartTime;
-
-    // Detect tap (short duration, minimal movement)
-    if (deltaTime < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-      isTap = true;
-      handleCardClick();
-      return;
-    }
-
-    // Handle swipes (movement > 50px)
-    const minSwipeDistance = 50;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      // Horizontal swipe - navigate cards
-      if (Math.abs(deltaX) > minSwipeDistance) {
-        if (deltaX > 0) {
-          handlePrev();
+      // Use requestAnimationFrame for smoother timing (60fps aligned)
+      rafId = requestAnimationFrame(() => {
+        // Schedule next reveal after delay (slower in cinematic mode)
+        if (index < pack.cards.length) {
+          const timerId = window.setTimeout(revealNext, revealDelay);
+          autoRevealTimers.push(timerId);
         } else {
-          handleNext();
+          autoRevealActive = false;
         }
-      }
-    } else {
-      // Vertical swipe - swipe up to skip all reveals
-      if (deltaY < -minSwipeDistance) {
-        handleSkip();
+      });
+    }
+  };
+
+  // Start the sequence with RAF for smooth initial timing
+  rafId = requestAnimationFrame(() => {
+    const timerId = window.setTimeout(revealNext, revealDelay);
+    autoRevealTimers.push(timerId);
+  });
+}
+
+function stopAutoRevealSequence() {
+  autoRevealActive = false;
+  // Clear all pending timers
+  autoRevealTimers.forEach(timerId => clearTimeout(timerId));
+  autoRevealTimers = [];
+  // Cancel pending RAF
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  // Reset camera zoom
+  cameraZoomActive = false;
+  cardScale = 1;
+}
+
+function handleCardClick() {
+  // Cancel auto-reveal on user interaction
+  stopAutoRevealSequence();
+
+  if (!isCurrentRevealed) {
+    particlesActive = true;
+    const card = currentCard;
+    const cardRarity = card?.rarity;
+
+    // PACK-025: Check for new discovery and trigger effects
+    if (card) {
+      checkNewDiscovery(card);
+    }
+
+    // Activate camera zoom for cinematic mode
+    if (
+      cinematicConfig.zoomEnabled &&
+      ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)
+    ) {
+      cameraZoomActive = true;
+      cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
+      const zoomTimerId = window.setTimeout(() => {
+        cameraZoomActive = false;
+        cardScale = 1;
+      }, 800 / cinematicConfig.speedMultiplier);
+      effectTimers.push(zoomTimerId);
+    }
+
+    // Activate confetti for legendary+ cards (enhanced in cinematic)
+    if (cardRarity === 'legendary' || cardRarity === 'mythic') {
+      confettiActive = true;
+      const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
+      const confettiTimerId = window.setTimeout(() => {
+        confettiActive = false;
+      }, confettiDuration / cinematicConfig.speedMultiplier);
+      effectTimers.push(confettiTimerId);
+    }
+
+    // Activate screen shake for mythic cards only (epic moment!)
+    // Respect reduced motion preference - skip shake if user prefers reduced motion
+    if (cardRarity === 'mythic' && !reducedMotion) {
+      screenShakeActive = true;
+      const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
+      const shakeTimerId = window.setTimeout(() => {
+        screenShakeActive = false;
+      }, shakeDuration);
+      effectTimers.push(shakeTimerId);
+    }
+
+    // Play reveal sound based on card rarity (cinematic enhanced)
+    if (cardRarity) {
+      if (cinematicConfig.audioEnhanced) {
+        playCinematicCardReveal(cardRarity);
+      } else {
+        playCardReveal(cardRarity);
       }
     }
+    dispatch('reveal');
+  } else if (currentIndex < pack.cards.length - 1) {
+    dispatch('next');
+  } else {
+    dispatch('results');
+  }
+}
+
+function handlePrev() {
+  stopAutoRevealSequence();
+  dispatch('prev');
+}
+
+function handleNext() {
+  stopAutoRevealSequence();
+  if (!isCurrentRevealed) {
+    particlesActive = true;
+    const card = currentCard;
+    const cardRarity = card?.rarity;
+
+    // PACK-025: Check for new discovery and trigger effects
+    if (card) {
+      checkNewDiscovery(card);
+    }
+
+    // Activate camera zoom for cinematic mode
+    if (
+      cinematicConfig.zoomEnabled &&
+      ['rare', 'epic', 'legendary', 'mythic'].includes(cardRarity)
+    ) {
+      cameraZoomActive = true;
+      cardScale = cardRarity === 'mythic' || cardRarity === 'legendary' ? 1.3 : 1.15;
+      const zoomTimerId = window.setTimeout(() => {
+        cameraZoomActive = false;
+        cardScale = 1;
+      }, 800 / cinematicConfig.speedMultiplier);
+      effectTimers.push(zoomTimerId);
+    }
+
+    // Activate confetti for legendary+ cards (enhanced in cinematic)
+    if (cardRarity === 'legendary' || cardRarity === 'mythic') {
+      confettiActive = true;
+      const confettiDuration = cinematicConfig.audioEnhanced ? 5000 : 3500;
+      const confettiTimerId = window.setTimeout(() => {
+        confettiActive = false;
+      }, confettiDuration / cinematicConfig.speedMultiplier);
+      effectTimers.push(confettiTimerId);
+    }
+
+    // Activate screen shake for mythic cards only (epic moment!)
+    // Respect reduced motion preference - skip shake if user prefers reduced motion
+    if (cardRarity === 'mythic' && !reducedMotion) {
+      screenShakeActive = true;
+      const shakeDuration = cinematicConfig.audioEnhanced ? 500 : 300;
+      const shakeTimerId = window.setTimeout(() => {
+        screenShakeActive = false;
+      }, shakeDuration);
+      effectTimers.push(shakeTimerId);
+    }
+
+    // Play reveal sound based on card rarity (cinematic enhanced)
+    if (cardRarity) {
+      if (cinematicConfig.audioEnhanced) {
+        playCinematicCardReveal(cardRarity);
+      } else {
+        playCardReveal(cardRarity);
+      }
+    }
+
+    dispatch('reveal');
+  } else {
+    dispatch('next');
+  }
+}
+
+function handleSkip() {
+  stopAutoRevealSequence();
+  dispatch('skip');
+}
+
+// Touch handling for swipe
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let isSwipe = false;
+let isTap = false;
+
+function handleTouchStart(event: TouchEvent) {
+  touchStartX = event.touches[0].clientX;
+  touchStartY = event.touches[0].clientY;
+  touchStartTime = Date.now();
+  isSwipe = false;
+  isTap = false;
+}
+
+function handleTouchMove(event: TouchEvent) {
+  // Detect if user is swiping (moved more than 10px in any direction)
+  const deltaX = Math.abs(event.touches[0].clientX - touchStartX);
+  const deltaY = Math.abs(event.touches[0].clientY - touchStartY);
+
+  if (deltaX > 10 || deltaY > 10) {
+    isSwipe = true;
+  }
+}
+
+function handleTouchEnd(event: TouchEvent) {
+  // Cancel auto-reveal on touch interaction
+  stopAutoRevealSequence();
+
+  const touchEndX = event.changedTouches[0].clientX;
+  const touchEndY = event.changedTouches[0].clientY;
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+  const deltaTime = Date.now() - touchStartTime;
+
+  // Detect tap (short duration, minimal movement)
+  if (deltaTime < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+    isTap = true;
+    handleCardClick();
+    return;
   }
 
-  function handleCardNavigatorClick(cardIndex: number) {
-    // Cancel auto-reveal when user clicks a card navigator dot
-    stopAutoRevealSequence();
+  // Handle swipes (movement > 50px)
+  const minSwipeDistance = 50;
 
-    // Dispatch event to navigate to the specific card
-    dispatch('goToCard', { cardIndex });
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Horizontal swipe - navigate cards
+    if (Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0) {
+        handlePrev();
+      } else {
+        handleNext();
+      }
+    }
+  } else {
+    // Vertical swipe - swipe up to skip all reveals
+    if (deltaY < -minSwipeDistance) {
+      handleSkip();
+    }
   }
+}
+
+function handleCardNavigatorClick(cardIndex: number) {
+  // Cancel auto-reveal when user clicks a card navigator dot
+  stopAutoRevealSequence();
+
+  // Dispatch event to navigate to the specific card
+  dispatch('goToCard', { cardIndex });
+}
 </script>
 
 <!-- Live region for screen reader announcements -->
@@ -434,12 +517,12 @@
     <!-- PACK-025: Discovery progress -->
     <span class="text-slate-400 text-sm font-mono">{discoveryProgress}</span>
   </div>
-  
+
   <!-- Card display -->
   <div
     class="relative cursor-pointer"
     onclick={handleCardClick}
-    onkeydown={(e) => e.key === ' ' && handleCardClick()}
+    onkeydown={e => e.key === ' ' && handleCardClick()}
     role="button"
     tabindex="0"
   >
@@ -493,17 +576,12 @@
 
           <!-- PACK-026: Rarity-specific reveal animation -->
           <div class={revealAnimationClass}>
-            <Card
-              card={currentCard}
-              isFlipped={false}
-              size="lg"
-              interactive={true}
-            />
+            <Card card={currentCard} isFlipped={false} size="lg" interactive={true} />
           </div>
         </FadeIn>
       {/if}
     {/if}
-    
+
     <!-- Tap hint -->
     {#if !isCurrentRevealed}
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -513,7 +591,7 @@
       </div>
     {/if}
   </div>
-  
+
   <!-- Navigation buttons -->
   <div class="flex items-center gap-4">
     <button
@@ -562,13 +640,20 @@
   <div class="flex flex-col items-center gap-3">
     <!-- Fast-forward toggle button -->
     <button
-      class="flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg transition-colors {isFastForward ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-400'} hover:bg-amber-500/30"
+      class="flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg transition-colors {isFastForward
+        ? 'bg-amber-500/20 text-amber-400'
+        : 'bg-slate-700/50 text-slate-400'} hover:bg-amber-500/30"
       onclick={toggleFastForward}
       aria-label={isFastForward ? 'Disable fast forward' : 'Enable fast forward'}
       aria-pressed={isFastForward}
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 10V3L4 14h7v7l9-11h-7z"
+        />
       </svg>
       <span class="text-sm font-semibold">2x Speed</span>
       {#if isFastForward}
@@ -604,250 +689,255 @@
         class:scale-110={isCurrent}
         style="
           background: {isRevealed ? cardRarity.color : '#475569'};
-          box-shadow: {isCurrent ? `0 0 10px ${isRevealed ? cardRarity.color : '#475569'}` : 'none'};
+          box-shadow: {isCurrent
+          ? `0 0 10px ${isRevealed ? cardRarity.color : '#475569'}`
+          : 'none'};
         "
         onclick={() => handleCardNavigatorClick(i)}
         aria-label="Card {i + 1}"
       >
-        <span class="w-3 h-3 rounded-full block" style="
+        <span
+          class="w-3 h-3 rounded-full block"
+          style="
           background: {isRevealed ? cardRarity.color : '#475569'};
-        "></span>
+        "
+        ></span>
       </button>
     {/each}
   </div>
 </div>
 
 <style>
-  /* PACK-026: Rarity-specific reveal animations */
+/* PACK-026: Rarity-specific reveal animations */
 
-  /* Common: Simple flip (0.3s) */
-  .animate-reveal-common {
-    animation: revealCommon 0.3s ease-out;
-    will-change: transform;
-  }
+/* Common: Simple flip (0.3s) */
+.animate-reveal-common {
+  animation: revealCommon 0.3s ease-out;
+  will-change: transform;
+}
 
-  @keyframes revealCommon {
-    0% {
-      transform: scale(0.95) rotateY(-90deg);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1) rotateY(0deg);
-      opacity: 1;
-    }
+@keyframes revealCommon {
+  0% {
+    transform: scale(0.95) rotateY(-90deg);
+    opacity: 0;
   }
+  100% {
+    transform: scale(1) rotateY(0deg);
+    opacity: 1;
+  }
+}
 
-  /* Uncommon: Flip + blue glow (0.4s) */
-  .animate-reveal-uncommon {
-    animation: revealUncommon 0.4s ease-out;
-    will-change: transform, box-shadow;
-  }
+/* Uncommon: Flip + blue glow (0.4s) */
+.animate-reveal-uncommon {
+  animation: revealUncommon 0.4s ease-out;
+  will-change: transform, box-shadow;
+}
 
-  @keyframes revealUncommon {
-    0% {
-      transform: scale(0.9) rotateY(-90deg);
-      opacity: 0;
-      box-shadow: 0 0 0 rgba(96, 165, 250, 0);
-    }
-    50% {
-      box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
-    }
-    100% {
-      transform: scale(1) rotateY(0deg);
-      opacity: 1;
-      box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
-    }
+@keyframes revealUncommon {
+  0% {
+    transform: scale(0.9) rotateY(-90deg);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(96, 165, 250, 0);
   }
+  50% {
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg);
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+  }
+}
 
-  /* Rare: Flip + gold particles + glow (0.6s) */
-  .animate-reveal-rare {
-    animation: revealRare 0.6s ease-out;
-    will-change: transform, box-shadow;
-  }
+/* Rare: Flip + gold particles + glow (0.6s) */
+.animate-reveal-rare {
+  animation: revealRare 0.6s ease-out;
+  will-change: transform, box-shadow;
+}
 
-  @keyframes revealRare {
-    0% {
-      transform: scale(0.85) rotateY(-90deg) scale(0.8);
-      opacity: 0;
-      box-shadow: 0 0 0 rgba(251, 191, 36, 0);
-    }
-    40% {
-      transform: scale(1.1) rotateY(0deg);
-      box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
-    }
-    70% {
-      transform: scale(0.95) rotateY(0deg);
-      box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-    }
-    100% {
-      transform: scale(1) rotateY(0deg);
-      opacity: 1;
-      box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
-    }
+@keyframes revealRare {
+  0% {
+    transform: scale(0.85) rotateY(-90deg) scale(0.8);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
   }
+  40% {
+    transform: scale(1.1) rotateY(0deg);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+  }
+  70% {
+    transform: scale(0.95) rotateY(0deg);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg);
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+  }
+}
 
-  /* Epic: Flip + purple particles + screen shake (0.8s) */
-  .animate-reveal-epic {
-    animation: revealEpic 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform, box-shadow;
-  }
+/* Epic: Flip + purple particles + screen shake (0.8s) */
+.animate-reveal-epic {
+  animation: revealEpic 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, box-shadow;
+}
 
-  @keyframes revealEpic {
-    0% {
-      transform: scale(0.8) rotateY(-90deg) translateX(-20px);
-      opacity: 0;
-      box-shadow: 0 0 0 rgba(168, 85, 247, 0);
-    }
-    30% {
-      transform: scale(1.2) rotateY(45deg) translateX(10px);
-      box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
-    }
-    60% {
-      transform: scale(0.9) rotateY(0deg) translateX(-5px);
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
-    }
-    100% {
-      transform: scale(1) rotateY(0deg) translateX(0);
-      opacity: 1;
-      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-    }
+@keyframes revealEpic {
+  0% {
+    transform: scale(0.8) rotateY(-90deg) translateX(-20px);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(168, 85, 247, 0);
   }
+  30% {
+    transform: scale(1.2) rotateY(45deg) translateX(10px);
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
+  }
+  60% {
+    transform: scale(0.9) rotateY(0deg) translateX(-5px);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg) translateX(0);
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+}
 
-  /* Legendary: Flip + orange particles + screen shake + delay (1.0s) */
-  .animate-reveal-legendary {
-    animation: revealLegendary 1.0s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform, box-shadow, filter;
-  }
+/* Legendary: Flip + orange particles + screen shake + delay (1.0s) */
+.animate-reveal-legendary {
+  animation: revealLegendary 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, box-shadow, filter;
+}
 
-  @keyframes revealLegendary {
-    0% {
-      transform: scale(0.7) rotateY(-90deg) scale(0.6);
-      opacity: 0;
-      box-shadow: 0 0 0 rgba(249, 115, 22, 0);
-      filter: brightness(1);
-    }
-    20% {
-      opacity: 0;
-      transform: scale(0.7) rotateY(-90deg) scale(0.6);
-    }
-    40% {
-      transform: scale(1.3) rotateY(90deg);
-      box-shadow: 0 0 50px rgba(249, 115, 22, 0.8);
-      filter: brightness(1.2);
-    }
-    70% {
-      transform: scale(0.85) rotateY(0deg);
-      box-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
-      filter: brightness(1.1);
-    }
-    100% {
-      transform: scale(1) rotateY(0deg);
-      opacity: 1;
-      box-shadow: 0 0 25px rgba(249, 115, 22, 0.5);
-      filter: brightness(1);
-    }
+@keyframes revealLegendary {
+  0% {
+    transform: scale(0.7) rotateY(-90deg) scale(0.6);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(249, 115, 22, 0);
+    filter: brightness(1);
   }
+  20% {
+    opacity: 0;
+    transform: scale(0.7) rotateY(-90deg) scale(0.6);
+  }
+  40% {
+    transform: scale(1.3) rotateY(90deg);
+    box-shadow: 0 0 50px rgba(249, 115, 22, 0.8);
+    filter: brightness(1.2);
+  }
+  70% {
+    transform: scale(0.85) rotateY(0deg);
+    box-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg);
+    opacity: 1;
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.5);
+    filter: brightness(1);
+  }
+}
 
-  /* Mythic: Flip + rainbow particles + screen shake + delay + fanfare (1.5s) */
-  .animate-reveal-mythic {
-    animation: revealMythic 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform, box-shadow, filter;
-  }
+/* Mythic: Flip + rainbow particles + screen shake + delay + fanfare (1.5s) */
+.animate-reveal-mythic {
+  animation: revealMythic 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, box-shadow, filter;
+}
 
-  @keyframes revealMythic {
-    0% {
-      transform: scale(0.5) rotateY(-180deg) rotate(0deg) scale(0.4);
-      opacity: 0;
-      box-shadow: 0 0 0 rgba(236, 72, 153, 0);
-      filter: brightness(1) hue-rotate(0deg);
-    }
-    15% {
-      opacity: 0;
-      transform: scale(0.5) rotateY(-180deg) rotate(0deg) scale(0.4);
-    }
-    35% {
-      transform: scale(1.4) rotateY(90deg) rotate(180deg) scale(1.2);
-      box-shadow: 0 0 60px rgba(236, 72, 153, 1);
-      filter: brightness(1.5) hue-rotate(90deg);
-    }
-    60% {
-      transform: scale(0.8) rotateY(0deg) rotate(360deg) scale(0.9);
-      box-shadow: 0 0 40px rgba(236, 72, 153, 0.8);
-      filter: brightness(1.3) hue-rotate(180deg);
-    }
-    85% {
-      transform: scale(1.05) rotateY(0deg) rotate(360deg);
-      box-shadow: 0 0 30px rgba(236, 72, 153, 0.6);
-      filter: brightness(1.1) hue-rotate(270deg);
-    }
-    100% {
-      transform: scale(1) rotateY(0deg) rotate(360deg);
-      opacity: 1;
-      box-shadow: 0 0 25px rgba(236, 72, 153, 0.5);
-      filter: brightness(1) hue-rotate(360deg);
-    }
+@keyframes revealMythic {
+  0% {
+    transform: scale(0.5) rotateY(-180deg) rotate(0deg) scale(0.4);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+    filter: brightness(1) hue-rotate(0deg);
   }
+  15% {
+    opacity: 0;
+    transform: scale(0.5) rotateY(-180deg) rotate(0deg) scale(0.4);
+  }
+  35% {
+    transform: scale(1.4) rotateY(90deg) rotate(180deg) scale(1.2);
+    box-shadow: 0 0 60px rgba(236, 72, 153, 1);
+    filter: brightness(1.5) hue-rotate(90deg);
+  }
+  60% {
+    transform: scale(0.8) rotateY(0deg) rotate(360deg) scale(0.9);
+    box-shadow: 0 0 40px rgba(236, 72, 153, 0.8);
+    filter: brightness(1.3) hue-rotate(180deg);
+  }
+  85% {
+    transform: scale(1.05) rotateY(0deg) rotate(360deg);
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.6);
+    filter: brightness(1.1) hue-rotate(270deg);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg) rotate(360deg);
+    opacity: 1;
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.5);
+    filter: brightness(1) hue-rotate(360deg);
+  }
+}
 
-  .animate-legendary-burst {
-    animation: legendaryBurst 0.8s ease-out forwards;
-    will-change: transform, opacity;
-  }
+.animate-legendary-burst {
+  animation: legendaryBurst 0.8s ease-out forwards;
+  will-change: transform, opacity;
+}
 
-  @keyframes legendaryBurst {
-    0% {
-      transform: scale(0.5);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
+@keyframes legendaryBurst {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
   }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
 
-  /* Cinematic camera zoom animation (US083) */
-  .animate-cinematic-zoom {
-    animation: cinematicZoom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    will-change: transform;
-  }
+/* Cinematic camera zoom animation (US083) */
+.animate-cinematic-zoom {
+  animation: cinematicZoom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform;
+}
 
-  @keyframes cinematicZoom {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.2);
-    }
-    100% {
-      transform: scale(1.3);
-    }
+@keyframes cinematicZoom {
+  0% {
+    transform: scale(1);
   }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1.3);
+  }
+}
 
-  /* Enhanced burst animation for cinematic mode */
-  .animate-cinematic-burst {
-    animation: cinematicBurst 1.2s ease-out forwards;
-  }
+/* Enhanced burst animation for cinematic mode */
+.animate-cinematic-burst {
+  animation: cinematicBurst 1.2s ease-out forwards;
+}
 
-  @keyframes cinematicBurst {
-    0% {
-      transform: scale(0.5);
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      transform: scale(3);
-      opacity: 0;
-    }
+@keyframes cinematicBurst {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
   }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
 
-  /* GPU acceleration for card container */
-  .relative.cursor-pointer {
-    transform: translateZ(0);
-  }
+/* GPU acceleration for card container */
+.relative.cursor-pointer {
+  transform: translateZ(0);
+}
 
-  /* Optimize progress bar animation */
-  .transition-all.duration-300 {
-    will-change: width;
-  }
+/* Optimize progress bar animation */
+.transition-all.duration-300 {
+  will-change: width;
+}
 </style>

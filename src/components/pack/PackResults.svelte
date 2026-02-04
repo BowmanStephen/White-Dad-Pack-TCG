@@ -44,7 +44,8 @@ const DAD_MESSAGES = [
   "Mythic?! Call the neighbors, we're having a block party.",
 ];
 
-const dadMessage = $derived(DAD_MESSAGES[Math.floor(Math.random() * DAD_MESSAGES.length)]);
+// Use $state instead of $derived to prevent flickering - random message selected once on mount
+let dadMessage = $state(DAD_MESSAGES[Math.floor(Math.random() * DAD_MESSAGES.length)]);
 const bestRarityConfig = $derived(RARITY_CONFIG[stats.bestCard.rarity]);
 const hasLegendaryOrBetter = $derived(
   stats.bestCard.rarity === 'legendary' || stats.bestCard.rarity === 'mythic'

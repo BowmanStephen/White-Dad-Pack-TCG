@@ -346,15 +346,16 @@ function handleTouchStart(event: TouchEvent) {
 function handleTouchMove(event: TouchEvent) {
   if (!isDragging) return;
 
-  event.preventDefault();
   const currentX = event.touches[0].clientX;
   const deltaX = currentX - touchStartX;
 
   // Calculate tear progress (normalized to 0-1)
   tearProgress = Math.min(1, Math.max(0, deltaX / TEAR_GESTURE_CONFIG.THRESHOLD_PX));
 
-  // Visual feedback: shake pack as tear progresses
+  // Only prevent scrolling when actively tearing the pack (not just touching)
+  // This allows users to scroll the page when not performing a tear gesture
   if (tearProgress > TEAR_GESTURE_CONFIG.VISUAL_FEEDBACK_THRESHOLD) {
+    event.preventDefault();
     phase = 'tear';
   }
 }
