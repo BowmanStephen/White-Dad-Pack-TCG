@@ -10,6 +10,42 @@ import { atom, computed } from 'nanostores';
 import { persistentAtom } from '@/lib/utils/persistent';
 
 /**
+ * Welcome modal persistence - tracks if user has seen the welcome modal
+ */
+export const welcomeSeen = persistentAtom<boolean>('daddeck-welcome-seen', false, {
+  encode: value => JSON.stringify(value),
+  decode: value => {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return false;
+    }
+  },
+});
+
+/**
+ * Welcome modal visibility state (non-persistent, UI state only)
+ */
+export const welcomeModalVisible = atom<boolean>(false);
+
+/**
+ * Mark welcome as seen and hide the modal
+ */
+export function dismissWelcome(): void {
+  welcomeSeen.set(true);
+  welcomeModalVisible.set(false);
+}
+
+/**
+ * Show welcome modal if not seen before
+ */
+export function showWelcomeIfNeeded(): void {
+  if (!welcomeSeen.get()) {
+    welcomeModalVisible.set(true);
+  }
+}
+
+/**
  * Tutorial step definitions
  * Each step has an ID, title, content, and optional target selector for highlighting
  */
@@ -44,7 +80,8 @@ export const TUTORIALS: Record<string, TutorialStep[]> = {
     {
       id: 'pack_button',
       title: 'Open Your First Pack',
-      content: 'Click the <strong>"Open Pack"</strong> button to start! Each pack contains 6 cards with different rarities - from Common to Mythic!',
+      content:
+        'Click the <strong>"Open Pack"</strong> button to start! Each pack contains 6 cards with different rarities - from Common to Mythic!',
       target: '[data-tutorial="pack-button"]',
       position: 'bottom',
       action: 'click',
@@ -52,7 +89,8 @@ export const TUTORIALS: Record<string, TutorialStep[]> = {
     {
       id: 'card_reveal',
       title: 'Watch Cards Reveal',
-      content: 'Enjoy the premium animations as each card is revealed! Higher rarity cards have more dramatic effects. Keep an eye out for holographic variants! ✨',
+      content:
+        'Enjoy the premium animations as each card is revealed! Higher rarity cards have more dramatic effects. Keep an eye out for holographic variants! ✨',
       target: '[data-tutorial="card-reveal"]',
       position: 'center',
       action: 'wait',
@@ -60,7 +98,8 @@ export const TUTORIALS: Record<string, TutorialStep[]> = {
     {
       id: 'share_pull',
       title: 'Share Your Pull',
-      content: 'Got an awesome card? Click the <strong>"Share"</strong> button to show your friends! Your card pull is saved as an image ready for social media. 📸',
+      content:
+        'Got an awesome card? Click the <strong>"Share"</strong> button to show your friends! Your card pull is saved as an image ready for social media. 📸',
       target: '[data-tutorial="share-button"]',
       position: 'bottom',
       action: 'next',
@@ -76,8 +115,8 @@ export const tutorialProgress = persistentAtom<Record<string, boolean>>(
   'daddeck-tutorial-progress',
   {},
   {
-    encode: (value) => JSON.stringify(value),
-    decode: (value) => {
+    encode: value => JSON.stringify(value),
+    decode: value => {
       try {
         return JSON.parse(value);
       } catch {
@@ -108,26 +147,20 @@ export const tutorialState = atom<TutorialState>({
 /**
  * Current tutorial step (computed)
  */
-export const currentStep = computed(
-  [tutorialState, activeTutorialId],
-  (state, tutorialId) => {
-    if (!state.isActive || !tutorialId) return null;
-    const steps = TUTORIALS[tutorialId];
-    if (!steps || state.currentStepIndex >= steps.length) return null;
-    return steps[state.currentStepIndex];
-  }
-);
+export const currentStep = computed([tutorialState, activeTutorialId], (state, tutorialId) => {
+  if (!state.isActive || !tutorialId) return null;
+  const steps = TUTORIALS[tutorialId];
+  if (!steps || state.currentStepIndex >= steps.length) return null;
+  return steps[state.currentStepIndex];
+});
 
 /**
  * Tutorial progress percentage (computed)
  */
-export const tutorialProgressPercent = computed(
-  [tutorialState],
-  (state) => {
-    if (state.steps.length === 0) return 0;
-    return Math.round((state.currentStepIndex / state.steps.length) * 100);
-  }
-);
+export const tutorialProgressPercent = computed([tutorialState], state => {
+  if (state.steps.length === 0) return 0;
+  return Math.round((state.currentStepIndex / state.steps.length) * 100);
+});
 
 /**
  * Check if a tutorial has been completed
@@ -252,8 +285,9 @@ export function completeTutorial(): void {
 export function resetTutorial(tutorialId?: string): void {
   if (tutorialId) {
     const progress = tutorialProgress.get();
-    delete progress[tutorialId];
-    tutorialProgress.set(progress);
+    // Create new object without the tutorialId (immutable pattern)
+    const { [tutorialId]: _removed, ...rest } = progress;
+    tutorialProgress.set(rest);
   } else {
     // Reset all tutorials
     tutorialProgress.set({});

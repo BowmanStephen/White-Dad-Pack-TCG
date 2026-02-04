@@ -18,7 +18,7 @@ export default defineConfig({
   site: 'https://dadddeck.com',
   integrations: [
     svelte({
-      exclude: ['**/src/_archived/**'],
+      exclude: ['**/src/__archived_DO_NOT_IMPORT/**'],
     }),
     tailwind(),
     sentry({
@@ -73,7 +73,9 @@ export default defineConfig({
     plugins: [],
     resolve: {
       alias: {
-        '@nanostores/persistent': fileURLToPath(new URL('./src/lib/utils/persistent.ts', import.meta.url)),
+        '@nanostores/persistent': fileURLToPath(
+          new URL('./src/lib/utils/persistent.ts', import.meta.url)
+        ),
       },
     },
     define: {
@@ -84,11 +86,11 @@ export default defineConfig({
     // Exclude archived components from being processed
     server: {
       watch: {
-        ignored: ['**/src/_archived/**']
-      }
+        ignored: ['**/src/__archived_DO_NOT_IMPORT/**', '**/node_modules/**'],
+      },
     },
     ssr: {
-      noExternal: []
+      noExternal: [],
     },
     build: {
       // Optimize CSS code splitting
@@ -105,7 +107,7 @@ export default defineConfig({
           entryFileNames: '_astro/[name].[hash].js',
           assetFileNames: '_astro/[name].[hash].[ext]',
 
-          manualChunks: (id) => {
+          manualChunks: id => {
             // Split vendor chunks for better caching
             if (id.includes('node_modules')) {
               // Split html2canvas into separate chunk (largest dependency)
@@ -113,7 +115,14 @@ export default defineConfig({
                 return 'vendor-html2canvas';
               }
               // Split Svelte runtime
-              if (id.includes('svelte/') || id.includes('svelte/animate') || id.includes('svelte/easing') || id.includes('svelte/motion') || id.includes('svelte/store') || id.includes('svelte/transition')) {
+              if (
+                id.includes('svelte/') ||
+                id.includes('svelte/animate') ||
+                id.includes('svelte/easing') ||
+                id.includes('svelte/motion') ||
+                id.includes('svelte/store') ||
+                id.includes('svelte/transition')
+              ) {
                 return 'vendor-svelte';
               }
               // Split nanostores
@@ -172,6 +181,13 @@ export default defineConfig({
     optimizeDeps: {
       include: ['svelte', 'nanostores'],
       exclude: ['html2canvas'], // Don't pre-bundle large dependencies
+      // Exclude archived folder from dependency scanning
+      entries: [
+        'src/pages/**/*.astro',
+        'src/layouts/**/*.astro',
+        'src/components/**/*.svelte',
+        '!src/__archived_DO_NOT_IMPORT/**',
+      ],
     },
   },
 

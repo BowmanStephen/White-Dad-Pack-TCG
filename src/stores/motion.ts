@@ -78,12 +78,23 @@ export const $isReducedMotion = computed(
 );
 export const isReducedMotion = $isReducedMotion;
 
+// Track if motion settings have been initialized to prevent duplicate listeners
+let motionSettingsInitialized = false;
+let motionMediaQueryCleanup: (() => void) | null = null;
+
 /**
  * Initialize motion settings
  * Detects system preference on mount
+ * Returns cleanup function to remove event listeners
  */
-export function initializeMotionSettings(): void {
-  if (typeof window === 'undefined') return;
+export function initializeMotionSettings(): () => void {
+  if (typeof window === 'undefined') return () => {};
+
+  // Prevent duplicate initialization
+  if (motionSettingsInitialized) {
+    return motionMediaQueryCleanup || (() => {});
+  }
+  motionSettingsInitialized = true;
 
   // Check initial system preference
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -97,15 +108,25 @@ export function initializeMotionSettings(): void {
   // Modern browsers
   if (mediaQuery.addEventListener) {
     mediaQuery.addEventListener('change', handleChange);
-    // Note: Cleanup function stored but not returned (void return type)
-    // Cleanup happens automatically when component unmounts
+    motionMediaQueryCleanup = () => {
+      mediaQuery.removeEventListener('change', handleChange);
+      motionSettingsInitialized = false;
+    };
   }
   // Legacy fallback
   else if (mediaQuery.addListener) {
     mediaQuery.addListener(handleChange);
-    // Note: Cleanup function stored but not returned (void return type)
-    // Cleanup happens automatically when component unmounts
+    motionMediaQueryCleanup = () => {
+      mediaQuery.removeListener(handleChange);
+      motionSettingsInitialized = false;
+    };
+  } else {
+    motionMediaQueryCleanup = () => {
+      motionSettingsInitialized = false;
+    };
   }
+
+  return motionMediaQueryCleanup;
 }
 
 /**

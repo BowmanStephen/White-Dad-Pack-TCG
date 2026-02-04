@@ -8,6 +8,7 @@ Implements Ralph Loop HOTL dashboard pattern for tutorial visibility.
 import { onMount, onDestroy, tick } from 'svelte';
 import { fade } from 'svelte/transition';
 import { sanitizeHTML } from '@/lib/security/sanitizer';
+import { createFocusTrap } from '@/lib/utils/focus-trap';
 import {
   tutorialState,
   currentStep,
@@ -26,6 +27,7 @@ let highlightedElement: HTMLElement | null = null;
 let overlay = $state<HTMLElement | null>(null);
 let spotlight = $state<HTMLElement | null>(null);
 let dontShowAgain = $state(false);
+let cleanupFocusTrap: (() => void) | null = null;
 
 // SSR guard
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -46,15 +48,16 @@ async function updateSpotlight(): Promise<void> {
 
   await tick();
 
-  const step = currentStep.get();
-  if (!step?.target) {
+  // Use the derived step value, not a fresh .get() call (fixes variable shadowing)
+  const currentStepValue = currentStep.get();
+  if (!currentStepValue?.target) {
     if (spotlight) spotlight.style.display = 'none';
     return;
   }
 
-  const target = document.querySelector(step.target) as HTMLElement | null;
+  const target = document.querySelector(currentStepValue.target) as HTMLElement | null;
   if (!target) {
-    console.warn(`Tutorial target not found: ${step.target}`);
+    console.warn(`Tutorial target not found: ${currentStepValue.target}`);
     if (spotlight) spotlight.style.display = 'none';
     return;
   }
@@ -81,12 +84,16 @@ function handleKeydown(event: KeyboardEvent): void {
 
   switch (event.key) {
     case 'Escape':
+      event.stopPropagation();
+      event.preventDefault();
       skipTutorial();
       break;
     case 'ArrowRight':
+      event.preventDefault();
       nextStep();
       break;
     case 'ArrowLeft':
+      event.preventDefault();
       prevStep();
       break;
   }
@@ -97,17 +104,26 @@ let unsubscribe: (() => void) | null = null;
 onMount(() => {
   if (!isBrowser) return;
 
-  window.addEventListener('keydown', handleKeydown);
   unsubscribe = currentStep.subscribe(updateSpotlight);
-
   updateSpotlight();
 });
 
 onDestroy(() => {
-  if (!isBrowser) return;
-
-  window.removeEventListener('keydown', handleKeydown);
   if (unsubscribe) unsubscribe();
+  if (cleanupFocusTrap) cleanupFocusTrap();
+});
+
+// Setup focus trap when overlay becomes visible
+$effect(() => {
+  if (tutorial.isActive && overlay) {
+    overlay.focus();
+    cleanupFocusTrap = createFocusTrap(overlay, {
+      autoFocus: true,
+    });
+  } else if (!tutorial.isActive && cleanupFocusTrap) {
+    cleanupFocusTrap();
+    cleanupFocusTrap = null;
+  }
 });
 
 function handleSkip(): void {
@@ -127,6 +143,9 @@ function handleFinish(): void {
 }
 </script>
 
+<!-- Use svelte:window for consistent keyboard handling -->
+<svelte:window onkeydown={handleKeydown} />
+
 {#if tutorial.isActive}
   <div
     bind:this={overlay}
@@ -134,7 +153,7 @@ function handleFinish(): void {
     aria-modal="true"
     aria-labelledby="tutorial-title"
     tabindex="-1"
-    class="fixed inset-0 z-50 flex items-center justify-center"
+    class="fixed inset-0 z-[5000] flex items-center justify-center"
   >
     <!-- Dark backdrop -->
     <button

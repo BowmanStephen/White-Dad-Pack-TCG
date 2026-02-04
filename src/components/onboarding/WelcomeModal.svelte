@@ -11,103 +11,129 @@ Features:
 - Persistent tracking via localStorage
 - Responsive design with mobile-first approach
 - Keyboard accessible (Escape to close, Enter to start)
+- Focus trap for accessibility
 -->
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { fade, fly } from 'svelte/transition';
-  import { persistentAtom } from '@/lib/utils/persistent';
+import { onMount, onDestroy } from 'svelte';
+import { fade, fly } from 'svelte/transition';
+import { createFocusTrap } from '@/lib/utils/focus-trap';
+import {
+  welcomeSeen,
+  welcomeModalVisible,
+  dismissWelcome,
+  showWelcomeIfNeeded,
+} from '@/stores/tutorial';
 
-  // Track whether welcome modal has been shown
-  export const welcomeSeen = persistentAtom<boolean>(
-    'daddeck-welcome-seen',
-    false,
-    {
-      encode: (value) => JSON.stringify(value),
-      decode: (value) => {
-        try {
-          return JSON.parse(value);
-        } catch {
-          return false;
-        }
-      },
-    }
-  );
+// Props for callback when user chooses action
+interface Props {
+  onStartTutorial?: () => void;
+  onSkip?: () => void;
+}
 
-  // Props for callback when user chooses action
-  interface Props {
-    onStartTutorial?: () => void;
-    onSkip?: () => void;
-  }
+let { onStartTutorial = () => {}, onSkip = () => {} }: Props = $props();
 
-  let {
-    onStartTutorial = () => {},
-    onSkip = () => {},
-  }: Props = $props();
+// Local state synced with store
+let isVisible = $state(false);
+let modalElement = $state<HTMLElement | null>(null);
+let cleanupFocusTrap: (() => void) | null = null;
+let showDelayTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // Local state
-  let isVisible = $state(false);
+// Subscribe to store
+let unsubscribe: (() => void) | null = null;
 
-  // Show modal on mount if not seen before
-  onMount(() => {
-    // Only run on client-side
-    if (typeof window === 'undefined') return;
-
-    // Check if user has already seen the welcome modal
-    if (!welcomeSeen.get()) {
-      // Show after a short delay for smooth experience
-      setTimeout(() => {
-        isVisible = true;
-      }, 500);
-    }
+onMount(() => {
+  // Subscribe to visibility store
+  unsubscribe = welcomeModalVisible.subscribe((visible: boolean) => {
+    isVisible = visible;
   });
 
-  // Handle start tutorial button
-  function handleStart() {
-    isVisible = false;
+  // Only run on client-side
+  if (typeof window === 'undefined') return;
 
-    // Mark as seen so we don't show it again
-    welcomeSeen.set(true);
-
-    // Call the start tutorial callback
-    onStartTutorial();
+  // Check if user has already seen the welcome modal
+  if (!welcomeSeen.get()) {
+    // Show after a short delay for smooth experience
+    showDelayTimer = setTimeout(() => {
+      showWelcomeIfNeeded();
+    }, 500);
   }
+});
 
-  // Handle skip button
-  function handleSkip() {
-    isVisible = false;
-
-    // Mark as seen
-    welcomeSeen.set(true);
-
-    // Call the skip callback
-    onSkip();
+onDestroy(() => {
+  // Cleanup subscription
+  if (unsubscribe) {
+    unsubscribe();
   }
-
-  // Handle keyboard navigation
-  function handleKeydown(event: KeyboardEvent) {
-    if (!isVisible) return;
-
-    switch (event.key) {
-      case 'Escape':
-        handleSkip();
-        break;
-      case 'Enter':
-        handleStart();
-        break;
-    }
+  // Cleanup timeout
+  if (showDelayTimer) {
+    clearTimeout(showDelayTimer);
   }
+  // Cleanup focus trap
+  if (cleanupFocusTrap) {
+    cleanupFocusTrap();
+  }
+});
+
+// Setup focus trap when modal becomes visible
+$effect(() => {
+  if (isVisible && modalElement) {
+    // Focus the modal and setup focus trap
+    modalElement.focus();
+    cleanupFocusTrap = createFocusTrap(modalElement, {
+      autoFocus: true,
+    });
+  } else if (!isVisible && cleanupFocusTrap) {
+    cleanupFocusTrap();
+    cleanupFocusTrap = null;
+  }
+});
+
+// Handle start tutorial button
+function handleStart() {
+  dismissWelcome();
+  onStartTutorial();
+}
+
+// Handle skip button
+function handleSkip() {
+  dismissWelcome();
+  onSkip();
+}
+
+// Handle keyboard navigation
+function handleKeydown(event: KeyboardEvent) {
+  if (!isVisible) return;
+
+  switch (event.key) {
+    case 'Escape':
+      event.stopPropagation();
+      event.preventDefault();
+      handleSkip();
+      break;
+    case 'Enter':
+      // Only trigger start if not focused on skip button
+      if (document.activeElement?.textContent?.includes('Skip')) {
+        return; // Let the button's native behavior handle it
+      }
+      event.stopPropagation();
+      event.preventDefault();
+      handleStart();
+      break;
+  }
+}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isVisible}
   <div
+    bind:this={modalElement}
     role="dialog"
     aria-modal="true"
     aria-labelledby="welcome-title"
     aria-describedby="welcome-description"
     tabindex="-1"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 z-[5000] flex items-center justify-center p-4"
   >
     <!-- Backdrop -->
     <button
@@ -121,7 +147,7 @@ Features:
     <!-- Modal content -->
     <div
       class="relative z-10 w-full max-w-2xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl"
-      transition:fly="{{ y: 50, duration: 300 }}"
+      transition:fly={{ y: 50, duration: 300 }}
     >
       <!-- Close button (top right) -->
       <button
@@ -130,12 +156,7 @@ Features:
         aria-label="Close welcome"
         type="button"
       >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -149,13 +170,10 @@ Features:
       <div class="p-8 md:p-12">
         <!-- Logo/Icon -->
         <div class="flex justify-center mb-6">
-          <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
-            <svg
-              class="w-12 h-12 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <div
+            class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg"
+          >
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -171,7 +189,7 @@ Features:
           id="welcome-title"
           class="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-4"
         >
-          Welcome to DadDeck™!
+          Welcome to DadDeck!
         </h2>
 
         <!-- Subtitle -->
@@ -180,21 +198,24 @@ Features:
         </p>
 
         <!-- Description -->
-        <div
-          id="welcome-description"
-          class="prose prose-lg dark:prose-invert max-w-none mb-8"
-        >
+        <div id="welcome-description" class="prose prose-lg dark:prose-invert max-w-none mb-8">
           <p class="text-gray-700 dark:text-gray-300 text-center leading-relaxed">
-            Open digital booster packs featuring collectible dad-themed cards.
-            From <strong class="text-yellow-600">Grillmaster Gary</strong> to
-            <strong class="text-green-600">Fix-It Dad</strong>, collect 50+ hilarious
-            cards parodying suburban American dad culture.
+            Open digital booster packs featuring collectible dad-themed cards. From <strong
+              class="text-yellow-600">Grillmaster Gary</strong
+            >
+            to
+            <strong class="text-green-600">Fix-It Dad</strong>, collect 50+ hilarious cards
+            parodying suburban American dad culture.
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <!-- Feature 1 -->
-            <div class="flex flex-col items-center text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-3">
+            <div
+              class="flex flex-col items-center text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+            >
+              <div
+                class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-3"
+              >
                 <svg
                   class="w-6 h-6 text-blue-600 dark:text-blue-400"
                   fill="none"
@@ -209,17 +230,19 @@ Features:
                   />
                 </svg>
               </div>
-              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
-                Free to Play
-              </h3>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Free to Play</h3>
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 Unlimited pack opening, no microtransactions
               </p>
             </div>
 
             <!-- Feature 2 -->
-            <div class="flex flex-col items-center text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-              <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-3">
+            <div
+              class="flex flex-col items-center text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+            >
+              <div
+                class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-3"
+              >
                 <svg
                   class="w-6 h-6 text-purple-600 dark:text-purple-400"
                   fill="none"
@@ -234,17 +257,19 @@ Features:
                   />
                 </svg>
               </div>
-              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
-                Premium Feel
-              </h3>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Premium Feel</h3>
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 AAA-quality animations and effects
               </p>
             </div>
 
             <!-- Feature 3 -->
-            <div class="flex flex-col items-center text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-              <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-3">
+            <div
+              class="flex flex-col items-center text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+            >
+              <div
+                class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-3"
+              >
                 <svg
                   class="w-6 h-6 text-green-600 dark:text-green-400"
                   fill="none"
@@ -259,9 +284,7 @@ Features:
                   />
                 </svg>
               </div>
-              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
-                Collect & Battle
-              </h3>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Collect & Battle</h3>
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 Build your collection and compete
               </p>
@@ -278,12 +301,7 @@ Features:
             type="button"
           >
             <span class="flex items-center justify-center gap-2">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -315,11 +333,13 @@ Features:
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-6 text-center">
           Press <kbd
             class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 font-mono"
-          >Enter</kbd>
+            >Enter</kbd
+          >
           to start or
           <kbd
             class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 font-mono"
-          >Esc</kbd>
+            >Esc</kbd
+          >
           to skip
         </p>
       </div>
@@ -328,15 +348,15 @@ Features:
 {/if}
 
 <style>
-  /* Ensure proper z-index stacking */
-  [role='dialog'] {
-    isolation: isolate;
-  }
+/* Ensure proper z-index stacking */
+[role='dialog'] {
+  isolation: isolate;
+}
 
-  /* Responsive adjustments */
-  @media (max-width: 640px) {
-    [role='dialog'] {
-      padding: 1rem;
-    }
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  [role='dialog'] {
+    padding: 1rem;
   }
+}
 </style>

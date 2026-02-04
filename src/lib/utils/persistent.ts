@@ -13,14 +13,18 @@ const memoryStorage = new Map<string, string>();
 function getStorageBackend(): StorageBackend {
   if (typeof window === 'undefined') {
     return {
-      getItem: (key) => memoryStorage.get(key) ?? null,
-      setItem: (key, value) => { memoryStorage.set(key, value); },
-      removeItem: (key) => { memoryStorage.delete(key); },
+      getItem: key => memoryStorage.get(key) ?? null,
+      setItem: (key, value) => {
+        memoryStorage.set(key, value);
+      },
+      removeItem: key => {
+        memoryStorage.delete(key);
+      },
     };
   }
 
   return {
-    getItem: (key) => {
+    getItem: key => {
       try {
         return window.localStorage.getItem(key);
       } catch {
@@ -34,7 +38,7 @@ function getStorageBackend(): StorageBackend {
         memoryStorage.set(key, value);
       }
     },
-    removeItem: (key) => {
+    removeItem: key => {
       try {
         window.localStorage.removeItem(key);
       } catch {
@@ -56,15 +60,23 @@ interface PersistentOptions<T> {
 const identityEncode = <T>(value: T): string => String(value);
 const identityDecode = <T>(value: string): T => value as unknown as T;
 
-export function persistentAtom<T>(
-  key: string,
-  initial: T,
-  opts: PersistentOptions<T> = {}
-) {
+export function persistentAtom<T>(key: string, initial: T, opts: PersistentOptions<T> = {}) {
   const encode = opts.encode ?? identityEncode;
   const decode = opts.decode ?? identityDecode;
 
-  const store = atom<T>(initial);
+  // SYNC restore from localStorage immediately on creation (fixes race condition)
+  // This ensures .get() returns the persisted value even before any subscription
+  let initialValue = initial;
+  const raw = storage.getItem(key);
+  if (raw !== null) {
+    try {
+      initialValue = decode(raw);
+    } catch {
+      // Fall back to initial on decode error
+    }
+  }
+
+  const store = atom<T>(initialValue);
   const baseSet = store.set;
 
   store.set = (newValue: T) => {
@@ -133,8 +145,8 @@ export function persistentBoolean(
 ) {
   return persistentAtom<boolean>(key, initial, {
     ...opts,
-    encode: (value) => (value ? 'yes' : undefined),
-    decode: (value) => value === 'yes',
+    encode: value => (value ? 'yes' : undefined),
+    decode: value => value === 'yes',
   });
 }
 

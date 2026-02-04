@@ -22,7 +22,11 @@
 
 import { atom } from 'nanostores';
 import { persistentAtom } from '@/lib/utils/persistent';
-import { getNetworkDetector, NETWORK_EVENTS, type NetworkInfo } from '@/lib/network/network-detector';
+import {
+  getNetworkDetector,
+  NETWORK_EVENTS,
+  type NetworkInfo,
+} from '@/lib/network/network-detector';
 import { onBrowser } from '@/lib/utils/browser';
 
 /**
@@ -62,17 +66,46 @@ export const queueCount = atom(0);
 export const isProcessing = atom(false);
 export const processResults = atom<ProcessResult[]>([]);
 
+// Queue count sync subscription (initialized lazily to avoid memory leak)
+let queueSubscriptionCleanup: (() => void) | null = null;
+
+function setupQueueSubscription(): void {
+  if (queueSubscriptionCleanup) return; // Already setup
+
+  queueSubscriptionCleanup = queuedActions.subscribe(actions => {
+    queueCount.set(actions.length);
+
+    // Persist to localStorage (client-side only)
+    onBrowser(() => {
+      try {
+        const toStore = actions.map(a => ({
+          ...a,
+          timestamp: a.timestamp.toISOString(),
+        }));
+        localStorage.setItem('offline-queue', JSON.stringify(toStore));
+      } catch (error) {
+        console.error('[Offline Queue] Failed to save actions:', error);
+      }
+    });
+  });
+}
+
 // Initialize from localStorage on client side
 function initializeStoredActions(): void {
   if (typeof window === 'undefined') return;
 
+  // Setup queue subscription (only once)
+  setupQueueSubscription();
+
   try {
     const stored = localStorage.getItem('offline-queue');
     if (stored) {
-      const parsed = JSON.parse(stored) as Array<Omit<QueuedAction, 'timestamp'> & { timestamp: string }>;
-      const actions: QueuedAction[] = parsed.map((action) => ({
+      const parsed = JSON.parse(stored) as Array<
+        Omit<QueuedAction, 'timestamp'> & { timestamp: string }
+      >;
+      const actions: QueuedAction[] = parsed.map(action => ({
         ...action,
-        timestamp: new Date(action.timestamp)
+        timestamp: new Date(action.timestamp),
       }));
       queuedActions.set(actions);
     }
@@ -85,33 +118,18 @@ function initializeStoredActions(): void {
   isOnline.set(detector.isOnline());
 }
 
-// Update queue count when actions change
-queuedActions.subscribe((actions) => {
-  queueCount.set(actions.length);
-
-  // Persist to localStorage (client-side only)
-  onBrowser(() => {
-    try {
-      const toStore = actions.map(a => ({
-        ...a,
-        timestamp: a.timestamp.toISOString()
-      }));
-      localStorage.setItem('offline-queue', JSON.stringify(toStore));
-    } catch (error) {
-      console.error('[Offline Queue] Failed to save actions:', error);
-    }
-  });
-});
-
 /**
  * Add an action to the queue
  */
 export function enqueueAction(action: Omit<QueuedAction, 'id' | 'timestamp' | 'retryCount'>): void {
+  // Ensure queue subscription is active (idempotent)
+  setupQueueSubscription();
+
   const newAction: QueuedAction = {
     ...action,
     id: crypto.randomUUID(),
     timestamp: new Date(),
-    retryCount: 0
+    retryCount: 0,
   };
 
   const current = queuedActions.get();
@@ -122,6 +140,9 @@ export function enqueueAction(action: Omit<QueuedAction, 'id' | 'timestamp' | 'r
  * Remove an action from the queue
  */
 export function dequeueAction(actionId: string): void {
+  // Ensure queue subscription is active (idempotent)
+  setupQueueSubscription();
+
   const current = queuedActions.get();
   queuedActions.set(current.filter(a => a.id !== actionId));
 }
@@ -130,6 +151,9 @@ export function dequeueAction(actionId: string): void {
  * Clear all queued actions
  */
 export function clearQueue(): void {
+  // Ensure queue subscription is active (idempotent)
+  setupQueueSubscription();
+
   queuedActions.set([]);
   processResults.set([]);
 }
@@ -140,7 +164,6 @@ export function clearQueue(): void {
  */
 async function processAction(action: QueuedAction): Promise<ProcessResult> {
   try {
-
     // Simulate processing (in real app, this would call actual APIs)
     switch (action.type) {
       case 'pack_open':
@@ -297,5 +320,5 @@ export const offlineQueue = {
   getQueueCount: () => queueCount.get(),
   getQueuedActions: () => queuedActions.get(),
   getProcessResults: () => processResults.get(),
-  isProcessing: () => isProcessing.get()
+  isProcessing: () => isProcessing.get(),
 };

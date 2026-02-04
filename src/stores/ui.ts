@@ -27,10 +27,10 @@ const CINEMATIC_CONFIGS: Record<CinematicMode, CinematicConfig> = {
     audioEnhanced: false,
   },
   cinematic: {
-    speedMultiplier: 0.5,   // 2x slower animations
+    speedMultiplier: 0.5, // 2x slower animations
     particleMultiplier: 2.0, // 2x more particles
-    zoomEnabled: true,       // Camera zoom on reveal
-    audioEnhanced: true,     // Enhanced dramatic audio
+    zoomEnabled: true, // Camera zoom on reveal
+    audioEnhanced: true, // Enhanced dramatic audio
   },
 };
 
@@ -170,7 +170,13 @@ export const $deviceOrientation = atom<{ alpha: number; beta: number; gamma: num
 export const $modalOpen = atom<string | null>(null);
 
 // Toast notifications
-export const $toasts = atom<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' | 'warning' | 'achievement' }>>([]);
+export const $toasts = atom<
+  Array<{
+    id: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning' | 'achievement';
+  }>
+>([]);
 
 // Screen shake enabled state
 export const $screenShakeEnabled = atom<boolean>(getStoredBoolean(SCREEN_SHAKE_KEY, true));
@@ -237,6 +243,8 @@ export const fastForward = $fastForward;
  * Set skip animations preference
  */
 export function setSkipAnimations(enabled: boolean): void {
+  // Capture previous value BEFORE setting
+  const previousValue = $skipAnimations.get();
   $skipAnimations.set(enabled);
 
   // Persist to localStorage
@@ -249,7 +257,7 @@ export function setSkipAnimations(enabled: boolean): void {
     type: 'settings_change',
     data: {
       setting: 'skipAnimations',
-      previousValue: !$skipAnimations.get(),
+      previousValue,
       newValue: enabled,
     },
   });
@@ -267,6 +275,8 @@ export function toggleSkipAnimations(): void {
  * Set fast forward preference
  */
 export function setFastForward(enabled: boolean): void {
+  // Capture previous value BEFORE setting
+  const previousValue = $fastForward.get();
   $fastForward.set(enabled);
 
   // Persist to localStorage
@@ -279,7 +289,7 @@ export function setFastForward(enabled: boolean): void {
     type: 'settings_change',
     data: {
       setting: 'fastForward',
-      previousValue: !$fastForward.get(),
+      previousValue,
       newValue: enabled,
     },
   });
@@ -339,6 +349,8 @@ export function toggleQuickReveal(): void {
  * Set cinematic mode
  */
 export function setCinematicMode(mode: CinematicMode): void {
+  // Capture previous value BEFORE setting
+  const previousValue = $cinematicMode.get();
   $cinematicMode.set(mode);
 
   // Persist to localStorage
@@ -351,7 +363,7 @@ export function setCinematicMode(mode: CinematicMode): void {
     type: 'settings_change',
     data: {
       setting: 'cinematicMode',
-      previousValue: $cinematicMode.get() === 'cinematic' ? 'normal' : 'cinematic',
+      previousValue,
       newValue: mode,
     },
   });
@@ -373,29 +385,32 @@ export function toggleCinematicMode(): void {
  * Particle preset configuration
  * Each preset controls both particle count and screen shake
  */
-export const PARTICLE_PRESETS: Record<ParticlePreset, {
-  particleMultiplier: number;
-  screenShakeEnabled: boolean;
-  description: string;
-}> = {
+export const PARTICLE_PRESETS: Record<
+  ParticlePreset,
+  {
+    particleMultiplier: number;
+    screenShakeEnabled: boolean;
+    description: string;
+  }
+> = {
   low: {
-    particleMultiplier: 0.5,    // 50% particles
-    screenShakeEnabled: false,  // No screen shake
+    particleMultiplier: 0.5, // 50% particles
+    screenShakeEnabled: false, // No screen shake
     description: 'Minimal particles, no screen shake - best performance',
   },
   medium: {
-    particleMultiplier: 0.75,   // 75% particles
-    screenShakeEnabled: false,  // No screen shake (reduced effects)
+    particleMultiplier: 0.75, // 75% particles
+    screenShakeEnabled: false, // No screen shake (reduced effects)
     description: 'Balanced particles, reduced effects for smoother performance',
   },
   high: {
-    particleMultiplier: 1.0,    // 100% particles
-    screenShakeEnabled: true,   // All effects enabled (default)
+    particleMultiplier: 1.0, // 100% particles
+    screenShakeEnabled: true, // All effects enabled (default)
     description: 'Full particle effects with screen shake - the complete experience',
   },
   ultra: {
-    particleMultiplier: 1.5,    // 150% particles
-    screenShakeEnabled: true,   // Maximum drama
+    particleMultiplier: 1.5, // 150% particles
+    screenShakeEnabled: true, // Maximum drama
     description: 'Maximum particle intensity with all effects for epic reveals',
   },
 };
@@ -405,7 +420,8 @@ const getInitialParticlePreset = (): ParticlePreset => {
   const saved = getStoredValue<ParticlePreset>(
     PARTICLE_PRESET_KEY,
     null,
-    (value): value is ParticlePreset => ['low', 'medium', 'high', 'ultra'].includes(value as ParticlePreset)
+    (value): value is ParticlePreset =>
+      ['low', 'medium', 'high', 'ultra'].includes(value as ParticlePreset)
   );
   return saved ?? 'medium'; // Use 'medium' as default for better performance on most devices
 };
@@ -426,6 +442,8 @@ export function getParticlePresetConfig() {
  * @param preset - Preset to apply
  */
 export function setParticlePreset(preset: ParticlePreset): void {
+  // Capture previous value BEFORE setting
+  const previousValue = $particlePreset.get();
   $particlePreset.set(preset);
 
   // Apply preset settings
@@ -437,10 +455,10 @@ export function setParticlePreset(preset: ParticlePreset): void {
   // Update particle intensity slider to match preset
   // Map preset multiplier to intensity slider (1-5 scale)
   const intensityMap: Record<ParticlePreset, number> = {
-    low: 1,      // 0.5x → minimal
-    medium: 2,    // 0.75x → low
-    high: 3,      // 1.0x → normal
-    ultra: 5,     // 1.5x → maximum
+    low: 1, // 0.5x → minimal
+    medium: 2, // 0.75x → low
+    high: 3, // 1.0x → normal
+    ultra: 5, // 1.5x → maximum
   };
   setParticleIntensity(intensityMap[preset]);
 
@@ -454,7 +472,7 @@ export function setParticlePreset(preset: ParticlePreset): void {
     type: 'settings_change',
     data: {
       setting: 'particlePreset',
-      previousValue: $particlePreset.get(),
+      previousValue,
       newValue: preset,
     },
   });
@@ -500,6 +518,8 @@ export function getParticleIntensityMultiplier(): number {
  * @param intensity - Intensity level (1-5)
  */
 export function setParticleIntensity(intensity: number): void {
+  // Capture previous value BEFORE setting
+  const previousValue = $particleIntensity.get();
   // Validate intensity is between 1 and 5
   const validatedIntensity = Math.max(1, Math.min(5, intensity));
   $particleIntensity.set(validatedIntensity);
@@ -514,7 +534,7 @@ export function setParticleIntensity(intensity: number): void {
     type: 'settings_change',
     data: {
       setting: 'particleIntensity',
-      previousValue: $particleIntensity.get(),
+      previousValue,
       newValue: validatedIntensity,
     },
   });
@@ -543,7 +563,7 @@ export {
   playPackTear,
   playCardReveal,
   playCardFlip,
-  isAudioAvailable
+  isAudioAvailable,
 } from './audio';
 
 /**
@@ -551,17 +571,17 @@ export {
  */
 export function initializeUI(): void {
   if (typeof window === 'undefined') return;
-  
+
   // Check for reduced motion preference
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   $prefersReducedMotion.set(mediaQuery.matches);
-  mediaQuery.addEventListener('change', (e) => {
+  mediaQuery.addEventListener('change', e => {
     $prefersReducedMotion.set(e.matches);
   });
-  
+
   // Check for touch device
   $isTouchDevice.set('ontouchstart' in window || navigator.maxTouchPoints > 0);
-  
+
   // Check for gyroscope
   if (window.DeviceOrientationEvent) {
     // Request permission on iOS 13+
@@ -593,7 +613,7 @@ export async function requestGyroscopePermission(): Promise<boolean> {
   } catch (error) {
     console.error('Gyroscope permission denied:', error);
   }
-  
+
   return false;
 }
 
@@ -618,7 +638,10 @@ export function updatePointerPosition(x: number, y: number): void {
 /**
  * Show a toast notification
  */
-export function showToast(message: string, type: 'success' | 'error' | 'info' | 'warning' | 'achievement' = 'info'): void {
+export function showToast(
+  message: string,
+  type: 'success' | 'error' | 'info' | 'warning' | 'achievement' = 'info'
+): void {
   const id = Math.random().toString(36).substring(2, 9);
   const currentToasts = $toasts.get();
   $toasts.set([...currentToasts, { id, message, type }]);
@@ -634,7 +657,7 @@ export function showToast(message: string, type: 'success' | 'error' | 'info' | 
  */
 export function removeToast(id: string): void {
   const currentToasts = $toasts.get();
-  $toasts.set(currentToasts.filter((t) => t.id !== id));
+  $toasts.set(currentToasts.filter(t => t.id !== id));
 }
 
 /**

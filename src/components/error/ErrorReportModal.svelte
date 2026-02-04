@@ -75,7 +75,17 @@ function handleSubmit(event?: SubmitEvent) {
 function copyErrorId() {
   navigator.clipboard.writeText(error.id);
 }
+
+// Handle Escape key to close modal
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    e.stopPropagation();
+    onClose?.();
+  }
+}
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="error-report-backdrop">
   <button class="error-report-overlay" onclick={onClose} aria-label="Close modal" type="button"

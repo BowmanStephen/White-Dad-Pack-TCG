@@ -1,5 +1,4 @@
 import { atom } from 'nanostores';
-import { onMount } from 'svelte';
 import { onBrowser } from '@/lib/utils/browser';
 
 // Theme Types
@@ -139,6 +138,6 @@ export function initTheme(node: HTMLElement) {
   return {
     destroy() {
       // Clean up listeners if needed
-    }
+    },
   };
 }
